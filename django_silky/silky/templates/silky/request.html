@@ -1,0 +1,69 @@
+{% extends "silky/base.html" %}
+{% load filters %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/silky/request.css"/>
+    <link rel="stylesheet" href="/static/silky/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+{% endblock %}
+{% block js %}
+    <script src="/static/silky/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+{% block onload %}
+{% endblock %}
+
+{% block data %}
+    <table>
+    <colgroup>
+            <col style="width:15%">
+            <col style="width:85%">
+    </colgroup>
+        <tr>
+            <td>id</td>
+            <td>{{ request.pk }}</td>
+        </tr>
+        <tr>
+            <td>method</td>
+            <td>{{ request.method }}</td>
+        </tr>
+        <tr>
+            <td>path</td>
+            <td>{{ request.path }}</td>
+        </tr>
+        <tr>
+            <td>db time</td>
+            <td>{{ request.time_spent_on_sql_queries }}</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td>{{ request.time_taken }}</td>
+        </tr>
+        <tr>
+            <td>#queries</td>
+            <td><a href="{% url 'silky.views.sql' request.pk %}">{{ request.num_sql_queries }}</a></td>
+
+        </tr>
+        <tr>
+            <td>query params</td>
+            <td>
+                {% if query_params %}
+                    <pre><code>{{ query_params }}</code></pre>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+        </tr>
+        <tr>
+            <td>body</td>
+            <td>
+                {% if body %}
+                    <pre><code>{{ body }}</code></pre>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

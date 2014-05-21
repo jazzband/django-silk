@@ -1,0 +1,60 @@
+{% extends "silky/base.html" %}
+
+{% block style %}
+<link rel="stylesheet" href="/static/silky/requests.css"/>
+{% endblock %}
+
+{% block data %}
+    {% if requests %}
+    <table>
+        <colgroup>
+            <col style="width:10%">
+            <col style="width:8%">
+            <col style="width:55%">
+            <col style="width:10%">
+            <col style="width:10%">
+            <col style="width:10%">
+        </colgroup>
+        <tr>
+            <th>id</th>
+            <th>method</th>
+            <th>path</th>
+            <th>time</th>
+            <th>db time</th>
+            <th>#queries</th>
+        </tr>
+        {% for r in requests %}
+            <tr>
+                <td><a href="{% url 'silky.views.request' r.pk %}">{{ r.pk }}</a></td>
+                <td>{{ r.method }}</td>
+                <td>{{ r.path }}</td>
+                <td><a href="{% url 'silky.views.profiling' r.pk %}">{{ r.time_taken }}</a></td>
+                <td>{{ r.time_spent_on_sql_queries }}</td>
+                <td><a href="{% url 'silky.views.sql' r.pk %}">{{ r.num_sql_queries }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div id="table-pagination" class="pagination">
+        <span class="current">
+                Page {{ requests.number }} of {{ requests.paginator.num_pages }}.
+        </span>
+
+        <div class="step-links">
+            {% if requests.has_previous %}
+                <a href="?page={{ requests.previous_page_number }}">previous</a>
+            {% else %}
+                previous
+            {% endif %}
+             |
+            {% if requests.has_next %}
+                <a href="?page={{ requests.next_page_number }}">next</a>
+                {% else %}
+                next
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div id="no-queries-div">The database is empty!</div>
+    {% endif %}
+
+{% endblock %}

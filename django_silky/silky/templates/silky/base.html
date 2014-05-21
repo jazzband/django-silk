@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Silky</title>
+    <link rel="stylesheet" href="/static/silky/silky.css"/>
+    {% block style %}
+    {% endblock %}
+    {% block js %}
+    {% endblock %}
+</head>
+<body onload="{% block onload %}{% endblock %}">
+<div id="content">
+    <div id="header">
+        <a href="/silky/"><img id="logo" src="/static/silky/silky.png"/></a>
+
+    </div>
+    <div id="data">
+        {% block data %}
+        {% endblock %}
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends "silky/base.html" %}
+{% load filters %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/silky/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+    <style>
+        #traceback {
+            overflow: visible;
+        }
+
+        pre {
+
+        {#            white-space: pre-wrap; /* css-3 */#}
+        }
+
+        #time-div {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #query-div {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #query {
+            text-align: left;
+            margin: 0 auto;
+            display: inline-block;
+        }
+
+        .line {
+            width: 100%;
+            display: inline-block;
+        }
+
+        #the-line {
+            background-color: #c3c3c3;
+        }
+    </style>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/silky/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+
+{% block onload %}
+{% endblock %}
+
+{% block data %}
+    <div id="time-div">
+        {{ sql_query.time_taken }}ms
+    </div>
+    <div id="query-div">
+        <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>
+    </div>
+    {% if traceback %}
+        <div id="traceback">
+            {% for ln in traceback %}
+                {{ ln }}<br>
+                {% if forloop.counter == pos %}
+                    <pre><code>...{% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}...</code></pre>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {#        <div id="traceback">{{ sql_query.traceback_ln_only | spacify | filepath_urlify | linebreaksbr }}</div>#}
+    {% endif %}
+{% endblock %}

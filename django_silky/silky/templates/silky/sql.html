@@ -1,0 +1,65 @@
+
+{% extends "silky/base.html" %}
+{% load filters %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/silky/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/silky/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+
+{% block onload %}
+
+{#    sh_highlightDocument();#}
+{% endblock %}
+
+{% block data %}
+    <table>
+        <colgroup>
+            <col style="width:10%">
+            <col style="width:77%">
+            <col style="width:13%">
+        </colgroup>
+        <tr>
+            <th>id</th>
+            <th>query</th>
+            <th>time taken</th>
+        </tr>
+        {% for r in items %}
+{#                            <td><a href="{% url 'silky.views.sql' r.pk %}">{{ r.num_sql_queries }}</a></td>#}
+
+            <tr>
+                <td><a href="{% url 'silky.views.sql_detail' r.request.pk r.pk %}">{{ r.pk }}</a></td>
+                <td><pre><code>{{ r.formatted_query | spacify | linebreaksbr}}</code></pre></td>
+                <td>{{ r.time_taken }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+    <div id="table-pagination" class="pagination">
+        <span class="current">
+            Page {{ items.number }} of {{ items.paginator.num_pages }}.
+        </span>
+
+
+        <div class="step-links">
+            {% if items.has_previous %}
+                <a href="?page={{ items.previous_page_number }}">previous</a>
+            {% else %}
+                previous
+            {% endif %}
+             |
+            {% if items.has_next %}
+                <a href="?page={{ items.next_page_number }}">next</a>
+                {% else %}
+                next
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}

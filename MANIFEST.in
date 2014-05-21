@@ -1,0 +1,4 @@
+include LICENSE
+include README.rst
+recursive-include silky/static *
+recursive-include silky/templates *
