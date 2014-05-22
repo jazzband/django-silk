@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.safestring import mark_safe
 
-from silky.middleware import ProfilerMiddleware
+from silky.middleware import SilkyMiddleware
 from silky.models import Request, SQLQuery, Profile
 
 
@@ -118,7 +118,7 @@ def request(request, request_id):
     if r.body:
         if r.content_type:
             content_type = r.content_type.split(';')[0]
-            if content_type in ProfilerMiddleware.content_types_json:
+            if content_type in SilkyMiddleware.content_types_json:
                 context['body'] = json.dumps(json.loads(r.body), sort_keys=True, indent=4)
             else:
                 context['body'] = r.body

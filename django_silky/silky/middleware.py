@@ -12,7 +12,7 @@ from silky.sql import execute_sql
 from silky.thread import SilkyThread
 
 
-class ProfilerMiddleware(object):
+class SilkyMiddleware(object):
     """this bad boy is where all the magic happens. all the wrapping and writing
     things down to the database starts here"""
     content_types_json = ['application/json', 'application/x-javascript', 'text/javascript', 'text/x-javascript',
@@ -20,7 +20,7 @@ class ProfilerMiddleware(object):
     content_type_form = ['multipart/form-data', 'application/x-www-form-urlencoded']
 
     def __init__(self):
-        super(ProfilerMiddleware, self).__init__()
+        super(SilkyMiddleware, self).__init__()
         self.queue = Queue.Queue()
         self.thread = SilkyThread(self.queue)
         self.thread.start()
@@ -33,7 +33,7 @@ class ProfilerMiddleware(object):
                 SQLCompiler._execute_sql = SQLCompiler.execute_sql
                 SQLCompiler.execute_sql = execute_sql
             body = ''
-            content_type = request.META['CONTENT_TYPE']
+            content_type = request.META.get('CONTENT_TYPE', '')
             if content_type:
                 content_type = content_type.split(';')[0]
             if content_type in self.content_type_form:

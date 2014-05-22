@@ -21,7 +21,7 @@ class Request(models.Model):
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    content_type = CharField(max_length=50)
+    content_type = CharField(max_length=50, default='', blank=True)
 
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
@@ -54,7 +54,7 @@ class SQLQueryManager(models.Manager):
             # TODO: Not that there is ever more than one request (but there could be eventually)
             # but perhaps there is a cleaner way of apply the increment from the counter without iterating
             # and saving individually? e.g. bulk update but with diff. increments. Couldn't come up with this
-            # off hand. --Mike
+            # off hand.
             for r in requests:
                 r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
                 r.save()
