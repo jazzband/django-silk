@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.safestring import mark_safe
+from silky.httpie_cmd import curl_cmd
 
 from silky.middleware import SilkyMiddleware
 from silky.models import Request, SQLQuery, Profile
@@ -110,11 +111,19 @@ def source(request):
 
 def request(request, request_id):
     r = Request.objects.get(pk=request_id)
-    context = {
-        'request': r
-    }
+    query_params = None
     if r.query_params:
-        context['query_params'] = json.dumps(json.loads(r.query_params), sort_keys=True, indent=4)
+        query_params = json.loads(r.query_params)
+    context = {
+        'request': r,
+        'curl': curl_cmd(url=request.build_absolute_uri(r.path),
+                         method=r.method,
+                         query_params=query_params,
+                         body=r.body,
+                         content_type=r.content_type),
+        'query_params': json.dumps(query_params, sort_keys=True, indent=4)
+    }
+
     if r.body:
         if r.content_type:
             content_type = r.content_type.split(';')[0]

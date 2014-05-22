@@ -17,7 +17,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'silky',
-    'pet_store'
+    'blog'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -27,7 +27,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silky.middleware.ProfilerMiddleware'
+    'silky.middleware.SilkyMiddleware'
 )
 
 ROOT_URLCONF = 'django_silky.urls'

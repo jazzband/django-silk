@@ -5,6 +5,16 @@
     <link rel="stylesheet" href="/static/silky/request.css"/>
     <link rel="stylesheet" href="/static/silky/sql.css"/>
     <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+    <style>
+        #pre-curl {
+            white-space: pre-wrap; /* css-3 */
+            white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+            /*noinspection CssInvalidElement*/
+            white-space: -pre-wrap; /* Opera 4-6 */
+            white-space: -o-pre-wrap; /* Opera 7 */
+            word-wrap: break-word; /* Internet Explorer 5.5+ */
+        }
+    </style>
 {% endblock %}
 {% block js %}
     <script src="/static/silky/highlight/highlight.pack.js"></script>
@@ -15,10 +25,10 @@
 
 {% block data %}
     <table>
-    <colgroup>
+        <colgroup>
             <col style="width:15%">
             <col style="width:85%">
-    </colgroup>
+        </colgroup>
         <tr>
             <td>id</td>
             <td>{{ request.pk }}</td>
@@ -65,5 +75,15 @@
                 {% endif %}
             </td>
         </tr>
+        {% if curl %}
+            <tr>
+                <td>
+                    curl
+                </td>
+                <td>
+                    <pre id="pre-curl">{{ curl.strip }}</pre>
+                </td>
+            </tr>
+        {% endif %}
     </table>
 {% endblock %}

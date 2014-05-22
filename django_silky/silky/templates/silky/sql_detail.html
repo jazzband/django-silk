@@ -61,7 +61,10 @@
             {% for ln in traceback %}
                 {{ ln }}<br>
                 {% if forloop.counter == pos %}
-                    <pre><code>...{% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}...</code></pre>
+                    <pre><code>...
+
+{% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}
+...</code></pre>
                 {% endif %}
             {% endfor %}
         </div>

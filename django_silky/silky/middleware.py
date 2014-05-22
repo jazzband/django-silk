@@ -22,9 +22,9 @@ class SilkyMiddleware(object):
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
         self.queue = Queue.Queue()
-        self.thread = SilkyThread(self.queue)
-        self.thread.start()
-        atexit.register(self.clean_up)
+        # self.thread = SilkyThread(self.queue)
+        # self.thread.start()
+        # atexit.register(self.clean_up)
 
     def process_request(self, request):
         path = request.path
@@ -44,7 +44,8 @@ class SilkyMiddleware(object):
             query_params = request.GET
             encoded_query_params = ''
             if query_params:
-                encoded_query_params = json.dumps(dict(query_params))  # Encode as json
+                query_params_dict = dict(zip(query_params.keys(), query_params.values()))
+                encoded_query_params = json.dumps(query_params_dict)
             request_model = models.Request(path=path,
                                            body=body,
                                            method=request.method,
@@ -73,8 +74,8 @@ class SilkyMiddleware(object):
             self.save()
         return response
 
-    def clean_up(self):
-        self.thread.running = False
-        self.thread.join()
+    # def clean_up(self):
+    #     self.thread.running = False
+    #     self.thread.join()
 
 
