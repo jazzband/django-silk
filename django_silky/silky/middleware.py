@@ -1,5 +1,4 @@
 import Queue
-import atexit
 import inspect
 import json
 
@@ -9,7 +8,6 @@ from django.utils import timezone
 import models
 from silky.local import DataCollector
 from silky.sql import execute_sql
-from silky.thread import SilkyThread
 
 
 class SilkyMiddleware(object):
@@ -71,11 +69,13 @@ class SilkyMiddleware(object):
 
     def process_response(self, request, response):
         if not request.path.startswith('/silky'):
+            collector = DataCollector()
+            collector.request.response_status_code = response.status_code
             self.save()
         return response
 
-    # def clean_up(self):
-    #     self.thread.running = False
-    #     self.thread.join()
+        # def clean_up(self):
+        #     self.thread.running = False
+        #     self.thread.join()
 
 

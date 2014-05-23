@@ -22,7 +22,7 @@ class Request(models.Model):
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     content_type = CharField(max_length=50, default='', blank=True)
-
+    response_status_code = IntegerField(null=True, blank=True)
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     num_sql_queries = IntegerField(default=0)

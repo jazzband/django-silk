@@ -9,6 +9,7 @@ from silky.httpie_cmd import curl_cmd
 
 from silky.middleware import SilkyMiddleware
 from silky.models import Request, SQLQuery, Profile
+from silky.test_client import gen
 
 
 def _page(request, query_set):
@@ -121,7 +122,12 @@ def request(request, request_id):
                          query_params=query_params,
                          body=r.body,
                          content_type=r.content_type),
-        'query_params': json.dumps(query_params, sort_keys=True, indent=4)
+        'query_params': json.dumps(query_params, sort_keys=True, indent=4),
+        'client': gen(path=r.path,
+                      method=r.method,
+                      query_params=query_params,
+                      data=r.body,
+                      content_type=r.content_type)
     }
 
     if r.body:
