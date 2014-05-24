@@ -1,10 +1,66 @@
+{% extends 'silky/request_base.html' %}
 
-{% extends "silky/base.html" %}
+{% load nav %}
 {% load filters %}
 
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/highlight/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/cell.css"/>
     <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+    <style>
+        .right-aligned {
+            text-align: right;
+
+        }
+
+        .center-aligned {
+            text-align: center;
+
+        }
+
+        .left-aligned {
+            text-align: left;
+        }
+
+        table {
+            border-spacing: 0;
+            margin: auto;
+            max-width: 920px;
+        }
+
+        #table-pagination {
+            text-align: center;
+            margin: 20px;
+        }
+
+        tr {
+            height: 20px;
+        }
+
+        tr:hover {
+            background-color: #eccfcf;
+            cursor: pointer;
+        }
+
+        td {
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        #table-div {
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        th {
+            background-color: #e0f4f4;
+            height: 40px;
+            padding-left: 20px;
+            padding-right: 20px;
+
+        }
+    </style>
 {% endblock %}
 
 {% block js %}
@@ -14,52 +70,52 @@
 
 {% block onload %}
 
-{#    sh_highlightDocument();#}
+    {#    sh_highlightDocument();#}
 {% endblock %}
 
 {% block data %}
-    <table>
-        <colgroup>
-            <col style="width:10%">
-            <col style="width:77%">
-            <col style="width:13%">
-        </colgroup>
-        <tr>
-            <th>id</th>
-            <th>query</th>
-            <th>time taken</th>
-        </tr>
-        {% for r in items %}
-{#                            <td><a href="{% url 'silky.views.sql' r.pk %}">{{ r.num_sql_queries }}</a></td>#}
+    {{ block.super }}
+    <div id="table-div">
+        <table>
 
             <tr>
-                <td><a href="{% url 'silky.views.sql_detail' r.request.pk r.pk %}">{{ r.pk }}</a></td>
-                <td><pre><code>{{ r.formatted_query | spacify | linebreaksbr}}</code></pre></td>
-                <td>{{ r.time_taken }}</td>
+                <th class="left-aligned">Time</th>
+                <th class="left-aligned">Tables</th>
+                <th class="right-aligned">Num. Joins</th>
+                <th class="right-aligned">Execution Time</th>
             </tr>
-        {% endfor %}
+            {% for sql_query in items %}
+                <tr onclick="window.location='{% url 'sql_detail' r.id sql_query.id %}';">
+                    <td class="left-aligned">{{ sql_query.start_time }}</td>
+                    <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
+                    <td class="right-aligned">{{ sql_query.num_joins }}</td>
+                    <td class="right-aligned">{{ sql_query.time_taken }}</td>
+                </tr>
+            {% endfor %}
 
-    </table>
-    <div id="table-pagination" class="pagination">
-        <span class="current">
-            Page {{ items.number }} of {{ items.paginator.num_pages }}.
-        </span>
+        </table>
+        <div id="table-pagination" class="pagination">
+            <span class="current">
+                Page {{ items.number }} of {{ items.paginator.num_pages }}.
+            </span>
 
-
-        <div class="step-links">
-            {% if items.has_previous %}
-                <a href="?page={{ items.previous_page_number }}">previous</a>
-            {% else %}
-                previous
-            {% endif %}
-             |
-            {% if items.has_next %}
-                <a href="?page={{ items.next_page_number }}">next</a>
+            <div class="step-links">
+                {% if items.has_previous %}
+                    <a href="?page={{ items.previous_page_number }}">previous</a>
                 {% else %}
-                next
-            {% endif %}
+                    previous
+                {% endif %}
+                |
+                {% if items.has_next %}
+                    <a href="?page={{ items.next_page_number }}">next</a>
+                {% else %}
+                    next
+                {% endif %}
+            </div>
         </div>
     </div>
+
+
 
 
 {% endblock %}

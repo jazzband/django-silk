@@ -3,6 +3,6 @@ from blog import models
 
 
 def index(request):
-    return render_to_response('blog/index.html', context={
+    return render_to_response('blog/index.html', {
         'posts': models.Post.objects.all()
     })

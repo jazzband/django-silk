@@ -1,9 +1,9 @@
-{% extends "silky/base.html" %}
+{% extends "silky/request_base.html" %}
 {% load filters %}
-
+{% load inclusion %}
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/request.css"/>
-    <link rel="stylesheet" href="/static/silky/sql.css"/>
+    <link rel="stylesheet" href="/static/silky/cell.css"/>
+    <link rel="stylesheet" href="/static/silky/heading.css"/>
     <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
     <style>
         #pre-curl {
@@ -14,90 +14,81 @@
             white-space: -o-pre-wrap; /* Opera 7 */
             word-wrap: break-word; /* Internet Explorer 5.5+ */
         }
+
+        #request-summary-div {
+            text-align: center;
+            width: 100%;
+        }
+
+
+
+        pre {
+            margin: 0;
+        }
+
+        .cell {
+            background-color: transparent;
+            margin: 0;
+        }
+
+
     </style>
 {% endblock %}
 {% block js %}
     <script src="/static/silky/highlight/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/static/silky/cell.js"></script>
 {% endblock %}
 {% block onload %}
 {% endblock %}
 
 {% block data %}
+    {{ block.super }}
+    <div id="request-summary-div">
+        {% request_summary r %}
+    </div>
+    <div id="request-info-div">
+        {% if query_params %}
+            <div class="heading">
+                <div class="inner-heading">
+                    Query Parameters
+                </div>
+            </div>
+            <pre><code>{{ query_params }}</code></pre>
+        {% endif %}
+        {% if body %}
+            <div class="heading">
+                <div class="inner-heading">
+                    Body
+                </div>
+            </div>
+            <pre><code>{{ body }}</code></pre>
+        {% endif %}
+        {% if curl %}
+            <div class="heading">
+                <div class="inner-heading">
+                    Curl
+                </div>
+            </div>
+
+            <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>
+        {% endif %}
+        {% if client %}
+            <div class="heading">
+                <div class="inner-heading">
+                    Django Test Client
+                </div>
+            </div>
+            <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
+        {% endif %}
+    </div>
     <table>
         <colgroup>
             <col style="width:17%">
             <col style="width:83%">
         </colgroup>
-        <tr>
-            <td>id</td>
-            <td>{{ request.pk }}</td>
-        </tr>
-        <tr>
-            <td>method</td>
-            <td>{{ request.method }}</td>
-        </tr>
-        <tr>
-            <td>path</td>
-            <td>{{ request.path }}</td>
-        </tr>
-        <tr>
-            <td>db time</td>
-            <td>{{ request.time_spent_on_sql_queries }}</td>
-        </tr>
-        <tr>
-            <td>time</td>
-            <td>{{ request.time_taken }}</td>
-        </tr>
-        <tr>
-            <td>#queries</td>
-            <td><a href="{% url 'silky.views.sql' request.pk %}">{{ request.num_sql_queries }}</a></td>
-
-        </tr>
-        <tr>
-            <td>query params</td>
-            <td>
-                {% if query_params %}
-                    <pre><code>{{ query_params }}</code></pre>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-        </tr>
-        <tr>
-            <td>body</td>
-            <td>
-                {% if body %}
-                    <pre><code>{{ body }}</code></pre>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>response status code</td>
-            <td>{{ request.response_status_code }}</td>
-        </tr>
-        {% if curl %}
-            <tr>
-                <td>
-                    curl
-                </td>
-                <td>
-                    <pre id="pre-curl">{{ curl.strip }}</pre>
-                </td>
-            </tr>
-        {% endif %}
         {% if client %}
-            <tr>
-                <td>
-                    client
-                </td>
-                <td>
-                    <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
-                </td>
-            </tr>
+
         {% endif %}
     </table>
 {% endblock %}

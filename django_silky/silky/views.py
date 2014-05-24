@@ -33,15 +33,19 @@ def requests(request):
     page = _page(request, query_set)
     return render_to_response('silky/requests.html', {
         'requests': page,
-        'url': _url_for_sql_queries
+        'url': _url_for_sql_queries,
+        'request': request
     })
 
 
 def sql(request, request_id):
-    query_set = SQLQuery.objects.filter(request_id=request_id).order_by('-start_time')
+    r = Request.objects.get(id=request_id)
+    query_set = SQLQuery.objects.filter(request=r).order_by('-start_time')
     page = _page(request, query_set)
     return render_to_response('silky/sql.html', {
-        'items': page
+        'items': page,
+        'request': request,
+        'r': r
     })
 
 
@@ -116,7 +120,7 @@ def request(request, request_id):
     if r.query_params:
         query_params = json.loads(r.query_params)
     context = {
-        'request': r,
+        'r': r,
         'curl': curl_cmd(url=request.build_absolute_uri(r.path),
                          method=r.method,
                          query_params=query_params,
@@ -127,7 +131,8 @@ def request(request, request_id):
                       method=r.method,
                       query_params=query_params,
                       data=r.body,
-                      content_type=r.content_type)
+                      content_type=r.content_type),
+        'request': request
     }
 
     if r.body:

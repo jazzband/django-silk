@@ -70,12 +70,15 @@ LOGGING = {
         }
     },
     'loggers': {
-
         'silky': {
             'handlers': ['console'],
             'level': 'DEBUG'
+        },
+        'blog': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
         }
-    }
+    },
 }
 
 STATIC_URL = '/static/'
@@ -85,26 +88,26 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-STATICFILES_DIRS = (
-    'static',
-)
-
 STATIC_ROOT = '/tmp/static/'
 
 MEDIA_ROOT = BASE_DIR + '/media/'
 
 TEMPLATE_DIRS = (
-    BASE_DIR + '/templates/'
+    BASE_DIR
 )
 
-print TEMPLATE_DIRS
-
+# A tuple of template loader classes, specified as strings. Each Loader class
+# knows how to import templates from a particular source.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader'
 )
 
+# A tuple of callables that are used to populate the context in RequestContext.
+# These callables take a request object as their argument and return a dictionary of
+# items to be merged into the context.
 TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'django.contrib.auth.context_processors.auth'
+    'django.contrib.auth.context_processors.auth',
 )

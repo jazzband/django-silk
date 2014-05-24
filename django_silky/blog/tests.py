@@ -1,9 +1,14 @@
+import logging
+
 from django.test import TestCase
+
 from blog.models import Post
 
 
-class TestMarkdown(TestCase):
+logger = logging.getLogger('blog')
 
+
+class TestMarkdown(TestCase):
     def test_highlight(self):
         markdown = """```python
     if True:
@@ -11,4 +16,6 @@ class TestMarkdown(TestCase):
 ```"""
         post = Post(markdown=markdown)
         post.save()
-        self.assertIn('codehilite', post.html)
+        post_html = post.html
+        print post_html
+        self.assertIn('codehilite', post_html)

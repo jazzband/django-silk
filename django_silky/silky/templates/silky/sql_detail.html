@@ -1,17 +1,13 @@
 {% extends "silky/base.html" %}
 {% load filters %}
+{% load nav %}
 
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/sql.css"/>
     <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+    <link rel="stylesheet" href="/static/silky/heading.css"/>
     <style>
         #traceback {
             overflow: visible;
-        }
-
-        pre {
-
-        {#            white-space: pre-wrap; /* css-3 */#}
         }
 
         #time-div {
@@ -38,6 +34,18 @@
         #the-line {
             background-color: #c3c3c3;
         }
+
+        code {
+            background-color: transparent !important;
+        }
+
+        #query-div pre {
+            background-color: transparent !important;
+        }
+
+        pre {
+            margin: 0;
+        }
     </style>
 {% endblock %}
 
@@ -50,24 +58,68 @@
 {% endblock %}
 
 {% block data %}
-    <div id="time-div">
-        {{ sql_query.time_taken }}ms
+    <div id="header">
+        <div id="menu">
+            <div class="menu-item">
+                <div class="menu-item-outer" onclick="window.history.back()">
+                    <div class="menu-item-inner">&larr;</div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-outer menu-item-selected">
+                    <div class="menu-item-inner">SQL Query</div>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="query-div">
+        <div>
+            {{ sql_query.num_joins }} joins
+        </div>
+        <div>
+            {{ sql_query.time_taken }}ms
+        </div>
         <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>
     </div>
-    {% if traceback %}
-        <div id="traceback">
-            {% for ln in traceback %}
-                {{ ln }}<br>
-                {% if forloop.counter == pos %}
-                    <pre><code>...
+    {% for ln in traceback %}
+        {% if ln %}
+        <div class="heading">
+            <div class="inner-heading">
+                {{ ln }}
+            </div>
 
-{% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}
-...</code></pre>
-                {% endif %}
-            {% endfor %}
         </div>
-        {#        <div id="traceback">{{ sql_query.traceback_ln_only | spacify | filepath_urlify | linebreaksbr }}</div>#}
-    {% endif %}
+        {% if forloop.counter == pos %}
+                        <pre><code>...
+
+    {% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}
+    ...</code></pre>
+        {% endif %}
+        {% endif %}
+    {% endfor %}
+    {#    <div class="heading">#}
+    {#        <div class="inner-heading">#}
+    {#            Query#}
+    {#        </div>#}
+    {#    </div>#}
+    {#    <div id="time-div">#}
+    {#        {{ sql_query.time_taken }}ms#}
+    {#    </div>#}
+    {#    <div id="query-div">#}
+    {#        <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>#}
+    {#    </div>#}
+    {#    {% if traceback %}#}
+    {#        <div id="traceback">#}
+    {#            {% for ln in traceback %}#}
+    {#                {{ ln }}<br>#}
+    {#                {% if forloop.counter == pos %}#}
+{#                        <pre><code>...#}
+{##}
+{#    {% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}#}
+{#    ...</code></pre>#}
+    {#                {% endif %}#}
+    {#            {% endfor %}#}
+    {#        </div>#}
+    {#        <div id="traceback">{{ sql_query.traceback_ln_only | spacify | filepath_urlify | linebreaksbr }}</div>#}
+    {#    {% endif %}#}
 {% endblock %}

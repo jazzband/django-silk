@@ -1,23 +1,103 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Silky</title>
-    <link rel="stylesheet" href="/static/silky/silky.css"/>
+    <link rel="stylesheet" href="/static/silky/fonts.css"/>
+    <link rel="stylesheet" href="/static/silky/colors.css"/>
+    <style>
+        body {
+            font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3fbfb;
+            margin: 0;
+            font-weight: lighter;
+        }
+
+        pre {
+            font-family: Fantasque;
+            background-color: #e0f4f4 !important;
+        }
+
+        code {
+            font-family: Fantasque;
+            background-color: #e0f4f4 !important;
+        }
+
+        html {
+            margin: 0;
+        }
+
+        #header {
+            height: 50px;
+            background-color: #eccfcf;
+            display: table;
+            width: 100%;
+        }
+
+        #header div {
+            display: inline-block;
+        }
+
+        #menu {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            height: 100%;
+            padding-left: 10px;
+            padding-right: 10px;
+            margin: 0;
+        }
+
+        .menu-item:hover {
+            background-color: #ffe2e2;
+            cursor: pointer;
+        }
+
+        .menu-item-selected {
+            background-color: #ffe2e2;
+        }
+
+        .menu-item-outer {
+            display: table !important;
+            height: 100%;
+            width: 100%;
+        }
+
+        .menu-item-inner {
+            display: table-cell !important;
+            vertical-align: middle;
+            width: 100%;
+        }
+
+        a:visited {
+            color: black;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+
+    </style>
     {% block style %}
     {% endblock %}
+    <script src="/static/silky/jquery.min.js"></script>
+    <script src="/static/silky/underscore.min.js"></script>
+    <script src="/static/silky/backbone.min.js"></script>
     {% block js %}
     {% endblock %}
 </head>
 <body onload="{% block onload %}{% endblock %}">
 <div id="content">
-    <div id="header">
-        <a href="/silky/"><img id="logo" src="/static/silky/silky.png"/></a>
-
-    </div>
     <div id="data">
         {% block data %}
         {% endblock %}
     </div>
 </div>
+
 </body>
 </html>

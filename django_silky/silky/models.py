@@ -10,7 +10,7 @@ import sqlparse
 
 def time_taken(self):
     d = self.end_time - self.start_time
-    return 0.0 + d.seconds * 1000 + d.microseconds / 1000
+    return d.seconds * 1000 + d.microseconds / 1000
 
 
 class Request(models.Model):
@@ -77,6 +77,31 @@ class SQLQuery(models.Model):
     @property
     def formatted_query(self):
         return sqlparse.format(self.query, reindent=True, keyword_case='upper')
+
+    # TODO: Surely a better way to handle this? May return false positives
+    @property
+    def num_joins(self):
+        return self.query.lower().count('join ')
+
+    @property
+    def tables_involved(self):
+        """A rreally ather rudimentary way to work out tables involved in a query.
+        Eventually this should likely be parsing the SQL and pulling out
+        the tables that way."""
+        components = [x.strip() for x in self.query.split()]
+        tables = []
+        for idx, c in enumerate(components):
+            # TODO: If django uses aliases on column names they will be falsely identified as tables...
+            if c.lower() == 'from' or c.lower() == 'join' or c.lower() == 'as':
+                try:
+                    nxt = components[idx + 1]
+                    if not nxt.startswith('('):  # Subquery
+                        stripped = nxt.strip().strip(',')
+                        if stripped:
+                            tables.append(stripped)
+                except IndexError:  # Reach the end
+                    pass
+        return tables
 
     time_taken = property(time_taken)
 

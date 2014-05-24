@@ -1,0 +1,12 @@
+.heading {
+    width: 100%;
+    background-color: #ffe2e2;
+    height: 30px;
+    display: table;
+}
+
+.heading .inner-heading {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
