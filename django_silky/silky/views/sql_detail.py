@@ -5,6 +5,27 @@ from django.utils.safestring import mark_safe
 from django.views.generic import View
 
 from silky.models import SQLQuery
+from silky.views.method_map_view import MethodMapView
+
+
+def _code(file_path, line_num):
+    actual_line = ''
+    lines = ''
+    with open(file_path, 'r') as f:
+        r = range(max(0, line_num - 10), line_num + 10)
+        for i, line in enumerate(f):
+            if i in r:
+                lines += line
+            if i + 1 == line_num:
+                actual_line = line
+    code = lines.split('\n')
+    return actual_line, code
+
+
+def _code_context(file_path, line_num):
+    actual_line, code = _code(file_path, line_num)
+    context = {'code': code, 'file_path': file_path, 'line_num': line_num, 'actual_line': actual_line}
+    return context
 
 
 class SQLDetailView(View):
@@ -27,7 +48,7 @@ class SQLDetailView(View):
             n += 1
         return str
 
-    def get(self, request, request_id, sql_id):
+    def get(self, request, sql_id):
         sql_query = SQLQuery.objects.get(pk=sql_id)
         pos = int(request.GET.get('pos', 0))
         file_path = request.GET.get('file_path', '')
@@ -42,26 +63,7 @@ class SQLDetailView(View):
             'file_path': file_path
         }
         if pos and file_path and line_num:
-            actual_line, code = self._code(file_path, line_num)
+            actual_line, code = _code(file_path, line_num)
             context['code'] = code
             context['actual_line'] = actual_line
         return render_to_response('silky/sql_detail.html', context)
-
-    def _code(self, file_path, line_num):
-        actual_line = ''
-        lines = ''
-        with open(file_path, 'r') as f:
-            r = range(max(0, line_num - 10), line_num + 10)
-            for i, line in enumerate(f):
-                if i in r:
-                    lines += line
-                if i + 1 == line_num:
-                    actual_line = line
-        code = lines.split('\n')
-        return actual_line, code
-
-
-    def _code_context(self, file_path, line_num):
-        actual_line, code = self._code(file_path, line_num)
-        context = {'code': code, 'file_path': file_path, 'line_num': line_num, 'actual_line': actual_line}
-        return context

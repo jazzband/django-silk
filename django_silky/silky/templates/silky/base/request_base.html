@@ -1,7 +1,7 @@
 {% extends 'silky/base/base.html' %}
 {% load nav %}
 
-{% block data %}
+{% block menu %}
     <div id="header">
         <div class="menu">
             <a href="{% url 'requests' %}">
@@ -18,15 +18,15 @@
                     </div>
                 </div>
             </a>
-            <a href="{% url 'sql' r.id %}">
-                <div class="menu-item {% navactive request 'sql' r.id %} selectable-menu-item">
+            <a href="{% url 'request_sql' r.id %}">
+                <div class="menu-item {% navactive request 'request_sql' r.id %} selectable-menu-item">
                     <div class="menu-item-outer">
                         <div class="menu-item-inner">SQL</div>
                     </div>
                 </div>
             </a>
-            <a href="{% url 'profiling' r.id %}">
-                <div class="menu-item {% navactive request 'profiling' r.id %} selectable-menu-item">
+            <a href="{% url 'profile_detail' r.id %}">
+                <div class="menu-item {% navactive request 'profile_detail' r.id %} selectable-menu-item">
                     <div class="menu-item-outer">
                         <div class="menu-item-inner">Profiling</div>
                     </div>
@@ -35,3 +35,4 @@
         </div>
     </div>
 {% endblock %}
+

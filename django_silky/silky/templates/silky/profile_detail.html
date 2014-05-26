@@ -1,0 +1,92 @@
+{% extends "silky/base/detail_base.html" %}
+{% load filters %}
+{% load nav %}
+{% load inclusion %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
+            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+        });
+    </script>
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        #error-div {
+            margin: 10px;
+        }
+
+        #code {
+            text-align: left;
+        }
+
+        #query-info-div div {
+            margin-bottom: 5px;
+        }
+
+        #name-div {
+            font-weight: bold;
+        }
+    </style>
+
+{% endblock %}
+
+{% block menu %}
+    <a href="{% url 'profiling' %}">
+        <div class="menu-item">
+            <div class="menu-item-outer">
+                <div class="menu-item-inner">&larr;</div>
+            </div>
+        </div>
+    </a>
+
+    <div class="menu-item">
+        <a href="{% url 'profile_detail' profile.id %}">
+            <div class="menu-item-outer selectable-menu-item {% navactive request 'profile_detail' profile.id %}">
+                <div class="menu-item-inner">Detail</div>
+            </div>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a href="{% url 'profile_sql' profile.id %}">
+            <div class="menu-item-outer selectable-menu-item {% navactive request 'profile_sql' profile.id %}">
+                <div class="menu-item-inner">Queries</div>
+            </div>
+        </a>
+    </div>
+{% endblock %}
+
+{% block data %}
+    <div id="query-div">
+
+        <div id="query-info-div">
+            <div id="name-div">
+                {{ profile.name }}
+            </div>
+            <div id="time-taken-div">
+                <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
+            </div>
+        </div>
+        <div class="heading">
+            <div class="inner-heading">
+                {% if profile.file_path and profile.line_num %}
+                    {{ file_path }}:{{ line_num }}
+                {% else %}
+                    Location
+                {% endif %}
+            </div>
+        </div>
+        {% if code %}
+            <pre id="code"><code>{% code code actual_line %}</code></pre>
+        {% elif code_error %}
+            <div id="error-div">
+                {{ code_error }}
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

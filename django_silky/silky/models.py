@@ -25,6 +25,7 @@ class Request(models.Model):
     response_status_code = IntegerField(null=True, blank=True)
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
+    # TODO: This is probably a bad way to do this, .count() will prob do?
     num_sql_queries = IntegerField(default=0)
 
     time_taken = property(time_taken)
@@ -121,7 +122,7 @@ class SQLQuery(models.Model):
 
 
 class BaseProfile(models.Model):
-    name = CharField(max_length=300, blank=True)
+    name = CharField(max_length=300, blank=True, default='')
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     request = ForeignKey('Request', null=True, blank=True)
@@ -132,11 +133,11 @@ class BaseProfile(models.Model):
 
 
 class Profile(BaseProfile):
-    file_path = CharField(max_length=300, blank=True)
+    file_path = CharField(max_length=300, blank=True, default='')
     line_num = IntegerField(null=True, blank=True)
-    func_name = CharField(max_length=300, blank=True)
+    func_name = CharField(max_length=300, blank=True, default='')
     exception_raised = BooleanField(default=False)
-    queries = ManyToManyField('SQLQuery')
+    queries = ManyToManyField('SQLQuery', related_name='profiles')
 
     @property
     def is_function_profile(self):

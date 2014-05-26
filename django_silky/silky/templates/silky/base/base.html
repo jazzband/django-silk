@@ -80,6 +80,10 @@
             color: black;
             text-decoration: none;
         }
+        #filter {
+            position: absolute;
+            right: 0;
+        }
 
     </style>
     {% block style %}
@@ -91,6 +95,16 @@
 </head>
 <body onload="{% block onload %}{% endblock %}">
 <div id="content">
+    <div id="header">
+        <div class="menu">
+            {% block menu %}
+            {% endblock %}
+        </div>
+        <div id="filter" class="menu">
+            {% block filter %}
+            {% endblock %}
+        </div>
+    </div>
     <div id="data">
         {% block data %}
         {% endblock %}

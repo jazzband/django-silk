@@ -6,13 +6,11 @@ from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
 
 import models
-from silky.local import DataCollector
+from silky.collector import DataCollector
 from silky.sql import execute_sql
 
 
 class SilkyMiddleware(object):
-    """this bad boy is where all the magic happens. all the wrapping and writing
-    things down to the database starts here"""
     content_types_json = ['application/json', 'application/x-javascript', 'text/javascript', 'text/x-javascript',
                           'text/x-json']
     content_type_form = ['multipart/form-data', 'application/x-www-form-urlencoded']
@@ -46,9 +44,9 @@ class SilkyMiddleware(object):
                                            method=request.method,
                                            content_type=content_type,
                                            query_params=encoded_query_params)
-            DataCollector().configure(request_model)
+            DataCollector().request = request_model
 
-    def process_view(self, request, view_func):
+    def process_view(self, request, view_func, *args, **kwargs):
         if not request.path.startswith('/silky'):
             if inspect.ismethod(view_func):
                 view_name = view_func.im_class.__module__ + '.' + view_func.im_class.__name__ + view_func.__name__

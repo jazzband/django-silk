@@ -1,0 +1,39 @@
+{% extends "silky/base/base.html" %}
+{% load nav %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="/static/silky/css/cell.css"/>
+    <link rel="stylesheet" href="/static/silky/css/numeric.css"/>
+    <style>
+        .cell:hover {
+            background-color: #eccfcf;
+            cursor: pointer;
+        }
+
+        .cell {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/silky/js/cell.js"></script>
+{% endblock %}
+
+{% block menu %}
+    <div class="menu-item selectable-menu-item {% navactive request 'requests' %}">
+        <a href="{% url 'requests' %}">
+            <div class="menu-item-outer">
+                <div class="menu-item-inner">Requests</div>
+            </div>
+        </a>
+    </div>
+    <div class="menu-item selectable-menu-item {% navactive request 'profiling' %}">
+        <a href="{% url 'profiling' %}">
+            <div class="menu-item-outer">
+                <div class="menu-item-inner">Profiling</div>
+            </div>
+        </a>
+    </div>
+{% endblock %}

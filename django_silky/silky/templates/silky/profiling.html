@@ -1,68 +1,15 @@
-{% extends "silky/base/base.html" %}
-{% load filters %}
+{% extends 'silky/base/root_base.html' %}
+{% load inclusion %}
+{% block filter %}
 
-{% block style %}
-    <link rel="stylesheet" href="/static/silky/time.css"/>
-{% endblock %}
-
-{% block onload %}
-
-    {#    sh_highlightDocument();#}
 {% endblock %}
 
 {% block data %}
-    {% if profiles %}
-        <div id="time-div">
-            {{ request.path }}: {{ request.time_taken }}ms
-        </div>
-        <table>
-            <colgroup>
-                <col style="width:7%">
-                <col style="width:28%">
-                <col style="width:28%">
-                <col style="width:13%">
-                <col style="width:8%">
-                <col style="width:6%">
-            </colgroup>
-            <tr>
-                <th>id</th>
-                <th>time</th>
-                <th>name</th>
-                <th>time taken</th>
-                <th>db time</th>
-                <th>#queries</th>
-            </tr>
-            {% for p in profiles %}
-                <tr>
-                    <td>{{ p.pk }}</td>
-                    <td>{{ p.start_time | date:"c" }}</td>
-                    <td><a href="{% url 'silky.views.profile' p.pk %}">{{ p.name }}</a></td>
-                    <td>{{ p.time_taken }}</td>
-                    <td>{{ p.time_spent_on_sql_queries }}</td>
-                    <td>{{ p.queries.count }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <div id="table-pagination" class="pagination">
-            <span class="current">
-                Page {{ items.number }} of {{ items.paginator.num_pages }}.
-            </span>
-
-            <div class="step-links">
-                {% if items.has_previous %}
-                    <a href="?page={{ items.previous_page_number }}">previous</a>
-                {% else %}
-                    previous
-                {% endif %}
-                |
-                {% if items.has_next %}
-                    <a href="?page={{ items.next_page_number }}">next</a>
-                {% else %}
-                    next
-                {% endif %}
-            </div>
-        </div>
-    {% else %}
-        <div id="no-queries-div">No profiling was triggered for this request.</div>
+    {% if results %}
+        {% for r in results %}
+            <a href="{% url 'profile_detail' profile_id=r.pk %}">
+                {% profile_summary r %}
+            </a>
+        {% endfor %}
     {% endif %}
 {% endblock %}

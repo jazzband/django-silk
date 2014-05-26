@@ -85,7 +85,7 @@
                 <th class="right-aligned">Execution Time</th>
             </tr>
             {% for sql_query in items %}
-                <tr onclick="window.location='{% url 'sql_detail' r.id sql_query.id %}';">
+                <tr onclick="window.location='{% url 'sql_detail' sql_query.id %}';">
                     <td class="left-aligned">{{ sql_query.start_time }}</td>
                     <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                     <td class="right-aligned">{{ sql_query.num_joins }}</td>
