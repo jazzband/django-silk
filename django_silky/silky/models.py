@@ -124,7 +124,7 @@ class BaseProfile(models.Model):
     name = CharField(max_length=300, blank=True)
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    request = ForeignKey('Request')
+    request = ForeignKey('Request', null=True, blank=True)
     time_taken = property(time_taken)
 
     class Meta:

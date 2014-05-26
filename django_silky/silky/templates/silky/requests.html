@@ -1,44 +1,96 @@
-{% extends "silky/base.html" %}
+{% extends "silky/base/base.html" %}
 {% load nav %}
 
 {% load inclusion %}
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/cell.css"/>
+    <link rel="stylesheet" href="/static/silky/css/cell.css"/>
+    <link rel="stylesheet" href="/static/silky/css/numeric.css"/>
     <style>
         .cell:hover {
             background-color: #eccfcf;
             cursor: pointer;
         }
+
         .cell {
             text-align: center;
+        }
+
+        #filter {
+            position: absolute;
+            right: 0;
         }
     </style>
 {% endblock %}
 
 {% block js %}
-    <script src="/static/silky/cell.js"></script>
-
-
+    <script src="/static/silky/js/cell.js"></script>
 {% endblock %}
 
 {% block data %}
     <div id="header">
-        <div id="menu">
-            <div class="menu-item {% navactive request 'requests' %}">
+        <div class="menu">
+            <div class="menu-item selectable-menu-item {% navactive request 'requests' %}">
                 <div class="menu-item-outer">
                     <div class="menu-item-inner">Requests</div>
                 </div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item selectable-menu-item">
                 <div class="menu-item-outer">
                     <div class="menu-item-inner">Profiling</div>
                 </div>
             </div>
         </div>
+        <div id="filter" class="menu">
+            <form id="filter-form" action="." method="get"></form>
+            <div class="menu-item ">
+                <div class="menu-item-outer">
+                    <div class="menu-item-inner">
+                        <label>Path:
+                            <select name="path" form="filter-form" onchange="this.form.submit();">
+                                {% for option in options_paths %}
+                                    <option value="{{ option }}"
+                                            {% if option == path %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-outer">
+                    <div class="menu-item-inner">
+                        <label>Show:
+                            <select name="show" form="filter-form" onchange="this.form.submit();">
+                                {% for option in options_show %}
+                                    <option value="{{ option }}"
+                                            {% if option == show %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-outer">
+                    <div class="menu-item-inner">
+                        <label>Order:
+                            <select name="order_by" form="filter-form" onchange="this.form.submit();">
+                                {% for option in options_order_by %}
+                                    <option value="{{ option }}"
+                                            {% if option == order_by %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
     </div>
-    {% if requests %}
-        {% for r in requests %}
-            <a href="{% url 'silky.views.request' r.pk %}">
+    {% if results %}
+        {% for r in results %}
+            <a href="{% url 'request_detail' request_id=r.pk %}">
                 {% request_summary r %}
             </a>
         {% endfor %}

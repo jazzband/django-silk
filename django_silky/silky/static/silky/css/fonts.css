@@ -5,35 +5,35 @@
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-Regular.woff);
+    src: url(../fonts/fira/FiraSans-Regular.woff);
     font-weight: normal;
 }
 
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-Medium.woff);
+    src: url(../fonts/fira/FiraSans-Medium.woff);
     font-weight: bold;
 }
 
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-Bold.woff);
+    src: url(../fonts/fira/FiraSans-Bold.woff);
     font-weight: bolder;
 }
 
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-Light.woff);
+    src: url(../fonts/fira/FiraSans-Light.woff);
     font-weight: lighter;
 }
 
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-RegularItalic.woff);
+    src: url(../fonts/fira/FiraSans-RegularItalic.woff);
     font-weight: normal;
     font-style: italic;
 }
@@ -41,7 +41,7 @@
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-MediumItalic.woff);
+    src: url(../fonts/fira/FiraSans-MediumItalic.woff);
     font-weight: bold;
     font-style: italic;
 }
@@ -49,7 +49,7 @@
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-BoldItalic.woff);
+    src: url(../fonts/fira/FiraSans-BoldItalic.woff);
     font-weight: bolder;
     font-style: italic;
 }
@@ -57,7 +57,7 @@
 @font-face
 {
     font-family: FiraSans;
-    src: url(fonts/fira/FiraSans-LightItalic.woff);
+    src: url(../fonts/fira/FiraSans-LightItalic.woff);
     font-weight: lighter;
     font-style: italic;
 }
@@ -69,21 +69,21 @@
 @font-face
 {
     font-family: Fantasque;
-    src: url(fonts/fantasque/FantasqueSansMono-Regular.woff);
+    src: url(../fonts/fantasque/FantasqueSansMono-Regular.woff);
     font-weight: normal;
 }
 
 @font-face
 {
     font-family: Fantasque;
-    src: url(fonts/fantasque/FantasqueSansMono-Bold.woff);
+    src: url(../fonts/fantasque/FantasqueSansMono-Bold.woff);
     font-weight: bold;
 }
 
 @font-face
 {
     font-family: Fantasque;
-    src: url(fonts/fantasque/FantasqueSansMono-RegItalic.woff);
+    src: url(../fonts/fantasque/FantasqueSansMono-RegItalic.woff);
     font-weight: normal;
     font-style: italic;
 }
@@ -91,7 +91,7 @@
 @font-face
 {
     font-family: Fantasque;
-    src: url(fonts/fantasque/FantasqueSansMono-BoldItalic.woff);
+    src: url(../fonts/fantasque/FantasqueSansMono-BoldItalic.woff);
     font-weight: bold;
     font-style: italic;
 }

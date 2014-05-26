@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Silky</title>
-    <link rel="stylesheet" href="/static/silky/fonts.css"/>
-    <link rel="stylesheet" href="/static/silky/colors.css"/>
+    <link rel="stylesheet" href="/static/silky/css/fonts.css"/>
+    <link rel="stylesheet" href="/static/silky/css/colors.css"/>
     <style>
         body {
             font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
@@ -32,13 +31,14 @@
             background-color: #eccfcf;
             display: table;
             width: 100%;
+            position: relative;
         }
 
         #header div {
             display: inline-block;
         }
 
-        #menu {
+        .menu {
             height: 100%;
             padding: 0;
             margin: 0;
@@ -51,7 +51,7 @@
             margin: 0;
         }
 
-        .menu-item:hover {
+        .selectable-menu-item:hover {
             background-color: #ffe2e2;
             cursor: pointer;
         }
@@ -81,15 +81,13 @@
             text-decoration: none;
         }
 
-
     </style>
     {% block style %}
     {% endblock %}
-    <script src="/static/silky/jquery.min.js"></script>
-    <script src="/static/silky/underscore.min.js"></script>
-    <script src="/static/silky/backbone.min.js"></script>
+    <script src="/static/silky/lib/jquery.min.js"></script>
     {% block js %}
     {% endblock %}
+
 </head>
 <body onload="{% block onload %}{% endblock %}">
 <div id="content">

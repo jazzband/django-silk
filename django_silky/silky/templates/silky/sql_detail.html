@@ -1,10 +1,11 @@
-{% extends "silky/base.html" %}
+{% extends "silky/base/base.html" %}
 {% load filters %}
 {% load nav %}
+{% load inclusion %}
 
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
-    <link rel="stylesheet" href="/static/silky/heading.css"/>
+    <link rel="stylesheet" href="/static/silky/lib/highlight/foundation.css"/>
+    <link rel="stylesheet" href="/static/silky/css/heading.css"/>
     <style>
         #traceback {
             overflow: visible;
@@ -46,12 +47,30 @@
         pre {
             margin: 0;
         }
+
+        #query-info-div {
+            padding-top: 5px;
+        }
+
+        #query-info-div div {
+            padding-top: 5px;
+        }
+
+
     </style>
+    <link rel="stylesheet" href="/static/silky/css/numeric.css"/>
 {% endblock %}
 
 {% block js %}
-    <script src="/static/silky/highlight/highlight.pack.js"></script>
+    <script src="/static/silky/lib/highlight/highlight.pack.js"></script>
+    <script src="/static/silky/js/cell.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+        $(document).ready(function () {
+            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
+            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+        });
+    </script>
 {% endblock %}
 
 {% block onload %}
@@ -59,12 +78,15 @@
 
 {% block data %}
     <div id="header">
-        <div id="menu">
-            <div class="menu-item">
-                <div class="menu-item-outer" onclick="window.history.back()">
-                    <div class="menu-item-inner">&larr;</div>
+        <div class="menu">
+            <a href="{% url 'sql' sql_query.request.pk %}">
+                <div class="menu-item">
+                    <div class="menu-item-outer">
+                        <div class="menu-item-inner">&larr;</div>
+                    </div>
                 </div>
-            </div>
+            </a>
+
             <div class="menu-item">
                 <div class="menu-item-outer menu-item-selected">
                     <div class="menu-item-inner">SQL Query</div>
@@ -73,53 +95,27 @@
         </div>
     </div>
     <div id="query-div">
-        <div>
-            {{ sql_query.num_joins }} joins
-        </div>
-        <div>
-            {{ sql_query.time_taken }}ms
-        </div>
         <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>
+        <div id="query-info-div">
+            <div id="time-taken-div" >
+                <span class="numeric">{{ sql_query.time_taken }}<span class="unit">ms</span></span>
+            </div>
+            <div id="num-joins-div">
+                <span class="numeric">{{ sql_query.num_joins }}</span> joins
+            </div>
+        </div>
+
     </div>
     {% for ln in traceback %}
         {% if ln %}
-        <div class="heading">
-            <div class="inner-heading">
-                {{ ln }}
+            <div class="heading">
+                <div class="inner-heading">
+                    {{ ln }}
+                </div>
             </div>
-
-        </div>
-        {% if forloop.counter == pos %}
-                        <pre><code>...
-
-    {% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}
-    ...</code></pre>
-        {% endif %}
+            {% if forloop.counter == pos %}
+                {% code code actual_line %}
+            {% endif %}
         {% endif %}
     {% endfor %}
-    {#    <div class="heading">#}
-    {#        <div class="inner-heading">#}
-    {#            Query#}
-    {#        </div>#}
-    {#    </div>#}
-    {#    <div id="time-div">#}
-    {#        {{ sql_query.time_taken }}ms#}
-    {#    </div>#}
-    {#    <div id="query-div">#}
-    {#        <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>#}
-    {#    </div>#}
-    {#    {% if traceback %}#}
-    {#        <div id="traceback">#}
-    {#            {% for ln in traceback %}#}
-    {#                {{ ln }}<br>#}
-    {#                {% if forloop.counter == pos %}#}
-{#                        <pre><code>...#}
-{##}
-{#    {% for line in code %}<span class="line" {% if line.strip == actual_line.strip %}id="the-line"{% endif %}>{{ line }}</span><br>{% endfor %}#}
-{#    ...</code></pre>#}
-    {#                {% endif %}#}
-    {#            {% endfor %}#}
-    {#        </div>#}
-    {#        <div id="traceback">{{ sql_query.traceback_ln_only | spacify | filepath_urlify | linebreaksbr }}</div>#}
-    {#    {% endif %}#}
 {% endblock %}

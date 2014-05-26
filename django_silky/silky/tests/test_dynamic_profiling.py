@@ -3,18 +3,7 @@ from unittest import TestCase
 from mock import patch
 
 import silky
-from silky.tools import _get_module, _get_parent_module, \
-    inject_context_manager_module, _inject_context_manager_func, inject_context_manager_func, \
-    profile_function_or_method
-
-
-def wtf():
-    pass
-
-
-class MyClass(object):
-    def foo(self):
-        pass
+from silky.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
 
 
 class TestGetModule(TestCase):
@@ -41,67 +30,54 @@ class TestGetParentModule(TestCase):
         self.assertIsInstance(parent, dict)
 
     def test_dot(self):
-        parent = _get_parent_module(silky.tools)
+        import silky.utils
+
+        parent = _get_parent_module(silky.utils)
         self.assertEqual(parent, silky)
 
 
-class TestInject(TestCase):
-    def test_inject_context_manager_module(self):
-        with patch('silky.profiler.silky_profile') as silky_profile:
-            new_module = inject_context_manager_module('silky.tests.data.dynamic', 5, 7, 'test')
-            new_module.foo()
-            silky_profile.assert_called_once_with('test')
-
-    def test_inject_context_manager_func_raw(self):
-        x = 5
-
-        def foo():
-            print x
-            v = 99
-            print v
-            print '1'
-            print '2'
-            print '3'
-
-        bar = _inject_context_manager_func(foo, 0, 2, 'test')
-        with patch('silky.profiler.silky_profile') as silky_profile:
-            foo()
-            self.assertFalse(silky_profile.call_count)
-        with patch('silky.profiler.silky_profile') as silky_profile:
-            bar()
-            silky_profile.assert_called_once_with('test')
+class MyClass(object):
+    def foo(self):
+        pass
 
 
-    def test_inject_context_manager_func(self):
-        global foo
+def foo():
+    pass
 
-        def bar():
-            v = 2
-            print v
-            print '1'
-            print '2'
-            print '3'
 
-        foo = bar
-        inject_context_manager_func('silky.tests.test_dynamic_profiling', 'foo', 0, 2, 'test')
-        with patch('silky.profiler.silky_profile') as silky_profile:
-            foo()
-            silky_profile.assert_called_once_with('test')
+def source_file_name():
+    file_name = __file__
+    if file_name[-1] == 'c':
+        file_name = file_name[:-1]
+    return file_name
 
 
 class TestProfileFunction(TestCase):
-    def test_method(self):
-        with patch.object(MyClass, 'foo') as wrapped_foo:
-            with patch('silky.tools.silky_profile') as silky_profile:
-                profile_function_or_method('silky.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
-                silky_profile.assert_called_once_with('test')
-                __call__ = silky_profile.return_value
-                __call__.assert_called_once_with(wrapped_foo)
+    def test_method_as_str(self):
+        # noinspection PyShadowingNames
+        def foo(_):
+            pass
 
-    def test_func(self):
-        blah = foo
-        with patch('silky.tools.silky_profile') as silky_profile:
-            profile_function_or_method('silky.tests.test_dynamic_profiling', 'foo', 'test')
-            silky_profile.assert_called_once_with('test')
-            __call__ = silky_profile.return_value
-            __call__.assert_called_once_with(blah)
+        # noinspection PyUnresolvedReferences
+        with patch.object(MyClass, 'foo', foo):
+            profile_function_or_method('silky.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
+            with patch('silky.profiling.profiler.Profile') as mock_Profile:
+                MyClass().foo()
+                # noinspection PyUnresolvedReferences
+                mock_Profile.assert_called_once_with(func_name=foo.__name__,
+                                                     file_path=source_file_name(),
+                                                     name='test',
+                                                     line_num=foo.func_code.co_firstlineno)
+
+    def test_func_as_str(self):
+        name = foo.__name__
+        # noinspection PyUnresolvedReferences
+        line_num = foo.func_code.co_firstlineno
+        profile_function_or_method('silky.tests.test_dynamic_profiling', 'foo', 'test')
+        with patch('silky.profiling.profiler.Profile') as mock_Profile:
+            foo()
+            # noinspection PyUnresolvedReferences
+            mock_Profile.assert_called_once_with(func_name=name,
+                                                 file_path=source_file_name(),
+                                                 name='test',
+                                                 line_num=line_num)

@@ -19,19 +19,3 @@
     font-size: 18px;
     margin-bottom: 15px;
 }
-
-.cell .time-taken-div .numeric {
-    font-size: 20px;
-}
-
-.cell .numeric .unit {
-    font-size: 12px;
-}
-
-.numeric {
-    font-weight: normal;
-}
-
-.unit {
-    font-weight: normal;
-}

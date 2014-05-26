@@ -9,7 +9,7 @@ from pygments.lexers.sql import SqlLexer
 from pygments.formatters.terminal import TerminalFormatter
 
 from silky import models
-from silky.local import DataCollector
+from silky.collector import DataCollector
 
 
 Logger = logging.getLogger('silky')
@@ -46,7 +46,10 @@ def execute_sql(self, *args, **kwargs):
                     Logger.debug('\n{sql} [{time_taken}ms]\n'.format(
                         sql=highlight(query_model.formatted_query, SqlLexer(), formatter).strip(),
                         time_taken=query_model.time_taken))
-
+            request = DataCollector().request
+            if request:
+                query_model.request = request
+            query_model.save()
             DataCollector().register_query(query_model)
     else:
         return self._execute_sql(*args, **kwargs)

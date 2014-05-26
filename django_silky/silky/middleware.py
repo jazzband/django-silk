@@ -20,9 +20,6 @@ class SilkyMiddleware(object):
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
         self.queue = Queue.Queue()
-        # self.thread = SilkyThread(self.queue)
-        # self.thread.start()
-        # atexit.register(self.clean_up)
 
     def process_request(self, request):
         path = request.path
@@ -51,7 +48,7 @@ class SilkyMiddleware(object):
                                            query_params=encoded_query_params)
             DataCollector().configure(request_model)
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    def process_view(self, request, view_func):
         if not request.path.startswith('/silky'):
             if inspect.ismethod(view_func):
                 view_name = view_func.im_class.__module__ + '.' + view_func.im_class.__name__ + view_func.__name__
@@ -61,21 +58,10 @@ class SilkyMiddleware(object):
             assert current_request, 'no request model available?'
             current_request.view = view_name
 
-    def save(self):
-        collector = DataCollector()
-        collector.request.end_time = timezone.now()
-        collector.save()
-
-
     def process_response(self, request, response):
         if not request.path.startswith('/silky'):
             collector = DataCollector()
             collector.request.response_status_code = response.status_code
-            self.save()
+            collector.request.end_time = timezone.now()
+            collector.request.save()
         return response
-
-        # def clean_up(self):
-        #     self.thread.running = False
-        #     self.thread.join()
-
-

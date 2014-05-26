@@ -5,14 +5,15 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
+from silky.collector import DataCollector
 
-from silky.local import DataCollector
 from silky.models import Profile
 
 
 Logger = logging.getLogger('silky')
 
 
+# noinspection PyPep8Naming
 class silky_profile(object):
     def __init__(self, name=None):
         self.name = name
@@ -21,7 +22,7 @@ class silky_profile(object):
         self._queries_after = None
 
     def _start_queries(self):
-        self._queries_before = copy(DataCollector().request_queries)
+        self._queries_before = copy(DataCollector().queries)
 
     def __enter__(self):
         if self._silky_installed():
@@ -36,14 +37,19 @@ class silky_profile(object):
             self.profile = Profile(name=self.name,
                                    file_path=path,
                                    line_num=line_num)
+            self.profile.request = DataCollector().request
         else:
             Logger.warn('Cannot execute silky_profile as silky is not installed correctly.')
 
     def _finalise_queries(self):
-        self._queries_after = copy(DataCollector().request_queries)
+        self._queries_after = copy(DataCollector().queries)
         assert self.profile, 'no profile was created'
-        DataCollector().register_queries_for_profile(self.profile, self.distinct_queries())
+        diff = set(self._queries_after).difference(set(self._queries_before))
+        self.profile.save()
+        self.profile.queries = diff
+        self.profile.save()
 
+    # noinspection PyUnusedLocal
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._silky_installed():
             exception_raised = exc_type is not None
@@ -69,6 +75,7 @@ class silky_profile(object):
                                            name=self.name,
                                            file_path=file_path,
                                            line_num=line_num)
+                    self.profile.request = DataCollector().request
                     self._start_queries()
                     try:
                         result = target(*args, **kwargs)
@@ -76,11 +83,12 @@ class silky_profile(object):
                         self.profile.exception_raised = True
                         raise
                     finally:
-                        self._finalise_queries()
                         self.profile.end_time = timezone.now()
+                        self._finalise_queries()
                     return result
                 else:
                     raise NotImplementedError('Profile not implemented to decorate type %s', target.__class__.__name__)
+
             return wrapped_target
         else:
             Logger.warn('Cannot execute silky_profile as silky is not installed correctly.')

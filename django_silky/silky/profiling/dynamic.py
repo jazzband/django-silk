@@ -1,9 +1,8 @@
 import inspect
 import sys
 import re
-import imp
 
-from silky.profiler import silky_profile
+from silky.profiling.profiler import silky_profile
 
 
 def _get_module(module_name):
@@ -51,15 +50,13 @@ def profile_function_or_method(module, func, name=None):
     if type(module) is str or type(module) is unicode:
         module = _get_module(module)
     decorator = silky_profile(name)
-    if type(func) is str or type(module) is unicode:
-        func_name = func
-        cls, func = _get_func(module, func_name)
-        if cls:
-            setattr(cls, func_name, decorator(func))
-        else:
-            setattr(module, func_name, decorator(func))
+    func_name = func
+    cls, func = _get_func(module, func_name)
+    wrapped_target = decorator(func)
+    if cls:
+        setattr(cls, func_name.split('.')[-1], wrapped_target)
     else:
-        setattr(module, func.__name__, decorator(func))
+        setattr(module, func_name, wrapped_target)
 
 
 def _get_parent_module(module):
@@ -72,8 +69,6 @@ def _get_parent_module(module):
             except AttributeError:
                 parent = parent[module_name]
     return parent
-
-
 
 
 def _get_context_manager_source(end_line, file_path, name, start_line):
@@ -98,22 +93,6 @@ def _get_context_manager_source(end_line, file_path, name, start_line):
     return code
 
 
-def inject_context_manager_module(module, start_line, end_line, name):
-    """
-    Injects a context manager into the given module.
-
-    Note: if the module has side effects they will be executed again. This means that this function
-    should NOT be used with modules that have non-idempotent side effects!
-    """
-    if type(module) is str or type(module) is unicode:
-        module = _get_module(module)
-    file_path = inspect.getsourcefile(module)
-    code = _get_context_manager_source(end_line, file_path, name, start_line)
-    new_module = imp.new_module(module.__name__)
-    exec code in new_module.__dict__
-    return new_module
-
-
 def _get_ws(txt):
     """
     Return whitespace at the beginning of a string
@@ -134,9 +113,9 @@ def _get_source_lines(func):
     return source
 
 
-def _replace_func_source(func, source):
+def _new_func_from_source(source, func):
     """
-    Replace func with function defined in source, but maintaining the context.
+    Create new function defined in source but maintain context from func
 
     @param func: The function whose global + local context we will use
     @param source: Python source code containing def statement
@@ -203,9 +182,7 @@ def _inject_context_manager_func(func, start_line, end_line, name):
 
     source.insert(start_line, ws + "from silky.profiler import silky_profile\n")
     source.insert(start_line + 1, ws + "with silky_profile('%s'):\n" % name)
-    return _replace_func_source(func, source)
-
-
+    return _new_func_from_source(source, func)
 
 
 def is_str_typ(string):

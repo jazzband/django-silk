@@ -1,10 +1,11 @@
-{% extends "silky/request_base.html" %}
+{% extends "silky/base/request_base.html" %}
 {% load filters %}
 {% load inclusion %}
 {% block style %}
-    <link rel="stylesheet" href="/static/silky/cell.css"/>
-    <link rel="stylesheet" href="/static/silky/heading.css"/>
-    <link rel="stylesheet" href="/static/silky/highlight/foundation.css"/>
+    <link rel="stylesheet" href="/static/silky/css/cell.css"/>
+    <link rel="stylesheet" href="/static/silky/css/numeric.css"/>
+    <link rel="stylesheet" href="/static/silky/css/heading.css"/>
+    <link rel="stylesheet" href="/static/silky/lib/highlight/foundation.css"/>
     <style>
         #pre-curl {
             white-space: pre-wrap; /* css-3 */
@@ -35,9 +36,9 @@
     </style>
 {% endblock %}
 {% block js %}
-    <script src="/static/silky/highlight/highlight.pack.js"></script>
+    <script src="/static/silky/lib/highlight/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/static/silky/cell.js"></script>
+    <script src="/static/silky/js/cell.js"></script>
 {% endblock %}
 {% block onload %}
 {% endblock %}

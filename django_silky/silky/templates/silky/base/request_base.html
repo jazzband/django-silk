@@ -1,0 +1,37 @@
+{% extends 'silky/base/base.html' %}
+{% load nav %}
+
+{% block data %}
+    <div id="header">
+        <div class="menu">
+            <a href="{% url 'requests' %}">
+                <div class="menu-item selectable-menu-item">
+                    <div class="menu-item-outer">
+                        <div class="menu-item-inner">&larr;</div>
+                    </div>
+                </div>
+            </a>
+            <a href="{% url 'request_detail' r.id %}">
+                <div class="menu-item {% navactive request 'request_detail' r.id %} selectable-menu-item">
+                    <div class="menu-item-outer">
+                        <div class="menu-item-inner">Details</div>
+                    </div>
+                </div>
+            </a>
+            <a href="{% url 'sql' r.id %}">
+                <div class="menu-item {% navactive request 'sql' r.id %} selectable-menu-item">
+                    <div class="menu-item-outer">
+                        <div class="menu-item-inner">SQL</div>
+                    </div>
+                </div>
+            </a>
+            <a href="{% url 'profiling' r.id %}">
+                <div class="menu-item {% navactive request 'profiling' r.id %} selectable-menu-item">
+                    <div class="menu-item-outer">
+                        <div class="menu-item-inner">Profiling</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}
