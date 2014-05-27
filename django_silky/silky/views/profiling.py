@@ -27,10 +27,23 @@ class ProfilingView(View):
                 'Function Name']
     defualt_order_by = 'Name'
 
-    def _get_function_names(self):
-        return [''] + [x['func_name'] for x in Profile.objects.values('func_name').distinct()]
+    def _get_distinct_values(self, field, silky_request):
+        if silky_request:
+            query_set = Profile.objects.filter(request=silky_request)
+        else:
+            query_set = Profile.objects.all()
+        function_names = [x[field] for x in query_set.values(field).distinct()]
+        if not '' in function_names:
+            function_names = [''] + function_names
+        return function_names
 
-    def _get_objects(self, show=None, order_by=None, func_name=None, silky_request=None):
+    def _get_function_names(self, silky_request=None):
+        return self._get_distinct_values('func_name', silky_request)
+
+    def _get_names(self, silky_request=None):
+        return self._get_distinct_values('name', silky_request)
+
+    def _get_objects(self, show=None, order_by=None, name=None, func_name=None, silky_request=None):
         if not show:
             show = self.default_show
         manager = Profile.objects
@@ -50,6 +63,8 @@ class ProfilingView(View):
             raise RuntimeError('Unknown order_by: "%s"' % order_by)
         if func_name:
             query_set = query_set.filter(func_name=func_name)
+        if name:
+            query_set = query_set.filter(name=name)
         return list(query_set[:show])
 
     def _create_context(self, request, *args, **kwargs):
@@ -62,21 +77,28 @@ class ProfilingView(View):
         order_by = request.GET.get('order_by', self.defualt_order_by)
         if show:
             show = int(show)
-        path = request.GET.get('path', None)
+        func_name = request.GET.get('func_name', None)
+        name = request.GET.get('name', None)
         context = {
             'show': show,
             'order_by': order_by,
             'request': request,
             'options_show': self.show,
             'options_order_by': self.order_by,
-            'options_func_names': self._get_function_names(),
+            'options_func_names': self._get_function_names(silky_request),
+            'options_names': self._get_names(silky_request),
         }
         if silky_request:
             context['silky_request'] = silky_request
-        if path:
-            context['path'] = path
-
-        objs = self._get_objects(show, order_by, path, silky_request)
+        if func_name:
+            context['func_name'] = func_name
+        if name:
+            context['name'] = name
+        objs = self._get_objects(show=show,
+                                 order_by=order_by,
+                                 func_name=func_name,
+                                 silky_request=silky_request,
+                                 name=name)
         context['results'] = objs
         return context
 

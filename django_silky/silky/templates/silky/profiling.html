@@ -10,7 +10,64 @@
 {% endblock %}
 
 {% block filter %}
+    <form id="filter-form" action="." method="get"></form>
+     <div class="menu-item ">
+     <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Name:
+                    <select name="name" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_names %}
+                            <option value="{{ option }}"
+                                    {% if option == name %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item ">
 
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Function Name:
+                    <select name="func_name" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_func_names %}
+                            <option value="{{ option }}"
+                                    {% if option == func_name %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Show:
+                    <select name="show" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_show %}
+                            <option value="{{ option }}"
+                                    {% if option == show %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Order:
+                    <select name="order_by" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_order_by %}
+                            <option value="{{ option }}"
+                                    {% if option == order_by %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block data %}
