@@ -15,7 +15,13 @@
 
 
 {% block menu %}
-    <a href="{% url 'request_sql' sql_query.request.pk %}">
+    <a href="
+    {% if silky_request %}
+    {% url 'request_sql' silky_request.pk %}
+    {% elif profile %}
+    {% url 'profile_sql' profile.pk %}
+    {% endif %}
+    ">
         <div class="menu-item">
             <div class="menu-item-outer">
                 <div class="menu-item-inner">&larr;</div>

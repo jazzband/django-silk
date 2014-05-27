@@ -1,4 +1,4 @@
-{% extends "silky/base/request_base.html" %}
+{% extends "silky/base/base.html" %}
 {% load filters %}
 {% load inclusion %}
 {% block style %}
@@ -41,6 +41,10 @@
     <script src="/static/silky/js/cell.js"></script>
 {% endblock %}
 {% block onload %}
+{% endblock %}
+
+{% block menu %}
+{% request_menu request r %}
 {% endblock %}
 
 {% block data %}

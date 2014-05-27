@@ -7,23 +7,25 @@ from silky.views.method_map_view import MethodMapView
 __author__ = 'mtford'
 
 
-class SQLView(MethodMapView):
+class SQLView(View):
 
-    def get_request(self, request, request_id):
-        r = Request.objects.get(id=request_id)
-        query_set = SQLQuery.objects.filter(request=r).order_by('-start_time')
-        page = _page(request, query_set)
-        return render_to_response('silky/sql.html', {
-            'items': page,
+    def get(self, request, *_, **kwargs):
+        request_id = kwargs.get('request_id')
+        profile_id = kwargs.get('profile_id')
+        context = {
             'request': request,
-            'r': r
-        })
+        }
+        if request_id:
+            r = Request.objects.get(id=request_id)
+            query_set = SQLQuery.objects.filter(request=r).order_by('-start_time')
+            page = _page(request, query_set)
+            context['r'] = r
+        elif profile_id:
+            p = Profile.objects.get(id=profile_id)
+            page = _page(request, p.queries.order_by('-start_time').all())
+            context['profile'] = p
+        else:
+            raise KeyError('No profile_id or request_id')
+        context['items'] = page
+        return render_to_response('silky/sql.html', context)
 
-    def get_profile(self, request, profile_id):
-        p = Profile.objects.get(id=profile_id)
-        page = _page(request, p.queries.order_by('-start_time').all())
-        return render_to_response('silky/sql.html', {
-            'items': page,
-            'request': request,
-            'profile': p
-        })

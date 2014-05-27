@@ -1,7 +1,8 @@
-{% extends 'silky/base/request_base.html' %}
+{% extends 'silky/base/base.html' %}
 
 {% load nav %}
 {% load filters %}
+{% load inclusion %}
 
 {% block style %}
     <link rel="stylesheet" href="/static/silky/highlight/sql.css"/>
@@ -73,11 +74,19 @@
     {#    sh_highlightDocument();#}
 {% endblock %}
 
+{% block menu %}
+    {% if r %}
+        {% request_menu request r %}
+    {% elif profile %}
+        {% profile_menu request profile %}
+    {% endif %}
+{% endblock %}
+
+
 {% block data %}
     {{ block.super }}
     <div id="table-div">
         <table>
-
             <tr>
                 <th class="left-aligned">Time</th>
                 <th class="left-aligned">Tables</th>

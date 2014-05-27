@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.views.generic import View
 
-from silky.models import SQLQuery
+from silky.models import SQLQuery, Request, Profile
 from silky.views.method_map_view import MethodMapView
 
 
@@ -48,7 +48,10 @@ class SQLDetailView(View):
             n += 1
         return str
 
-    def get(self, request, sql_id):
+    def get(self, request, *_, **kwargs):
+        sql_id = kwargs.get('sql_id', None)
+        request_id = kwargs.get('request_id', None)
+        profile_id = kwargs.get('profile_id', None)
         sql_query = SQLQuery.objects.get(pk=sql_id)
         pos = int(request.GET.get('pos', 0))
         file_path = request.GET.get('file_path', '')
@@ -62,6 +65,10 @@ class SQLDetailView(View):
             'line_num': line_num,
             'file_path': file_path
         }
+        if request_id:
+            context['silky_request'] = Request.objects.get(pk=request_id)
+        if profile_id:
+            context['profile'] = Profile.objects.get(pk=profile_id)
         if pos and file_path and line_num:
             actual_line, code = _code(file_path, line_num)
             context['code'] = code

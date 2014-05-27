@@ -1,0 +1,22 @@
+{% load nav %}
+<a href="{% url 'profiling' %}">
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">&larr;</div>
+        </div>
+    </div>
+</a>
+<div class="menu-item">
+    <a href="{% url 'profile_detail' profile.id %}">
+        <div class="menu-item-outer selectable-menu-item {% navactive request 'profile_detail' profile.id %}">
+            <div class="menu-item-inner">Detail</div>
+        </div>
+    </a>
+</div>
+<div class="menu-item">
+    <a href="{% url 'profile_sql' profile.id %}">
+        <div class="menu-item-outer selectable-menu-item {% navactive request 'profile_sql' profile.id %}">
+            <div class="menu-item-inner">Queries</div>
+        </div>
+    </a>
+</div>
