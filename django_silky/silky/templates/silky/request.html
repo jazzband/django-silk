@@ -44,12 +44,12 @@
 {% endblock %}
 
 {% block menu %}
-{% request_menu request r %}
+{% request_menu request silky_request %}
 {% endblock %}
 
 {% block data %}
     <div id="request-summary-div">
-        {% request_summary r %}
+        {% request_summary silky_request %}
     </div>
     <div id="request-info-div">
         {% if query_params %}

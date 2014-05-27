@@ -16,16 +16,16 @@ class SQLView(View):
             'request': request,
         }
         if request_id:
-            r = Request.objects.get(id=request_id)
-            query_set = SQLQuery.objects.filter(request=r).order_by('-start_time')
+            silky_request = Request.objects.get(id=request_id)
+            query_set = SQLQuery.objects.filter(request=silky_request).order_by('-start_time')
             page = _page(request, query_set)
-            context['r'] = r
-        elif profile_id:
+            context['silky_request'] = silky_request
+        if profile_id:
             p = Profile.objects.get(id=profile_id)
             page = _page(request, p.queries.order_by('-start_time').all())
             context['profile'] = p
-        else:
-            raise KeyError('No profile_id or request_id')
+        if not (request_id or profile_id):
+            raise KeyError('no profile_id or request_id')
+        # noinspection PyUnboundLocalVariable
         context['items'] = page
         return render_to_response('silky/sql.html', context)
-

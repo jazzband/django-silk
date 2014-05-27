@@ -68,7 +68,7 @@ class SQLDetailView(View):
         if request_id:
             context['silky_request'] = Request.objects.get(pk=request_id)
         if profile_id:
-            context['profile'] = Profile.objects.get(pk=profile_id)
+            context['profile'] = Profile.objects.get(pk=int(profile_id))
         if pos and file_path and line_num:
             actual_line, code = _code(file_path, line_num)
             context['code'] = code

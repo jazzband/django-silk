@@ -1,20 +1,25 @@
 from django.shortcuts import render_to_response
 from django.views.generic import View
-from silky.models import Profile
+from silky.models import Profile, Request
 from silky.views.sql_detail import _code
 
 
 class ProfilingDetailView(View):
-    def get(self, request,  profile_id):
+    def get(self, request,  *_, **kwargs):
+        profile_id = kwargs['profile_id']
+        silky_request_id = kwargs.get('request_id', None)
+        context = {
+            'request': request
+        }
         profile = Profile.objects.get(pk=profile_id)
         file_path = profile.file_path
         line_num = profile.line_num
-        context = {
-            'profile': profile,
-            'line_num': line_num,
-            'file_path': file_path,
-            'request': request
-        }
+        context['profile'] = profile
+        context['line_num'] = file_path
+        context['file_path'] = line_num
+        if silky_request_id:
+            silky_request = Request.objects.get(pk=silky_request_id)
+            context['silky_request'] = silky_request
         if file_path and line_num:
             try:
                 actual_line, code = _code(file_path, line_num)

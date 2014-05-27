@@ -3,18 +3,23 @@ from django.template import Library
 register = Library()
 
 
-def request_summary(request):
-    return {'request': request}
+def request_summary(silky_request):
+    return {'silky_request': silky_request}
 
 
 def request_menu(request, silky_request):
     return {'request': request,
-            'r': silky_request}
+            'silky_request': silky_request}
+
+def root_menu(request):
+    return {'request': request}
 
 
-def profile_menu(request, profile):
-    return {'request': request,
-            'profile': profile}
+def profile_menu(request, profile, silky_request=None):
+    context = {'request': request, 'profile': profile}
+    if silky_request:
+        context['silky_request'] = silky_request
+    return context
 
 
 def profile_summary(profile):
@@ -30,5 +35,6 @@ register.inclusion_tag('silky/inclusion/profile_summary.html')(profile_summary)
 register.inclusion_tag('silky/inclusion/code.html')(code)
 register.inclusion_tag('silky/inclusion/request_menu.html')(request_menu)
 register.inclusion_tag('silky/inclusion/profile_menu.html')(profile_menu)
+register.inclusion_tag('silky/inclusion/root_menu.html')(root_menu)
 
 

@@ -16,11 +16,13 @@
 
 {% block menu %}
     <a href="
-    {% if silky_request %}
-    {% url 'request_sql' silky_request.pk %}
-    {% elif profile %}
-    {% url 'profile_sql' profile.pk %}
-    {% endif %}
+        {% if silky_request and profile %}
+            {% url 'request_and_profile_sql' silky_request.id profile.id %}
+        {% elif silky_request %}
+            {% url 'request_sql' silky_request.pk %}
+        {% elif profile %}
+            {% url 'profile_sql' profile.pk %}
+        {% endif %}
     ">
         <div class="menu-item">
             <div class="menu-item-outer">

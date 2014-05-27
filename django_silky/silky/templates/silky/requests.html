@@ -1,5 +1,10 @@
 {% extends 'silky/base/root_base.html' %}
 {% load inclusion %}
+
+{% block menu %}
+{% root_menu request %}
+{% endblock %}
+
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
     <div class="menu-item ">
@@ -48,9 +53,9 @@
 
 {% block data %}
     {% if results %}
-        {% for r in results %}
-            <a href="{% url 'request_detail' request_id=r.pk %}">
-                {% request_summary r %}
+        {% for silky_request in results %}
+            <a href="{% url 'request_detail' request_id=silky_request.pk %}">
+                {% request_summary silky_request %}
             </a>
         {% endfor %}
     {% endif %}

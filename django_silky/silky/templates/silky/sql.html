@@ -69,16 +69,12 @@
     <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 
-{% block onload %}
-
-    {#    sh_highlightDocument();#}
-{% endblock %}
 
 {% block menu %}
-    {% if r %}
-        {% request_menu request r %}
-    {% elif profile %}
-        {% profile_menu request profile %}
+    {% if profile %}
+        {% profile_menu request profile silky_request %}
+    {% elif silky_request %}
+        {% request_menu request silky_request %}
     {% endif %}
 {% endblock %}
 
@@ -94,7 +90,16 @@
                 <th class="right-aligned">Execution Time</th>
             </tr>
             {% for sql_query in items %}
-                <tr onclick="window.location='{% url 'sql_detail' sql_query.id %}';">
+                <!-- TODO: Pretty grimy... -->
+                <tr onclick="window.location=' \
+                       {% if profile and silky_request %}\
+                           {% url 'request_and_profile_sql_detail' silky_request.id profile.id sql_query.id %}\
+                       {% elif profile %}\
+                           {% url 'profile_sql_detail' profile.id sql_query.id %}\
+                       {% elif silky_request %}\
+                           {% url 'request_sql_detail' silky_request.id sql_query.id %}\
+                       {% endif %}\
+                        ';">
                     <td class="left-aligned">{{ sql_query.start_time }}</td>
                     <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                     <td class="right-aligned">{{ sql_query.num_joins }}</td>

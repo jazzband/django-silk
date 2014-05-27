@@ -1,14 +1,29 @@
 {% extends 'silky/base/root_base.html' %}
 {% load inclusion %}
+
+{% block menu %}
+    {% if silky_request %}
+        {% request_menu request silky_request %}
+    {% else %}
+        {% root_menu request %}
+    {% endif %}
+{% endblock %}
+
 {% block filter %}
 
 {% endblock %}
 
 {% block data %}
     {% if results %}
-        {% for r in results %}
-            <a href="{% url 'profile_detail' profile_id=r.pk %}">
-                {% profile_summary r %}
+        {% for profile in results %}
+            <a href="
+            {% if silky_request %}
+                {% url 'request_profile_detail' request_id=silky_request.pk profile_id=profile.pk %}
+            {% else %}
+                {% url 'profile_detail' profile_id=profile.pk %}
+            {% endif %}
+            ">
+                {% profile_summary profile %}
             </a>
         {% endfor %}
     {% endif %}
