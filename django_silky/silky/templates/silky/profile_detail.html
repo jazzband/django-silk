@@ -9,6 +9,7 @@
         $(document).ready(function () {
             configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
             configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+            configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
         });
     </script>
 {% endblock %}
@@ -48,6 +49,9 @@
             </div>
             <div id="time-taken-div">
                 <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
+            </div>
+            <div id="num-queries-div">
+                <span class="numeric">{{ profile.queries.count }}</span> queries
             </div>
         </div>
         <div class="heading">
