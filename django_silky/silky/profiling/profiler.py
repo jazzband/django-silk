@@ -15,11 +15,12 @@ Logger = logging.getLogger('silky')
 
 # noinspection PyPep8Naming
 class silky_profile(object):
-    def __init__(self, name=None):
+    def __init__(self, name=None, _dynamic=False):
         self.name = name
         self.profile = None
         self._queries_before = None
         self._queries_after = None
+        self._dynamic = _dynamic
 
     def _start_queries(self):
         self._queries_before = copy(DataCollector().queries)
@@ -36,7 +37,8 @@ class silky_profile(object):
             line_num = outer_frame[2]
             self.profile = Profile(name=self.name,
                                    file_path=path,
-                                   line_num=line_num)
+                                   line_num=line_num,
+                                   dynamic=self._dynamic)
             self.profile.request = DataCollector().request
         else:
             Logger.warn('Cannot execute silky_profile as silky is not installed correctly.')
@@ -74,7 +76,8 @@ class silky_profile(object):
                     self.profile = Profile(func_name=func_name,
                                            name=self.name,
                                            file_path=file_path,
-                                           line_num=line_num)
+                                           line_num=line_num,
+                                           dynamic=self._dynamic)
                     self.profile.request = DataCollector().request
                     self._start_queries()
                     try:

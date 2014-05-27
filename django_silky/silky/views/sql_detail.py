@@ -8,16 +8,18 @@ from silky.models import SQLQuery, Request, Profile
 from silky.views.method_map_view import MethodMapView
 
 
-def _code(file_path, line_num):
-    actual_line = ''
+def _code(file_path, line_num, end_line_num=None):
+    if not end_line_num:
+        end_line_num = line_num
+    actual_line = []
     lines = ''
     with open(file_path, 'r') as f:
         r = range(max(0, line_num - 10), line_num + 10)
         for i, line in enumerate(f):
             if i in r:
                 lines += line
-            if i + 1 == line_num:
-                actual_line = line
+            if i + 1 in range(line_num, end_line_num+1):
+                actual_line.append(line)
     code = lines.split('\n')
     return actual_line, code
 

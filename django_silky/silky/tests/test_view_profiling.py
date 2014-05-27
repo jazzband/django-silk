@@ -71,16 +71,19 @@ class TestProfilingContext(TestCase):
     def test_get(self):
         request = Mock(spec_set=['GET'])
         show = 10
-        path = '/path/to/somewhere/'
+        func_name = 'func_name'
+        name = 'name'
         order_by = 'Time'
         request.GET = {'show': show,
-                       'path': path,
+                       'func_name': func_name,
+                       'name': name,
                        'order_by': order_by}
         context = ProfilingView()._create_context(request)
         self.assertDictContainsSubset({
             'show': show,
             'order_by': order_by,
-            'path': path,
+            'func_name': func_name,
+            'name': name,
             'options_show': ProfilingView.show,
             'options_order_by': ProfilingView.order_by,
             'options_func_names': ProfilingView()._get_function_names()

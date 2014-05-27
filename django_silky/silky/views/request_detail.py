@@ -29,14 +29,6 @@ class RequestView(View):
                           content_type=silky_request.content_type),
             'request': request
         }
-
-        if silky_request.body:
-            if silky_request.content_type:
-                content_type = silky_request.content_type.split(';')[0]
-                # if content_type in SilkyMiddleware.content_types_json:
-                #     context['body'] = json.dumps(json.loads(silky_request.body), sort_keys=True, indent=4)
-                # else:
-                #     context['body'] = silky_request.body
         return render_to_response('silky/request.html', context)
 
 

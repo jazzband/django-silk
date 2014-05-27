@@ -2,7 +2,7 @@ from collections import Counter
 
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
-    ManyToManyField
+    ManyToManyField, OneToOneField
 from django.utils import timezone
 from django.db import transaction
 import sqlparse
@@ -22,7 +22,7 @@ class Request(models.Model):
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     content_type = CharField(max_length=50, default='', blank=True)
-    response_status_code = IntegerField(null=True, blank=True)
+
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
@@ -39,6 +39,13 @@ class Request(models.Model):
         # within aggregates for four years here: https://code.djangoproject.com/ticket/14030
         # It looks like this will go in soon at which point this should be changed.
         return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+
+
+class Response(models.Model):
+    request = OneToOneField('Request', related_name='response')
+    status_code = IntegerField()
+    body = TextField(blank=True, default='')
+    content_type = CharField(max_length=50, default='', blank=True)
 
 
 class SQLQueryManager(models.Manager):
@@ -135,9 +142,11 @@ class BaseProfile(models.Model):
 class Profile(BaseProfile):
     file_path = CharField(max_length=300, blank=True, default='')
     line_num = IntegerField(null=True, blank=True)
+    end_line_num = IntegerField(null=True, blank=True)
     func_name = CharField(max_length=300, blank=True, default='')
     exception_raised = BooleanField(default=False)
     queries = ManyToManyField('SQLQuery', related_name='profiles')
+    dynamic = BooleanField(default=False)
 
     @property
     def is_function_profile(self):

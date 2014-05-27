@@ -25,9 +25,12 @@ def profile_menu(request, profile, silky_request=None):
 def profile_summary(profile):
     return {'profile': profile}
 
+def heading(text):
+    return {'text': text}
+
 
 def code(lines, actual_line):
-    return {'code': lines, 'actual_line': actual_line}
+    return {'code': lines, 'actual_line': [x.strip() for x in actual_line]}
 
 
 register.inclusion_tag('silky/inclusion/request_summary.html')(request_summary)
@@ -36,5 +39,6 @@ register.inclusion_tag('silky/inclusion/code.html')(code)
 register.inclusion_tag('silky/inclusion/request_menu.html')(request_menu)
 register.inclusion_tag('silky/inclusion/profile_menu.html')(profile_menu)
 register.inclusion_tag('silky/inclusion/root_menu.html')(root_menu)
+register.inclusion_tag('silky/inclusion/heading.html')(heading)
 
 

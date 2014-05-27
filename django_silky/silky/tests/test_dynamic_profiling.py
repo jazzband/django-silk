@@ -65,6 +65,7 @@ class TestProfileFunction(TestCase):
                 MyClass().foo()
                 # noinspection PyUnresolvedReferences
                 mock_Profile.assert_called_once_with(func_name=foo.__name__,
+                                                     dynamic=True,
                                                      file_path=source_file_name(),
                                                      name='test',
                                                      line_num=foo.func_code.co_firstlineno)
@@ -78,6 +79,7 @@ class TestProfileFunction(TestCase):
             foo()
             # noinspection PyUnresolvedReferences
             mock_Profile.assert_called_once_with(func_name=name,
+                                                 dynamic=True,
                                                  file_path=source_file_name(),
                                                  name='test',
                                                  line_num=line_num)

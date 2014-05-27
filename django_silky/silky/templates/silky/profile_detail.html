@@ -42,10 +42,9 @@
 
 {% block data %}
     <div id="query-div">
-
         <div id="query-info-div">
             <div id="name-div">
-                {{ profile.name }}
+                {{ profile.name }} {% if profile.dynamic %} (dynamic) {% endif %}
             </div>
             <div id="time-taken-div">
                 <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
@@ -57,7 +56,7 @@
         <div class="heading">
             <div class="inner-heading">
                 {% if profile.file_path and profile.line_num %}
-                    {{ file_path }}:{{ line_num }}
+                    {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}:{{ profile.end_line_num }}{% endif %}
                 {% else %}
                     Location
                 {% endif %}

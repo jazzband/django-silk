@@ -61,9 +61,9 @@ class ProfilingView(View):
             query_set = query_set.order_by('-func_name')
         elif order_by:
             raise RuntimeError('Unknown order_by: "%s"' % order_by)
-        if func_name:
+        if func_name is not None:
             query_set = query_set.filter(func_name=func_name)
-        if name:
+        if name is not None:
             query_set = query_set.filter(name=name)
         return list(query_set[:show])
 

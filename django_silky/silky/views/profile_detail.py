@@ -22,7 +22,7 @@ class ProfilingDetailView(View):
             context['silky_request'] = silky_request
         if file_path and line_num:
             try:
-                actual_line, code = _code(file_path, line_num)
+                actual_line, code = _code(file_path, line_num, profile.end_line_num)
                 context['code'] = code
                 context['actual_line'] = actual_line
             except IOError, e:

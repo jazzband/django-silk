@@ -21,8 +21,6 @@
             width: 100%;
         }
 
-
-
         pre {
             margin: 0;
         }
@@ -31,8 +29,6 @@
             background-color: transparent;
             margin: 0;
         }
-
-
     </style>
 {% endblock %}
 {% block js %}
@@ -44,7 +40,7 @@
 {% endblock %}
 
 {% block menu %}
-{% request_menu request silky_request %}
+    {% request_menu request silky_request %}
 {% endblock %}
 
 {% block data %}
@@ -53,38 +49,35 @@
     </div>
     <div id="request-info-div">
         {% if query_params %}
-            <div class="heading">
-                <div class="inner-heading">
-                    Query Parameters
-                </div>
-            </div>
+            {% heading 'Query Parameters' %}
             <pre><code>{{ query_params }}</code></pre>
         {% endif %}
-        {% if body %}
-            <div class="heading">
-                <div class="inner-heading">
-                    Body
-                </div>
-            </div>
-            <pre><code>{{ body }}</code></pre>
+        {% if silky_request.content_type %}
+            {% heading 'Request Content Type' %}
+            <pre>{{ silky_request.content_type }}</pre>
+        {% endif %}
+        {% if silky_request.body %}
+            {% heading 'Request Body' %}
+            <pre><code>{{ silky_request.body }}</code></pre>
+        {% endif %}
+        {% if silky_request.response.content_type %}
+            {% heading 'Response Content Type' %}
+            <pre>{{ silky_request.response.content_type }}</pre>
+        {% endif %}
+        {% if silky_request.response.body %}
+            {% heading 'Response Body' %}
+            <pre><code>{{ silky_request.response.body }}</code></pre>
         {% endif %}
         {% if curl %}
-            <div class="heading">
-                <div class="inner-heading">
-                    Curl
-                </div>
-            </div>
-
+            {% heading 'Curl' %}
             <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>
         {% endif %}
+
         {% if client %}
-            <div class="heading">
-                <div class="inner-heading">
-                    Django Test Client
-                </div>
-            </div>
+            {% heading 'Django Test Client' %}
             <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
         {% endif %}
+
     </div>
     <table>
         <colgroup>

@@ -5,6 +5,9 @@ import re
 from silky.profiling.profiler import silky_profile
 
 
+
+
+
 def _get_module(module_name):
     """
     Given a module name in form 'path.to.module' return module object for 'module'.
@@ -49,7 +52,7 @@ def profile_function_or_method(module, func, name=None):
     """
     if type(module) is str or type(module) is unicode:
         module = _get_module(module)
-    decorator = silky_profile(name)
+    decorator = silky_profile(name, _dynamic=True)
     func_name = func
     cls, func = _get_func(module, func_name)
     wrapped_target = decorator(func)
@@ -72,8 +75,8 @@ def _get_parent_module(module):
 
 
 def _get_context_manager_source(end_line, file_path, name, start_line):
-    inject_code = "with silky_profile('%s'):\n" % name
-    code = 'from silky.profiler import silky_profile\n'
+    inject_code = "with silky_profile('%s', _dynamic=True):\n" % name
+    code = 'from silky.profiling.profiler import silky_profile\n'
     with open(file_path, 'r') as f:
         ws = ''
         for i, line in enumerate(f):
@@ -100,7 +103,7 @@ def _get_ws(txt):
     m = re.search(r"^(\s+).*$", txt)
     try:
         fws = m.groups()[0]
-    except IndexError:
+    except AttributeError:
         fws = ''
     return fws
 
@@ -178,10 +181,13 @@ def _inject_context_manager_func(func, start_line, end_line, name):
     end_line += 1
     ws = _get_ws(source[start_line])
     for i in range(start_line, end_line):
-        source[i] = '  ' + source[i]
+        try:
+            source[i] = '  ' + source[i]
+        except IndexError:
+            raise IndexError('Function %s does not have line %d' % (func.__name__, i))
 
-    source.insert(start_line, ws + "from silky.profiler import silky_profile\n")
-    source.insert(start_line + 1, ws + "with silky_profile('%s'):\n" % name)
+    source.insert(start_line, ws + "from silky.profiling.profiler import silky_profile\n")
+    source.insert(start_line + 1, ws + "with silky_profile('%s', _dynamic=True):\n" % name)
     return _new_func_from_source(source, func)
 
 

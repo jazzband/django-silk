@@ -10,9 +10,20 @@ from pygments.formatters.terminal import TerminalFormatter
 
 from silky import models
 from silky.collector import DataCollector
+from silky.config import SilkyConfig
 
 
 Logger = logging.getLogger('silky')
+
+
+def _print(query_model):
+    should_print = SilkyConfig().SILKY_DEBUG
+    if should_print:
+        formatter = TerminalFormatter()
+        if Logger.isEnabledFor(logging.DEBUG):
+            Logger.debug('\n{sql} [{time_taken}ms]\n'.format(
+                sql=highlight(query_model.formatted_query, SqlLexer(), formatter).strip(),
+                time_taken=query_model.time_taken))
 
 
 def execute_sql(self, *args, **kwargs):
@@ -35,17 +46,7 @@ def execute_sql(self, *args, **kwargs):
             return self._execute_sql(*args, **kwargs)
         finally:
             query_model.end_time = timezone.now()
-            should_print = False
-            try:
-                should_print = settings.SILKY_PRINT
-            except AttributeError:
-                pass
-            if should_print:
-                formatter = TerminalFormatter()
-                if Logger.isEnabledFor(logging.DEBUG):
-                    Logger.debug('\n{sql} [{time_taken}ms]\n'.format(
-                        sql=highlight(query_model.formatted_query, SqlLexer(), formatter).strip(),
-                        time_taken=query_model.time_taken))
+            _print(query_model)
             request = DataCollector().request
             if request:
                 query_model.request = request
