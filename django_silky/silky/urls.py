@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from silky.views.documentation import DocumentationView
 
 from silky.views.profile_detail import ProfilingDetailView
 from silky.views.profiling import ProfilingView
@@ -23,5 +24,6 @@ urlpatterns = patterns('silky.views',
                        url(r'^/profile/(?P<profile_id>[0-9]*)/sql/$', SQLView.as_view(), name='profile_sql'),
                        url(r'^/profile/(?P<profile_id>[0-9]*)/sql/(?P<sql_id>[0-9]*)/$', SQLDetailView.as_view(), name='profile_sql_detail'),
 
-                       url(r'^/profiling/$', ProfilingView.as_view(), name='profiling'))
+                       url(r'^/profiling/$', ProfilingView.as_view(), name='profiling'),
+                       url(r'^/documentation/$', DocumentationView.as_view(), name='documentation'))
 

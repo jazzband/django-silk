@@ -70,11 +70,11 @@ class SilkyMiddleware(object):
             if query_params:
                 query_params_dict = dict(zip(query_params.keys(), query_params.values()))
                 encoded_query_params = json.dumps(query_params_dict)
-            request_model = models.Request(path=path,
-                                           body=body,
-                                           method=request.method,
-                                           content_type=content_type,
-                                           query_params=encoded_query_params)
+            request_model = models.Request.objects.create(path=path,
+                                                          body=body,
+                                                          method=request.method,
+                                                          content_type=content_type,
+                                                          query_params=encoded_query_params)
             DataCollector().request = request_model
 
     def process_view(self, request, view_func, *args, **kwargs):
@@ -90,12 +90,13 @@ class SilkyMiddleware(object):
     def process_response(self, request, response):
         if not request.path.startswith('/silky'):
             collector = DataCollector()
-            body = None
-            if response.content_type in self.content_types_json + ['text/plain'] + self.content_type_html + self.content_type_css:
-                body = body
+            body = ''
+            content_type = response['Content-Type'].split(';')[0]
+            if content_type in self.content_types_json + ['text/plain'] + self.content_type_html + self.content_type_css:
+                body = response.content
             models.Response.objects.create(request=collector.request,
                                            status_code=response.status_code,
-                                           content_type=response.content_type,
+                                           content_type=content_type,
                                            body=body)
             collector.request.end_time = timezone.now()
             collector.request.save()

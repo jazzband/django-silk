@@ -1,5 +1,126 @@
 {% extends 'blog/base.html' %}
 
-{% block content %}
+{% block style %}
+    <style>
+        #img-div img {
+            width: 65px;
+            position: relative;
+            right: 3px;
+        }
 
+        #img-div {
+            width: 60px;
+            height: 60px;
+            border-radius: 150px;
+            -webkit-border-radius: 150px;
+            -moz-border-radius: 150px;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .section .section-header .section-more {
+            float: right;
+            height: 100%;
+        }
+
+        .section .section-header .section-more:hover {
+            background-color: #fddfdc;
+            cursor: pointer;
+        }
+
+        img#runkeeper {
+            width: 20px;
+        }
+        img#soundcloud {
+            width: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <table>
+        <tr>
+            <td>
+                <div id="img-div"><img src="/static/blog/images/me.jpg"></div>
+            </td>
+            <td>
+                Michael Ford
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block subheader %}
+    software developer, united kingdom
+{% endblock %}
+
+{% block content %}
+    <div class="section">
+        <div class="section-header">
+            experience
+            <div class="section-more">20 &rarr;</div>
+        </div>
+        <hr>
+        <ul>
+            <li>
+                Django
+            </li>
+            <li>
+                Python
+            </li>
+            <li>
+                Objective-C/iOS
+            </li>
+        </ul>
+    </div>
+    <div class="section">
+        <div class="section-header">
+            projects
+        </div>
+        <hr>
+        <ul>
+            <li>
+                <a href="{% url 'smooth' %}">Smooth</a>
+            </li>
+        </ul>
+    </div>
+    <div class="section">
+        <div class="section-header">
+            blog
+            <div class="section-more">10 &rarr;</div>
+        </div>
+        <hr>
+    </div>
+    <div class="section">
+        <div class="section-header">
+
+            latest activity
+        </div>
+        <hr>
+        <table>
+            {% if latest_runkeeper %}
+                <tr>
+                    <td>
+                        <img id="runkeeper" src="/static/blog/images/runkeeper.png" title="Runkeeper">
+                    </td>
+                    <td>
+                        {{ latest_runkeeper.date }} ago: Ran {{ latest_runkeeper.distance }}km in {{ latest_runkeeper.time }} minutes.
+                        {% if runkeeper_total_distance and runkeeper_total_duration %} ({{ runkeeper_total_distance }}km/{{ runkeeper_total_duration }}mins in last month){% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if latest_soundcloud %}
+                <tr>
+                    <td>
+                        <img id="runkeeper" src="/static/blog/images/soundcloud.png" title="Soundcloud">
+                    </td>
+                    <td>
+                        {{ latest_soundcloud.date }} ago: Shared "<a href='{{ latest_soundcloud.url }}'>{{ latest_soundcloud.title }}</a>" by {{ latest_soundcloud.username }}
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+
+    </div>
 {% endblock %}

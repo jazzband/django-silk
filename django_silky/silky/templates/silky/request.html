@@ -16,19 +16,32 @@
             word-wrap: break-word; /* Internet Explorer 5.5+ */
         }
 
-        #request-summary-div {
-            text-align: center;
-            width: 100%;
-        }
+        #request-summary {
 
-        pre {
-            margin: 0;
         }
 
         .cell {
             background-color: transparent;
-            margin: 0;
+            margin-top: 15px;
         }
+
+        div.wrapper {
+            width: 100%;
+        }
+
+        div.wrapper div#request-summary {
+            margin: auto;
+            text-align: center;
+            width: 100%;
+        }
+
+        div.wrapper div#request-info {
+            width: 960px;
+            margin: auto auto 20px;
+        }
+
+
+
     </style>
 {% endblock %}
 {% block js %}
@@ -44,48 +57,47 @@
 {% endblock %}
 
 {% block data %}
-    <div id="request-summary-div">
-        {% request_summary silky_request %}
+    <div class="wrapper">
+        <div id="request-summary">
+            {% request_summary silky_request %}
+        </div>
+        <div id="request-info">
+            {% if query_params %}
+                {% heading 'Query Parameters' %}
+                <pre><code>{{ query_params }}</code></pre>
+            {% endif %}
+            {% if silky_request.content_type %}
+                {% heading 'Request Content Type' %}
+                <pre>{{ silky_request.content_type }}</pre>
+            {% endif %}
+            {% if silky_request.body %}
+                {% heading 'Request Body' %}
+                <pre><code>{{ silky_request.body }}</code></pre>
+            {% endif %}
+            {% if silky_request.response.content_type %}
+                {% heading 'Response Content Type' %}
+                <pre>{{ silky_request.response.content_type }}</pre>
+            {% endif %}
+            {% if silky_request.response.body %}
+                {% heading 'Response Body' %}
+                <pre><code>{{ silky_request.response.body }}</code></pre>
+            {% endif %}
+            {% if curl %}
+                {% heading 'Curl' %}
+                <div class="description">
+                    Curl is a command-line utility for transfering data from servers. Paste the following into
+                    a terminal to repeat this request via command line.
+                </div>
+                <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>
+            {% endif %}
+            {% if client %}
+                {% heading 'Django Test Client' %}
+                <div class="description">
+                    The following is working python code that makes use of the Django test client. It can be used to
+                    replicate this request from within a Django unit test, or simply as standalone Python.
+                </div>
+                <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
+            {% endif %}
+        </div>
     </div>
-    <div id="request-info-div">
-        {% if query_params %}
-            {% heading 'Query Parameters' %}
-            <pre><code>{{ query_params }}</code></pre>
-        {% endif %}
-        {% if silky_request.content_type %}
-            {% heading 'Request Content Type' %}
-            <pre>{{ silky_request.content_type }}</pre>
-        {% endif %}
-        {% if silky_request.body %}
-            {% heading 'Request Body' %}
-            <pre><code>{{ silky_request.body }}</code></pre>
-        {% endif %}
-        {% if silky_request.response.content_type %}
-            {% heading 'Response Content Type' %}
-            <pre>{{ silky_request.response.content_type }}</pre>
-        {% endif %}
-        {% if silky_request.response.body %}
-            {% heading 'Response Body' %}
-            <pre><code>{{ silky_request.response.body }}</code></pre>
-        {% endif %}
-        {% if curl %}
-            {% heading 'Curl' %}
-            <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>
-        {% endif %}
-
-        {% if client %}
-            {% heading 'Django Test Client' %}
-            <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
-        {% endif %}
-
-    </div>
-    <table>
-        <colgroup>
-            <col style="width:17%">
-            <col style="width:83%">
-        </colgroup>
-        {% if client %}
-
-        {% endif %}
-    </table>
 {% endblock %}

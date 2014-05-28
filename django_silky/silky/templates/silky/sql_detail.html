@@ -13,8 +13,33 @@
     </script>
 {% endblock %}
 
+{% block style %}
+    {{ block.super }}
+    <style>
+        #traceback {
+            width: 960px;
+            margin: auto;
+        }
+
+    a {
+        color: #45ADA8;
+    }
+    a:visited {
+        color: #45ADA8;
+    }
+
+    a:hover {
+        color :#547980;
+    }
+
+    a:active {
+        color: #594F4F;
+    }
+    </style>
+{% endblock %}
 
 {% block menu %}
+
     <a href="
         {% if silky_request and profile %}
             {% url 'request_and_profile_sql' silky_request.id profile.id %}
@@ -39,28 +64,42 @@
 {% endblock %}
 
 {% block data %}
-    <div id="query-div">
-        <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>
-        <div id="query-info-div">
-            <div id="time-taken-div">
-                <span class="numeric">{{ sql_query.time_taken }}<span class="unit">ms</span></span>
-            </div>
-            <div id="num-joins-div">
-                <span class="numeric">{{ sql_query.num_joins }}</span> joins
-            </div>
-        </div>
-
-    </div>
-    {% for ln in traceback %}
-        {% if ln %}
-            <div class="heading">
-                <div class="inner-heading">
-                    {{ ln }}
+    <div class="wrapper">
+        <div id="query-div">
+            <pre id="query"><code>{{ sql_query.formatted_query | spacify | linebreaksbr }}</code></pre>
+            <div id="query-info-div">
+                <div id="time-taken-div">
+                    <span class="numeric">{{ sql_query.time_taken }}<span class="unit">ms</span></span>
+                </div>
+                <div id="num-joins-div">
+                    <span class="numeric">{{ sql_query.num_joins }}</span> joins
                 </div>
             </div>
-            {% if forloop.counter == pos %}
-                {% code code actual_line %}
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+
+        </div>
+        <div id="traceback">
+            <div class="heading">
+                <div class="inner-heading">
+                    Traceback
+                </div>
+            </div>
+            <div class="description">
+                The below is the Python stacktrace that leads up the execution of the above SQL query.
+                Use it to figure out where and why this SQL query is being executed and whether or not
+                it's actually neccessary.
+            </div>
+            {% for ln in traceback %}
+                {% if ln %}
+                    <div class="file-path">
+                        {{ ln }}
+                    </div>
+                    {% if forloop.counter == pos %}
+                        {% code code actual_line %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+
 {% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'blog/base.html' %}
+
+{% block style %}
+    <style>
+        #smooth-subheader {
+            margin-top: 10px;
+        }
+
+        img.screenshot {
+            width: 446px;
+            margin: 6px;
+        }
+
+        img#github {
+            width: 40px;
+        }
+
+        img#rtd {
+            width: 40px;
+        }
+
+        div#outer-menu {
+            width: 100%;
+        }
+
+        div#menu {
+            text-align: center;
+        }
+
+        div#menu img {
+            margin: 5px;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block header %}
+    Smooth
+{% endblock %}
+
+{% block subheader %}
+    <div id="smooth-subheader">
+        silky smooth profiling for Django
+    </div>
+{% endblock %}
+
+{% block content %}
+    <a href="/static/blog/images/home.png"><img class="screenshot" src="/static/blog/images/home.png"/></a>
+    <a href="/static/blog/images/sql.png"><img class="screenshot" src="/static/blog/images/sql.png"/></a>
+    <div id="outer-menu">
+        <div id="menu">
+            <a href="#" title="github"><img id="github" src="/static/blog/images/Logos-Github-icon.png"></a>
+            <a href="#" title="documentation"><img id="rtd" src="/static/blog/images/rtd.png"></a>
+        </div>
+    </div>
+{% endblock %}
