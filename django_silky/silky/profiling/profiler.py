@@ -5,6 +5,7 @@ import time
 
 from django.conf import settings
 from django.utils import timezone
+import six
 from silky.collector import DataCollector
 
 from silky.models import Profile
@@ -67,31 +68,31 @@ class silky_profile(object):
     def __call__(self, target):
         if self._silky_installed():
             def wrapped_target(*args, **kwargs):
-                if hasattr(target, 'func_code'):
-                    line_num = target.func_code.co_firstlineno
-                    file_path = target.func_code.co_filename
-                    func_name = target.__name__
-                    if not self.name:
-                        self.name = func_name
-                    self.profile = Profile(func_name=func_name,
-                                           name=self.name,
-                                           file_path=file_path,
-                                           line_num=line_num,
-                                           dynamic=self._dynamic)
-                    self.profile.request = DataCollector().request
-                    self._start_queries()
-                    try:
-                        result = target(*args, **kwargs)
-                    except Exception:
-                        self.profile.exception_raised = True
-                        raise
-                    finally:
-                        self.profile.end_time = timezone.now()
-                        self._finalise_queries()
-                    return result
-                else:
-                    raise NotImplementedError('Profile not implemented to decorate type %s', target.__class__.__name__)
-
+                try:
+                    func_code = six.get_function_code(target)
+                except AttributeError:
+                    raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
+                line_num = func_code.co_firstlineno
+                file_path = func_code.co_filename
+                func_name = target.__name__
+                if not self.name:
+                    self.name = func_name
+                self.profile = Profile(func_name=func_name,
+                                       name=self.name,
+                                       file_path=file_path,
+                                       line_num=line_num,
+                                       dynamic=self._dynamic)
+                self.profile.request = DataCollector().request
+                self._start_queries()
+                try:
+                    result = target(*args, **kwargs)
+                except Exception:
+                    self.profile.exception_raised = True
+                    raise
+                finally:
+                    self.profile.end_time = timezone.now()
+                    self._finalise_queries()
+                return result
             return wrapped_target
         else:
             Logger.warn('Cannot execute silky_profile as silky is not installed correctly.')

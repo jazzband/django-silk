@@ -36,7 +36,7 @@ WSGI_APPLICATION = 'django_silky.wsgi.application'
 
 DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
 
-print 'Initialising database at ' + DB_NAME
+print('Initialising database at ' + DB_NAME)
 
 DATABASES = {
     'default': {

@@ -2,11 +2,10 @@ from copy import copy
 from silky.singleton import Singleton
 from django.conf import settings
 
+import six
 
 
-
-class SilkyConfig(object):
-    __metaclass__ = Singleton
+class SilkyConfig(six.with_metaclass(Singleton, object)):
 
     defaults = {
         'SILKY_DEBUG': False,

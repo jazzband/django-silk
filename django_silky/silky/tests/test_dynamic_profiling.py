@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from mock import patch
-
+import six
 import silky
 from silky.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
 
@@ -68,12 +68,11 @@ class TestProfileFunction(TestCase):
                                                      dynamic=True,
                                                      file_path=source_file_name(),
                                                      name='test',
-                                                     line_num=foo.func_code.co_firstlineno)
+                                                     line_num=six.get_function_code(foo).co_firstlineno)
 
     def test_func_as_str(self):
         name = foo.__name__
-        # noinspection PyUnresolvedReferences
-        line_num = foo.func_code.co_firstlineno
+        line_num = six.get_function_code(foo).co_firstlineno
         profile_function_or_method('silky.tests.test_dynamic_profiling', 'foo', 'test')
         with patch('silky.profiling.profiler.Profile') as mock_Profile:
             foo()

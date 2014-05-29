@@ -20,7 +20,7 @@ class TestMarkdown(TestCase):
         post = Post(markdown=markdown)
         post.save()
         post_html = post.html
-        print post_html
+        print(post_html)
         self.assertIn('codehilite', post_html)
 
 

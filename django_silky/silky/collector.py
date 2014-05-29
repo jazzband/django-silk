@@ -1,8 +1,8 @@
+from six import with_metaclass
 from silky.singleton import Singleton
 
 
-class DataCollector(object):
-    __metaclass__ = Singleton
+class DataCollector(with_metaclass(Singleton, object)):
 
     def __init__(self):
         super(DataCollector, self).__init__()
@@ -17,4 +17,5 @@ class DataCollector(object):
         self.queries = []
 
     def register_query(self, *args):
-        map(self.queries.append, args)
+        for arg in args:
+            self.queries.append(arg)

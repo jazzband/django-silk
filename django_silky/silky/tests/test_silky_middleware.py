@@ -5,6 +5,8 @@ from silky.middleware import SilkyMiddleware
 
 
 
+
+
 class TestApplyDynamicMappings(TestCase):
     def test_dynamic_decorator(self):
         middleware = SilkyMiddleware()
@@ -41,7 +43,7 @@ class TestApplyDynamicMappings(TestCase):
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'silky.tests.data.dynamic',
-                'function': 'foo',
+                'function': 'foo2',
                 'start_line': 1,
                 'end_line': 7,
             }

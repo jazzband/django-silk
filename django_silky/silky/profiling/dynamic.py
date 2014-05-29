@@ -1,11 +1,15 @@
+from functools import partial
 import inspect
+import logging
 import sys
 import re
+
+import six
 
 from silky.profiling.profiler import silky_profile
 
 
-
+Logger = logging.getLogger('silky')
 
 
 def _get_module(module_name):
@@ -141,7 +145,12 @@ def _new_func_from_source(source, func):
     # could be.
     #
     # relevant: http://stackoverflow.com/questions/2749655/why-are-closures-broken-within-exec
-    exec src_str in dict(func.func_globals.items() + calling_frame.f_locals.items()), context
+    globals = six.get_function_globals(func)
+    locals = calling_frame.f_locals
+    combined = globals.copy()
+    combined.update(locals)
+    Logger.debug('New src_str:\n %s' % src_str)
+    six.exec_(src_str, combined, context)
     new_func = context[func.__name__]
     return new_func
 
@@ -191,8 +200,9 @@ def _inject_context_manager_func(func, start_line, end_line, name):
     return _new_func_from_source(source, func)
 
 
-def is_str_typ(string):
-    return type(string) is str or type(string) is unicode
+def is_str_typ(o):
+    return any(map(partial(isinstance, o), six.string_types)) \
+        or isinstance(o, six.text_type)
 
 
 def inject_context_manager_func(module, func, start_line, end_line, name):

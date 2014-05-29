@@ -38,10 +38,15 @@
             height: 20px;
         }
 
-        tr:hover {
-            background-color: #eccfcf;
+
+        tr.data-row:hover {
+            background-color:#6ea1a8;
             cursor: pointer;
+            color: white;
         }
+
+
+
 
         td {
             padding: 5px;
@@ -91,7 +96,7 @@
             </tr>
             {% for sql_query in items %}
                 <!-- TODO: Pretty grimy... -->
-                <tr onclick="window.location=' \
+                <tr class="data-row" onclick="window.location=' \
                        {% if profile and silky_request %}\
                            {% url 'request_and_profile_sql_detail' silky_request.id profile.id sql_query.id %}\
                        {% elif profile %}\

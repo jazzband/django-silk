@@ -20,7 +20,7 @@ class SoundcloudInterface(object):
         if resp.status_code == 200:
             try:
                 return json.loads(resp.raw_data)
-            except ValueError, e:
+            except ValueError as e:
                 raise SoundcloudError('invalid json: %s' % e)
         else:
             raise SoundcloudError('status code: %s' % resp.status_code)

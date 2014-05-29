@@ -28,7 +28,7 @@ class RootView(View):
                 query += 'WHERE path == "%s" \n' % path
             query += 'GROUP BY request_id \n'
             query += 'ORDER BY total_db_time'
-            print query
+            print(query)
             query_set = Request.objects.raw(query)
         else:
             query_set = Request.objects.all()

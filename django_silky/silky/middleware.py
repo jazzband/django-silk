@@ -1,15 +1,18 @@
-import Queue
 import inspect
 import json
+import logging
+from django.db import IntegrityError
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
+from silky import models
 
-import models
 from silky.collector import DataCollector
 from silky.config import SilkyConfig
 from silky.profiling import dynamic
 from silky.sql import execute_sql
+
+Logger = logging.getLogger('silky')
 
 
 class SilkyMiddleware(object):
@@ -25,7 +28,6 @@ class SilkyMiddleware(object):
 
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
-        self.queue = Queue.Queue()
 
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = SilkyConfig().SILKY_DYNAMIC_PROFILING
@@ -94,10 +96,11 @@ class SilkyMiddleware(object):
             content_type = response['Content-Type'].split(';')[0]
             if content_type in self.content_types_json + ['text/plain'] + self.content_type_html + self.content_type_css:
                 body = response.content
-            models.Response.objects.create(request=collector.request,
-                                           status_code=response.status_code,
-                                           content_type=content_type,
-                                           body=body)
-            collector.request.end_time = timezone.now()
-            collector.request.save()
+            try:  # TODO: This is called twice sometimes... Why?
+                models.Response.objects.create(request=collector.request, status_code=response.status_code, content_type=content_type, body=body)
+            except IntegrityError as e:
+                Logger.error('Unable to save response due to %s. For some reason process_response sometimes gets called twice...?' % e)
+            finally:
+                collector.request.end_time = timezone.now()
+                collector.request.save()
         return response
