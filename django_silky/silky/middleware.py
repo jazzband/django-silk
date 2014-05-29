@@ -5,6 +5,7 @@ from django.db import IntegrityError
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
+import six
 from silky import models
 
 from silky.collector import DataCollector
@@ -81,10 +82,14 @@ class SilkyMiddleware(object):
 
     def process_view(self, request, view_func, *args, **kwargs):
         if not request.path.startswith('/silky'):
+            try:
+                func_name = view_func.__name__
+            except AttributeError:  # e.g. in case of Django Syndication Feed
+                func_name = view_func.__class__.__name__
             if inspect.ismethod(view_func):
-                view_name = view_func.im_class.__module__ + '.' + view_func.im_class.__name__ + view_func.__name__
+                view_name = view_func.im_class.__module__ + '.' + view_func.im_class.__name__ + func_name
             else:
-                view_name = view_func.__module__ + '.' + view_func.__name__
+                view_name = view_func.__module__ + '.' + func_name
             current_request = DataCollector().request
             assert current_request, 'no request model available?'
             current_request.view = view_name

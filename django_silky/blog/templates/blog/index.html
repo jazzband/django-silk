@@ -1,5 +1,7 @@
 {% extends 'blog/base.html' %}
 
+{% load blog_filters %}
+
 {% block style %}
     <style>
         #img-div img {
@@ -31,8 +33,15 @@
         img#runkeeper {
             width: 20px;
         }
+
         img#soundcloud {
             width: 20px;
+        }
+        img#rss {
+            width: 15px;
+            position: relative;
+            bottom: 0px;
+            right: 8px;
         }
     </style>
 {% endblock %}
@@ -82,14 +91,38 @@
             <li>
                 <a href="{% url 'smooth' %}">Smooth</a>
             </li>
+            <li>
+                <a href="http://www.mosayc.com">Mosayc</a>
+            </li>
         </ul>
     </div>
     <div class="section">
         <div class="section-header">
             blog
-            <div class="section-more">10 &rarr;</div>
+            <div class="section-more">{{ num_posts }} &rarr;</div>
+            <div class="section-more"><a href="{% url 'rss_feed' %}" title="rss feed"><img id="rss" src="/static/blog/images/rss2.png"/></a></div>
         </div>
         <hr>
+        <ul>
+            {% for post in posts %}
+                <li>{{ post.published_date |short_date }} ago: <a href="{% url 'post' post.pk %}">{{ post.title }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+    <div class="section">
+        <div class="section-header">
+            contact
+        </div>
+        <hr>
+        <ul>
+            <li>
+                <a href="mailto:mtford@gmail.com">mtford@gmail.com</a>
+            </li>
+            <li>
+                <a href="https://twitter.com/mtford90">@mtford90</a>
+            </li>
+        </ul>
     </div>
     <div class="section">
         <div class="section-header">
