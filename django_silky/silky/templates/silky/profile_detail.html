@@ -21,54 +21,74 @@
             margin: 10px;
         }
 
+        #query-div {
+            margin: auto;
+            width: 960px;
+        }
+
         #code {
             text-align: left;
         }
 
+        #query-info-div {
+            margin-top: 20px;
+        }
+
         #query-info-div div {
-            margin-bottom: 5px;
+            margin-top: 9px;
         }
 
         #name-div {
             font-weight: bold;
+        }
+
+        .description {
+            text-align: left;
         }
     </style>
 
 {% endblock %}
 
 {% block menu %}
-{% profile_menu request profile silky_request %}
+    {% profile_menu request profile silky_request %}
 {% endblock %}
 
 {% block data %}
-    <div id="query-div">
-        <div id="query-info-div">
-            <div id="name-div">
-                {{ profile.name }} {% if profile.dynamic %} (dynamic) {% endif %}
+    <div class="wrapper">
+        <div id="query-div">
+            <div id="query-info-div">
+                <div id="name-div">
+                    {{ profile.name }} {% if profile.dynamic %} (dynamic) {% endif %}
+                </div>
+                <div id="time-taken-div">
+                    <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
+                </div>
+                <div id="num-queries-div">
+                    <span class="numeric">{{ profile.queries.count }}</span> queries
+                </div>
             </div>
-            <div id="time-taken-div">
-                <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
+            <div class="heading">
+                <div class="inner-heading">
+                    {% if profile.file_path and profile.line_num %}
+                        {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}:{{ profile.end_line_num }}{% endif %}
+                    {% else %}
+                        Location
+                    {% endif %}
+                </div>
             </div>
-            <div id="num-queries-div">
-                <span class="numeric">{{ profile.queries.count }}</span> queries
-            </div>
+        <div class="description">
+            The below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
+            then this will show the range of lines that are covered by the profiling.
         </div>
-        <div class="heading">
-            <div class="inner-heading">
-                {% if profile.file_path and profile.line_num %}
-                    {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}:{{ profile.end_line_num }}{% endif %}
-                {% else %}
-                    Location
-                {% endif %}
-            </div>
-        </div>
-        {% if code %}
-            <pre id="code"><code>{% code code actual_line %}</code></pre>
-        {% elif code_error %}
-            <div id="error-div">
-                {{ code_error }}
-            </div>
-        {% endif %}
+            {% if code %}
+                <pre id="code"><code>{% code code actual_line %}</code></pre>
+            {% elif code_error %}
+                <div id="error-div">
+                    {{ code_error }}
+                </div>
+            {% endif %}
 
+        </div>
     </div>
+
 {% endblock %}

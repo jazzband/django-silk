@@ -21,20 +21,37 @@
             margin: auto;
         }
 
-    a {
-        color: #45ADA8;
-    }
-    a:visited {
-        color: #45ADA8;
-    }
+        a {
+            color: #45ADA8;
+        }
 
-    a:hover {
-        color :#547980;
-    }
+        a:visited {
+            color: #45ADA8;
+        }
 
-    a:active {
-        color: #594F4F;
-    }
+        a:hover {
+            color: #547980;
+        }
+
+        a:active {
+            color: #594F4F;
+        }
+
+        code {
+            background-color: transparent !important;
+        }
+
+        #query-div pre {
+            background-color: transparent !important;
+        }
+
+        #query-info {
+            padding-top: 5px;
+        }
+
+        #query-info-div div {
+            padding-top: 5px;
+        }
     </style>
 {% endblock %}
 
@@ -49,15 +66,15 @@
             {% url 'profile_sql' profile.pk %}
         {% endif %}
     ">
-        <div class="menu-item">
+        <div class="menu-item selectable-menu-item">
             <div class="menu-item-outer">
                 <div class="menu-item-inner">&larr;</div>
             </div>
         </div>
     </a>
 
-    <div class="menu-item">
-        <div class="menu-item-outer menu-item-selected">
+    <div class="menu-item menu-item-selected">
+        <div class="menu-item-outer ">
             <div class="menu-item-inner">SQL Query</div>
         </div>
     </div>
