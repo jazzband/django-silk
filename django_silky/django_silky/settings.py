@@ -71,10 +71,6 @@ LOGGING = {
         'silky': {
             'handlers': ['console'],
             'level': 'DEBUG'
-        },
-        'blog': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
         }
     },
 }
