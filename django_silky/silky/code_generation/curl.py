@@ -1,5 +1,8 @@
 import json
-import urllib
+# import urllib
+
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import urlencode
 
 import jinja2
 
@@ -15,7 +18,7 @@ curl {% if method %}-X {{ method }}{% endif %}
 def _curl_process_params(body, content_type, query_params):
     if query_params:
         try:
-            query_params = urllib.urlencode(query_params)
+            query_params = urlencode(query_params)
         except TypeError:
             pass
         query_params = '?' + str(query_params)
