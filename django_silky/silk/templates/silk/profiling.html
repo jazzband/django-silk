@@ -85,9 +85,9 @@
         {% for profile in results %}
             <a href="
             {% if silk_request %}
-                {% url silk:request_profile_detail request_id=silk_request.pk profile_id=profile.pk %}
+                {% url "silk:request_profile_detail" request_id=silk_request.pk profile_id=profile.pk %}
             {% else %}
-                {% url silk:profile_detail profile_id=profile.pk %}
+                {% url "silk:profile_detail" profile_id=profile.pk %}
             {% endif %}
             ">
                 {% profile_summary profile %}
