@@ -1,9 +1,9 @@
-import unittest
+from django.test import TestCase
 from mock import Mock
 from silk.collector import DataCollector
 
 
-class TestCollector(unittest.TestCase):
+class TestCollector(TestCase):
     def test_singleton(self):
         a = DataCollector()
         b = DataCollector()

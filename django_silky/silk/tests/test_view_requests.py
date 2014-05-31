@@ -4,7 +4,6 @@ from django.test import TestCase
 from mock import Mock
 
 from silk.tests.test_lib.mock_suite import MockSuite
-
 from silk.views.root import RootView
 
 
@@ -24,18 +23,17 @@ class TestRootViewDefaults(TestCase):
 
 
 class TestContext(TestCase):
-
     def test_default(self):
         request = Mock(spec_set=['GET'])
         request.GET = {}
         context = RootView()._create_context(request)
         self.assertDictContainsSubset({
-            'show': RootView.default_show,
-            'order_by': RootView.defualt_order_by,
-            'options_show': RootView.show,
-            'options_order_by': RootView.order_by,
-            'options_paths': RootView()._get_paths()
-        }, context)
+                                          'show': RootView.default_show,
+                                          'order_by': RootView.defualt_order_by,
+                                          'options_show': RootView.show,
+                                          'options_order_by': RootView.order_by,
+                                          'options_paths': RootView()._get_paths()
+                                      }, context)
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -49,17 +47,14 @@ class TestContext(TestCase):
                        'order_by': order_by}
         context = RootView()._create_context(request)
         self.assertDictContainsSubset({
-            'show': show,
-            'order_by': order_by,
-            'path': path,
-            'options_show': RootView.show,
-            'options_order_by': RootView.order_by,
-            'options_paths': RootView()._get_paths()
-        }, context)
+                                          'show': show,
+                                          'order_by': order_by,
+                                          'path': path,
+                                          'options_show': RootView.show,
+                                          'options_order_by': RootView.order_by,
+                                          'options_paths': RootView()._get_paths()
+                                      }, context)
         self.assertIn('results', context)
-
-
-
 
 
 class TestGetObjects(TestCase):

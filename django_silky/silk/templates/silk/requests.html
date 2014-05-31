@@ -54,7 +54,7 @@
 {% block data %}
     {% if results %}
         {% for silk_request in results %}
-            <a href="{% url 'request_detail' request_id=silk_request.pk %}">
+            <a href="{% url silk:request_detail request_id=silk_request.pk %}">
                 {% request_summary silk_request %}
             </a>
         {% endfor %}

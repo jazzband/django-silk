@@ -94,11 +94,11 @@
                 <!-- TODO: Pretty grimy... -->
                 <tr class="data-row" onclick="window.location=' \
                        {% if profile and silk_request %}\
-                           {% url 'request_and_profile_sql_detail' silk_request.id profile.id sql_query.id %}\
+                           {% url silk:request_and_profile_sql_detail silk_request.id profile.id sql_query.id %}\
                        {% elif profile %}\
-                           {% url 'profile_sql_detail' profile.id sql_query.id %}\
+                           {% url silk:profile_sql_detail profile.id sql_query.id %}\
                        {% elif silk_request %}\
-                           {% url 'request_sql_detail' silk_request.id sql_query.id %}\
+                           {% url silk:request_sql_detail silk_request.id sql_query.id %}\
                        {% endif %}\
                         ';">
                     <td class="left-aligned">{{ sql_query.start_time }}</td>

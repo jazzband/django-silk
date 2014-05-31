@@ -27,7 +27,7 @@ content_type_css = ['text/css']
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-    path = reverse('requests')
+    path = reverse('silk:requests')
     should_intercept = not request.path.startswith(path)
     return should_intercept
 

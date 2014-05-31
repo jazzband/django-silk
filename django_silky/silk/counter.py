@@ -5,7 +5,13 @@ It allows for Python 2.6 compatability.
 """
 from operator import itemgetter
 from heapq import nlargest
-from itertools import repeat, ifilter
+from six import PY2
+
+if PY2:
+    from itertools import repeat, ifilter
+else:
+    from itertools import repeat
+    from itertools import filter as ifilter
 
 
 class Counter(dict):
@@ -193,4 +199,4 @@ class Counter(dict):
 if __name__ == '__main__':
     import doctest
 
-    print doctest.testmod()
+    print(doctest.testmod())
