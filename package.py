@@ -13,6 +13,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 DIST_DIR = SCRIPT_DIR + '/dist/{version}'
 
 
+
 def main():
     try:
         version = sys.argv[1]
@@ -33,16 +34,16 @@ def main():
             shutil.rmtree(silky_dir)
         shutil.copytree(SCRIPT_DIR + '/django_silky/silky/', silky_dir)
         cmd = 'cd %s && python setup.py sdist' % dist_dir
-        print cmd
+        print(cmd)
         subprocess.call(cmd, shell=True)
         archive_name = 'django-silky-%s.tar.gz' % version
         from_file = dist_dir + ('/dist/' + archive_name)
         to_file = dist_dir + '/../' + archive_name
-        print 'Copying from %s to %s' % (from_file, to_file)
+        print('Copying from %s to %s' % (from_file, to_file))
         shutil.copy2(from_file, to_file)
-        shutil.rmtree(dist_dir)
+        #shutil.rmtree(dist_dir)
     except IndexError:
-        print 'Usage: %s <version>' % sys.argv[0]
+        print('Usage: %s <version>' % sys.argv[0])
 
 
 if __name__ == '__main__':
