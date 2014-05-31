@@ -1,0 +1,80 @@
+{% extends "silk/templates/silk/base/detail_base.html" %}
+{% load filters %}
+{% load nav %}
+{% load inclusion %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
+            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+            configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
+        });
+    </script>
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        #error-div {
+            margin: 10px;
+        }
+
+        #query-div {
+            margin: auto;
+            width: 960px;
+        }
+
+        #code {
+            text-align: left;
+        }
+
+        .name-div {
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .description {
+            text-align: left;
+        }
+    </style>
+
+{% endblock %}
+
+{% block menu %}
+    {% profile_menu request profile silk_request %}
+{% endblock %}
+
+{% block data %}
+    <div class="wrapper">
+        <div id="query-div">
+            <div id="query-info-div">
+                {% profile_summary profile %}
+            </div>
+            <div class="heading">
+                <div class="inner-heading">
+                    {% if profile.file_path and profile.line_num %}
+                        {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}:{{ profile.end_line_num }}{% endif %}
+                    {% else %}
+                        Location
+                    {% endif %}
+                </div>
+            </div>
+        <div class="description">
+            The below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
+            then this will show the range of lines that are covered by the profiling.
+        </div>
+            {% if code %}
+                <pre id="code"><code>{% code code actual_line %}</code></pre>
+            {% elif code_error %}
+                <div id="error-div">
+                    {{ code_error }}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
