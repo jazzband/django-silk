@@ -101,9 +101,9 @@ class TestCodeGenerationCurl(unittest.TestCase):
         def _execute_test(method):
             response = self._execute('/', method, {'blah': 5})
             self.assertDictContainsSubset({
-                u'path': u'/',
-                u'query_params': {
-                    u'blah': ['5']
+                'path': '/',
+                'query_params': {
+                    'blah': ['5']
                 }
             }, response)
 
@@ -112,7 +112,7 @@ class TestCodeGenerationCurl(unittest.TestCase):
     def test_methods(self):
         def _test_method(method):
             response = self._execute('/', method)
-            self.assertDictContainsSubset({u'path': u'/'}, response)
+            self.assertDictContainsSubset({'path': '/'}, response)
         map(_test_method, self.methods)
 
     def test_json_body(self):
@@ -123,8 +123,8 @@ class TestCodeGenerationCurl(unittest.TestCase):
             }
             response = self._execute('/', method, body=body, content_type='application/json')
             self.assertDictContainsSubset({
-                u'path': u'/',
-                u'body': json.dumps(body)
+                'path': '/',
+                'body': json.dumps(body)
             }, response)
         map(_test_json_body, self.methods)
 
@@ -136,8 +136,8 @@ class TestCodeGenerationCurl(unittest.TestCase):
             }
             response = self._execute('/', method, body=json.dumps(body), content_type='application/json')
             self.assertDictContainsSubset({
-                u'path': u'/',
-                u'body': json.dumps(body)
+                'path': '/',
+                'body': json.dumps(body)
             }, response)
         map(_test_json_body, self.methods)
 
@@ -147,7 +147,7 @@ class TestCodeGenerationCurl(unittest.TestCase):
             body = {"random": "body"}
             response = self._execute('/', method, body=json.dumps(body), content_type='application/json')
             self.assertDictContainsSubset({
-                u'path': u'/'
+                'path': '/'
             }, response)
             response_body = response.get('body')
             self.assertDictEqual(body, eval(response_body))
