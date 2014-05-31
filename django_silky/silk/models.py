@@ -1,11 +1,10 @@
-
+from collections import Counter
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
     ManyToManyField, OneToOneField
 from django.utils import timezone
 from django.db import transaction
 import sqlparse
-from silk.counter import Counter
 
 
 def time_taken(self):
