@@ -14,9 +14,9 @@ def time_taken(self):
 
 
 class Request(models.Model):
-    view = CharField(max_length=300, db_index=True, blank=True, default='')
     path = CharField(max_length=300, db_index=True)
     query_params = TextField(blank=True, default='')
+    raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now)
@@ -29,6 +29,7 @@ class Request(models.Model):
     num_sql_queries = IntegerField(default=0)
 
     time_taken = property(time_taken)
+
 
     @property
     def time_spent_on_sql_queries(self):
@@ -44,6 +45,7 @@ class Request(models.Model):
 class Response(models.Model):
     request = OneToOneField('Request', related_name='response')
     status_code = IntegerField()
+    raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
     content_type = CharField(max_length=50, default='', blank=True)
 

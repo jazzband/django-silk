@@ -3,7 +3,10 @@ import urllib
 import autopep8
 
 import jinja2
-
+# noinspection PyUnresolvedReferences
+from six.moves.urllib.parse import urlencode
+from silky.profiling.dynamic import is_str_typ
+from silky.profiling.profiler import silky_profile
 
 template = """
 from django.test import Client
@@ -16,12 +19,11 @@ content_type='{{ content_type }}'){% endif %}
 
 def _encode_query_params(query_params):
     try:
-        query_params = urllib.urlencode(query_params)
+        query_params = urlencode(query_params)
     except TypeError:
         pass
     query_params = '?' + query_params
     return query_params
-
 
 def gen(path,
         method=None,
@@ -40,6 +42,8 @@ def gen(path,
         if query_params:
             query_params = _encode_query_params(query_params)
             path += query_params
+        if is_str_typ(data):
+            data = "'%s'" % data
         r = t.render(path=path,
                      data=data,
                      lower_case_method=method,

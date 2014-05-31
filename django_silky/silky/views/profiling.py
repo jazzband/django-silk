@@ -16,6 +16,7 @@
 #     return render_to_response('silky/profile.html', context)
 from django.shortcuts import render_to_response
 from django.views.generic import View
+
 from silky.models import Profile, Request
 
 
@@ -33,8 +34,12 @@ class ProfilingView(View):
         else:
             query_set = Profile.objects.all()
         function_names = [x[field] for x in query_set.values(field).distinct()]
-        if not '' in function_names:
-            function_names = [''] + function_names
+        # Ensure top, default option is ''
+        try:
+            function_names.remove('')
+        except ValueError:
+            pass
+        function_names = [''] + function_names
         return function_names
 
     def _get_function_names(self, silky_request=None):
@@ -61,9 +66,9 @@ class ProfilingView(View):
             query_set = query_set.order_by('-func_name')
         elif order_by:
             raise RuntimeError('Unknown order_by: "%s"' % order_by)
-        if func_name is not None:
+        if func_name:
             query_set = query_set.filter(func_name=func_name)
-        if name is not None:
+        if name:
             query_set = query_set.filter(name=name)
         return list(query_set[:show])
 
@@ -83,6 +88,7 @@ class ProfilingView(View):
             'show': show,
             'order_by': order_by,
             'request': request,
+            'func_name': func_name,
             'options_show': self.show,
             'options_order_by': self.order_by,
             'options_func_names': self._get_function_names(silky_request),

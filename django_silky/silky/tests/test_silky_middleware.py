@@ -1,10 +1,8 @@
 from django.test import TestCase
 from mock import patch
+
 from silky.config import SilkyConfig
 from silky.middleware import SilkyMiddleware
-
-
-
 
 
 class TestApplyDynamicMappings(TestCase):
@@ -18,6 +16,7 @@ class TestApplyDynamicMappings(TestCase):
         ]
         middleware._apply_dynamic_mappings()
         from silky.tests.data.dynamic import foo
+
         with patch('silky.profiling.profiler.Profile') as mock_Profile:
             foo()  # Should be wrapped in a decorator
             self.assertTrue(mock_Profile.call_count)
@@ -34,6 +33,7 @@ class TestApplyDynamicMappings(TestCase):
         ]
         middleware._apply_dynamic_mappings()
         from silky.tests.data.dynamic import foo
+
         with patch('silky.profiling.profiler.Profile') as mock_Profile:
             foo()  # Should be wrapped in a decorator
             self.assertTrue(mock_Profile.call_count)

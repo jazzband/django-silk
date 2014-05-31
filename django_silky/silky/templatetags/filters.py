@@ -46,7 +46,17 @@ def filepath_urlify(value, autoescape=None):
     return mark_safe(value)
 
 
+@stringfilter
+def body_filter(value):
+    print(value)
+    if len(value) > 20:
+        return 'Too big!'
+    else:
+        return value
+
+
 spacify.needs_autoescape = True
 filepath_urlify.needs_autoescape = True
 register.filter(spacify)
 register.filter(filepath_urlify)
+register.filter(body_filter)

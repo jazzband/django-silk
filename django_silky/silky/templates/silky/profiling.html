@@ -9,10 +9,20 @@
     {% endif %}
 {% endblock %}
 
+{% block style %}
+    {{ block.super }}
+    <style>
+        .name-div {
+            font-weight: bold;
+        }
+    </style>
+
+{% endblock %}
+
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
-     <div class="menu-item ">
-     <div class="menu-item-outer">
+    <div class="menu-item ">
+        <div class="menu-item-outer">
             <div class="menu-item-inner">
                 <label>Name:
                     <select name="name" form="filter-form" onchange="this.form.submit();">

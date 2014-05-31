@@ -3,6 +3,7 @@ from silky.views.documentation import DocumentationView
 
 from silky.views.profile_detail import ProfilingDetailView
 from silky.views.profiling import ProfilingView
+from silky.views.raw import Raw
 from silky.views.request_detail import RequestView
 from silky.views.root import RootView
 from silky.views.sql import SQLView
@@ -14,6 +15,7 @@ urlpatterns = patterns('silky.views',
                        url(r'^/request/(?P<request_id>[0-9]*)/$', RequestView.as_view(), name='request_detail'),
                        url(r'^/request/(?P<request_id>[0-9]*)/sql/$', SQLView.as_view(), name='request_sql'),
                        url(r'^/request/(?P<request_id>[0-9]*)/sql/(?P<sql_id>[0-9]*)/$', SQLDetailView.as_view(), name='request_sql_detail'),
+                       url(r'^/request/(?P<request_id>[0-9]*)/raw/$', Raw.as_view(), name='raw'),
                        url(r'^/request/(?P<request_id>[0-9]*)/profiling/$', ProfilingView.as_view(), name='request_profiling'),
                        url(r'^/request/(?P<request_id>[0-9]*)/profile/(?P<profile_id>[0-9]*)/$', ProfilingDetailView.as_view(), name='request_profile_detail'),
                        url(r'^/request/(?P<request_id>[0-9]*)/profile/(?P<profile_id>[0-9]*)/sql/$', SQLView.as_view(), name='request_and_profile_sql'),

@@ -166,3 +166,12 @@ class TestCodeGenerationCurl(unittest.TestCase):
         self.assertIn('part', body)
         self.assertIn('multi', body)
         print(response)
+
+    def test_form_urlencoded(self):
+        body = {"multi": "part"}
+        response = self._execute('/', 'POST', body=body, content_type='application/x-www-form-urlencoded')
+        try:
+            body = response['body']
+        except KeyError:
+            self.fail('Response isnt dict')
+        print(response)

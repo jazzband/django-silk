@@ -1,33 +1,89 @@
-import inspect
 import json
 import logging
-from django.core.urlresolvers import reverse
-from django.db import IntegrityError
 
+from django.core.urlresolvers import reverse
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
-import six
-from silky import models
 
+from silky import models
 from silky.collector import DataCollector
 from silky.config import SilkyConfig
 from silky.profiling import dynamic
 from silky.sql import execute_sql
 
+
 Logger = logging.getLogger('silky')
+
+content_types_json = ['application/json',
+                      'application/x-javascript',
+                      'text/javascript',
+                      'text/x-javascript',
+                      'text/x-json']
+content_type_form = ['multipart/form-data',
+                     'application/x-www-form-urlencoded']
+content_type_html = ['text/html']
+content_type_css = ['text/css']
+
+
+def _should_intercept(request):
+    """we want to avoid recording any requests/sql queries etc that belong to Silky"""
+    path = reverse('requests')
+    should_intercept = not request.path.startswith(path)
+    return should_intercept
+
+
+class RequestModelFactory(object):
+    """Produce Request models from Django request objects"""
+
+    def __init__(self, request):
+        super(RequestModelFactory, self).__init__()
+        self.request = request
+
+    def content_type(self):
+        content_type = self.request.META.get('CONTENT_TYPE', '')
+        if content_type:
+            content_type = content_type.split(';')[0]
+        return content_type
+
+    def body(self):
+        content_type = self.content_type()
+        body = ''
+        # Encode body as JSON if possible so can be used as a dictionary in generation
+        # of curl/django test client code
+        if content_type in content_type_form:
+            body = self.request.POST
+            body = json.dumps(dict(body), sort_keys=True, indent=4)
+        elif content_type in content_types_json:
+            # TODO: Perhaps theres a way to format the JSON without parsing it?
+            body = json.dumps(json.loads(self.request.body), sort_keys=True, indent=4)
+        return body, content_type
+
+    def query_params(self):
+        query_params = self.request.GET
+        encoded_query_params = ''
+        if query_params:
+            query_params_dict = dict(zip(query_params.keys(), query_params.values()))
+            encoded_query_params = json.dumps(query_params_dict)
+        return encoded_query_params
+
+    def construct_request_model(self):
+        body, content_type = self.body()
+        query_params = self.query_params()
+        request_model = models.Request.objects.create(raw_body=self.request.body,
+                                                      content_type=content_type,
+                                                      path=self.request.path,
+                                                      method=self.request.method,
+                                                      query_params=query_params,
+                                                      body=body)
+        Logger.debug('Created new request model with pk %s' % request_model.pk)
+        return request_model
+
+
+class ResponseModelFactory(object):
+    """Produce Request models from Django request objects"""
 
 
 class SilkyMiddleware(object):
-    content_types_json = ['application/json',
-                          'application/x-javascript',
-                          'text/javascript',
-                          'text/x-javascript',
-                          'text/x-json']
-    content_type_form = ['multipart/form-data',
-                         'application/x-www-form-urlencoded']
-    content_type_html = ['text/html']
-    content_type_css = ['text/css']
-
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
 
@@ -53,68 +109,41 @@ class SilkyMiddleware(object):
             else:
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
-    def _construct_request_model(self, request):
-        body = ''
-        content_type = request.META.get('CONTENT_TYPE', '')
-        if content_type:
-            content_type = content_type.split(';')[0]
-        if content_type in self.content_type_form:
-            body = request.POST
-            body = json.dumps(dict(body))  # Encode as json
-        elif content_type in self.content_types_json + ['text/plain']:
-            body = request.body
-        query_params = request.GET
-        encoded_query_params = ''
-        if query_params:
-            query_params_dict = dict(zip(query_params.keys(), query_params.values()))
-            encoded_query_params = json.dumps(query_params_dict)
-        request_model = models.Request.objects.create(path=request.path,
-                                                      body=body,
-                                                      method=request.method,
-                                                      content_type=content_type,
-                                                      query_params=encoded_query_params)
-        return request_model
-
     def process_request(self, request):
-        url = reverse('requests')
-        if not request.path.startswith('/silky'):  # We dont want to profile requests to Silky. Shit would go down.
+        if _should_intercept(request):
             self._apply_dynamic_mappings()
             if not hasattr(SQLCompiler, '_execute_sql'):
                 SQLCompiler._execute_sql = SQLCompiler.execute_sql
                 SQLCompiler.execute_sql = execute_sql
-            request_model = self._construct_request_model(request)
-            DataCollector().request = request_model
-
-    def process_view(self, request, view_func, *args, **kwargs):
-        if not request.path.startswith('/silky'):
-            try:
-                func_name = view_func.__name__
-            except AttributeError:  # e.g. in case of Django Syndication Feed
-                func_name = view_func.__class__.__name__
-            if inspect.ismethod(view_func):
-                view_name = view_func.im_class.__module__ + '.' + view_func.im_class.__name__ + func_name
-            else:
-                view_name = view_func.__module__ + '.' + func_name
-            current_request = DataCollector().request
-            assert current_request, 'no request model available?'
-            current_request.view = view_name
+            request_model = RequestModelFactory(request).construct_request_model()
+            DataCollector().configure(request_model)
 
     def process_response(self, request, response):
-        if not request.path.startswith('/silky'):
+        if _should_intercept(request):
             collector = DataCollector()
-            body = ''
             content_type = response['Content-Type'].split(';')[0]
-            if content_type in self.content_types_json + ['text/plain'] + self.content_type_html + self.content_type_css:
-                body = response.content
             silky_request = collector.request
-            if not silky_request:
-                Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
-                silky_request = self._construct_request_model(request)
-            try:  # TODO: This is called twice sometimes... Why?
-                models.Response.objects.create(request=silky_request, status_code=response.status_code, content_type=content_type, body=body)
-            except IntegrityError as e:
-                Logger.error('Unable to save response due to %s. For some reason process_response sometimes gets called twice...?' % e)
-            finally:
+            if silky_request:
+                Logger.debug('Creating response model for request model with pk %s' % silky_request.pk)
+                body = ''
+                if content_type in content_types_json:
+                    # TODO: Perhaps theres a way to format the JSON without parsing it?
+                    try:
+                        content = response.content
+                        try:  #py3
+                            content = content.decode('UTF-8')
+                        except AttributeError:  #py2
+                            pass
+                        body = json.dumps(json.loads(content), sort_keys=True, indent=4)
+                    except (TypeError, ValueError):
+                        Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (silky_request.pk, content_type))
+                models.Response.objects.create(request=silky_request,
+                                               status_code=response.status_code,
+                                               content_type=content_type,
+                                               raw_body=response.content,
+                                               body=body)
                 silky_request.end_time = timezone.now()
                 silky_request.save()
+            else:
+                Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
         return response

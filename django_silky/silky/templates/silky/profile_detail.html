@@ -30,15 +30,9 @@
             text-align: left;
         }
 
-        #query-info-div {
+        .name-div {
             margin-top: 20px;
-        }
-
-        #query-info-div div {
-            margin-top: 9px;
-        }
-
-        #name-div {
+            margin-bottom: 15px;
             font-weight: bold;
         }
 
@@ -57,15 +51,7 @@
     <div class="wrapper">
         <div id="query-div">
             <div id="query-info-div">
-                <div id="name-div">
-                    {{ profile.name }} {% if profile.dynamic %} (dynamic) {% endif %}
-                </div>
-                <div id="time-taken-div">
-                    <span class="numeric">{{ profile.time_taken }}<span class="unit">ms</span></span>
-                </div>
-                <div id="num-queries-div">
-                    <span class="numeric">{{ profile.queries.count }}</span> queries
-                </div>
+                {% profile_summary profile %}
             </div>
             <div class="heading">
                 <div class="inner-heading">

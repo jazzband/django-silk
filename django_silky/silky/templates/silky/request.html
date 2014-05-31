@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="/static/silky/css/heading.css"/>
     <link rel="stylesheet" href="/static/silky/lib/highlight/foundation.css"/>
     <style>
-        #pre-curl {
+
+        pre {
             white-space: pre-wrap; /* css-3 */
             white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
             /*noinspection CssInvalidElement*/
@@ -40,6 +41,21 @@
             margin: auto auto 20px;
         }
 
+        a {
+            color: #45ADA8;
+        }
+
+        a:visited {
+            color: #45ADA8;
+        }
+
+        a:hover {
+            color: #547980;
+        }
+
+        a:active {
+            color: #594F4F;
+        }
 
 
     </style>
@@ -70,17 +86,55 @@
                 {% heading 'Request Content Type' %}
                 <pre>{{ silky_request.content_type }}</pre>
             {% endif %}
+            {% if silky_request.raw_body %}
+                {% heading 'Raw Request Body' %}
+                {% if silky_request.raw_body|length > 1000 %}
+                    The raw request body is <b>{{ silky_request.raw_body|length }}</b> characters long
+                    and hence is <b>too big</b> to show here.
+                    Click <a href="{% url 'raw' silky_request.pk %}?typ=request&subtyp=raw">here</a> to view the raw request body.
+                {% else %}
+                    <pre>{{ silky_request.raw_body }}</pre>
+                {% endif %}
+            {% endif %}
             {% if silky_request.body %}
                 {% heading 'Request Body' %}
-                <pre><code>{{ silky_request.body }}</code></pre>
+                {% if silky_request.body|length > 1000 %}
+                    The processed request body is <b>{{ silky_request.body|length }}</b> characters long
+                    and hence is <b>too big</b> to show here.
+                    Click <a href="{% url 'raw' silky_request.pk %}?typ=request&subtyp=processed">here</a> to view the request body.
+                {% else %}
+                    <div class="description">
+                        This is the body of the HTTP request represented as JSON for easier reading.
+                    </div>
+                    <pre><code>{{ silky_request.body }}</code></pre>
+                {% endif %}
             {% endif %}
             {% if silky_request.response.content_type %}
                 {% heading 'Response Content Type' %}
                 <pre>{{ silky_request.response.content_type }}</pre>
             {% endif %}
+            {% if silky_request.response.raw_body %}
+                {% heading 'Raw Response Body' %}
+                {% if silky_request.response.raw_body|length > 1000 %}
+                    The raw response body is <b>{{ silky_request.response.raw_body|length }}</b> characters long
+                    and hence is <b>too big</b> to show here.
+                    Click <a href="{% url 'raw' silky_request.pk %}?typ=response&subtyp=raw">here</a> to view the raw response body.
+                {% else %}
+                    <pre>{{ silky_request.response.raw_body }}</pre>
+                {% endif %}
+            {% endif %}
             {% if silky_request.response.body %}
                 {% heading 'Response Body' %}
-                <pre><code>{{ silky_request.response.body }}</code></pre>
+                <div class="description">
+                    This is the body of the HTTP response represented as JSON for easier reading.
+                </div>
+                {% if silky_request.response.body|length > 1000 %}
+                    The response body is <b>{{ silky_request.response.body|length }}</b> characters long
+                    and hence is <b>too big</b> to show here.
+                    Click <a href="{% url 'raw' silky_request.pk %}?typ=response&subtyp=processed">here</a> to view the response body.
+                {% else %}
+                    <pre><code>{{ silky_request.response.body }}</code></pre>
+                {% endif %}
             {% endif %}
             {% if curl %}
                 {% heading 'Curl' %}
