@@ -5,7 +5,7 @@ from silk.collector import DataCollector
 
 from silk.models import Profile, Request
 from silk.profiling.profiler import silk_profile
-from silk.tests.lib.mock_suite import MockSuite
+from silk.tests.test_lib.mock_suite import MockSuite
 
 
 class TestProfilerRequests(TestCase):
