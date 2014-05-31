@@ -37,7 +37,9 @@ class TestProfilingViewGetObjects(TestCase):
         self.assertEqual(5, len(results))
 
     def test_func_name(self):
-        func_name = random.choice([x.func_name for x in self.profiles if x.func_name])
+        func_name = 'a_func_name'
+        self.profiles[1].func_name = func_name
+        self.profiles[1].save()
         results = ProfilingView()._get_objects(func_name=func_name)
         for r in results:
             self.assertEqual(r.func_name, func_name)
