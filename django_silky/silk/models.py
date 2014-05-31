@@ -1,4 +1,3 @@
-from collections import Counter
 
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
@@ -6,6 +5,7 @@ from django.db.models import DateTimeField, TextField, CharField, ForeignKey, In
 from django.utils import timezone
 from django.db import transaction
 import sqlparse
+from silk.counter import Counter
 
 
 def time_taken(self):
@@ -58,7 +58,7 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
-        with transaction.atomic():
+        with transaction.commit_on_success():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
             # TODO: Not that there is ever more than one request (but there could be eventually)
@@ -115,7 +115,7 @@ class SQLQuery(models.Model):
 
     time_taken = property(time_taken)
 
-    @transaction.atomic()
+    @transaction.commit_on_success()
     def save(self, *args, **kwargs):
         if not self.pk:
             if self.request:
@@ -123,7 +123,7 @@ class SQLQuery(models.Model):
                 self.request.save()
         super(SQLQuery, self).save(*args, **kwargs)
 
-    @transaction.atomic()
+    @transaction.commit_on_success()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
