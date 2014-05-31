@@ -1,0 +1,8 @@
+Pygments>=1.6
+six>=1.6
+simplejson>=3
+python-dateutil>=2
+requests>=2
+sqlparse>=0.1
+Jinja2>=2.7
+autopep8>=1
