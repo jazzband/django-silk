@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import patch
+from mock import patch, Mock
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware
@@ -17,9 +17,11 @@ class TestApplyDynamicMappings(TestCase):
         middleware._apply_dynamic_mappings()
         from silk.tests.data.dynamic import foo
 
-        with patch('silk.profiling.profiler.Profile') as mock_Profile:
+        mock = Mock()
+        mock.queries = []
+        with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()  # Should be wrapped in a decorator
-            self.assertTrue(mock_Profile.call_count)
+            self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
 
     def test_dynamic_context_manager(self):
         middleware = SilkyMiddleware()
@@ -34,9 +36,11 @@ class TestApplyDynamicMappings(TestCase):
         middleware._apply_dynamic_mappings()
         from silk.tests.data.dynamic import foo
 
-        with patch('silk.profiling.profiler.Profile') as mock_Profile:
+        mock = Mock()
+        mock.queries = []
+        with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()  # Should be wrapped in a decorator
-            self.assertTrue(mock_Profile.call_count)
+            self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
 
     def test_invalid_dynamic_context_manager(self):
         middleware = SilkyMiddleware()

@@ -1,8 +1,8 @@
 from datetime import timedelta
 import random
 import traceback
-from django.core import management
 
+from django.core import management
 from django.utils import timezone
 
 from silk import models
@@ -74,20 +74,30 @@ class MockSuite(object):
     def _random_query(self):
         return random.choice(self.sql_queries)
 
-    def mock_sql_queries(self, request=None, profile=None, n=1):
+    def mock_sql_queries(self, request=None, profile=None, n=1, as_dict=False):
         start_time, end_time = self._random_time()
         queries = []
         for _ in range(0, n):
             tb = ''.join(reversed(traceback.format_stack()))
-            query = SQLQuery.objects.create(query=self._random_query(),
-                                            start_time=start_time,
-                                            end_time=end_time,
-                                            request=request,
-                                            traceback=tb)
-            queries.append(query)
+            d = {
+                'query': self._random_query(),
+                'start_time': start_time,
+                'end_time': end_time,
+                'request': request,
+                'traceback': tb
+            }
+            if as_dict:
+                queries.append(d)
+            else:
+                query = SQLQuery.objects.create(**d)
+                queries.append(query)
         if profile:
-            profile.queries = queries
-            profile.save()
+            if as_dict:
+                for q in queries:
+                    profile['queries'].append(q)
+            else:
+                profile.queries = queries
+                profile.save()
         return queries
 
     def mock_profile(self, request=None):

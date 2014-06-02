@@ -11,7 +11,7 @@ class TestCollector(TestCase):
         self.assertTrue(a == b == c)
 
     def test_query_registration(self):
-        mock_query = Mock(spec_set=[])
+        mock_query = {}
         DataCollector().register_query(mock_query)
         self.assertIn(mock_query, DataCollector().queries)
 

@@ -23,8 +23,11 @@ class silk_profile(object):
         self._queries_after = None
         self._dynamic = _dynamic
 
+    def _query_identifiers_from_collector(self):
+        return [x['temp_id'] for x in DataCollector().queries]
+
     def _start_queries(self):
-        self._queries_before = copy(DataCollector().queries)
+        self._queries_before = self._query_identifiers_from_collector()
 
     def __enter__(self):
         if self._silk_installed():
@@ -36,28 +39,31 @@ class silk_profile(object):
             outer_frame = frames[1]
             path = outer_frame[1]
             line_num = outer_frame[2]
-            self.profile = Profile(name=self.name,
-                                   file_path=path,
-                                   line_num=line_num,
-                                   dynamic=self._dynamic)
-            self.profile.request = DataCollector().request
+            self.profile = {
+                'name': self.name,
+                'file_path': path,
+                'line_num': line_num,
+                'dynamic': self._dynamic,
+                'request': DataCollector().request,
+                'start_time':  timezone.now(),
+            }
         else:
             Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
 
     def _finalise_queries(self):
-        self._queries_after = copy(DataCollector().queries)
+        collector = DataCollector()
+        self._queries_after = self._query_identifiers_from_collector()
         assert self.profile, 'no profile was created'
         diff = set(self._queries_after).difference(set(self._queries_before))
-        self.profile.save()
-        self.profile.queries = diff
-        self.profile.save()
+        self.profile['queries'] = [collector.query_with_temp_id(x) for x in diff]
+        collector.register_profile(self.profile)
 
     # noinspection PyUnusedLocal
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._silk_installed():
             exception_raised = exc_type is not None
-            self.profile.exception_raised = exception_raised
-            self.profile.end_time = timezone.now()
+            self.profile['exception_raised'] = exception_raised
+            self.profile['end_time'] = timezone.now()
             self._finalise_queries()
 
     def _silk_installed(self):
@@ -77,20 +83,23 @@ class silk_profile(object):
                 func_name = target.__name__
                 if not self.name:
                     self.name = func_name
-                self.profile = Profile(func_name=func_name,
-                                       name=self.name,
-                                       file_path=file_path,
-                                       line_num=line_num,
-                                       dynamic=self._dynamic)
-                self.profile.request = DataCollector().request
+                self.profile = {
+                    'func_name': func_name,
+                    'name': self.name,
+                    'file_path': file_path,
+                    'line_num': line_num,
+                    'dynamic': self._dynamic,
+                    'start_time': timezone.now(),
+                    'request': DataCollector().request
+                }
                 self._start_queries()
                 try:
                     result = target(*args, **kwargs)
                 except Exception:
-                    self.profile.exception_raised = True
+                    self.profile['exception_raised'] = True
                     raise
                 finally:
-                    self.profile.end_time = timezone.now()
+                    self.profile['end_time'] = timezone.now()
                     self._finalise_queries()
                 return result
             return wrapped_target

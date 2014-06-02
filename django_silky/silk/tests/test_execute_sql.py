@@ -19,6 +19,7 @@ def mock_sql():
 class TestCall(TestCase):
     @classmethod
     def setUpClass(cls):
+        DataCollector().configure(request=None)
         SQLQuery.objects.all().delete()
         cls.mock_sql, cls.query_string = mock_sql()
         kwargs = {
@@ -33,57 +34,51 @@ class TestCall(TestCase):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
 
     def test_count(self):
-        self.assertEqual(1, SQLQuery.objects.count())
+        self.assertEqual(1, len(DataCollector().queries))
 
     def _get_query(self):
-        try:
-            query = SQLQuery.objects.all()[0]
-        except IndexError:
-            self.fail('No queries created')
+        query = DataCollector().queries[0]
         return query
 
     def test_no_request(self):
         query = self._get_query()
-        self.assertFalse(query.request)
+        self.assertNotIn('request', query)
 
     def test_query(self):
         query = self._get_query()
-        self.assertEqual(query.query, self.query_string)
+        self.assertEqual(query['query'], self.query_string)
 
 
 class TestCallSilky(TestCase):
     def test_no_effect(self):
-        SQLQuery.objects.all().delete()
+        DataCollector().configure()
         sql, _ = mock_sql()
         sql.query.model = NonCallableMagicMock(spec_set=['__module__'])
         sql.query.model.__module__ = 'silk.models'
         # No SQLQuery models should be created for silk requests for obvious reasons
-        with patch('silk.sql.models.SQLQuery') as mock_SQLQuery:
+        with patch('silk.sql.DataCollector', return_value=Mock()) as mock_DataCollector:
             execute_sql(sql)
-            self.assertFalse(mock_SQLQuery.call_count)
+            self.assertFalse(mock_DataCollector().register_query.call_count)
 
 
 class TestCollectorInteraction(TestCase):
-
     def _query(self):
         try:
-            query = SQLQuery.objects.all()[0]
+            query = DataCollector().queries[0]
         except IndexError:
             self.fail('No queries created')
         return query
 
     def test_request(self):
-        SQLQuery.objects.all().delete()
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        DataCollector().request = Request.objects.create(path='/path/to/somewhere')
         execute_sql(sql)
         query = self._query()
-        self.assertEqual(query.request, DataCollector().request)
+        self.assertEqual(query['request'], DataCollector().request)
 
     def test_registration(self):
-        SQLQuery.objects.all().delete()
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        DataCollector().request = Request.objects.create(path='/path/to/somewhere')
         execute_sql(sql)
         query = self._query()
         self.assertIn(query, DataCollector().queries)

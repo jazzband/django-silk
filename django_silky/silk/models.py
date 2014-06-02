@@ -7,9 +7,14 @@ from django.db import transaction
 import sqlparse
 
 
-def time_taken(self):
-    d = self.end_time - self.start_time
+# Seperated out so can use in tests w/o models
+def _time_taken(start_time, end_time):
+    d = end_time - start_time
     return d.seconds * 1000 + d.microseconds / 1000
+
+
+def time_taken(self):
+    return _time_taken(self.start_time, self.end_time)
 
 
 class Request(models.Model):

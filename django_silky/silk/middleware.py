@@ -144,6 +144,7 @@ class SilkyMiddleware(object):
                                                body=body)
                 silk_request.end_time = timezone.now()
                 silk_request.save()
+                collector.finalise()
             else:
                 Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
         return response

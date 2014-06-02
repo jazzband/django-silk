@@ -1,6 +1,7 @@
 from django.test import TestCase
-from mock import patch
+from mock import patch, Mock
 import six
+
 import silk
 from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
 
@@ -60,24 +61,34 @@ class TestProfileFunction(TestCase):
         # noinspection PyUnresolvedReferences
         with patch.object(MyClass, 'foo', foo):
             profile_function_or_method('silk.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
-            with patch('silk.profiling.profiler.Profile') as mock_Profile:
+            mock_data_collector = Mock()
+            mock_data_collector.queries = []
+            with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
                 MyClass().foo()
-                # noinspection PyUnresolvedReferences
-                mock_Profile.assert_called_once_with(func_name=foo.__name__,
-                                                     dynamic=True,
-                                                     file_path=source_file_name(),
-                                                     name='test',
-                                                     line_num=six.get_function_code(foo).co_firstlineno)
+                self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
+                call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]
+                self.assertDictContainsSubset({
+                    'func_name': foo.__name__,
+                    'dynamic': True,
+                    'file_path': source_file_name(),
+                    'name': 'test',
+                    'line_num': six.get_function_code(foo).co_firstlineno
+                }, call_args)
 
     def test_func_as_str(self):
         name = foo.__name__
         line_num = six.get_function_code(foo).co_firstlineno
         profile_function_or_method('silk.tests.test_dynamic_profiling', 'foo', 'test')
-        with patch('silk.profiling.profiler.Profile') as mock_Profile:
+        mock_data_collector = Mock()
+        mock_data_collector.queries = []
+        with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
             foo()
-            # noinspection PyUnresolvedReferences
-            mock_Profile.assert_called_once_with(func_name=name,
-                                                 dynamic=True,
-                                                 file_path=source_file_name(),
-                                                 name='test',
-                                                 line_num=line_num)
+            self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
+            call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]
+            self.assertDictContainsSubset({
+                'func_name': name,
+                'dynamic': True,
+                'file_path': source_file_name(),
+                'name': 'test',
+                'line_num': line_num
+            }, call_args)
