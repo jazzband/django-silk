@@ -1,4 +1,4 @@
-
+from django.db.models import Count, Sum
 from django.shortcuts import render_to_response
 from django.views.generic import View
 
@@ -8,10 +8,13 @@ from silk.models import Profile, Request
 class ProfilingView(View):
     show = [5, 10, 25, 100, 250]
     default_show = 25
-    order_by = ['Time',
+    order_by = ['Recent',
                 'Name',
-                'Function Name']
-    defualt_order_by = 'Name'
+                'Function Name',
+                'Num. Queries',
+                'Time',
+                'Time on queries']
+    defualt_order_by = 'Recent'
 
     def _get_distinct_values(self, field, silk_request):
         if silk_request:
@@ -43,12 +46,18 @@ class ProfilingView(View):
             query_set = manager.all()
         if not order_by:
             order_by = self.defualt_order_by
-        if order_by == 'Time':
+        if order_by == 'Recent':
             query_set = query_set.order_by('-start_time')
         elif order_by == 'Name':
             query_set = query_set.order_by('-name')
         elif order_by == 'Function Name':
             query_set = query_set.order_by('-func_name')
+        elif order_by == 'Num. Queries':
+            query_set = query_set.annotate(num_queries=Count('queries')).order_by('-num_queries')
+        elif order_by == 'Time':
+            query_set = query_set.order_by('-time_taken')
+        elif order_by == 'Time on queries':
+            query_set = query_set.annotate(db_time=Sum('queries__time_taken')).order_by('-db_time')
         elif order_by:
             raise RuntimeError('Unknown order_by: "%s"' % order_by)
         if func_name:
