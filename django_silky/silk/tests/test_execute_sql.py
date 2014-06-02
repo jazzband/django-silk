@@ -37,7 +37,7 @@ class TestCall(TestCase):
         self.assertEqual(1, len(DataCollector().queries))
 
     def _get_query(self):
-        query = DataCollector().queries[0]
+        query = list(DataCollector().queries)[0]
         return query
 
     def test_no_request(self):
@@ -64,7 +64,7 @@ class TestCallSilky(TestCase):
 class TestCollectorInteraction(TestCase):
     def _query(self):
         try:
-            query = DataCollector().queries[0]
+            query = list(DataCollector().queries)[0]
         except IndexError:
             self.fail('No queries created')
         return query
