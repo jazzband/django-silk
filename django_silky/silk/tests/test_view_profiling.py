@@ -28,7 +28,7 @@ class TestProfilingViewGetObjects(TestCase):
         cls.profiles = [MockSuite().mock_profile() for _ in range(0, 10)]
 
     def test_ordering(self):
-        results = ProfilingView()._get_objects(order_by='Time')
+        results = ProfilingView()._get_objects(order_by='Recent')
         self.assertSorted(results, 'start_time')
 
 

@@ -7,7 +7,6 @@ import six
 class SilkyConfig(six.with_metaclass(Singleton, object)):
 
     defaults = {
-        'SILKY_DEBUG': False,
         'SILKY_DYNAMIC_PROFILING': []
     }
 

@@ -13,15 +13,6 @@ from silk.config import SilkyConfig
 
 Logger = logging.getLogger('silk')
 
-# TODO: Broken due to changes needed to handle atomic transactions in execute_sql
-def _print(query_dict):
-    should_print = SilkyConfig().SILKY_DEBUG
-    if should_print:
-        formatter = TerminalFormatter()
-        if Logger.isEnabledFor(logging.DEBUG):
-            Logger.debug('\n{sql} [{time_taken}ms]\n'.format(
-                sql=highlight(query_dict.formatted_query, SqlLexer(), formatter).strip(),
-                time_taken=query_dict.time_taken))
 
 
 def execute_sql(self, *args, **kwargs):
@@ -47,7 +38,6 @@ def execute_sql(self, *args, **kwargs):
             return self._execute_sql(*args, **kwargs)
         finally:
             query_dict['end_time'] = timezone.now()
-            _print(query_dict)
             request = DataCollector().request
             if request:
                 query_dict['request'] = request

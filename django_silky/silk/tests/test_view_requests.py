@@ -87,7 +87,7 @@ class TestGetObjects(TestCase):
 
     def test_time_spent_db_with_path(self):
         request = random.choice(self.requests)
-        query_set = RootView()._get_objects(order_by='Time Spent DB',
+        query_set = RootView()._get_objects(order_by='Time on queries',
                                             path=request.path)
         num_results = len(query_set)
         self.assertTrue(num_results)
@@ -105,18 +105,14 @@ class TestOrderingRequestView(TestCase):
                 pass
 
     def test_ordering(self):
-        self.assertSorted(objects=RootView()._get_objects(order_by='Time'),
+        self.assertSorted(objects=RootView()._get_objects(order_by='Recent'),
                           sort_field='start_time')
         self.assertSorted(objects=RootView()._get_objects(order_by='Path'),
                           sort_field='path')
-        self.assertSorted(objects=RootView()._get_objects(order_by='Num. DB Queries'),
+        self.assertSorted(objects=RootView()._get_objects(order_by='Num. Queries'),
                           sort_field='num_sql_queries')
-        self.assertSorted(objects=RootView()._get_objects(order_by='Time Spent Overall'),
-                          sort_field='total_time')
-        self.assertSorted(objects=RootView()._get_objects(order_by='Time Spent DB'),
-                          sort_field='total_db_time')
+        self.assertSorted(objects=RootView()._get_objects(order_by='Time'),
+                          sort_field='time_taken')
+        self.assertSorted(objects=RootView()._get_objects(order_by='Time on queries'),
+                          sort_field='db_time')
 
-    def test_order_by_time_spent_in_db(self):
-        for _ in range(0, 10):
-            MockSuite().mock_request()
-        print [x.db_time for x in  RootView()._order_by_time_spent_in_db()]
