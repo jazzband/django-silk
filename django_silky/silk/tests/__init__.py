@@ -6,4 +6,6 @@ from silk.tests.test_silky_middleware import *
 from silk.tests.test_silky_profiler import *
 from silk.tests.test_view_profiling import *
 from silk.tests.test_view_requests import *
+from silk.tests.test_end_points import *
+
 

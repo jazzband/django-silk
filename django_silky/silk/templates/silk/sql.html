@@ -52,7 +52,6 @@
         }
 
         th {
-            background-color: #e0f4f4;
             height: 40px;
             padding-left: 20px;
             padding-right: 20px;
@@ -61,6 +60,10 @@
         #table-div {
             width: 100%;
             margin-top: 40px;
+        }
+
+        #table-pagination div{
+            padding: 5px;
         }
     </style>
 {% endblock %}
@@ -109,10 +112,11 @@
             {% endfor %}
 
         </table>
+
         <div id="table-pagination" class="pagination">
-            <span class="current">
+            <div class="current">
                 Page {{ items.number }} of {{ items.paginator.num_pages }}.
-            </span>
+            </div>
 
             <div class="step-links">
                 {% if items.has_previous %}
