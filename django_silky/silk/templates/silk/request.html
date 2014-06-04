@@ -57,6 +57,30 @@
             color: #594F4F;
         }
 
+        .headers {
+            font-size: 12px;
+            font-family: Fantasque;
+            background-color: white;
+            width: 100%;
+        }
+
+        .headers tr:hover {
+            background-color: #f4f4f4;
+        }
+
+        .headers td {
+            padding-bottom:5px;
+            padding-left:5px;
+        }
+
+        .headers .key {
+            font-weight: bold;
+        }
+
+        .headers .value {
+
+        }
+
 
     </style>
 {% endblock %}
@@ -82,10 +106,15 @@
                 {% heading 'Query Parameters' %}
                 <pre><code>{{ query_params }}</code></pre>
             {% endif %}
-            {% if silk_request.content_type %}
-                {% heading 'Request Content Type' %}
-                <pre>{{ silk_request.content_type }}</pre>
-            {% endif %}
+            {% heading 'Request Headers' %}
+            <table class="headers">
+                {% for k,v in silk_request.headers.items %}
+                    <tr>
+                        <td class="key">{{ k.upper }}</td>
+                        <td class="value">{{ v }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
             {% if silk_request.raw_body %}
                 {% heading 'Raw Request Body' %}
                 {% if silk_request.raw_body|length > 1000 %}
@@ -109,10 +138,15 @@
                     <pre><code>{{ silk_request.body }}</code></pre>
                 {% endif %}
             {% endif %}
-            {% if silk_request.response.content_type %}
-                {% heading 'Response Content Type' %}
-                <pre>{{ silk_request.response.content_type }}</pre>
-            {% endif %}
+            {% heading 'Response Headers' %}
+            <table class="headers">
+                {% for k, v in silk_request.response.headers.items %}
+                    <tr>
+                        <td class="key">{{ k.upper }}</td>
+                        <td class="value">{{ v }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
             {% if silk_request.response.raw_body %}
                 {% heading 'Raw Response Body' %}
                 {% if silk_request.response.raw_body|length > 1000 %}

@@ -14,16 +14,20 @@
 
         pre {
             font-family: Fantasque;
-            background-color: #e0f4f4 !important;
+            background-color: white !important;
             padding: 0.5em !important;
             margin: 0 !important;
+            border-radius: 5px;
+            font-size: 14px;
         }
 
         code {
             font-family: Fantasque;
-            background-color: #e0f4f4 !important;
+            background-color: white !important;
             padding: 0 !important;
             margin: 0 !important;
+            font-size: 14px;
+
         }
 
         html {
@@ -55,6 +59,12 @@
             padding-right: 10px;
             margin: 0;
             margin-right: -4px;
+            color: white;
+
+        }
+
+        .menu-item a {
+            color: white !important;
         }
 
         #filter .menu-item {
@@ -63,8 +73,12 @@
 
         .selectable-menu-item:hover {
             background-color: #f4f4f4;
-            color: black !important;
             cursor: pointer;
+            color: black !important;
+        }
+
+        .selectable-menu-item:hover a {
+            color: black !important;
         }
 
         .menu-item-selected {
@@ -72,11 +86,14 @@
             color: black !important;
         }
 
+        .menu-item-selected a {
+            color: black !important;
+        }
+
         .menu-item-outer {
             display: table !important;
             height: 100%;
             width: 100%;
-            color: white;
         }
 
         .menu-item-inner {

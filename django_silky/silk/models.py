@@ -1,4 +1,5 @@
 from collections import Counter
+import json
 
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
@@ -19,6 +20,25 @@ def time_taken(self):
     return _time_taken(self.start_time, self.end_time)
 
 
+class CaseInsensitiveDictionary(dict):
+    def __getitem__(self, key):
+        return super(CaseInsensitiveDictionary, self).__getitem__(key.lower())
+
+    def __setitem__(self, key, value):
+        super(CaseInsensitiveDictionary, self).__setitem__(key.lower(), value)
+
+    def update(self, other=None, **kwargs):
+        for k, v in other.items():
+            self[k] = v
+        for k, v in kwargs.items():
+            self[k] = v
+
+    def __init__(self, d):
+        super(CaseInsensitiveDictionary, self).__init__()
+        for k, v in d.items():
+            self[k] = v
+
+
 class Request(models.Model):
     path = CharField(max_length=300, db_index=True)
     query_params = TextField(blank=True, default='')
@@ -28,13 +48,12 @@ class Request(models.Model):
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    content_type = CharField(max_length=50, default='', blank=True)
+    encoded_headers = TextField(blank=True, default='')
 
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
     num_sql_queries = IntegerField(default=0)
-
 
     @property
     def time_spent_on_sql_queries(self):
@@ -45,6 +64,15 @@ class Request(models.Model):
         # within aggregates for four years here: https://code.djangoproject.com/ticket/14030
         # It looks like this will go in soon at which point this should be changed.
         return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+
+    @property
+    def headers(self):
+        raw = json.loads(self.encoded_headers)
+        return CaseInsensitiveDictionary(raw)
+
+    @property
+    def content_type(self):
+        return self.headers['content-type']
 
     def save(self, *args, **kwargs):
         if self.end_time and self.start_time:
@@ -58,7 +86,16 @@ class Response(models.Model):
     status_code = IntegerField()
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
-    content_type = CharField(max_length=50, default='', blank=True)
+    encoded_headers = TextField(blank=True, default='')
+
+    @property
+    def content_type(self):
+        return self.headers['content-type']
+
+    @property
+    def headers(self):
+        raw = json.loads(self.encoded_headers)
+        return CaseInsensitiveDictionary(raw)
 
 
 class SQLQueryManager(models.Manager):

@@ -45,6 +45,24 @@ class RequestModelFactory(object):
             content_type = content_type.split(';')[0]
         return content_type
 
+    def encoded_headers(self):
+        """
+        From Django docs (https://docs.djangoproject.com/en/1.6/ref/request-response/#httprequest-objects):
+
+        "With the exception of CONTENT_LENGTH and CONTENT_TYPE, as given above, any HTTP headers in the request are converted to
+        META keys by converting all characters to uppercase, replacing any hyphens with underscores and adding an HTTP_ prefix
+        to the name. So, for example, a header called X-Bender would be mapped to the META key HTTP_X_BENDER."
+        """
+        headers = {}
+        for k, v in self.request.META.items():
+            if k.startswith('HTTP') or k in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
+                splt = k.split('_')
+                if splt[0] == 'HTTP':
+                    splt = splt[1:]
+                k = '-'.join(splt)
+                headers[k] = v
+        return json.dumps(headers)
+
     def body(self):
         content_type = self.content_type()
         body = ''
@@ -56,7 +74,7 @@ class RequestModelFactory(object):
         elif content_type in content_types_json:
             # TODO: Perhaps theres a way to format the JSON without parsing it?
             body = json.dumps(json.loads(self.request.body), sort_keys=True, indent=4)
-        return body, content_type
+        return body
 
     def query_params(self):
         query_params = self.request.GET
@@ -67,11 +85,11 @@ class RequestModelFactory(object):
         return encoded_query_params
 
     def construct_request_model(self):
-        body, content_type = self.body()
+        body = self.body()
         query_params = self.query_params()
         request_model = models.Request.objects.create(raw_body=self.request.body,
-                                                      content_type=content_type,
                                                       path=self.request.path,
+                                                      encoded_headers=self.encoded_headers(),
                                                       method=self.request.method,
                                                       query_params=query_params,
                                                       body=body)
@@ -137,9 +155,18 @@ class SilkyMiddleware(object):
                         body = json.dumps(json.loads(content), sort_keys=True, indent=4)
                     except (TypeError, ValueError):
                         Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (silk_request.pk, content_type))
+                raw_headers = response._headers
+                headers = {}
+                for k, v in raw_headers.items():
+                    try:
+                        header, val = v
+                    except ValueError:
+                        header, val = k, v
+                    finally:
+                        headers[header] = val
                 models.Response.objects.create(request=silk_request,
                                                status_code=response.status_code,
-                                               content_type=content_type,
+                                               encoded_headers=json.dumps(headers),
                                                raw_body=response.content,
                                                body=body)
                 silk_request.end_time = timezone.now()

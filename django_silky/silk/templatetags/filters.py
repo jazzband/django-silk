@@ -40,6 +40,14 @@ def _urlify(str):
     return str
 
 
+@register.filter
+def hash(h, key):
+    return h[key]
+
+@register.filter
+def sorted(l):
+    return sorted(l)
+
 @stringfilter
 def filepath_urlify(value, autoescape=None):
     value = _urlify(value)
