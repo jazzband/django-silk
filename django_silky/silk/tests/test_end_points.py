@@ -39,7 +39,7 @@ class TestEndPoints(TestCase):
 
     def test_request_sql_detail(self):
         fields = {
-            'sql_id': 'id',
+            'sql_id': 'silk_sqlquery.id',
             'request_id': 'request_id'
         }
         kwargs = random.choice(models.SQLQuery.objects.extra(select=fields).values(*fields.keys()).filter(request_id__isnull=False))
@@ -62,7 +62,7 @@ class TestEndPoints(TestCase):
 
     def test_request_profile_detail(self):
         fields = {
-            'profile_id': 'id',
+            'profile_id': 'silk_profile.id',
             'request_id': 'request_id'
         }
         kwargs = random.choice(models.Profile.objects.extra(select=fields).values(*fields.keys()).filter(request_id__isnull=False))
