@@ -4,6 +4,7 @@ from mock import Mock, NonCallableMock, NonCallableMagicMock, patch
 from silk.collector import DataCollector
 from silk.models import SQLQuery, Request
 from silk.sql import execute_sql
+from silk.tests.util import delete_all_models
 
 
 def mock_sql():
@@ -16,11 +17,13 @@ def mock_sql():
     return mock_sql_query, query_string
 
 
+
+
 class TestCall(TestCase):
     @classmethod
     def setUpClass(cls):
         DataCollector().configure(request=None)
-        SQLQuery.objects.all().delete()
+        delete_all_models(SQLQuery)
         cls.mock_sql, cls.query_string = mock_sql()
         kwargs = {
             'one': 1,
