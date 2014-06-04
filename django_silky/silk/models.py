@@ -67,7 +67,10 @@ class Request(models.Model):
 
     @property
     def headers(self):
-        raw = json.loads(self.encoded_headers)
+        if self.encoded_headers:
+            raw = json.loads(self.encoded_headers)
+        else:
+            raw = {}
         return CaseInsensitiveDictionary(raw)
 
     @property
@@ -94,8 +97,12 @@ class Response(models.Model):
 
     @property
     def headers(self):
-        raw = json.loads(self.encoded_headers)
+        if self.encoded_headers:
+            raw = json.loads(self.encoded_headers)
+        else:
+            raw = {}
         return CaseInsensitiveDictionary(raw)
+
 
 
 class SQLQueryManager(models.Manager):

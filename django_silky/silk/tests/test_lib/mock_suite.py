@@ -1,4 +1,5 @@
 from datetime import timedelta
+import json
 import random
 import traceback
 
@@ -142,13 +143,13 @@ class MockSuite(object):
                                                 num_sql_queries=num_sql_queries,
                                                 start_time=start_time,
                                                 end_time=end_time,
-                                                content_type=request_content_type,
+                                                encoded_headers=json.dumps({'content-type': request_content_type}),
                                                 body=request_body)
         response_content_type = random.choice(self.response_content_types)
         response_body = random.choice(self.response_content[response_content_type])
         models.Response.objects.create(request=request,
                                        status_code=random.choice(self.status_codes),
-                                       content_type=response_content_type,
+                                       content_type=json.dumps({'content-type': response_content_type}),
                                        body=response_body)
         self.mock_sql_queries(request=request, n=num_sql_queries)
         self.mock_profiles(request, random.randint(0, 2))
