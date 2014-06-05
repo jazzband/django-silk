@@ -1,14 +1,16 @@
-silky
-=====
+[![Build Status](https://travis-ci.org/mtford90/silk.svg?branch=master)](https://travis-ci.org/mtford90/silk)
 
-[![Build Status](https://travis-ci.org/mtford90/silky.svg?branch=master)](https://travis-ci.org/mtford90/silky)
+Silk is a live profiling and inspection tool for the Django framework. It primarily consists of:
 
-A silky smooth profiling and inspection tool for the Django framework. Tested with:
+* Middleware for intercepting Requests/Responses
+* A wrapper around SQL execution for profiling of database queries
+* A context manager/decorator for profiling blocks of code and functions either manually or dynamically. 
+* A user interface for inspection and visualisation of the above.
 
-* Django: 1.5, 1.6
-* Python: 2.7, 3.3, 3.4
+## Contents
 
-* [Features](#features)
+* [Requirements](#requirements)
+* [Features](#features) 
 * [Request Inspection](#request-inspection)
     * [SQL Inspection](#sql-inspection)
     * [Profiling](#profiling)
@@ -21,7 +23,16 @@ A silky smooth profiling and inspection tool for the Django framework. Tested wi
     * [Master](#master)
 * [Roadmap](#roadmap)
 
-<a name='Features'/>
+## Requirements
+
+Silk has been tested with:
+
+* Django: 1.5, 1.6
+* Python: 2.7, 3.3, 3.4
+
+I left out Django <1.5 due to the change in `{% url %}` syntax. Python 2.6 is missing `collections.Counter`. Python 3.0 and 3.1 are not available via
+Travis and also are missing the `u'xyz'` syntax for unicode. Workarounds can likely be found for all these if there is any demand. Django 1.7 is currently untested.
+
 ## Features
 
 ### Request Inspection
@@ -36,6 +47,8 @@ the silk UI we can view:
 * Time spent on queries
 * Request/Response headers
 * Request/Response bodies
+
+and so on.
 
 ### SQL Inspection
 
@@ -60,6 +73,7 @@ profiler will record:
 * Time taken 
 * Time spent in database
 * Number of queries
+* The SQL queries themselves + stack trace
 
 These properties can then be viewed from the Silk interface. Like with requests, we can also inspect
 the SQL queries themselves as well as view the stack trace.
@@ -219,7 +233,7 @@ response = c.post(path='/admin/',
 
 ### Existing Release
 
-Release of Silk are [here](https://github.com/mtford90/silk/releases)
+Releases of Silk are available on [github](https://github.com/mtford90/silk/releases).
 
 Once downloaded, run:
 
@@ -244,7 +258,7 @@ INSTALLED_APPS = (
 and to your `urls.py`:
 
 ```python
-urlpatterns += patterns'('', url(r'^silk', include('silk.urls', namespace='silk')),
+urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
 ```
 
 before running syncdb:
@@ -284,13 +298,21 @@ You can then follow the steps in 'Existing Release' to include Silk in your Djan
 
 I would eventually like to use this in a production environment. There are a number of things preventing that right now:
 
-* Questionable stability.
-    * Occasional request failures caused by Silk. (TODO: Issues)
 * Effect on performance.
-    * For every SQL query executed, Silk executes another query
+    * For every SQL query executed, Silk executes another.
+* Questionable stability.
 * Space concerns.
     * Silk would quickly generate a huge number of database records.
     * Silk saves down both the request body and response body for each and every request handled by Django.
 * Security risks involved in making the Silk UI available.
     * e.g. POST of password forms
     * exposure of session cookies
+
+## Screenshots
+
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/1.png)
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/2.png)
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/3.png)
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/4.png)
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/5.png)
+![profile](https://raw.githubusercontent.com/mtford90/silky/master/screenshots/6.png)
