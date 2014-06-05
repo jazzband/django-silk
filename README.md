@@ -8,7 +8,18 @@ A silky smooth profiling and inspection tool for the Django framework. Tested wi
 * Django: 1.5, 1.6
 * Python: 2.7, 3.3, 3.4
 
-* [Roadmap](#Roadmap)
+* [Features](#features)
+* [Request Inspection](#request-inspection)
+    * [SQL Inspection](#sql-inspection)
+    * [Profiling](#profiling)
+        * [Decorator](#decorator)
+        * [Context Manager](#context-manager)
+        * [Dynamic Profiling](#dynamic-profiling)
+    * [Code Generation](#code-generation)
+* [Installation](#installation)
+    * [Existing Release](#existing-release)
+    * [Master](#master)
+* [Roadmap](#roadmap)
 
 <a name='Features'/>
 ## Features
