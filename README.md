@@ -7,6 +7,9 @@ Silk is a live profiling and inspection tool for the Django framework. It primar
 * A context manager/decorator for profiling blocks of code and functions either manually or dynamically. 
 * A user interface for inspection and visualisation of the above.
 
+Documentation is below and a live demo is available at http://mtford.co.uk/silk/, where the tool
+is actively profiling my website and blog.
+
 ## Contents
 
 * [Requirements](#requirements)
