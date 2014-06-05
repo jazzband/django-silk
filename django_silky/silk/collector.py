@@ -85,9 +85,11 @@ class DataCollector(with_metaclass(Singleton, object)):
             query_model = models.SQLQuery.objects.create(**query)
             query['pk'] = query_model.pk
         for profile in self.profiles:
-            del(profile['temp_id'])
-            pks = [x['pk'] for x in profile['queries']]
-            del(profile['queries'])
+            if 'temp_id' in profile:
+                del profile['temp_id']
+            if 'queries' in profile:
+                pks = [x['pk'] for x in profile['queries']]
+                del profile['queries']
             profile = models.Profile.objects.create(**profile)
             queries = SQLQuery.objects.filter(pk__in=pks)
             profile.queries = queries
