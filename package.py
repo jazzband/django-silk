@@ -33,6 +33,8 @@ def main():
         if os.path.exists(silk_dir):
             shutil.rmtree(silk_dir)
         shutil.copytree(SCRIPT_DIR + '/django_silky/silk/', silk_dir)
+        template_dir = silk_dir + 'templates/silk/'
+        shutil.copytree(template_dir, template_dir + 'templates/silk')
         cmd = 'cd %s && python setup.py sdist' % dist_dir
         print(cmd)
         subprocess.call(cmd, shell=True)
