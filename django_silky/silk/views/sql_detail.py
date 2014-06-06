@@ -75,4 +75,4 @@ class SQLDetailView(View):
             actual_line, code = _code(file_path, line_num)
             context['code'] = code
             context['actual_line'] = actual_line
-        return render_to_response('silk/templates/silk/sql_detail.html', context)
+        return render_to_response('silk/sql_detail.html', context)

@@ -62,4 +62,4 @@ class RootView(View):
         return context
 
     def get(self, request):
-        return render_to_response('silk/templates/silk/requests.html', self._create_context(request))
+        return render_to_response('silk/requests.html', self._create_context(request))

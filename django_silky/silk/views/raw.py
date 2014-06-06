@@ -16,7 +16,7 @@ class Raw(View):
                 body = silk_request.raw_body if subtyp == 'raw' else silk_request.body
             elif typ == 'response':
                 body = silk_request.response.raw_body if subtyp == 'raw' else silk_request.response.body
-            return render_to_response('silk/templates/silk/raw.html', {
+            return render_to_response('silk/raw.html', {
                 'body': body
             })
         else:

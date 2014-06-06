@@ -31,4 +31,4 @@ class ProfilingDetailView(View):
                 else:
                     raise e
 
-        return render_to_response('silk/templates/silk/profile_detail.html', context)
+        return render_to_response('silk/profile_detail.html', context)

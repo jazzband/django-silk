@@ -28,4 +28,4 @@ class SQLView(View):
             raise KeyError('no profile_id or request_id')
         # noinspection PyUnboundLocalVariable
         context['items'] = page
-        return render_to_response('silk/templates/silk/sql.html', context)
+        return render_to_response('silk/sql.html', context)

@@ -103,4 +103,4 @@ class ProfilingView(View):
         return context
 
     def get(self, request, *args, **kwargs):
-        return render_to_response('silk/templates/silk/profiling.html', self._create_context(request, *args, **kwargs))
+        return render_to_response('silk/profiling.html', self._create_context(request, *args, **kwargs))
