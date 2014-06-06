@@ -90,6 +90,8 @@ class DataCollector(with_metaclass(Singleton, object)):
             if 'queries' in profile:
                 pks = [x['pk'] for x in profile['queries']]
                 del profile['queries']
+            else:
+                pks = []
             profile = models.Profile.objects.create(**profile)
             queries = SQLQuery.objects.filter(pk__in=pks)
             profile.queries = queries
