@@ -75,7 +75,7 @@ class Request(models.Model):
 
     @property
     def content_type(self):
-        return self.headers['content-type']
+        return self.headers.get('content-type', None)
 
     def save(self, *args, **kwargs):
         if self.end_time and self.start_time:
@@ -93,7 +93,7 @@ class Response(models.Model):
 
     @property
     def content_type(self):
-        return self.headers['content-type']
+        return self.headers.get('content-type', None)
 
     @property
     def headers(self):

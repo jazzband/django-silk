@@ -4,6 +4,7 @@ import logging
 from django.core.urlresolvers import reverse
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
+from django.utils.encoding import DjangoUnicodeDecodeError
 
 from silk import models
 from silk.collector import DataCollector
@@ -87,12 +88,17 @@ class RequestModelFactory(object):
     def construct_request_model(self):
         body = self.body()
         query_params = self.query_params()
-        request_model = models.Request.objects.create(raw_body=self.request.body,
-                                                      path=self.request.path,
-                                                      encoded_headers=self.encoded_headers(),
-                                                      method=self.request.method,
-                                                      query_params=query_params,
-                                                      body=body)
+        request_body = self.request.body
+        request_model = models.Request.objects.create(
+            path=self.request.path,
+            encoded_headers=self.encoded_headers(),
+            method=self.request.method,
+            query_params=query_params,
+            body=body)
+        try:
+            request_model.raw_body = request_body
+        except DjangoUnicodeDecodeError:
+            Logger.debug('NYI: Binary request bodies')  # TODO
         Logger.debug('Created new request model with pk %s' % request_model.pk)
         return request_model
 
@@ -139,7 +145,7 @@ class SilkyMiddleware(object):
     def process_response(self, request, response):
         if _should_intercept(request):
             collector = DataCollector()
-            content_type = response['Content-Type'].split(';')[0]
+            content_type = response.get('Content-Type', '').split(';')[0]
             silk_request = collector.request
             if silk_request:
                 Logger.debug('Creating response model for request model with pk %s' % silk_request.pk)
@@ -148,9 +154,9 @@ class SilkyMiddleware(object):
                     # TODO: Perhaps theres a way to format the JSON without parsing it?
                     try:
                         content = response.content
-                        try:  #py3
+                        try:  # py3
                             content = content.decode('UTF-8')
-                        except AttributeError:  #py2
+                        except AttributeError:  # py2
                             pass
                         body = json.dumps(json.loads(content), sort_keys=True, indent=4)
                     except (TypeError, ValueError):
@@ -164,11 +170,16 @@ class SilkyMiddleware(object):
                         header, val = k, v
                     finally:
                         headers[header] = val
-                models.Response.objects.create(request=silk_request,
-                                               status_code=response.status_code,
-                                               encoded_headers=json.dumps(headers),
-                                               raw_body=response.content,
-                                               body=body)
+                content = response.content
+                silky_response = models.Response.objects.create(request=silk_request,
+                                                                status_code=response.status_code,
+                                                                encoded_headers=json.dumps(headers),
+                                                                body=body)
+                try:
+                    silky_response.raw_body = content
+                    silky_response.save()
+                except DjangoUnicodeDecodeError:
+                    Logger.debug('NYI: Saving of binary response body')  # TODO
                 silk_request.end_time = timezone.now()
                 silk_request.save()
                 collector.finalise()
