@@ -9,7 +9,8 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
     defaults = {
         'SILKY_DYNAMIC_PROFILING': [],
         'SILKY_IGNORE_PATHS': [],
-        'SILKY_HIDE_COOKIES': True
+        'SILKY_HIDE_COOKIES': True,
+        'SILKY_IGNORE_QUERIES': []
     }
 
     def _setup(self):

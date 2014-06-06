@@ -28,9 +28,10 @@ content_type_css = ['text/css']
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-    path = reverse('silk:requests')
+    fpath = reverse('silk:requests')
+    path = '/'.join(fpath.split('/')[0:-1])
     silky = request.path.startswith(path)
-    ignored = path in SilkyConfig().SILKY_IGNORE_PATHS
+    ignored = request.path in SilkyConfig().SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
 
@@ -136,13 +137,14 @@ class SilkyMiddleware(object):
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
     def process_request(self, request):
+        request_model = None
         if _should_intercept(request):
             self._apply_dynamic_mappings()
             if not hasattr(SQLCompiler, '_execute_sql'):
                 SQLCompiler._execute_sql = SQLCompiler.execute_sql
                 SQLCompiler.execute_sql = execute_sql
             request_model = RequestModelFactory(request).construct_request_model()
-            DataCollector().configure(request_model)
+        DataCollector().configure(request_model)
 
     def process_response(self, request, response):
         if _should_intercept(request):

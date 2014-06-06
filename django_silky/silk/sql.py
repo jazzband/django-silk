@@ -3,9 +3,6 @@ import traceback
 
 from django.db.models.sql import EmptyResultSet
 from django.utils import timezone
-from pygments import highlight
-from pygments.lexers.sql import SqlLexer
-from pygments.formatters.terminal import TerminalFormatter
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
@@ -14,10 +11,16 @@ from silk.config import SilkyConfig
 Logger = logging.getLogger('silk')
 
 
+def _should_wrap(sql_query):
+    for ignore_str in SilkyConfig().SILKY_IGNORE_QUERIES:
+        if ignore_str in sql_query:
+            return False
+    return True
+
 
 def execute_sql(self, *args, **kwargs):
     """wrapper around real execute_sql in order to extract information"""
-    if self.query.model.__module__ != 'silk.models':  # Otherwise infinite recursion when write to DB
+    if self.query.model.__module__ != 'silk.models':
         try:
             q, params = self.as_sql()
             if not q:
@@ -28,19 +31,19 @@ def execute_sql(self, *args, **kwargs):
             else:
                 return
         tb = ''.join(reversed(traceback.format_stack()))
-        query = q % params
-        query_dict = {
-            'query': query,
-            'start_time': timezone.now(),
-            'traceback': tb
-        }
-        try:
-            return self._execute_sql(*args, **kwargs)
-        finally:
-            query_dict['end_time'] = timezone.now()
-            request = DataCollector().request
-            if request:
-                query_dict['request'] = request
-            DataCollector().register_query(query_dict)
-    else:
-        return self._execute_sql(*args, **kwargs)
+        sql_query = q % params
+        if _should_wrap(sql_query):
+            query_dict = {
+                'query': sql_query,
+                'start_time': timezone.now(),
+                'traceback': tb
+            }
+            try:
+                return self._execute_sql(*args, **kwargs)
+            finally:
+                query_dict['end_time'] = timezone.now()
+                request = DataCollector().request
+                if request:
+                    query_dict['request'] = request
+                DataCollector().register_query(query_dict)
+    return self._execute_sql(*args, **kwargs)
