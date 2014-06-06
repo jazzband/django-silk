@@ -5,42 +5,11 @@
 
 {% block js %}
     {{ block.super }}
-    <script>
-        $(document).ready(function () {
-            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
-            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
-            configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
-        });
-    </script>
 {% endblock %}
 
 {% block style %}
     {{ block.super }}
-    <style>
-        #error-div {
-            margin: 10px;
-        }
-
-        #query-div {
-            margin: auto;
-            width: 960px;
-        }
-
-        #code {
-            text-align: left;
-        }
-
-        .name-div {
-            margin-top: 20px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .description {
-            text-align: left;
-        }
-    </style>
-
+    <link rel="stylesheet" href="/static/silk/css/summary.css">
 {% endblock %}
 
 {% block menu %}

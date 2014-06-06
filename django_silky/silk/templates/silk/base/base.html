@@ -7,14 +7,14 @@
     <style>
         body {
             font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
-            background-color: white;
+            background-color: #f3f3f3;
             margin: 0;
             font-weight: lighter;
         }
 
         pre {
             font-family: Fantasque;
-            background-color: #f4f4f4 !important;
+            background-color: white !important;
             padding: 0.5em !important;
             margin: 0 !important;
             font-size: 14px;
@@ -22,7 +22,7 @@
 
         code {
             font-family: Fantasque;
-            background-color: #f4f4f4 !important;
+            background-color: white !important;
             padding: 0 !important;
             margin: 0 !important;
             font-size: 14px;
@@ -35,10 +35,11 @@
 
         #header {
             height: 50px;
-            background-color: #7AA7D6;
+            background-color: rgb(51, 51, 68);
             display: table;
             width: 100%;
             position: relative;
+
         }
 
         #header div {
@@ -71,7 +72,7 @@
         }
 
         .selectable-menu-item:hover {
-            background-color: white;
+            background-color: #f3f3f3;
             cursor: pointer;
             color: black !important;
         }
@@ -81,7 +82,7 @@
         }
 
         .menu-item-selected {
-            background-color: white;
+            background-color: #f3f3f3;
             color: black !important;
         }
 
@@ -125,6 +126,14 @@
     {% block style %}
     {% endblock %}
     <script src="/static/silk/lib/jquery.min.js"></script>
+    <script src="/static/silk/js/cell.js"></script>
+    <script>
+        $(document).ready(function () {
+            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
+            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+            configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
+        });
+    </script>
     {% block js %}
     {% endblock %}
 

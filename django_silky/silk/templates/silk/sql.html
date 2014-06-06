@@ -5,9 +5,6 @@
 {% load inclusion %}
 
 {% block style %}
-    <link rel="stylesheet" href="/static/silk/highlight/sql.css"/>
-    <link rel="stylesheet" href="/static/silk/cell.css"/>
-    <link rel="stylesheet" href="/static/silk/highlight/foundation.css"/>
     <style>
         .right-aligned {
             text-align: right;
@@ -23,11 +20,11 @@
             text-align: left;
         }
 
-
         #table-pagination {
             text-align: center;
             margin: 20px;
         }
+
         table {
             border-spacing: 0;
             margin: auto;
@@ -38,9 +35,9 @@
             height: 20px;
         }
 
-
         tr.data-row:hover {
-            background-color:#f3f3f3;
+            background-color: rgb(51, 51, 68);
+            color: white;
             cursor: pointer;
         }
 
@@ -61,17 +58,15 @@
             margin-top: 40px;
         }
 
-        #table-pagination div{
+        #table-pagination div {
             padding: 5px;
         }
     </style>
+    <link rel="stylesheet" href="/static/silk/css/colors.css">
+    <link rel="stylesheet" href="/static/silk/css/numeric.css">
+    <link rel="stylesheet" href="/static/silk/css/summary.css">
+    <link rel="stylesheet" href="/static/silk/css/cell.css">
 {% endblock %}
-
-{% block js %}
-    <script src="/static/silk/highlight/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-{% endblock %}
-
 
 {% block menu %}
     {% if profile %}
@@ -84,17 +79,33 @@
 
 {% block data %}
     {{ block.super }}
-    <div id="table-div">
-        <table>
-            <tr>
-                <th class="left-aligned">Time</th>
-                <th class="left-aligned">Tables</th>
-                <th class="right-aligned">Num. Joins</th>
-                <th class="right-aligned">Execution Time</th>
-            </tr>
-            {% for sql_query in items %}
-                <!-- TODO: Pretty grimy... -->
-                <tr class="data-row" onclick="window.location=' \
+    <div class="wrapper">
+        {% if profile or silk_request %}
+            <div id="query-div">
+            <div id="query-info-div">
+        {% endif %}
+        {% if profile %}
+            {% profile_summary profile %}
+        {% endif %}
+        {% if silk_request %}
+            {% request_summary silk_request %}
+        {% endif %}
+        {% if profile or silk_request %}
+            </div>
+            </div>
+        {% endif %}
+        <div id="table-div">
+
+            <table>
+                <tr>
+                    <th class="left-aligned">Time</th>
+                    <th class="left-aligned">Tables</th>
+                    <th class="right-aligned">Num. Joins</th>
+                    <th class="right-aligned">Execution Time</th>
+                </tr>
+                {% for sql_query in items %}
+                    <!-- TODO: Pretty grimy... -->
+                    <tr class="data-row" onclick="window.location=' \
                        {% if profile and silk_request %}\
                            {% url "silk:request_and_profile_sql_detail" silk_request.id profile.id sql_query.id %}\
                        {% elif profile %}\
@@ -103,35 +114,37 @@
                            {% url "silk:request_sql_detail" silk_request.id sql_query.id %}\
                        {% endif %}\
                         ';">
-                    <td class="left-aligned">{{ sql_query.start_time }}</td>
-                    <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
-                    <td class="right-aligned">{{ sql_query.num_joins }}</td>
-                    <td class="right-aligned">{{ sql_query.time_taken }}</td>
-                </tr>
-            {% endfor %}
+                        <td class="left-aligned">{{ sql_query.start_time }}</td>
+                        <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
+                        <td class="right-aligned">{{ sql_query.num_joins }}</td>
+                        <td class="right-aligned">{{ sql_query.time_taken }}</td>
+                    </tr>
+                {% endfor %}
 
-        </table>
+            </table>
 
-        <div id="table-pagination" class="pagination">
-            <div class="current">
-                Page {{ items.number }} of {{ items.paginator.num_pages }}.
-            </div>
+            <div id="table-pagination" class="pagination">
+                <div class="current">
+                    Page {{ items.number }} of {{ items.paginator.num_pages }}.
+                </div>
 
-            <div class="step-links">
-                {% if items.has_previous %}
-                    <a href="?page={{ items.previous_page_number }}">previous</a>
-                {% else %}
-                    previous
-                {% endif %}
-                |
-                {% if items.has_next %}
-                    <a href="?page={{ items.next_page_number }}">next</a>
-                {% else %}
-                    next
-                {% endif %}
+                <div class="step-links">
+                    {% if items.has_previous %}
+                        <a href="?page={{ items.previous_page_number }}">previous</a>
+                    {% else %}
+                        previous
+                    {% endif %}
+                    |
+                    {% if items.has_next %}
+                        <a href="?page={{ items.next_page_number }}">next</a>
+                    {% else %}
+                        next
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
+
 
 
 
