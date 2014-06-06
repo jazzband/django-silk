@@ -246,6 +246,16 @@ Both are intended for use in replaying the request. The curl command can be used
 
 ### Existing Release
 
+#### Pip
+
+Silk is on PyPi. Install via pip as follows:
+
+```
+sudo pip install django-silk
+```
+
+#### Github Tag
+
 Releases of Silk are available on [github](https://github.com/mtford90/silk/releases).
 
 Once downloaded, run:
