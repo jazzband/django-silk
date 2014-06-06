@@ -67,7 +67,7 @@ class RequestModelFactory(object):
         if SilkyConfig().SILKY_HIDE_COOKIES:
             try:
                 del headers['COOKIE']
-            except AttributeError:
+            except KeyError:
                 pass
         return json.dumps(headers)
 
