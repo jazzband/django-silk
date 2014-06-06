@@ -3,7 +3,7 @@ from time import sleep
 from django.test import TestCase
 from silk.collector import DataCollector
 
-from silk.models import Profile, Request, _time_taken
+from silk.models import Request, _time_taken
 from silk.profiling.profiler import silk_profile
 from silk.tests.test_lib.mock_suite import MockSuite
 
@@ -13,8 +13,7 @@ class TestProfilerRequests(TestCase):
         DataCollector().configure()
         with silk_profile(name='test_profile'):
             sleep(0.1)
-        profile = list(DataCollector().profiles)[0]
-        self.assertFalse(profile['request'])
+        self.assertFalse(DataCollector().profiles)
 
     def test_decorator_no_request(self):
         DataCollector().configure()
@@ -49,7 +48,8 @@ class TestProfilerRequests(TestCase):
 class TestProfilertContextManager(TestCase):
     @classmethod
     def setUpClass(cls):
-        DataCollector().configure()
+        r = Request.objects.create()
+        DataCollector().configure(r)
         with silk_profile(name='test_profile'):
             sleep(0.1)
 
@@ -70,7 +70,7 @@ class TestProfilertContextManager(TestCase):
 class TestProfilerDecorator(TestCase):
     @classmethod
     def setUpClass(cls):
-        DataCollector().configure()
+        DataCollector().configure(Request.objects.create())
 
         @silk_profile()
         def func():
@@ -94,7 +94,7 @@ class TestProfilerDecorator(TestCase):
 
 class TestQueries(TestCase):
     def test_no_queries_before(self):
-        DataCollector().configure()
+        DataCollector().configure(Request.objects.create())
         with silk_profile(name='test_no_queries_before_profile'):
             mock_queries = MockSuite().mock_sql_queries(n=5, as_dict=True)
             DataCollector().register_query(*mock_queries)
@@ -107,7 +107,7 @@ class TestQueries(TestCase):
 
     def test_queries_before(self):
         """test that any queries registered before profiling begins are ignored"""
-        DataCollector().configure()
+        DataCollector().configure(Request.objects.create())
         DataCollector().register_query(*MockSuite().mock_sql_queries(n=2, as_dict=True))
         with silk_profile(name='test_no_queries_before_profile'):
             mock_queries = MockSuite().mock_sql_queries(n=5, as_dict=True)

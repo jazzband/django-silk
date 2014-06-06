@@ -7,7 +7,9 @@ import six
 class SilkyConfig(six.with_metaclass(Singleton, object)):
 
     defaults = {
-        'SILKY_DYNAMIC_PROFILING': []
+        'SILKY_DYNAMIC_PROFILING': [],
+        'SILKY_IGNORE_PATHS': [],
+        'SILKY_HIDE_COOKIES': True
     }
 
     def _setup(self):

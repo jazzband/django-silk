@@ -29,8 +29,9 @@ content_type_css = ['text/css']
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
     path = reverse('silk:requests')
-    should_intercept = not request.path.startswith(path)
-    return should_intercept
+    silky = request.path.startswith(path)
+    ignored = path in SilkyConfig().SILKY_IGNORE_PATHS
+    return not (silky or ignored)
 
 
 class RequestModelFactory(object):
@@ -62,6 +63,11 @@ class RequestModelFactory(object):
                     splt = splt[1:]
                 k = '-'.join(splt)
                 headers[k] = v
+        if SilkyConfig().SILKY_HIDE_COOKIES:
+            try:
+                del headers['COOKIE']
+            except AttributeError:
+                pass
         return json.dumps(headers)
 
     def body(self):
@@ -101,10 +107,6 @@ class RequestModelFactory(object):
             Logger.debug('NYI: Binary request bodies')  # TODO
         Logger.debug('Created new request model with pk %s' % request_model.pk)
         return request_model
-
-
-class ResponseModelFactory(object):
-    """Produce Request models from Django request objects"""
 
 
 class SilkyMiddleware(object):

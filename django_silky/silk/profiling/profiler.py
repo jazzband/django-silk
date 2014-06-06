@@ -30,7 +30,7 @@ class silk_profile(object):
         self._queries_before = self._query_identifiers_from_collector()
 
     def __enter__(self):
-        if self._silk_installed():
+        if self._silk_installed() and self._should_profile():
             self._start_queries()
             if not self.name:
                 raise ValueError('silk_profile used as a context manager must have a name')
@@ -60,7 +60,7 @@ class silk_profile(object):
 
     # noinspection PyUnusedLocal
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self._silk_installed():
+        if self._silk_installed() and self._should_profile():
             exception_raised = exc_type is not None
             self.profile['exception_raised'] = exception_raised
             self.profile['end_time'] = timezone.now()
@@ -70,6 +70,9 @@ class silk_profile(object):
         app_installed = 'silk' in settings.INSTALLED_APPS
         middleware_installed = 'silk.middleware.SilkyMiddleware' in settings.MIDDLEWARE_CLASSES
         return app_installed and middleware_installed
+
+    def _should_profile(self):
+        return DataCollector().request is not None
 
     def __call__(self, target):
         if self._silk_installed():

@@ -9,7 +9,6 @@ from django.db import transaction
 import sqlparse
 
 
-
 # Seperated out so can use in tests w/o models
 def _time_taken(start_time, end_time):
     d = end_time - start_time
@@ -152,8 +151,7 @@ class SQLQuery(models.Model):
     @property
     def tables_involved(self):
         """A rreally ather rudimentary way to work out tables involved in a query.
-        Eventually this should likely be parsing the SQL and pulling out
-        the tables that way."""
+        TODO: Can probably parse the SQL using sqlparse etc and pull out table info that way?"""
         components = [x.strip() for x in self.query.split()]
         tables = []
         for idx, c in enumerate(components):

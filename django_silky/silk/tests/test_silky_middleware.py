@@ -39,7 +39,7 @@ class TestApplyDynamicMappings(TestCase):
         mock = Mock()
         mock.queries = []
         with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
-            foo()  # Should be wrapped in a decorator
+            foo()
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
 
     def test_invalid_dynamic_context_manager(self):
