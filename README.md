@@ -251,10 +251,10 @@ Both are intended for use in replaying the request. The curl command can be used
 
 #### Pip
 
-Silk is on PyPi. Install via pip as follows:
+Silk is on PyPi. Install via pip (into your virtualenv) as follows:
 
 ```
-sudo pip install django-silk
+pip install django-silk
 ```
 
 #### Github Tag
