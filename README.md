@@ -24,10 +24,8 @@ Documentation is below and a live demo is available at [http://mtford.co.uk/silk
     * [Dynamic Profiling](#dynamic-profiling)
     * [Code Generation](#code-generation)
 * [Installation](#installation)
-    * [Existing Release](#existing-release)
-        * [Pip](#Pip)
-        * [Github Tag](#Github Tag)
-    * [Master](#master)
+    * [Download](#download)
+    * [Configure](#configure)
 * [Roadmap](#roadmap)
 
 ## Requirements
