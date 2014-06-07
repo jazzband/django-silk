@@ -256,7 +256,7 @@ pip install django-silk
 Via [github tags](https://github.com/mtford90/silk/releases):
 
 ```bash
-pip install dist/django-silk-<version>.tar.gz
+pip install django-silk-<version>.tar.gz
 ```
 
 From master:
