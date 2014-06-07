@@ -24,10 +24,8 @@ Documentation is below and a live demo is available at [http://mtford.co.uk/silk
     * [Dynamic Profiling](#dynamic-profiling)
     * [Code Generation](#code-generation)
 * [Installation](#installation)
-    * [Existing Release](#existing-release)
-        * [Pip](#Pip)
-        * [Github Tag](#Github Tag)
-    * [Master](#master)
+    * [Download](#download)
+    * [Configure](#configure)
 * [Roadmap](#roadmap)
 
 ## Requirements
@@ -247,25 +245,27 @@ Both are intended for use in replaying the request. The curl command can be used
 
 ## Installation
 
-### Existing Release
+### Download
 
-#### Pip
+Via pip into a virtualenv:
 
-Silk is on PyPi. Install via pip (into your virtualenv) as follows:
-
-```
+```bash
 pip install django-silk
 ```
 
-#### Github Tag
-
-Releases of Silk are available on [github](https://github.com/mtford90/silk/releases).
-
-Once downloaded, run:
+Via [github tags](https://github.com/mtford90/silk/releases):
 
 ```bash
-pip install dist/django-silk-<version>.tar.gz
+pip install django-silk-<version>.tar.gz
 ```
+
+From master:
+
+```bash
+pip install -e git+https://github.com/mtford90/silk.git#egg=silk
+```
+
+### Configure
 
 Then configure Silk in `settings.py`:
 
@@ -295,30 +295,6 @@ python manage.py syncdb
 
 Silk will automatically begin interception of requests and you can proceed to add profiling
 if required. The UI can be reached at `/silk/`
-
-### Master
-
-First download the [source](https://github.com/mtford90/silky/archive/master.zip), unzip and
-navigate via the terminal to the source directory. Then run:
-
-```bash
-python package.py mas
-```
-
-You can either install via pip:
-
-```bash
-pip install dist/django-silk-mas.tar.gz
-```
-
-or run setup.py:
-
-```bash
-tar -xvf dist/django-silk-mas.tar.gz
-python dist/django-silk-mas/setup.py
-```
-
-You can then follow the steps in 'Existing Release' to include Silk in your Django project.
 
 ## Roadmap
 
