@@ -111,7 +111,3 @@ class TestEndPoints(TestCase):
     def test_profiling(self):
         response = self.client.get(reverse('silk:profiling'))
         self.assertTrue(response.status_code == 200)
-
-    def test_documentation(self):
-        response = self.client.get(reverse('silk:documentation'))
-        self.assertTrue(response.status_code == 200)

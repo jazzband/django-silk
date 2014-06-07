@@ -1,9 +1,10 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Silky</title>
-    <link rel="stylesheet" href="/static/silk/css/fonts.css"/>
-    <link rel="stylesheet" href="/static/silk/css/colors.css"/>
+    <link rel="stylesheet" href="{% static "silk/css/fonts.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/css/colors.css" %}"/>
     <style>
         body {
             font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
@@ -125,8 +126,8 @@
     </style>
     {% block style %}
     {% endblock %}
-    <script src="/static/silk/lib/jquery.min.js"></script>
-    <script src="/static/silk/js/cell.js"></script>
+    <script src="{% static 'silk/lib/jquery.min.js'  %}"></script>
+    <script src="{% static 'silk/js/cell.js' %}"></script>
     <script>
         $(document).ready(function () {
             configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);

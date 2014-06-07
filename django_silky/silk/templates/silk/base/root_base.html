@@ -1,12 +1,12 @@
 {% extends "silk/templates/silk/base/base.html" %}
 {% load nav %}
 {% load inclusion %}
-
+{% load staticfiles %}
 
 
 {% block style %}
-    <link rel="stylesheet" href="/static/silk/css/cell.css"/>
-    <link rel="stylesheet" href="/static/silk/css/numeric.css"/>
+    <link rel="stylesheet" href="{% static 'silk/css/cell.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/numeric.css' %}"/>
     <style>
         .cell:hover {
             background-color: rgb(51, 51, 68);
@@ -22,6 +22,6 @@
 {% endblock %}
 
 {% block js %}
-    <script src="/static/silk/js/cell.js"></script>
+    <script src="{% static 'silk/js/cell.js' %}"></script>
 {% endblock %}
 

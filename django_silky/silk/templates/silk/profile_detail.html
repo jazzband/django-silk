@@ -2,6 +2,7 @@
 {% load filters %}
 {% load nav %}
 {% load inclusion %}
+{% load staticfiles %}
 
 {% block js %}
     {{ block.super }}
@@ -9,7 +10,7 @@
 
 {% block style %}
     {{ block.super }}
-    <link rel="stylesheet" href="/static/silk/css/summary.css">
+    <link rel="stylesheet" href="{% static 'silk/css/summary.css' %}">
 {% endblock %}
 
 {% block menu %}

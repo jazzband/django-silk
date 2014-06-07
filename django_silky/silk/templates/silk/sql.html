@@ -2,6 +2,7 @@
 
 {% load nav %}
 {% load filters %}
+{% load staticfiles %}
 {% load inclusion %}
 
 {% block style %}
@@ -62,10 +63,10 @@
             padding: 5px;
         }
     </style>
-    <link rel="stylesheet" href="/static/silk/css/colors.css">
-    <link rel="stylesheet" href="/static/silk/css/numeric.css">
-    <link rel="stylesheet" href="/static/silk/css/summary.css">
-    <link rel="stylesheet" href="/static/silk/css/cell.css">
+    <link rel="stylesheet" href="{% static 'silk/css/colors.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/css/numeric.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/css/summary.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/css/cell.css' %}">
 {% endblock %}
 
 {% block menu %}
