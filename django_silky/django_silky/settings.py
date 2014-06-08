@@ -13,7 +13,13 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     'django.contrib.staticfiles',
-    'silk'
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'silk',
+    'example_app'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -100,5 +106,5 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'django.contrib.auth.context_processors.auth',
+    'django.contrib.auth.context_processors.auth'
 )

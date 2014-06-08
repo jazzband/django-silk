@@ -74,15 +74,15 @@ class RequestModelFactory(object):
     def body(self):
         content_type = self.content_type()
         body = ''
+        raw_body = self.request.body
         # Encode body as JSON if possible so can be used as a dictionary in generation
         # of curl/django test client code
         if content_type in content_type_form:
             body = self.request.POST
             body = json.dumps(dict(body), sort_keys=True, indent=4)
         elif content_type in content_types_json:
-            # TODO: Perhaps theres a way to format the JSON without parsing it?
-            body = json.dumps(json.loads(self.request.body), sort_keys=True, indent=4)
-        return body
+            body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4)
+        return body, raw_body  # Can't read body twice.
 
     def query_params(self):
         query_params = self.request.GET
@@ -93,9 +93,8 @@ class RequestModelFactory(object):
         return encoded_query_params
 
     def construct_request_model(self):
-        body = self.body()
+        body, raw_body = self.body()
         query_params = self.query_params()
-        request_body = self.request.body
         request_model = models.Request.objects.create(
             path=self.request.path,
             encoded_headers=self.encoded_headers(),
@@ -103,7 +102,7 @@ class RequestModelFactory(object):
             query_params=query_params,
             body=body)
         try:
-            request_model.raw_body = request_body
+            request_model.raw_body = raw_body
         except DjangoUnicodeDecodeError:
             Logger.debug('NYI: Binary request bodies')  # TODO
         Logger.debug('Created new request model with pk %s' % request_model.pk)

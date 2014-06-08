@@ -1,0 +1,19 @@
+<html>
+<head>
+
+</head>
+<body>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Child safe?</th>
+    </tr>
+    {% for blind in blinds %}
+        <tr>
+            <td>{{ blind.name }}</td>
+            <td>{% if blind.child_safe %}Yes{% else %}No{% endif %}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
