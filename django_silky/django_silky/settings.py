@@ -71,10 +71,10 @@ LOGGING = {
         }
     },
     'loggers': {
-        'silk': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
-        }
+        # 'silk': {
+        #     'handlers': ['console'],
+        #     'level': 'DEBUG'
+        # }
     },
 }
 

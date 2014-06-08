@@ -10,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='django-silk',
     version='0.1.1',
-    packages=['django_silky/silk'],
+    packages=['silk'],
     include_package_data=True,
     license='MIT License',
     description='A Django app for profiling other Django apps',
