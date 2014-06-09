@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request
 
 
 class Raw(View):
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request, request_id):
         typ = request.GET.get('typ', None)
         subtyp = request.GET.get('subtyp', None)

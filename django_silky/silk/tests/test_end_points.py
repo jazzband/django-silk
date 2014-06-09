@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count
 
 from django.test import TestCase
+from silk.config import SilkyConfig
 from silk import models
 
 from silk.tests import MockSuite
@@ -17,6 +18,9 @@ class TestEndPoints(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # We're not testing auth here.
+        SilkyConfig().SILKY_AUTHORISATION = False
+        SilkyConfig().SILKY_AUTHENTICATION = False
         mock_suite = MockSuite()
         for _ in range(0, 100):
             mock_suite.mock_request()

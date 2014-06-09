@@ -7,5 +7,6 @@ from silk.tests.test_silky_profiler import *
 from silk.tests.test_view_profiling import *
 from silk.tests.test_view_requests import *
 from silk.tests.test_end_points import *
-
-
+from silk.tests.test_config_auth import *
+from silk.tests.test_config_max_body_size import *
+from silk.tests.test_config_meta import *

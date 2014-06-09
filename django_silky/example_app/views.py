@@ -6,4 +6,4 @@ from example_app import models
 
 
 def index(request):
-    return render_to_response('index.html', {'blinds': models.Blind.objects.all()})
+    return render_to_response('example_app/index.html', {'blinds': models.Blind.objects.all()})

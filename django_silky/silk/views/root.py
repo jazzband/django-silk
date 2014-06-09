@@ -1,7 +1,9 @@
 from django.db.models import Count, Sum
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk import models
+from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import Request
 
@@ -61,5 +63,7 @@ class RootView(View):
         context['results'] = self._get_objects(show, order_by, path)
         return context
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request):
         return render_to_response('silk/requests.html', self._create_context(request))

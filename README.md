@@ -24,8 +24,10 @@ Documentation is below and a live demo is available at [http://mtford.co.uk/silk
     * [Dynamic Profiling](#dynamic-profiling)
     * [Code Generation](#code-generation)
 * [Installation](#installation)
-    * [Download](#download)
-    * [Configure](#configure)
+* [Configuration](#configuration)
+    * [Authentication/Authorisation](#authentication/authorisation)
+    * [Request/Response bodies](#request/response-bodies)
+    * [Meta-Profiling](#meta-profiling)
 * [Roadmap](#roadmap)
 
 ## Requirements
@@ -245,8 +247,6 @@ Both are intended for use in replaying the request. The curl command can be used
 
 ## Installation
 
-### Download
-
 Via pip into a virtualenv:
 
 ```bash
@@ -265,9 +265,9 @@ From master:
 pip install -e git+https://github.com/mtford90/silk.git#egg=silk
 ```
 
-### Configure
+Once silk is installed on your system/venv we then need to configure your Django project.
 
-Then configure Silk in `settings.py`:
+In `settings.py` add the following:
 
 ```python
 MIDDLEWARE_CLASSES = (
@@ -296,17 +296,50 @@ python manage.py syncdb
 Silk will automatically begin interception of requests and you can proceed to add profiling
 if required. The UI can be reached at `/silk/`
 
-## Roadmap
+## Configuration
 
-I would eventually like to use this in a production environment. There are a number of things preventing that right now:
+### Authentication/Authorisation
 
-* Effect on performance.
-    * For every SQL query executed, Silk executes another.
-* Questionable stability.
-* Space concerns.
-    * Silk would quickly generate a huge number of database records.
-    * Silk saves down both the request body and response body for each and every request handled by Django.
-* Security risks involved in making the Silk UI available.
-    * e.g. POST of password forms
-    * exposure of session cookies
+By default anybody can access the Silk user interface by heading to `/silk/`. To enable your Django 
+auth backend place the following in `settings.py`:
 
+```python
+SILKY_AUTHENTICATION = True  # User must login
+SILKY_AUTHORISATION = True  # User must have permissions
+```
+
+If `SILKY_AUTHORISATION` is `True`, by default Silk will only authorise users with `is_staff` attribute set to `True`.
+
+You can customise this using the following in `settings.py`:
+
+```python
+def my_custom_perms(user):
+    return user.is_allowed_to_use_silk
+
+SILKY_PERMISSIONS = my_custom_perms
+```
+
+### Request/Response bodies
+
+By default, Silk will save down the request and response bodies for each request for future viewing
+no matter how large. If Silk is used in production under heavy volume with large bodies this can have
+a huge impact on space/time performance. This behaviour can be configured with following options:
+
+```python
+SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
+SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
+```
+
+### Meta-Profiling
+
+Sometimes its useful to be able to see what effect Silk is having on the request/response time. To do this add
+the following to your `settings.py`:
+
+```python
+SILKY_META = True
+```
+
+Silk will then record how long it takes to save everything down to the database at the end of each 
+request:
+
+<img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/meta.png"/>

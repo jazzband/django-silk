@@ -71,10 +71,10 @@ LOGGING = {
         }
     },
     'loggers': {
-        # 'silk': {
-        #     'handlers': ['console'],
-        #     'level': 'DEBUG'
-        # }
+        'silk': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        }
     },
 }
 
@@ -108,3 +108,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth'
 )
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+
+SILKY_META = True
+SILKY_AUTHENTICATION = True
+SILKY_AUTHORISATION = True

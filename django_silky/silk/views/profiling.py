@@ -1,6 +1,8 @@
 from django.db.models import Count, Sum
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import Profile, Request
 
@@ -102,5 +104,7 @@ class ProfilingView(View):
         context['results'] = objs
         return context
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request, *args, **kwargs):
         return render_to_response('silk/profiling.html', self._create_context(request, *args, **kwargs))

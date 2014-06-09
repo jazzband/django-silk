@@ -4,13 +4,24 @@ from silk.singleton import Singleton
 import six
 
 
+def default_permissions(user):
+    if user:
+        return user.is_staff
+    return False
+
 class SilkyConfig(six.with_metaclass(Singleton, object)):
 
     defaults = {
         'SILKY_DYNAMIC_PROFILING': [],
         'SILKY_IGNORE_PATHS': [],
         'SILKY_HIDE_COOKIES': True,
-        'SILKY_IGNORE_QUERIES': []
+        'SILKY_IGNORE_QUERIES': [],
+        'SILKY_META': False,
+        'SILKY_AUTHENTICATION': False,
+        'SILKY_AUTHORISATION': False,
+        'SILKY_PERMISSIONS': default_permissions,
+        'SILKY_MAX_REQUEST_BODY_SIZE': -1,
+        'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
     }
 
     def _setup(self):
@@ -24,4 +35,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         self._setup()
 
     def __getattr__(self, item):
-        return self.attrs[item]
+        return self.attrs.get(item, None)
+
+    def __setattribute__(self, key, value):
+        self.attrs[key] = value

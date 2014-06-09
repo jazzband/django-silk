@@ -1,7 +1,9 @@
 import json
 
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.code_generation.curl import curl_cmd
 from silk.models import Request
@@ -10,6 +12,8 @@ from silk.code_generation.django_test_client import gen
 
 class RequestView(View):
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request, request_id):
         silk_request = Request.objects.get(pk=request_id)
         query_params = None

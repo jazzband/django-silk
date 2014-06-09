@@ -1,14 +1,17 @@
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request, SQLQuery, Profile
 from silk.utils.pagination import _page
-from silk.views.method_map_view import MethodMapView
 
 __author__ = 'mtford'
 
 
 class SQLView(View):
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         request_id = kwargs.get('request_id')
         profile_id = kwargs.get('profile_id')

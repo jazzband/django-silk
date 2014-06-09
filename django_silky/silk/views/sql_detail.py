@@ -1,11 +1,12 @@
 import re
 
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
+from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import SQLQuery, Request, Profile
-from silk.views.method_map_view import MethodMapView
 
 
 def _code(file_path, line_num, end_line_num=None):
@@ -50,6 +51,8 @@ class SQLDetailView(View):
             n += 1
         return str
 
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         sql_id = kwargs.get('sql_id', None)
         request_id = kwargs.get('request_id', None)
