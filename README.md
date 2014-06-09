@@ -25,8 +25,8 @@ Documentation is below and a live demo is available at [http://mtford.co.uk/silk
     * [Code Generation](#code-generation)
 * [Installation](#installation)
 * [Configuration](#configuration)
-    * [Authentication/Authorisation](#authentication/authorisation)
-    * [Request/Response bodies](#request/response-bodies)
+    * [Authentication/Authorisation](#authentication-authorisation)
+    * [Request/Response bodies](#request-response-bodies)
     * [Meta-Profiling](#meta-profiling)
 * [Roadmap](#roadmap)
 
