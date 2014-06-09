@@ -343,3 +343,5 @@ Silk will then record how long it takes to save everything down to the database 
 request:
 
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/meta.png"/>
+
+Note that in the above screenshot, this means that the request took 8ms (5ms from Django and 3ms from Silk performing database saves at the end of the request)
