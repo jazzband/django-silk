@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from silk.tests.util import delete_all_models
 from silk.config import SilkyConfig
 from silk.models import Request
 
@@ -8,7 +9,7 @@ __author__ = 'mtford'
 class TestConfigMeta(TestCase):
 
     def _execute_request(self):
-        Request.objects.all().delete()
+        delete_all_models(Request)
         response = self.client.get(reverse('example_app:index'))
         self.assertTrue(response.status_code == 200)
         objs = Request.objects.all()
