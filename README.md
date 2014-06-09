@@ -260,7 +260,7 @@ pip install django-silk-<version>.tar.gz
 ```
 
 You can install from master using the following, but please be aware that the version in master
-may not be working for all versions specified in [requirements](requirements)
+may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
 pip install -e git+https://github.com/mtford90/silk.git#egg=silk
