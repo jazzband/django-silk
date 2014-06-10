@@ -55,3 +55,6 @@ docs/_build/
 dist
 .idea
 *db.sqlite*
+
+# Vagrant
+.vagrant

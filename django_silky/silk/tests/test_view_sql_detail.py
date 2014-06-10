@@ -3,6 +3,7 @@ import random
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from silk.config import SilkyConfig
 
 from silk.views.sql_detail import SQLDetailView
 
@@ -10,6 +11,12 @@ from silk.tests import MockSuite
 
 
 class TestViewSQLDetail(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        SilkyConfig().SILKY_AUTHENTICATION = False
+        SilkyConfig().SILKY_AUTHORISATION = False
+
     def test_allowed_file_paths_nothing_specified(self):
         """by default we dont display any source, and it should return correctly"""
         request = MockSuite().mock_request()
