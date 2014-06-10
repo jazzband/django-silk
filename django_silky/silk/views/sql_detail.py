@@ -1,11 +1,12 @@
 import re
+from django.core.exceptions import PermissionDenied
 
 from django.shortcuts import render_to_response
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
-from silk.auth import login_possibly_required, permissions_possibly_required
 
+from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import SQLQuery, Request, Profile
 
 
@@ -19,7 +20,7 @@ def _code(file_path, line_num, end_line_num=None):
         for i, line in enumerate(f):
             if i in r:
                 lines += line
-            if i + 1 in range(line_num, end_line_num+1):
+            if i + 1 in range(line_num, end_line_num + 1):
                 actual_line.append(line)
     code = lines.split('\n')
     return actual_line, code
@@ -33,12 +34,14 @@ def _code_context(file_path, line_num):
 
 class SQLDetailView(View):
     def _urlify(self, str):
+        files = []
         r = re.compile("(?P<src>/.*\.py)\", line (?P<num>[0-9]+).*")
         m = r.search(str)
         n = 1
         while m:
             group = m.groupdict()
             src = group['src']
+            files.append(src)
             num = group['num']
             start = m.start('src')
             end = m.end('src')
@@ -49,7 +52,7 @@ class SQLDetailView(View):
             str = str[:start] + rep + str[end:]
             m = r.search(str)
             n += 1
-        return str
+        return str, files
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
@@ -62,7 +65,10 @@ class SQLDetailView(View):
         file_path = request.GET.get('file_path', '')
         line_num = int(request.GET.get('line_num', 0))
         tb = sql_query.traceback_ln_only
-        tb = [mark_safe(x) for x in self._urlify(tb).split('\n')]
+        str, files = self._urlify(tb)
+        if file_path and not file_path in files:
+            raise PermissionDenied
+        tb = [mark_safe(x) for x in str.split('\n')]
         context = {
             'sql_query': sql_query,
             'traceback': tb,
