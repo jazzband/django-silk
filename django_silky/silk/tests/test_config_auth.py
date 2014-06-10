@@ -15,7 +15,11 @@ class TestAuth(TestCase):
         SilkyConfig().SILKY_AUTHENTICATION = True
         response = self.client.get(reverse('silk:requests'))
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse('login'), response.url)
+        try:
+            url = response.url
+        except AttributeError:  # Django 1.5
+            url = response['location']
+        self.assertIn(reverse('login'), url)
 
 
     def test_default_authorisation(self):
