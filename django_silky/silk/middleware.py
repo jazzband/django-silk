@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
 from django.utils.encoding import DjangoUnicodeDecodeError
@@ -27,9 +27,20 @@ content_type_html = ['text/html']
 content_type_css = ['text/css']
 
 
+def silky_reverse(name, *args, **kwargs):
+    try:
+        r = reverse('silk:%s' % name, *args, **kwargs)
+    except NoReverseMatch:
+        # In case user forgets to set namespace, but also fixes Django 1.5 tests on Travis
+        # Hopefully if user has forgotten to add namespace there are no clashes with their own
+        # view names but I don't think there is really anything can do about this.
+        r = reverse(name, *args, **kwargs)
+    return r
+
+
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-    fpath = reverse('silk:requests')
+    fpath = silky_reverse('requests')
     path = '/'.join(fpath.split('/')[0:-1])
     silky = request.path.startswith(path)
     ignored = request.path in SilkyConfig().SILKY_IGNORE_PATHS

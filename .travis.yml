@@ -12,5 +12,5 @@ install:
     - pip install -q Django==$DJANGO_VERSION
     - pip install -r requirements.txt
 
-script: cd django_silky/ && ./manage.py test
+script: cd django_silky/ && ./manage.py test silk
 

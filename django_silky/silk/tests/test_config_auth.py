@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from silk.config import SilkyConfig, default_permissions
+from silk.middleware import silky_reverse
 
 
 __author__ = 'mtford'
@@ -13,7 +14,7 @@ class TestAuth(TestCase):
 
     def test_authentication(self):
         SilkyConfig().SILKY_AUTHENTICATION = True
-        response = self.client.get(reverse('silk:requests'))
+        response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 302)
         try:
             url = response.url
@@ -31,11 +32,11 @@ class TestAuth(TestCase):
         user.set_password(username_and_password)
         user.save()
         self.client.login(username=username_and_password, password=username_and_password)
-        response = self.client.get(reverse('silk:requests'))
+        response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 403)
         user.is_staff = True
         user.save()
-        response = self.client.get(reverse('silk:requests'))
+        response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
 
 
@@ -51,10 +52,10 @@ class TestAuth(TestCase):
         user.set_password(username_and_password)
         user.save()
         self.client.login(username=username_and_password, password=username_and_password)
-        response = self.client.get(reverse('silk:requests'))
+        response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 403)
         user.username = 'mike2'
         user.save()
-        response = self.client.get(reverse('silk:requests'))
+        response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
 
