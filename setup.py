@@ -31,7 +31,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires= [
-        'Django>=1.4,<=1.6',
+        'Django>=1.5,<1.7',
         'Pygments==1.6',
         'six==1.6',
         'simplejson>=3,<4',
