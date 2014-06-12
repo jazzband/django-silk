@@ -20,30 +20,33 @@ def _should_wrap(sql_query):
 
 def execute_sql(self, *args, **kwargs):
     """wrapper around real execute_sql in order to extract information"""
-    if self.query.model.__module__ != 'silk.models':
+
+    try:
+        q, params = self.as_sql()
+        if not q:
+            raise EmptyResultSet
+    except EmptyResultSet:
+        if kwargs.get('result_type', 'multi') == 'multi':
+            return iter([])
+        else:
+            return
+    tb = ''.join(reversed(traceback.format_stack()))
+    sql_query = q % params
+    if _should_wrap(sql_query):
+        query_dict = {
+            'query': sql_query,
+            'start_time': timezone.now(),
+            'traceback': tb
+        }
         try:
-            q, params = self.as_sql()
-            if not q:
-                raise EmptyResultSet
-        except EmptyResultSet:
-            if kwargs.get('result_type', 'multi') == 'multi':
-                return iter([])
-            else:
-                return
-        tb = ''.join(reversed(traceback.format_stack()))
-        sql_query = q % params
-        if _should_wrap(sql_query):
-            query_dict = {
-                'query': sql_query,
-                'start_time': timezone.now(),
-                'traceback': tb
-            }
-            try:
-                return self._execute_sql(*args, **kwargs)
-            finally:
-                query_dict['end_time'] = timezone.now()
-                request = DataCollector().request
-                if request:
-                    query_dict['request'] = request
+            return self._execute_sql(*args, **kwargs)
+        finally:
+            query_dict['end_time'] = timezone.now()
+            request = DataCollector().request
+            if request:
+                query_dict['request'] = request
+            if self.query.model.__module__ != 'silk.models':
                 DataCollector().register_query(query_dict)
+            else:
+                DataCollector().register_silk_query(query_dict)
     return self._execute_sql(*args, **kwargs)

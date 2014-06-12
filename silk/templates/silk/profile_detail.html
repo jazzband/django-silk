@@ -11,6 +11,16 @@
 {% block style %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'silk/css/summary.css' %}">
+    <style>
+        #query-info-div {
+            margin-top: 15px;
+        }
+
+        #query-info-div .timestamp-div {
+            font-size: 13px;
+
+        }
+    </style>
 {% endblock %}
 
 {% block menu %}
@@ -32,10 +42,10 @@
                     {% endif %}
                 </div>
             </div>
-        <div class="description">
-            The below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
-            then this will show the range of lines that are covered by the profiling.
-        </div>
+            <div class="description">
+                The below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
+                then this will show the range of lines that are covered by the profiling.
+            </div>
             {% if code %}
                 <pre id="code"><code>{% code code actual_line %}</code></pre>
             {% elif code_error %}

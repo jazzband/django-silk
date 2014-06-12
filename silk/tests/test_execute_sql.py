@@ -17,8 +17,6 @@ def mock_sql():
     return mock_sql_query, query_string
 
 
-
-
 class TestCall(TestCase):
     @classmethod
     def setUpClass(cls):

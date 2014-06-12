@@ -2,6 +2,7 @@ import re
 
 from django.template import Library
 from django.template.defaultfilters import stringfilter
+from django.utils import timezone
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
@@ -44,9 +45,27 @@ def _urlify(str):
 def hash(h, key):
     return h[key]
 
+
+def _process_microseconds(dt_strftime):
+    time, micro = dt_strftime.split('.')
+    micro = '%.3f' % float('0.' + micro)
+    return time + micro[1:]
+
+
+@register.filter
+def silk_date_time(dt):
+    today = timezone.now().date()
+    if dt.date() == today:
+        dt_strftime = dt.strftime('%H:%M:%S.%f')
+        return _process_microseconds(dt_strftime)
+    else:
+        return _process_microseconds(dt.strftime('%Y.%m.%d %H:%M.%f'))
+
+
 @register.filter
 def sorted(l):
     return sorted(l)
+
 
 @stringfilter
 def filepath_urlify(value, autoescape=None):

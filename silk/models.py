@@ -49,6 +49,12 @@ class Request(models.Model):
     time_taken = FloatField(blank=True, null=True)
     encoded_headers = TextField(blank=True, default='')
     meta_time = FloatField(null=True, blank=True)
+    meta_num_queries = IntegerField(null=True, blank=True)
+    meta_time_spent_queries = FloatField(null=True, blank=True)
+
+    @property
+    def total_meta_time(self):
+        return (self.meta_time or 0) + (self.meta_time_spent_queries or 0)
 
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager

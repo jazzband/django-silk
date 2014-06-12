@@ -3,8 +3,14 @@ from threading import local
 from six import with_metaclass
 
 from silk import models
+from silk.config import SilkyConfig
 from silk.errors import SilkNotConfigured, SilkInternalInconsistency
+from silk.models import _time_taken
 from silk.singleton import Singleton
+
+TYP_SILK_QUERIES = 'silk_queries'
+TYP_PROFILES = 'profiles'
+TYP_QUERIES = 'queries'
 
 
 class DataCollector(with_metaclass(Singleton, object)):
@@ -41,19 +47,27 @@ class DataCollector(with_metaclass(Singleton, object)):
 
     @property
     def queries(self):
-        return self._get_objects('queries')
+        return self._get_objects(TYP_QUERIES)
+
+    @property
+    def silk_queries(self):
+        return self._get_objects(TYP_SILK_QUERIES)
 
     def _get_objects(self, typ):
         objects = self.objects
         if objects is None:
             self._raise_not_configured('Attempt to access %s without initialisation.' % typ)
-        if not ('%s' % typ) in objects:
-            objects[('%s' % typ)] = {}
-        return objects[('%s' % typ)]
+        if not typ in objects:
+            objects[typ] = {}
+        return objects[typ]
 
     @property
     def profiles(self):
-        return self._get_objects('profiles')
+        return self._get_objects(TYP_PROFILES)
+
+    @property
+    def silk_queries(self):
+        return self._get_objects('silk_queries')
 
     def configure(self, request=None):
         self.request = request
@@ -79,10 +93,18 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.objects[typ][ident] = arg
 
     def register_query(self, *args):
-        self.register_objects('queries', *args)
+        self.register_objects(TYP_QUERIES, *args)
 
     def register_profile(self, *args):
-        self.register_objects('profiles', *args)
+        self.register_objects(TYP_PROFILES, *args)
+
+    def _record_meta_profiling(self):
+        if SilkyConfig().SILKY_META:
+            num_queries = len(self.silk_queries)
+            query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
+            self.request.meta_num_queries = num_queries
+            self.request.meta_time_spent_queries = query_time
+            self.request.save()
 
     def finalise(self):
         for _, query in self.queries.items():
@@ -90,9 +112,9 @@ class DataCollector(with_metaclass(Singleton, object)):
             query['model'] = query_model
         for _, profile in self.profiles.items():
             profile_query_models = []
-            if 'queries' in profile:
-                profile_queries = profile['queries']
-                del profile['queries']
+            if TYP_QUERIES in profile:
+                profile_queries = profile[TYP_QUERIES]
+                del profile[TYP_QUERIES]
                 for query_temp_id in profile_queries:
                     try:
                         query = self.queries[query_temp_id]
@@ -109,3 +131,7 @@ class DataCollector(with_metaclass(Singleton, object)):
             if profile_query_models:
                 profile.queries = profile_query_models
                 profile.save()
+        self._record_meta_profiling()
+
+    def register_silk_query(self, *args):
+        self.register_objects(TYP_SILK_QUERIES, *args)
