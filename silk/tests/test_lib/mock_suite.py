@@ -1,5 +1,6 @@
 from datetime import timedelta
 import json
+import os
 import random
 import traceback
 
@@ -18,7 +19,7 @@ class MockSuite(object):
     path_components = ['path', 'to', 'somewhere', 'around', 'here', 'bobs', 'your', 'uncle']
     status_codes = [200, 201, 300, 301, 302, 403, 404, 500]
     profile_names = ['slow_bit_of_code', 'terrible_dependency', 'what_on_earth_is_this_code_doing']
-    file_path = [__file__]
+    file_path = [os.path.realpath(__file__)]
     func_names = ['', '', '', 'foo', 'bar']
     sql_queries = ['''
     SELECT Book.title AS Title,
