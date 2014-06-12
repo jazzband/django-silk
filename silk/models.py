@@ -48,19 +48,13 @@ class Request(models.Model):
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
     encoded_headers = TextField(blank=True, default='')
-    meta_start_time = DateTimeField(null=True)
-    meta_end_time = DateTimeField(null=True)
+    meta_time = FloatField(null=True, blank=True)
 
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
     num_sql_queries = IntegerField(default=0)
 
-    @property
-    def meta_time(self):
-        if self.meta_start_time and self.meta_end_time:
-            return _time_taken(self.meta_start_time, self.meta_end_time)
-        return None
 
     @property
     def time_spent_on_sql_queries(self):

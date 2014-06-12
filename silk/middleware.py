@@ -9,6 +9,7 @@ from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
+from silk.models import _time_taken
 from silk.profiling import dynamic
 from silk.sql import execute_sql
 
@@ -72,23 +73,25 @@ class SilkyMiddleware(object):
             request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model)
 
+    def _process_response(self, response):
+        meta_start_time = None
+        if SilkyConfig().SILKY_META:
+            meta_start_time = timezone.now()
+        collector = DataCollector()
+        silk_request = collector.request
+        if silk_request:
+            silk_response = ResponseModelFactory(response).construct_response_model()
+            silk_response.save()
+            silk_request.end_time = timezone.now()
+            collector.finalise()
+            if SilkyConfig().SILKY_META:
+                meta_end_time = timezone.now()
+                silk_request.meta_time = _time_taken(meta_start_time, meta_end_time)
+            silk_request.save()
+        else:
+            Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+
     def process_response(self, request, response):
         if _should_intercept(request):
-            meta_start_time = None
-            if SilkyConfig().SILKY_META:
-                meta_start_time = timezone.now()
-            collector = DataCollector()
-            silk_request = collector.request
-            if silk_request:
-                silk_response = ResponseModelFactory(response).construct_response_model()
-                silk_response.save()
-                silk_request.end_time = timezone.now()
-                collector.finalise()
-                if SilkyConfig().SILKY_META:
-                    meta_end_time = timezone.now()
-                    silk_request.meta_start_time = meta_start_time
-                    silk_request.meta_end_time = meta_end_time
-                silk_request.save()
-            else:
-                Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+            self._process_response(response)
         return response
