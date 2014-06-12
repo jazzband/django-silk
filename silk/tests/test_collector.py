@@ -13,7 +13,7 @@ class TestCollector(TestCase):
     def test_query_registration(self):
         mock_query = {}
         DataCollector().register_query(mock_query)
-        self.assertIn(mock_query, DataCollector().queries)
+        self.assertIn(mock_query, list(DataCollector().queries.values()))
 
     def test_clear(self):
         self.test_query_registration()

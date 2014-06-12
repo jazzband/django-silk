@@ -1,4 +1,3 @@
-from copy import copy
 import inspect
 import logging
 import time
@@ -6,9 +5,8 @@ import time
 from django.conf import settings
 from django.utils import timezone
 import six
-from silk.collector import DataCollector
 
-from silk.models import Profile
+from silk.collector import DataCollector
 
 
 Logger = logging.getLogger('silk')
@@ -24,7 +22,7 @@ class silk_profile(object):
         self._dynamic = _dynamic
 
     def _query_identifiers_from_collector(self):
-        return [x['temp_id'] for x in DataCollector().queries]
+        return [x for x in DataCollector().queries]
 
     def _start_queries(self):
         self._queries_before = self._query_identifiers_from_collector()
@@ -45,7 +43,7 @@ class silk_profile(object):
                 'line_num': line_num,
                 'dynamic': self._dynamic,
                 'request': DataCollector().request,
-                'start_time':  timezone.now(),
+                'start_time': timezone.now(),
             }
         else:
             Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
@@ -55,7 +53,7 @@ class silk_profile(object):
         self._queries_after = self._query_identifiers_from_collector()
         assert self.profile, 'no profile was created'
         diff = set(self._queries_after).difference(set(self._queries_before))
-        self.profile['queries'] = [collector.query_with_temp_id(x) for x in diff]
+        self.profile['queries'] = diff
         collector.register_profile(self.profile)
 
     # noinspection PyUnusedLocal
@@ -105,6 +103,7 @@ class silk_profile(object):
                     self.profile['end_time'] = timezone.now()
                     self._finalise_queries()
                 return result
+
             return wrapped_target
         else:
             Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')

@@ -40,7 +40,7 @@ class TestCall(TestCase):
         self.assertEqual(1, len(DataCollector().queries))
 
     def _get_query(self):
-        query = list(DataCollector().queries)[0]
+        query = list(DataCollector().queries.values())[0]
         return query
 
     def test_no_request(self):
@@ -67,7 +67,7 @@ class TestCallSilky(TestCase):
 class TestCollectorInteraction(TestCase):
     def _query(self):
         try:
-            query = list(DataCollector().queries)[0]
+            query = list(DataCollector().queries.values())[0]
         except IndexError:
             self.fail('No queries created')
         return query
@@ -84,5 +84,5 @@ class TestCollectorInteraction(TestCase):
         sql, _ = mock_sql()
         execute_sql(sql)
         query = self._query()
-        self.assertIn(query, DataCollector().queries)
+        self.assertIn(query, DataCollector().queries.values())
 

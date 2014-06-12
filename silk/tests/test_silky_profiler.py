@@ -23,14 +23,14 @@ class TestProfilerRequests(TestCase):
             sleep(0.1)
 
         func()
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertFalse(profile['request'])
 
     def test_context_manager_request(self):
         DataCollector().configure(Request.objects.create(path='/to/somewhere'))
         with silk_profile(name='test_profile'):
             sleep(0.1)
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(DataCollector().request, profile['request'])
 
     def test_decorator_request(self):
@@ -41,7 +41,7 @@ class TestProfilerRequests(TestCase):
             sleep(0.1)
 
         func()
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(DataCollector().request, profile['request'])
 
 
@@ -57,11 +57,11 @@ class TestProfilertContextManager(TestCase):
         self.assertTrue(len(DataCollector().profiles), 1)
 
     def test_name(self):
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(profile['name'], 'test_profile')
 
     def test_time_taken(self):
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         time_taken = _time_taken(start_time=profile['start_time'], end_time=profile['end_time'])
         self.assertGreaterEqual(time_taken, 100)
         self.assertLess(time_taken, 110)
@@ -82,11 +82,11 @@ class TestProfilerDecorator(TestCase):
         self.assertTrue(len(DataCollector().profiles), 1)
 
     def test_name(self):
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(profile['name'], 'func')
 
     def test_time_taken(self):
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         time_taken = _time_taken(start_time=profile['start_time'], end_time=profile['end_time'])
         self.assertGreaterEqual(time_taken, 100)
         self.assertLess(time_taken, 110)
@@ -98,23 +98,24 @@ class TestQueries(TestCase):
         with silk_profile(name='test_no_queries_before_profile'):
             mock_queries = MockSuite().mock_sql_queries(n=5, as_dict=True)
             DataCollector().register_query(*mock_queries)
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(profile['name'], 'test_no_queries_before_profile')
         queries = profile['queries']
         self.assertEqual(len(queries), 5)
-        for query in mock_queries:
+        for query in DataCollector().queries:
             self.assertIn(query, queries)
 
     def test_queries_before(self):
         """test that any queries registered before profiling begins are ignored"""
         DataCollector().configure(Request.objects.create())
         DataCollector().register_query(*MockSuite().mock_sql_queries(n=2, as_dict=True))
+        before = [x for x in DataCollector().queries]
         with silk_profile(name='test_no_queries_before_profile'):
             mock_queries = MockSuite().mock_sql_queries(n=5, as_dict=True)
             DataCollector().register_query(*mock_queries)
-        profile = list(DataCollector().profiles)[0]
+        profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(profile['name'], 'test_no_queries_before_profile')
         queries = profile['queries']
         self.assertEqual(len(queries), 5)
-        for query in mock_queries:
+        for query in set(DataCollector().queries).difference(before):
             self.assertIn(query, queries)

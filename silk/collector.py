@@ -1,9 +1,9 @@
 from threading import local
 
 from six import with_metaclass
-from silk import models
-from silk.models import SQLQuery
 
+from silk import models
+from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.singleton import Singleton
 
 
@@ -13,6 +13,7 @@ class DataCollector(with_metaclass(Singleton, object)):
     the request due to the possibility of atomic blocks and hence must collect data and perform
     the save at the end.
     """
+
     def __init__(self):
         super(DataCollector, self).__init__()
         self.local = local()
@@ -30,34 +31,29 @@ class DataCollector(with_metaclass(Singleton, object)):
     def request(self, value):
         self.local.request = value
 
+    def _configure(self):
+        self.local.objects = {}
+        self.local.temp_identifier = 0
+
+    @property
+    def objects(self):
+        return getattr(self.local, 'objects', None)
+
     @property
     def queries(self):
-        queries = getattr(self.local, 'queries', {})
-        return queries.values()
+        return self._get_objects('queries')
 
-    @queries.setter
-    def queries(self, value):
-        self.local.queries = value
+    def _get_objects(self, typ):
+        objects = self.objects
+        if objects is None:
+            self._raise_not_configured('Attempt to access %s without initialisation.' % typ)
+        if not ('%s' % typ) in objects:
+            objects[('%s' % typ)] = {}
+        return objects[('%s' % typ)]
 
     @property
     def profiles(self):
-        profiles = getattr(self.local, 'profiles', {})
-        return profiles.values()
-
-    def query_with_temp_id(self, ident):
-        return self.local.queries.get(ident, None)
-
-    def profile_with_temp_id(self, ident):
-        return self.local.profiles.get(ident, None)
-
-    @profiles.setter
-    def profiles(self, value):
-        self.local.profiles = value
-
-    def _configure(self):
-        self.queries = {}
-        self.profiles = {}
-        self.local.temp_identifier = 0
+        return self._get_objects('profiles')
 
     def configure(self, request=None):
         self.request = request
@@ -67,32 +63,50 @@ class DataCollector(with_metaclass(Singleton, object)):
         self.request = None
         self._configure()
 
-    def register_query(self, *args):
+    def _raise_not_configured(self, err):
+        raise SilkNotConfigured(err + ' Is the middleware installed correctly?')
+
+    def register_objects(self, typ, *args):
         for arg in args:
             ident = self.get_identifier()
-            arg['temp_id'] = ident
-            self.local.queries[ident] = arg
+            objects = self.objects
+            if objects is None:
+                # This can happen if the SilkyMiddleware.process_request is not called for whatever reason.
+                # Perhaps if another piece of middleware is not playing ball.
+                self._raise_not_configured('Attempt to register object of type %s without initialisation. ')
+            if not typ in objects:
+                self.objects[typ] = {}
+            self.objects[typ][ident] = arg
+
+
+    def register_query(self, *args):
+        self.register_objects('queries', *args)
 
     def register_profile(self, *args):
-        for arg in args:
-            ident = self.get_identifier()
-            arg['temp_id'] = ident
-            self.local.profiles[ident] = arg
+        self.register_objects('profiles', *args)
 
     def finalise(self):
-        for query in self.queries:
-            del(query['temp_id'])
+        for _, query in self.queries.items():
             query_model = models.SQLQuery.objects.create(**query)
-            query['pk'] = query_model.pk
-        for profile in self.profiles:
-            if 'temp_id' in profile:
-                del profile['temp_id']
+            query['model'] = query_model
+        for _, profile in self.profiles.items():
+            profile_query_models = []
             if 'queries' in profile:
-                pks = [x['pk'] for x in profile['queries']]
+                profile_queries = profile['queries']
                 del profile['queries']
-            else:
-                pks = []
+                for query_temp_id in profile_queries:
+                    try:
+                        query = self.queries[query_temp_id]
+                        try:
+                            profile_query_models.append(query['model'])
+                        except KeyError:
+                            raise SilkInternalInconsistency('Profile references a query dictionary that has not '
+                                                            'been converted into a Django model. This should '
+                                                            'never happen, please file a bug report')
+                    except KeyError:
+                        raise SilkInternalInconsistency('Profile references a query temp_id that does not exist. '
+                                                        'This should never happen, please file a bug report')
             profile = models.Profile.objects.create(**profile)
-            queries = SQLQuery.objects.filter(pk__in=pks)
-            profile.queries = queries
-            profile.save()
+            if profile_query_models:
+                profile.queries = profile_query_models
+                profile.save()

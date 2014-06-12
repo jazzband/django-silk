@@ -1,9 +1,9 @@
 from django.test import TestCase
 from mock import Mock
+from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.models import Request
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
-from silk.middleware import RequestModelFactory, ResponseModelFactory
 
 
 class TestMaxBodySizeRequest(TestCase):
