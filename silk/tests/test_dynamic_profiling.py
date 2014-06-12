@@ -3,6 +3,7 @@ from mock import patch, Mock
 import six
 
 import silk
+from silk.models import Request
 from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
 
 
@@ -63,6 +64,7 @@ class TestProfileFunction(TestCase):
             profile_function_or_method('silk.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
             mock_data_collector = Mock()
             mock_data_collector.queries = []
+            mock_data_collector.request = Request()
             with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
                 MyClass().foo()
                 self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
@@ -81,6 +83,7 @@ class TestProfileFunction(TestCase):
         profile_function_or_method('silk.tests.test_dynamic_profiling', 'foo', 'test')
         mock_data_collector = Mock()
         mock_data_collector.queries = []
+        mock_data_collector.request = Request()
         with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
             foo()
             self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)

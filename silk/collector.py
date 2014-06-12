@@ -78,7 +78,6 @@ class DataCollector(with_metaclass(Singleton, object)):
                 self.objects[typ] = {}
             self.objects[typ][ident] = arg
 
-
     def register_query(self, *args):
         self.register_objects('queries', *args)
 

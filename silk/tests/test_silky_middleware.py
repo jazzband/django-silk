@@ -3,6 +3,7 @@ from mock import patch, Mock
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware
+from silk.models import Request
 
 
 class TestApplyDynamicMappings(TestCase):
@@ -19,6 +20,7 @@ class TestApplyDynamicMappings(TestCase):
 
         mock = Mock()
         mock.queries = []
+        mock.request = Request()
         with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()  # Should be wrapped in a decorator
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
@@ -38,6 +40,7 @@ class TestApplyDynamicMappings(TestCase):
 
         mock = Mock()
         mock.queries = []
+        mock.request = Request()
         with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)

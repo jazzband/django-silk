@@ -11,6 +11,7 @@ from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.models import _time_taken
 from silk.profiling import dynamic
+from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
 
 
@@ -63,6 +64,7 @@ class SilkyMiddleware(object):
             else:
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
+    @silk_meta_profiler()
     def process_request(self, request):
         request_model = None
         if _should_intercept(request):
@@ -74,22 +76,17 @@ class SilkyMiddleware(object):
         DataCollector().configure(request_model)
 
     def _process_response(self, response):
-        meta_start_time = None
-        if SilkyConfig().SILKY_META:
-            meta_start_time = timezone.now()
-        collector = DataCollector()
-        silk_request = collector.request
-        if silk_request:
-            silk_response = ResponseModelFactory(response).construct_response_model()
-            silk_response.save()
-            silk_request.end_time = timezone.now()
-            collector.finalise()
-            if SilkyConfig().SILKY_META:
-                meta_end_time = timezone.now()
-                silk_request.meta_time = _time_taken(meta_start_time, meta_end_time)
-            silk_request.save()
-        else:
-            Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+        with silk_meta_profiler():
+            collector = DataCollector()
+            silk_request = collector.request
+            if silk_request:
+                silk_response = ResponseModelFactory(response).construct_response_model()
+                silk_response.save()
+                silk_request.end_time = timezone.now()
+                collector.finalise()
+            else:
+                Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+        silk_request.save()
 
     def process_response(self, request, response):
         if _should_intercept(request):
