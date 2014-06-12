@@ -271,9 +271,10 @@ Once silk is installed on your system/venv we then need to configure your Django
 In `settings.py` add the following:
 
 ```python
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = ( 
     ...
     'silk.middleware.SilkyMiddleware',
+    ...
 )
 
 INSTALLED_APPS = (
@@ -282,7 +283,9 @@ INSTALLED_APPS = (
 )
 ```
 
-and to your `urls.py`:
+Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+
+To enable access to the user interface add the following to your `urls.py`:
 
 ```python
 urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
