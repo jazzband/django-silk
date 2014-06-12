@@ -60,4 +60,7 @@ dist
 .vagrant
 
 # Hardlinks
-django_silky/silk
+/django_silky/silk
+
+# Pip
+/src
