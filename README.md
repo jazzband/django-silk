@@ -283,9 +283,9 @@ INSTALLED_APPS = (
 )
 ```
 
-Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must make sure that any middleware placed before never return anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
 
-Then add the following to `urls.py`:
+To enable access to the user interface add the following to your `urls.py`:
 
 ```python
 urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
