@@ -277,19 +277,15 @@ MIDDLEWARE_CLASSES = (
     ...
 )
 
-Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must make sure that any middleware placed before never return anything from `process_request`
-
-https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request for the explanation on this.
-
-I'll update the README accordingly and also add some better error handling for this... Cheers guys.
-
 INSTALLED_APPS = (
     ...
     'silk'
 )
 ```
 
-and to your `urls.py`:
+Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must make sure that any middleware placed before never return anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+
+Then add the following to `urls.py`:
 
 ```python
 urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
