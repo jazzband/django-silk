@@ -58,3 +58,6 @@ dist
 
 # Vagrant
 .vagrant
+
+# Hardlinks
+django_silky/silk

@@ -1,0 +1,21 @@
+.cell {
+    display: inline-block;
+    background-color: transparent;
+    padding: 10px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.cell div {
+    margin: 2px;
+}
+
+.cell .method-div {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.cell .path-div {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
