@@ -271,10 +271,17 @@ Once silk is installed on your system/venv we then need to configure your Django
 In `settings.py` add the following:
 
 ```python
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = ( 
     ...
     'silk.middleware.SilkyMiddleware',
+    ...
 )
+
+Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must make sure that any middleware placed before never return anything from `process_request`
+
+https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request for the explanation on this.
+
+I'll update the README accordingly and also add some better error handling for this... Cheers guys.
 
 INSTALLED_APPS = (
     ...
