@@ -171,6 +171,6 @@ class ResponseModelFactory(object):
                                                         body=body)
         try:
             silky_response.raw_body = content
-        except DjangoUnicodeDecodeError:
+        except UnicodeDecodeError:
             Logger.debug('NYI: Saving of binary response body')  # TODO
         return silky_response
