@@ -47,7 +47,9 @@ def hash(h, key):
 
 
 def _process_microseconds(dt_strftime):
-    time, micro = dt_strftime.split('.')
+    splt = dt_strftime.split('.')
+    micro = splt[-1]
+    time = '.'.join(splt[0:-1])
     micro = '%.3f' % float('0.' + micro)
     return time + micro[1:]
 
