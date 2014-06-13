@@ -1,8 +1,44 @@
 {% extends 'silk/base/root_base.html' %}
 {% load inclusion %}
+{% load staticfiles %}
 
 {% block menu %}
-{% root_menu request %}
+    {% root_menu request %}
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        #filter-item {
+            width: 40px;
+            height: 20px;
+            float: right;
+            display: inline;
+            background-image: url('{% static 'silk/filter.png' %}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            text-align: right;
+        }
+
+        #filter-item #arrow {
+            position: relative;
+            top: 2px;
+        }
+    </style>
+
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+    $(document).ready(function () {
+        $('#filter-button').click(function() {
+            $(this).toggleClass('active');
+            $('body').toggleClass('cbp-spmenu-push-toleft');
+            $('#cbp-spmenu-s2').toggleClass('cbp-spmenu-open')
+        });
+    });
+    </script>
 {% endblock %}
 
 {% block filter %}
@@ -46,6 +82,13 @@
                         {% endfor %}
                     </select>
                 </label>
+            </div>
+        </div>
+    </div>
+    <div id="filter-button" class="menu-item selectable-menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <div id="filter-item"><span id="arrow">&LeftArrow;</span></div>
             </div>
         </div>
     </div>

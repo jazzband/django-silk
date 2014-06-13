@@ -75,8 +75,9 @@ class SilkyMiddleware(object):
             request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model)
 
-    def _process_response(self, response):
 
+
+    def _process_response(self, response):
         with silk_meta_profiler():
             collector = DataCollector()
             silk_request = collector.request

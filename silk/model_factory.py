@@ -1,8 +1,10 @@
 import json
 import logging
 import sys
+from django.core.urlresolvers import resolve
 
 from django.utils.encoding import DjangoUnicodeDecodeError
+from rest_framework.reverse import reverse
 
 from silk import models
 from silk.collector import DataCollector
@@ -104,11 +106,18 @@ class RequestModelFactory(object):
     def construct_request_model(self):
         body, raw_body = self.body()
         query_params = self.query_params()
+        path = self.request.path
+        resolved = resolve(path)
+        namespace = resolved.namespace
+        view_name = resolved.url_name
+        if namespace:
+            view_name = namespace + ':' + view_name
         request_model = models.Request.objects.create(
-            path=self.request.path,
+            path=path,
             encoded_headers=self.encoded_headers(),
             method=self.request.method,
             query_params=query_params,
+            view_name=view_name,
             body=body)
         try:
             request_model.raw_body = raw_body
