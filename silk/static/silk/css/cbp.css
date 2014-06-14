@@ -15,13 +15,11 @@
 }
 
 /*.cbp-spmenu div {*/
-    /*display: block;*/
-    /*color: #fff;*/
-    /*font-size: 1.1em;*/
-    /*font-weight: 300;*/
+/*display: block;*/
+/*color: #fff;*/
+/*font-size: 1.1em;*/
+/*font-weight: 300;*/
 /*}*/
-
-
 
 /* Orientation-dependent styles for the content of the menu */
 
@@ -32,19 +30,15 @@
     z-index: 1000;
 }
 
-
 /* Vertical menu that slides from the left or right */
 
 .cbp-spmenu-right {
     right: -300px;
 }
 
-
-
 .cbp-spmenu-right.cbp-spmenu-open {
     right: 0px;
 }
-
 
 /* Push classes applied to the body */
 
@@ -53,7 +47,6 @@
     position: relative;
     left: 0;
 }
-
 
 .cbp-spmenu-push-toleft {
     left: -300px;
@@ -77,14 +70,13 @@
         height: 110px;
     }
 
-
 }
 
-.ac-container{
+.ac-container {
     width: 300px;
 }
 
-.ac-container label{
+.ac-container label {
     padding: 5px 20px;
     position: relative;
     z-index: 20;
@@ -97,18 +89,18 @@
 
 }
 
-.ac-container label:hover{
-background: #258ecd;
+.ac-container label:hover {
+    background: #258ecd;
 }
 
 .ac-container .accordion-checkbox:checked + label,
-.ac-container .accordion-checkbox + label:hover{
+.ac-container .accordion-checkbox + label:hover {
     background: #258ecd;
 
 }
 
 .ac-container label:hover:after,
-.ac-container .accordion-checkbox:checked + label:hover:after{
+.ac-container .accordion-checkbox:checked + label:hover:after {
     content: '';
     position: absolute;
     width: 24px;
@@ -117,40 +109,39 @@ background: #258ecd;
     top: 7px;
 }
 
-
-
-.ac-container .accordion-checkbox{
+.ac-container .accordion-checkbox {
     display: none;
 }
 
-.ac-container article{
+.ac-container article {
     background: rgba(255, 255, 255, 0.5);
     margin-top: -1px;
     overflow: hidden;
     height: 0px;
     position: relative;
     z-index: 10;
-    transition:
-        height 0.3s ease-in-out,
-        box-shadow 0.6s linear;
+    transition: height 0.3s ease-in-out,
+    box-shadow 0.6s linear;
 }
-.ac-container input:checked ~ article{
-    transition:
-        height 0.5s ease-in-out,
-        box-shadow 0.1s linear;
+
+.ac-container input:checked ~ article {
+    transition: height 0.5s ease-in-out,
+    box-shadow 0.1s linear;
 }
 
 .inner-article {
     padding: 10px;
 }
 
-.ac-container input:checked ~ article.ac-small{
+.ac-container input:checked ~ article.ac-small {
     height: 140px;
 }
-.ac-container input:checked ~ article.ac-medium{
+
+.ac-container input:checked ~ article.ac-medium {
     height: 180px;
 }
-.ac-container input:checked ~ article.ac-large{
+
+.ac-container input:checked ~ article.ac-large {
     height: 230px;
 }
 
@@ -171,6 +162,7 @@ background: #258ecd;
     border: none;
     cursor: pointer;
 }
+
 #cbp-spmenu-s2 button:focus {
     outline: none;
 }
@@ -207,8 +199,17 @@ input[type="text"] {
     font-weight: bold;
 }
 
+.add-button.disabled {
+    color: darkgray !important;
+}
+
+.add-button.disabled:hover {
+    background: transparent !important;
+    cursor: default !important;
+}
+
 .button-div {
-        text-align: center;
+    text-align: center;
     height: 50px;
 
 }

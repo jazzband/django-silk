@@ -1,9 +1,10 @@
 import calendar
-from datetime import timedelta
+from datetime import timedelta, datetime
 import random
 
 from django.utils import timezone
 from django.test import TestCase
+import pytz
 
 from silk import models
 from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter
@@ -34,22 +35,6 @@ class TestFilters(TestCase):
             seconds = self._time_stamp(timezone.now()) - self._time_stamp(dt)
             self.assertTrue(seconds < 5)
 
-    def test_after_date_filter(self):
-        requests = [mock_suite.mock_request() for _ in range(0, 10)]
-        r = random.choice(requests)
-        dt = r.start_time
-        requuests = models.Request.objects.filter(AfterDateFilter(dt))
-        for r in requuests:
-            self.assertTrue(r.start_time > dt)
-
-    def test_before_date_filter(self):
-        requests = [mock_suite.mock_request() for _ in range(0, 10)]
-        r = random.choice(requests)
-        dt = r.start_time
-        requuests = models.Request.objects.filter(BeforeDateFilter(dt))
-        for r in requuests:
-            self.assertTrue(r.start_time < dt)
-
     def test_view_name_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         r = random.choice(requests)
@@ -65,4 +50,60 @@ class TestFilters(TestCase):
         requuests = models.Request.objects.filter(PathFilter(path))
         for r in requuests:
             self.assertTrue(r.path == path)
+
+
+class TestAfterDateFilter(TestCase):
+    def assertFilter(self, dt, f):
+        requuests = models.Request.objects.filter(f)
+        for r in requuests:
+            self.assertTrue(r.start_time > dt)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
+
+    def test_after_date_filter(self):
+        r = random.choice(self.requests)
+        dt = r.start_time
+        f = AfterDateFilter(dt)
+        self.assertFilter(dt, f)
+
+    def test_after_date_filter_str(self):
+        r = random.choice(self.requests)
+        dt = r.start_time
+        fmt = AfterDateFilter.fmt
+        dt_str = dt.strftime(fmt)
+        date_filter = AfterDateFilter
+        f = date_filter(dt_str)
+        new_dt = datetime.strptime(dt_str, fmt)
+        new_dt = timezone.make_aware(new_dt, pytz.UTC)
+        self.assertFilter(new_dt, f)
+
+
+class TestBeforeDateFilter(TestCase):
+    def assertFilter(self, dt, f):
+        requuests = models.Request.objects.filter(f)
+        for r in requuests:
+            self.assertTrue(r.start_time < dt)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
+
+    def test_before_date_filter(self):
+        r = random.choice(self.requests)
+        dt = r.start_time
+        f = BeforeDateFilter(dt)
+        self.assertFilter(dt, f)
+
+    def test_before_date_filter_str(self):
+        r = random.choice(self.requests)
+        dt = r.start_time
+        fmt = BeforeDateFilter.fmt
+        dt_str = dt.strftime(fmt)
+        date_filter = BeforeDateFilter
+        f = date_filter(dt_str)
+        new_dt = datetime.strptime(dt_str, fmt)
+        new_dt = timezone.make_aware(new_dt, pytz.UTC)
+        self.assertFilter(new_dt, f)
 

@@ -10,7 +10,7 @@
     {{ block.super }}
     <style>
         #filter-item {
-            width: 40px;
+            width: 24px;
             height: 20px;
             float: right;
             display: inline;
@@ -20,9 +20,10 @@
             text-align: right;
         }
 
-        #filter-item #arrow {
+        #filter-item #num-filters {
             position: relative;
-            top: 2px;
+            top: 7px;
+            left: 1px;
         }
     </style>
 
@@ -43,20 +44,6 @@
 
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
-    <div class="menu-item">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Path:
-                    <select name="path" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_paths %}
-                            <option value="{{ option }}"
-                                    {% if option == path %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
     <div class="menu-item ">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
@@ -88,7 +75,7 @@
     <div id="filter-button" class="menu-item selectable-menu-item">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
-                <div id="filter-item"><span id="arrow">&LeftArrow;</span></div>
+                <div id="filter-item"><span id="num-filters"><sub>{{ filters | length }}</sub></span></div>
             </div>
         </div>
     </div>

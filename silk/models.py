@@ -45,7 +45,7 @@ class Request(models.Model):
     body = TextField(blank=True, default='')
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now)
-    view_name = CharField(max_length=300, db_index=True)
+    view_name = CharField(max_length=300, db_index=True, blank=True, default='')
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
     encoded_headers = TextField(blank=True, default='')

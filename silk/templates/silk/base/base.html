@@ -189,6 +189,8 @@
         var idx = find.index(parent);
         filters.splice(idx, 1);
         parent.remove();
+        console.log(filters);
+        configureDisabled();
     }
 
     function addSecondsFilter() {
@@ -201,14 +203,14 @@
 
     function addBeforeDateFilter() {
         var $input = $('input[name="before-date"]');
-        filters.push(new BeforeDateFilter(new Date($input.val())));
+        filters.push(new BeforeDateFilter($input.val()));
         $input.val('');
         renderFilters();
     }
 
     function addAfterDateFilter() {
-        var $input = $('input[name="before-date"]');
-        filters.push(new AfterDateFilter(new Date(date.val())));
+        var $input = $('input[name="after-date"]');
+        filters.push(new AfterDateFilter($input.val()));
         $input.val('');
         renderFilters();
     }
@@ -231,22 +233,77 @@
 
     function initFilters() {
         var $filters = $('#filter-section').find('.active-filter');
-        for (var idx in $filters) {
-            var filter = $filters[idx];
+        console.log($filters);
+        $filters.each(function () {
+            var filter = $(this);
             var typ = $(filter).children('.typ').val();
             var value = $(filter).children('.value').val();
-            console.log(window);
-            filters.push(new Function(typ)(value));
+            filters.push(new window[typ](value));
+        });
+        console.log(filters);
+    }
+
+    function configureDisabledForDateTime() {
+        var secondsFilterExists = filterExists(SecondsFilter);
+        var beforeDateFilterExists = filterExists(BeforeDateFilter);
+        var afterDateFilterExists = filterExists(AfterDateFilter);
+        var $beforeDate = $('div#before-date-filter');
+        var $afterDate = $('div#after-date-filter');
+        var $seconds = $('div#seconds-filter');
+        var $beforeDateInput = $beforeDate.find('input[name="before-date"]');
+        var $afterDateInput = $afterDate.find('input[name="after-date"]');
+        var $secondsInput = $seconds.find('input[name="seconds"]');
+        var beforeDateDisabled = secondsFilterExists || beforeDateFilterExists;
+        var afterDateDisabled = secondsFilterExists || afterDateFilterExists;
+        var secondsDisabled = secondsFilterExists || beforeDateFilterExists || afterDateFilterExists;
+        $beforeDateInput.attr('disabled', beforeDateDisabled);
+        $afterDateInput.attr('disabled', afterDateDisabled);
+        $secondsInput.attr('disabled', secondsDisabled);
+        if (beforeDateDisabled) {
+            $beforeDate.find('.add-button').addClass('disabled');
         }
+        else {
+            $beforeDate.find('.add-button').removeClass('disabled');
+        }
+        if (afterDateDisabled) {
+            $afterDate.find('.add-button').addClass('disabled');
+        }
+        else {
+            $afterDate.find('.add-button').removeClass('disabled');
+        }
+        if (secondsDisabled) {
+            $seconds.find('.add-button').addClass('disabled');
+        }
+        else {
+            $seconds.find('.add-button').removeClass('disabled');
+        }
+    }
+
+    function configureDisabledForView() {
+        var viewFilterExists = filterExists(ViewNameFilter) || filterExists(PathFilter);
+        $('select[name="path"]').attr('disabled', viewFilterExists);
+        $('select[name="view-name"]').attr('disabled', viewFilterExists);
+        var $addButtons = $('div.view-filter .add-button');
+        if (viewFilterExists) {
+            $addButtons.addClass('disabled');
+        }
+        else {
+            $addButtons.removeClass('disabled');
+        }
+    }
+    function configureDisabled() {
+        configureDisabledForDateTime();
+        configureDisabledForView();
     }
 
     function renderFilters() {
         clear();
+        console.log(filters);
         for (var idx in filters) {
             var filter = filters[idx];
             var $button = $('<button class="delete-button" onclick="deleteFilter(this);">X</button>');
-            var $typ = $('<input class="typ" type="hidden" value="' + filter.name + '" name="filter-' + idx + '-typ">');
-            var $value = $('<input class="value" type="hidden" value="' + filter.value + '" name="filter-' + idx + '-value">');
+            var $typ = $('<input class="typ" form="filter-form2" type="hidden" value="' + filter.name + '" name="filter-' + idx + '-typ">');
+            var $value = $('<input class="value" form="filter-form2" type="hidden" value="' + filter.value + '" name="filter-' + idx + '-value">');
             var $span = $('<span>' + filter.desc + '</span>');
             var $activeFilter = $('<div class="active-filter"></div>');
             $activeFilter.append($typ);
@@ -255,6 +312,7 @@
             $activeFilter.append($span);
             $('#filter-section').append($activeFilter);
         }
+        configureDisabled();
     }
 
     $(document).ready(function () {
@@ -275,42 +333,43 @@
 <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
     <h3>Filters</h3>
 
-    <form id="filter-form2" action="." method="post">
-        {% csrf_token %}
-        <section id="filter-section">
-            {% for filter in filters %}
-                <div class="active-filter">
-                    <input class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
-                    <input class="value" type="hidden" value="{{ filter }}" name="filter-{{ forloop.counter0 }}-value">
-                    <button class="delete-button">X</button>
-                    <span>{{ filter }}</span>
-                </div>
-            {% endfor %}
-            <div class="button-div">
-                <div class="apply-div" onclick="$('#filter-form2').submit()">Apply</div>
-            </div>
-        </section>
+    <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
 
-        <div>
-            <input type="number" name="seconds" placeholder="seconds ago">
-            <button class="add-button" onclick="addSecondsFilter();">+</button>
+    <section id="filter-section">
+        {% for filter in filters %}
+            <div class="active-filter">
+                <input form="filter-form2" class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
+                <input form="filter-form2" class="value" type="hidden" value="{{ filter.value }}" name="filter-{{ forloop.counter0 }}-value">
+                <button class="delete-button" onclick="deleteFilter(this);">X</button>
+                <span>{{ filter.str }}</span>
+            </div>
+        {% endfor %}
+        <div class="button-div">
+            <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>
         </div>
-        <div>
-            <input type="text" class="datetimepicker" placeholder="before date" name="before-date">
-            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
-        </div>
-        <div>
-            <input type="text" class="datetimepicker" placeholder="after date" name="after-date">
-            <button class="add-button" onclick="addAfterDateFilter();">+</button>
-        </div>
+    </section>
+
+    <div id="seconds-filter" class="date-filter">
+        <input type="number" name="seconds" placeholder="seconds ago">
+        <button class="add-button" onclick="addSecondsFilter();">+</button>
+    </div>
+    <div id="before-date-filter" class="date-filter">
+        <input type="text" class="datetimepicker" placeholder="before date" name="before-date">
+        <button class="add-button" onclick="addBeforeDateFilter();">+</button>
+    </div>
+    <div id="after-date-filter" class="date-filter">
+        <input type="text" class="datetimepicker" placeholder="after date" name="after-date">
+        <button class="add-button" onclick="addAfterDateFilter();">+</button>
+    </div>
+    <div class="view-filter">
         <select name="view-name">
             {% for view_name in view_names %}
                 <option>{{ view_name }}</option>
             {% endfor %}
-
         </select>
         <button class="add-button" onclick="addViewNameFilter();">+</button>
-        <br>
+    </div>
+    <div class="view-filter">
         <select name="path">
             {% for path in options_paths %}
                 <option>{{ path }}</option>
@@ -318,7 +377,9 @@
 
         </select>
         <button class="add-button" onclick="addPathFilter();">+</button>
-    </form>
+    </div>
+
+
 </nav>
 <div id="content">
     <div id="header">
