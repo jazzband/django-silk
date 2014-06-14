@@ -1,3 +1,4 @@
+import json
 import rawes
 
 ELASTIC_SEARCH_MAPPINGS = {
@@ -63,8 +64,32 @@ ELASTIC_SEARCH_MAPPINGS = {
 
 ELASTIC_SEARCH_SETTINGS = {}
 
+
 class ElasticsearchInterface(object):
     host = 'localhost'
     port = 9202
 
-    pass
+    def __init__(self):
+        super(ElasticsearchInterface, self).__init__()
+        self.es = rawes.Elastic('%s:%d' % (self.host, self.port))
+
+    def create_request(self, data):
+        self.es.post('silk/requests', data=data)
+
+    def get_requests(self):
+        query = {
+            'query': {
+                'match_all': {}
+            }
+        }
+        r = self.es.get('silk/requests/_search', data=json.dumps(query))
+        hits = r['hits']
+        total = hits['total']
+        results = []
+        for hit in hits['hits']:
+            processed = {
+                'id': hit['_id']
+            }
+            processed.update(hit['_source'])
+            results.append(processed)
+        return results, total
