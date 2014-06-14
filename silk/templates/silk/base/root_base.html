@@ -373,32 +373,46 @@
         _deleteFilter(button, filters);
     }
 
-    function addSecondsFilter() {
+    function _addSecondsFilter(filterArray) {
         var $input = $('input[name="seconds"]');
         if (!$input.attr('disabled')) {
             var seconds = $input.val();
-            filters.push(new SecondsFilter(seconds));
+            filterArray.push(new SecondsFilter(seconds));
             $input.val('');
             renderFilters();
         }
     }
 
-    function addBeforeDateFilter() {
+    function _addBeforeDataFilter(filtersArray) {
         var $input = $('input[name="before-date"]');
         if (!$input.attr('disabled')) {
-            filters.push(new BeforeDateFilter($input.val()));
+            filtersArray.push(new BeforeDateFilter($input.val()));
             $input.val('');
             renderFilters();
         }
+    }
+
+
+    function _addAfterDateFilter(filterArray) {
+        var $input = $('input[name="after-date"]');
+        if (!$input.attr('disabled')) {
+            filterArray.push(new AfterDateFilter($input.val()));
+            $input.val('');
+            renderFilters();
+        }
+    }
+
+    function addSecondsFilter() {
+        _addSecondsFilter(filters);
+    }
+
+
+    function addBeforeDateFilter() {
+        _addBeforeDataFilter(filters);
     }
 
     function addAfterDateFilter() {
-        var $input = $('input[name="after-date"]');
-        if (!$input.attr('disabled')) {
-            filters.push(new AfterDateFilter($input.val()));
-            $input.val('');
-            renderFilters();
-        }
+        _addAfterDateFilter(filters);
     }
 
     function addViewNameFilter() {
@@ -416,7 +430,6 @@
             renderFilters();
         }
     }
-
 
 
     function clear() {
@@ -439,7 +452,6 @@
             }
         });
     }
-
 
 
     function configureDisabledForDateTime() {

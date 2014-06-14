@@ -56,7 +56,7 @@
             $('#no-active-filters').css('display', profileFilters.length ? 'none' : 'block');
             console.log($('#no-active-filters').css('display'))
             configureDisabledForNames();
-
+            configureDisabledForDateTime();
         }
 
         function configureDisabledForNames() {
@@ -77,6 +77,19 @@
             configureDisabled();
         }
 
+        function addSecondsFilter() {
+            _addSecondsFilter(profileFilters);
+        }
+
+
+        function addBeforeDateFilter() {
+            _addBeforeDataFilter(profileFilters);
+        }
+
+        function addAfterDateFilter() {
+            _addAfterDateFilter(profileFilters);
+        }
+
         function addNameFilter() {
             var $input = $('select[name="name"]');
             if (!$input.attr('disabled')) {
@@ -92,8 +105,6 @@
                 renderFilters();
             }
         }
-
-
 
 
         $(document).ready(function () {
@@ -138,6 +149,26 @@
 {% endblock %}
 
 {% block filters %}
+    <tr id="seconds-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addSecondsFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="seconds" placeholder="seconds ago">
+        </td>
+    </tr>
+    <tr id="before-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
+    </tr>
+    <tr id="after-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addAfterDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
+    </tr>
     <tr id="function-name-filter" class="name-filter">
         <td>
             <button class="add-button" onclick="addFunctionNameFilter();">+</button>
