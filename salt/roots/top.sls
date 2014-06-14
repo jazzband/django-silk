@@ -1,0 +1,4 @@
+base:
+    '*':
+        - packages
+        - elasticsearch
