@@ -21,6 +21,8 @@ class RootView(View):
     order_by = ['Recent', 'Path', 'Num. Queries', 'Time', 'Time on queries']
     defualt_order_by = 'Recent'
 
+    session_key_request_filters = 'request_filters'
+
     def _get_paths(self):
         return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
 
@@ -57,7 +59,7 @@ class RootView(View):
         if show:
             show = int(show)
         path = request.GET.get('path', None)
-        filters = request.session.get('filters', [])
+        filters = request.session.get(self.session_key_request_filters, [])
         context = {
             'show': show,
             'order_by': order_by,
@@ -99,5 +101,5 @@ class RootView(View):
             filter_class = getattr(module, typ)
             f = filter_class(value)
             filters.append(f)
-        request.session['filters'] = [x.as_dict() for x in filters]
+        request.session[self.session_key_request_filters] = [x.as_dict() for x in filters]
         return render_to_response('silk/requests.html', self._create_context(request))

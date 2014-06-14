@@ -43,9 +43,7 @@ class SecondsFilter(BaseFilter):
             super(SecondsFilter, self).__init__()
 
     def __str__(self):
-        return 'Last %d seconds' % self.value
-
-
+        return '>%d seconds ago' % self.value
 
 
 class BeforeDateFilter(BaseFilter):
@@ -64,7 +62,7 @@ class BeforeDateFilter(BaseFilter):
         return self.value.strftime(self.fmt)
 
     def __str__(self):
-        return '< %s' % _silk_date_time(self.value)
+        return '<%s' % _silk_date_time(self.value)
 
 
 class AfterDateFilter(BaseFilter):
@@ -82,9 +80,8 @@ class AfterDateFilter(BaseFilter):
     def serialisable_value(self):
         return self.value.strftime(self.fmt)
 
-
     def __str__(self):
-        return '> %s' % _silk_date_time(self.value)
+        return '>%s' % _silk_date_time(self.value)
 
 
 class ViewNameFilter(BaseFilter):
@@ -95,7 +92,7 @@ class ViewNameFilter(BaseFilter):
         super(ViewNameFilter, self).__init__(value, view_name=view_name)
 
     def __str__(self):
-        return 'view == %s' % self.value
+        return 'View == %s' % self.value
 
 
 class PathFilter(BaseFilter):
@@ -106,4 +103,22 @@ class PathFilter(BaseFilter):
         super(PathFilter, self).__init__(value, path=path)
 
     def __str__(self):
-        return 'path == %s' % self.value
+        return 'Path == %s' % self.value
+
+
+class NameFilter(BaseFilter):
+    def __init__(self, name):
+        value = name
+        super(NameFilter, self).__init__(value, name=name)
+
+    def __str__(self):
+        return 'name == %s' % self.value
+
+
+class FunctionNameFilter(BaseFilter):
+    def __init__(self, func_name):
+        value = func_name
+        super(FunctionNameFilter, self).__init__(value, func_name=func_name)
+
+    def __str__(self):
+        return 'func_name == %s' % self.value

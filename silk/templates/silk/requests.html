@@ -8,38 +8,17 @@
 
 {% block style %}
     {{ block.super }}
-    <style>
-        #filter-item {
-            width: 24px;
-            height: 20px;
-            float: right;
-            display: inline;
-            background-image: url('{% static 'silk/filter.png' %}');
-            background-size: contain;
-            background-repeat: no-repeat;
-            text-align: right;
-        }
-
-        #filter-item #num-filters {
-            position: relative;
-            top: 7px;
-            left: 1px;
-        }
-    </style>
 
 {% endblock %}
 
 {% block js %}
     {{ block.super }}
     <script>
-    $(document).ready(function () {
-        $('#filter-button').click(function() {
-            $(this).toggleClass('active');
-            $('body').toggleClass('cbp-spmenu-push-toleft');
-            $('#cbp-spmenu-s2').toggleClass('cbp-spmenu-open')
+        $(document).ready(function () {
+            _initFilters(filters);
         });
-    });
     </script>
+
 {% endblock %}
 
 {% block filter %}
@@ -72,13 +51,54 @@
             </div>
         </div>
     </div>
-    <div id="filter-button" class="menu-item selectable-menu-item">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <div id="filter-item"><span id="num-filters"><sub>{{ filters | length }}</sub></span></div>
-            </div>
-        </div>
-    </div>
+    {{ block.super }}
+{% endblock %}
+
+{% block filters %}
+    <tr id="seconds-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addSecondsFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="seconds" placeholder="seconds ago">
+        </td>
+    </tr>
+    <tr id="before-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
+    </tr>
+    <tr id="after-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addAfterDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
+    </tr>
+    <tr id="view-name-filter" class="view-filter">
+        <td>
+            <button class="add-button" onclick="addViewNameFilter();">+</button>
+        </td>
+        <td>
+            <select name="view-name">
+                {% for view_name in view_names %}
+                    <option>{{ view_name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr id="path-filter" class="view-filter">
+        <td>
+            <button class="add-button" onclick="addPathFilter();">+</button>
+        </td>
+        <td>
+            <select name="path">
+                {% for path in options_paths %}
+                    <option>{{ path }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
 {% endblock %}
 
 {% block data %}

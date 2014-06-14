@@ -19,37 +19,87 @@
 
 {% endblock %}
 
+{% block js %}
+
+
+
+
+    {{ block.super }}
+    <script>
+        var profileFilters = [];
+
+        function NameFilter(value) {
+            Filter.call(this, value, 'Name == ' + value);
+            this.name = 'NameFilter';
+        }
+        NameFilter.prototype = Object.create(Filter.prototype, {});
+
+        function FunctionNameFilter(value) {
+            Filter.call(this, value, 'Function Name == ' + value);
+            this.name = 'FunctionNameFilter';
+        }
+
+        FunctionNameFilter.prototype = Object.create(Filter.prototype, {});
+
+        function deleteFilter(button) {
+            _deleteFilter(button, profileFilters);
+        }
+
+        function filterExists(filterType) {
+            return _filterExists(filterType, profileFilters);
+        }
+
+        function configureDisabled() {
+            var $functionNameFilter = $('#function-name-filter');
+            var $nameFilter = $('#name-filter');
+            $('#no-active-filters').css('display', profileFilters.length ? 'none' : 'block');
+            configureDisabledForNames()
+        }
+
+        function configureDisabledForNames() {
+            var nameFilterExists = filterExists(NameFilter) || filterExists(FunctionNameFilter);
+            $('select[name="name"]').attr('disabled', nameFilterExists);
+            $('select[name="function-name"]').attr('disabled', nameFilterExists);
+            var $addButtons = $('.name-filter .add-button');
+            if (nameFilterExists) {
+                $addButtons.addClass('disabled');
+            }
+            else {
+                $addButtons.removeClass('disabled');
+            }
+        }
+
+        function renderFilters() {
+            _renderFilters(profileFilters);
+            configureDisabled();
+        }
+
+        function addNameFilter() {
+            var $input = $('select[name="name"]');
+            if (!$input.attr('disabled')) {
+                profileFilters.push(new NameFilter($input.val()));
+                renderFilters();
+            }
+        }
+
+        function addFunctionNameFilter() {
+            var $input = $('select[name="function-name"]');
+            if (!$input.attr('disabled')) {
+                profileFilters.push(new FunctionNameFilter($input.val()));
+                renderFilters();
+            }
+        }
+
+
+        $(document).ready(function () {
+
+        });
+    </script>
+{% endblock %}
+
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
-    <div class="menu-item ">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Name:
-                    <select name="name" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_names %}
-                            <option value="{{ option }}"
-                                    {% if option == name %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="menu-item ">
 
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Function Name:
-                    <select name="func_name" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_func_names %}
-                            <option value="{{ option }}"
-                                    {% if option == func_name %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
     <div class="menu-item">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
@@ -78,6 +128,34 @@
             </div>
         </div>
     </div>
+    {{ block.super }}
+{% endblock %}
+
+{% block filters %}
+    <tr id="function-name-filter" class="name-filter">
+        <td>
+            <button class="add-button" onclick="addFunctionNameFilter();">+</button>
+        </td>
+        <td>
+            <select name="function-name">
+                {% for function_name in options_func_names %}
+                    <option>{{ function_name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr id="name-filter" class="name-filter">
+        <td>
+            <button class="add-button" onclick="addNameFilter();">+</button>
+        </td>
+        <td>
+            <select name="name">
+                {% for name in options_names %}
+                    <option>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
 {% endblock %}
 
 {% block data %}

@@ -3,25 +3,542 @@
 {% load inclusion %}
 {% load staticfiles %}
 
+{% block body_class %}
+    cbp-spmenu-push
+{% endblock %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'silk/css/cell.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/numeric.css' %}"/>
+    <link rel="stylesheet" href="{% static "silk/lib/jquery.datetimepicker.css" %}"/>
+
+    <!-- Begin Custom Styles -->
     <style>
-        .cell:hover {
-            background-color: rgb(51, 51, 68);
-            color: white;
-            cursor: pointer;
+    .cell:hover {
+        background-color: rgb(51, 51, 68);
+        color: white;
+        cursor: pointer;
 
+    }
+
+    .cell {
+        text-align: center;
+    }
+
+    /* General styles for all menus */
+
+    .cbp-spmenu {
+        background: rgb(51, 51, 68);
+        position: fixed;
+    }
+
+    h3 {
+        color: white;
+        font-size: 1.9em;
+        padding: 10px;
+        margin: 0;
+        font-weight: 300;
+        background: rgb(51, 51, 68);
+    }
+
+    /*.cbp-spmenu div {*/
+    /*display: block;*/
+    /*color: #fff;*/
+    /*font-size: 1.1em;*/
+    /*font-weight: 300;*/
+    /*}*/
+
+    /* Orientation-dependent styles for the content of the menu */
+
+    .cbp-spmenu-vertical {
+        width: 300px;
+        height: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+
+    /* Vertical menu that slides from the left or right */
+
+    .cbp-spmenu-right {
+        right: -300px;
+    }
+
+    .cbp-spmenu-right.cbp-spmenu-open {
+        right: 0px;
+    }
+
+    /* Push classes applied to the body */
+
+    .cbp-spmenu-push {
+        overflow-x: hidden;
+        position: relative;
+        left: 0;
+    }
+
+    .cbp-spmenu-push-toleft {
+        left: -300px;
+    }
+
+    /* Transitions */
+
+    .cbp-spmenu,
+    .cbp-spmenu-push {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+
+    /* Example media queries */
+
+    @media screen and (max-width: 55.1875em) {
+
+        .cbp-spmenu-horizontal {
+            font-size: 75%;
+            height: 110px;
         }
 
-        .cell {
-            text-align: center;
+    }
+
+    .active-filter {
+        font-size: 12px;
+        color: white;
+    }
+
+    #cbp-spmenu-s2 button {
+        color: white;
+        background: none;
+        border: none;
+    }
+
+    #cbp-spmenu-s2 button:hover {
+        color: black;
+        background: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    #cbp-spmenu-s2 button:focus {
+        outline: none;
+    }
+
+    #slider-label {
+        margin-top: 5px;
+    }
+
+    #outer-slider {
+        text-align: center;
+        width: 80%;
+    }
+
+    #seconds {
+        width: 200px;
+        height: 50px;
+    }
+
+    #slider {
+        width: 80%;
+        margin: auto;
+        margin-top: 10px;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+        border: none;
+        padding: 10px;
+        width: 222px;
+    }
+
+    .add-button {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .add-button.disabled {
+        color: darkgray !important;
+    }
+
+    .add-button.disabled:hover {
+        background: transparent !important;
+        cursor: default !important;
+    }
+
+    .button-div {
+        text-align: center;
+        height: 50px;
+
+    }
+
+    .apply-div {
+        display: inline-block;
+        background-color: white;
+        color: black;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .apply-div:hover {
+        cursor: pointer;
+    }
+
+    select {
+        border-radius: 0;
+    }
+
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        /*safari and chrome*/
+        select {
+            height: 30px;
+            line-height: 30px;
+            background: #f4f4f4;
         }
+    }
+
+    select::-moz-focus-inner {
+        /*Remove button padding in FF*/
+        border: 0;
+        padding: 0;
+    }
+
+    @-moz-document url-prefix() {
+        /* targets Firefox only */
+        select {
+            padding: 15px 0 !important;
+        }
+    }
+
+    @media screen\0 {
+        /* IE Hacks: targets IE 8, 9 and 10 */
+        select {
+            height: 30px;
+            line-height: 30px;
+        }
+    }
+
+    #cbp-spmenu-s2 p {
+        margin-bottom: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 0;
+        font-size: 12px;
+        color: white;
+        font-style: oblique;
+        line-height: 16px;;
+    }
+
+    #filter-item {
+        width: 24px;
+        height: 20px;
+        float: right;
+        display: inline;
+        background-image: url('{% static 'silk/filter.png' %}');
+        background-size: contain;
+        background-repeat: no-repeat;
+        text-align: right;
+    }
+
+    #filter-item #num-filters {
+        position: relative;
+        top: 7px;
+        left: 1px;
+    }
     </style>
+    <!-- End Custom Styles -->
+{% endblock %}
+
+{% block filter %}
+    <div id="filter-button" class="menu-item selectable-menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <div id="filter-item"><span id="num-filters"><sub>{{ filters | length }}</sub></span></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block top %}
+    <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
+        <h3>Filters</h3>
+
+        <p>
+            Build up filters using the form below in order to narrow down the requests
+            to what you're looking for.
+        </p>
+
+        <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
+
+
+        <table id="filter-section">
+
+            {% block filters %}
+
+            {% endblock %}
+
+        </table>
+        <h3>Active</h3>
+        <table id="active-filter-section">
+            {% for filter in filters %}
+                <tr class="active-filter">
+                    <td>
+                        <input form="filter-form2" class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
+                        <input form="filter-form2" class="value" type="hidden" value="{{ filter.value }}" name="filter-{{ forloop.counter0 }}-value">
+                        <button class="add-button delete-button" onclick="deleteFilter(this);">-</button>
+                    </td>
+                    <td>
+                        {{ filter.str }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <p id="no-active-filters" style="{% if filters %}display:none{% endif %}">No active filters</p>
+
+        <div class="button-div">
+            <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>
+        </div>
+
+    </nav>
+
 {% endblock %}
 
 {% block js %}
     <script src="{% static 'silk/js/cell.js' %}"></script>
+    <script src="{% static 'silk/lib/jquery.datetimepicker.js' %}"></script>
+
+    <!-- Begin Custom JS -->
+    <script>
+    function Filter(value, desc) {
+        this.value = value;
+        this.desc = desc;
+    }
+
+    function SecondsFilter(value) {
+        Filter.call(this, value, '>' + value + ' seconds ago');
+        this.name = 'SecondsFilter';
+    }
+    SecondsFilter.prototype = Object.create(Filter.prototype, {});
+
+    function BeforeDateFilter(value) {
+        Filter.call(this, value, '<' + value);
+        this.name = 'BeforeDateFilter';
+    }
+    BeforeDateFilter.prototype = Object.create(Filter.prototype, {});
+
+    function AfterDateFilter(value) {
+        Filter.call(this, value, '>' + value);
+        this.name = 'AfterDateFilter';
+    }
+    AfterDateFilter.prototype = Object.create(Filter.prototype, {});
+
+    function PathFilter(value) {
+        Filter.call(this, value, 'Path == ' + value);
+        this.name = 'PathFilter';
+    }
+    PathFilter.prototype = Object.create(Filter.prototype, {});
+
+    function ViewNameFilter(value) {
+        Filter.call(this, value, 'View == ' + value);
+        this.name = 'ViewNameFilter';
+    }
+    ViewNameFilter.prototype = Object.create(Filter.prototype, {});
+
+
+    var filters = [];
+
+    function _filterExists(filterType, filterArray) {
+        for (var idx in filterArray) {
+            var filter = filterArray[idx];
+            if (filter instanceof filterType) return true;
+        }
+        return false;
+    }
+
+    function _deleteFilter(button, filterArray) {
+        var tableRow = $(button).parent().parent();
+        var find = $('#active-filter-section').find('.active-filter');
+        console.log(find);
+        var idx = find.index(tableRow);
+        filterArray.splice(idx, 1);
+        tableRow.remove();
+        console.log(filterArray);
+        configureDisabled();
+    }
+
+    function filterExists(filterType) {
+        return _filterExists(filterType, filters);
+    }
+
+
+    function deleteFilter(button) {
+        _deleteFilter(button, filters);
+    }
+
+    function addSecondsFilter() {
+        var $input = $('input[name="seconds"]');
+        if (!$input.attr('disabled')) {
+            var seconds = $input.val();
+            filters.push(new SecondsFilter(seconds));
+            $input.val('');
+            renderFilters();
+        }
+    }
+
+    function addBeforeDateFilter() {
+        var $input = $('input[name="before-date"]');
+        if (!$input.attr('disabled')) {
+            filters.push(new BeforeDateFilter($input.val()));
+            $input.val('');
+            renderFilters();
+        }
+    }
+
+    function addAfterDateFilter() {
+        var $input = $('input[name="after-date"]');
+        if (!$input.attr('disabled')) {
+            filters.push(new AfterDateFilter($input.val()));
+            $input.val('');
+            renderFilters();
+        }
+    }
+
+    function addViewNameFilter() {
+        var $input = $('select[name="view-name"]');
+        if (!$input.attr('disabled')) {
+            filters.push(new ViewNameFilter($input.val()));
+            renderFilters();
+        }
+    }
+
+    function addPathFilter() {
+        var $input = $('select[name="path"]');
+        if (!$input.attr('disabled')) {
+            filters.push(new PathFilter($input.val()));
+            renderFilters();
+        }
+    }
+
+
+
+    function clear() {
+        $('#active-filter-section').find('.active-filter').remove();
+    }
+
+    function _initFilters(filterArray) {
+        var $filters = $('#active-filter-section').find('.active-filter');
+        $filters.each(function () {
+            var filter = $(this);
+            console.log(filter);
+            var typ = $(filter).find('.typ').val();
+            var value = $(filter).find('.value').val();
+            var f = window[typ];
+            if (f) {
+                filterArray.push(new f(value));
+            }
+            else {
+                console.error('Unknown profile "' + typ + '" when parsing ', filter);
+            }
+
+        });
+    }
+
+
+
+    function configureDisabledForDateTime() {
+        var secondsFilterExists = filterExists(SecondsFilter);
+        var beforeDateFilterExists = filterExists(BeforeDateFilter);
+        var afterDateFilterExists = filterExists(AfterDateFilter);
+        var $beforeDate = $('#before-date-filter');
+        var $afterDate = $('#after-date-filter');
+        var $seconds = $('#seconds-filter');
+        var $beforeDateInput = $beforeDate.find('input[name="before-date"]');
+        var $afterDateInput = $afterDate.find('input[name="after-date"]');
+        var $secondsInput = $seconds.find('input[name="seconds"]');
+        var beforeDateDisabled = secondsFilterExists || beforeDateFilterExists;
+        var afterDateDisabled = secondsFilterExists || afterDateFilterExists;
+        var secondsDisabled = secondsFilterExists || beforeDateFilterExists || afterDateFilterExists;
+        $beforeDateInput.attr('disabled', beforeDateDisabled);
+        $afterDateInput.attr('disabled', afterDateDisabled);
+        $secondsInput.attr('disabled', secondsDisabled);
+        if (beforeDateDisabled) {
+            $beforeDate.find('.add-button').addClass('disabled');
+        }
+        else {
+            $beforeDate.find('.add-button').removeClass('disabled');
+        }
+        if (afterDateDisabled) {
+            $afterDate.find('.add-button').addClass('disabled');
+        }
+        else {
+            $afterDate.find('.add-button').removeClass('disabled');
+        }
+        if (secondsDisabled) {
+            $seconds.find('.add-button').addClass('disabled');
+        }
+        else {
+            $seconds.find('.add-button').removeClass('disabled');
+        }
+    }
+
+    function configureDisabledForView() {
+        var viewFilterExists = filterExists(ViewNameFilter) || filterExists(PathFilter);
+        $('select[name="path"]').attr('disabled', viewFilterExists);
+        $('select[name="view-name"]').attr('disabled', viewFilterExists);
+        var $addButtons = $('.view-filter .add-button');
+        if (viewFilterExists) {
+            $addButtons.addClass('disabled');
+        }
+        else {
+            $addButtons.removeClass('disabled');
+        }
+    }
+
+
+    function configureDisabled() {
+        configureDisabledForDateTime();
+        configureDisabledForView();
+        $('#no-active-filters').css('display', filters.length ? 'none' : 'block');
+    }
+
+    function _renderFilters(filterArray) {
+        clear();
+        console.log(filterArray);
+        for (var idx in filterArray) {
+            var filter = filterArray[idx];
+            var $tr = $('<tr class="active-filter"></tr>');
+            var $deleteTd = $('<td></td>');
+            var $button = $('<button class="add-button delete-button" onclick="deleteFilter(this);">-</button>');
+            var $typ = $('<input class="typ" form="filter-form2" type="hidden" value="' + filter.name + '" name="filter-' + idx + '-typ">');
+            var $value = $('<input class="value" form="filter-form2" type="hidden" value="' + filter.value + '" name="filter-' + idx + '-value">');
+            $deleteTd.append($typ);
+            $deleteTd.append($value);
+            $deleteTd.append($button);
+            var $span = $('<span>' + filter.desc + '</span>');
+            var $describeTd = $('<td></td>');
+            $describeTd.append($span);
+            $tr.append($deleteTd);
+            $tr.append($describeTd);
+            $('#active-filter-section').append($tr);
+        }
+    }
+
+    function renderFilters() {
+        _renderFilters(filters);
+        configureDisabled();
+    }
+
+    $(document).ready(function () {
+        $('.datetimepicker').datetimepicker()
+                .datetimepicker({ step: 10});
+        $('#filter-button').click(function () {
+            $(this).toggleClass('active');
+            $('body').toggleClass('cbp-spmenu-push-toleft');
+            $('#cbp-spmenu-s2').toggleClass('cbp-spmenu-open')
+        });
+    });
+
+
+    </script>
+    <!-- End Custom JS -->
+
 {% endblock %}
 

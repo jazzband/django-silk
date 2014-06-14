@@ -2,385 +2,152 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Silky</title>
-<link rel="stylesheet" href="{% static "silk/css/fonts.css" %}"/>
-<link rel="stylesheet" href="{% static "silk/css/colors.css" %}"/>
-<link rel="stylesheet" href="{% static "silk/css/cbp.css" %}"/>
-<link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.10.4.min.css" %}"/>
-<link rel="stylesheet" href="{% static "silk/lib/jquery.datetimepicker.css" %}"/>
-<style>
-    body {
-        font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
-        background-color: #f3f3f3;
-        margin: 0;
-        font-weight: lighter;
-    }
-
-    pre {
-        font-family: Fantasque;
-        background-color: white !important;
-        padding: 0.5em !important;
-        margin: 0 !important;
-        font-size: 14px;
-    }
-
-    code {
-        font-family: Fantasque;
-        background-color: white !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 14px;
-
-    }
-
-    html {
-        margin: 0;
-    }
-
-    #header {
-        height: 50px;
-        background-color: rgb(51, 51, 68);
-        display: table;
-        width: 100%;
-        position: relative;
-
-    }
-
-    #header div {
-        display: inline-block;
-    }
-
-    .menu {
-        height: 100%;
-        padding: 0;
-        margin: 0;
-
-    }
-
-    .menu-item {
-        height: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
-        margin: 0;
-        margin-right: -4px;
-        color: white;
-
-    }
-
-    .menu-item a {
-        color: white !important;
-    }
-
-    #filter .menu-item {
-        margin-right: 0px;
-    }
-
-    .selectable-menu-item:hover {
-        background-color: #f3f3f3;
-        cursor: pointer;
-        color: black !important;
-    }
-
-    .selectable-menu-item:hover a {
-        color: black !important;
-    }
-
-    .menu-item-selected {
-        background-color: #f3f3f3;
-        color: black !important;
-    }
-
-    .menu-item-selected a {
-        color: black !important;
-    }
-
-    .menu-item-outer {
-        display: table !important;
-        height: 100%;
-        width: 100%;
-    }
-
-    .menu-item-inner {
-        display: table-cell !important;
-        vertical-align: middle;
-        width: 100%;
-    }
-
-    a:visited {
-        color: black;
-    }
-
-    a {
-        color: black;
-        text-decoration: none;
-    }
-
-    #filter {
-        position: absolute;
-        right: 0;
-    }
-
-    .description {
-        font-style: italic;
-        font-size: 14px;
-        margin-bottom: 5px;
-    }
-
-
-</style>
-{% block style %}
-{% endblock %}
-<script src="{% static 'silk/lib/jquery.min.js' %}"></script>
-<script src="{% static 'silk/lib/jquery-ui-1.10.4.min.js' %}"></script>
-<script src="{% static 'silk/lib/jquery.datetimepicker.js' %}"></script>
-<script src="{% static 'silk/js/cell.js' %}"></script>
-<script>
-
-
-    function Filter(value, desc) {
-        this.value = value;
-        this.desc = desc;
-    }
-
-    function SecondsFilter(value) {
-        Filter.call(this, value, '> ' + value + ' seconds ago');
-        this.name = 'SecondsFilter';
-    }
-    SecondsFilter.prototype = Object.create(Filter.prototype, {});
-
-    function BeforeDateFilter(value) {
-        Filter.call(this, value, '< ' + value);
-        this.name = 'BeforeDateFilter';
-    }
-    BeforeDateFilter.prototype = Object.create(Filter.prototype, {});
-
-    function AfterDateFilter(value) {
-        Filter.call(this, value, '> ' + value);
-        this.name = 'AfterDateFilter';
-    }
-    AfterDateFilter.prototype = Object.create(Filter.prototype, {});
-
-    function PathFilter(value) {
-        Filter.call(this, value, 'Path == ' + value);
-        this.name = 'PathFilter';
-    }
-    PathFilter.prototype = Object.create(Filter.prototype, {});
-
-    function ViewNameFilter(value) {
-        Filter.call(this, value, 'View == ' + value);
-        this.name = 'ViewNameFilter';
-    }
-    ViewNameFilter.prototype = Object.create(Filter.prototype, {});
-
-    var filters = [];
-
-    function filterExists(filterType) {
-        for (var idx in filters) {
-            var filter = filters[idx];
-            if (filter instanceof filterType) return true;
+    <title>Silky</title>
+    <link rel="stylesheet" href="{% static "silk/css/fonts.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/css/colors.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.10.4.min.css" %}"/>
+    <style>
+        body {
+            font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            font-weight: lighter;
         }
-        return false;
-    }
 
-    function deleteFilter(button) {
-        var parent = $(button).parent();
-        var find = $('#filter-section').find('.active-filter');
-        console.log(find);
-        var idx = find.index(parent);
-        filters.splice(idx, 1);
-        parent.remove();
-        console.log(filters);
-        configureDisabled();
-    }
+        pre {
+            font-family: Fantasque;
+            background-color: white !important;
+            padding: 0.5em !important;
+            margin: 0 !important;
+            font-size: 14px;
+        }
 
-    function addSecondsFilter() {
-        var $input = $('input[name="seconds"]');
-        var seconds = $input.val();
-        filters.push(new SecondsFilter(seconds));
-        $input.val('');
-        renderFilters();
-    }
+        code {
+            font-family: Fantasque;
+            background-color: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 14px;
 
-    function addBeforeDateFilter() {
-        var $input = $('input[name="before-date"]');
-        filters.push(new BeforeDateFilter($input.val()));
-        $input.val('');
-        renderFilters();
-    }
+        }
 
-    function addAfterDateFilter() {
-        var $input = $('input[name="after-date"]');
-        filters.push(new AfterDateFilter($input.val()));
-        $input.val('');
-        renderFilters();
-    }
+        html {
+            margin: 0;
+        }
 
-    function addViewNameFilter() {
-        var $input = $('select[name="view-name"]');
-        filters.push(new ViewNameFilter($input.val()));
-        renderFilters();
-    }
+        #header {
+            height: 50px;
+            background-color: rgb(51, 51, 68);
+            display: table;
+            width: 100%;
+            position: relative;
 
-    function addPathFilter() {
-        var $input = $('select[name="path"]');
-        filters.push(new PathFilter($input.val()));
-        renderFilters();
-    }
+        }
 
-    function clear() {
-        $('#filter-section').find('.active-filter').remove();
-    }
+        #header div {
+            display: inline-block;
+        }
 
-    function initFilters() {
-        var $filters = $('#filter-section').find('.active-filter');
-        console.log($filters);
-        $filters.each(function () {
-            var filter = $(this);
-            var typ = $(filter).children('.typ').val();
-            var value = $(filter).children('.value').val();
-            filters.push(new window[typ](value));
+        .menu {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+
+        }
+
+        .menu-item {
+            height: 100%;
+            padding-left: 10px;
+            padding-right: 10px;
+            margin: 0;
+            margin-right: -4px;
+            color: white;
+
+        }
+
+        .menu-item a {
+            color: white !important;
+        }
+
+        #filter .menu-item {
+            margin-right: 0px;
+        }
+
+        .selectable-menu-item:hover {
+            background-color: #f3f3f3;
+            cursor: pointer;
+            color: black !important;
+        }
+
+        .selectable-menu-item:hover a {
+            color: black !important;
+        }
+
+        .menu-item-selected {
+            background-color: #f3f3f3;
+            color: black !important;
+        }
+
+        .menu-item-selected a {
+            color: black !important;
+        }
+
+        .menu-item-outer {
+            display: table !important;
+            height: 100%;
+            width: 100%;
+        }
+
+        .menu-item-inner {
+            display: table-cell !important;
+            vertical-align: middle;
+            width: 100%;
+        }
+
+        a:visited {
+            color: black;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        #filter {
+            position: absolute;
+            right: 0;
+        }
+
+        .description {
+            font-style: italic;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+
+    </style>
+    {% block style %}
+    {% endblock %}
+    <script src="{% static 'silk/lib/jquery.min.js' %}"></script>
+    <script src="{% static 'silk/lib/jquery-ui-1.10.4.min.js' %}"></script>
+    <script src="{% static 'silk/js/cell.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
+            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
+            configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
+
         });
-        console.log(filters);
-    }
-
-    function configureDisabledForDateTime() {
-        var secondsFilterExists = filterExists(SecondsFilter);
-        var beforeDateFilterExists = filterExists(BeforeDateFilter);
-        var afterDateFilterExists = filterExists(AfterDateFilter);
-        var $beforeDate = $('div#before-date-filter');
-        var $afterDate = $('div#after-date-filter');
-        var $seconds = $('div#seconds-filter');
-        var $beforeDateInput = $beforeDate.find('input[name="before-date"]');
-        var $afterDateInput = $afterDate.find('input[name="after-date"]');
-        var $secondsInput = $seconds.find('input[name="seconds"]');
-        var beforeDateDisabled = secondsFilterExists || beforeDateFilterExists;
-        var afterDateDisabled = secondsFilterExists || afterDateFilterExists;
-        var secondsDisabled = secondsFilterExists || beforeDateFilterExists || afterDateFilterExists;
-        $beforeDateInput.attr('disabled', beforeDateDisabled);
-        $afterDateInput.attr('disabled', afterDateDisabled);
-        $secondsInput.attr('disabled', secondsDisabled);
-        if (beforeDateDisabled) {
-            $beforeDate.find('.add-button').addClass('disabled');
-        }
-        else {
-            $beforeDate.find('.add-button').removeClass('disabled');
-        }
-        if (afterDateDisabled) {
-            $afterDate.find('.add-button').addClass('disabled');
-        }
-        else {
-            $afterDate.find('.add-button').removeClass('disabled');
-        }
-        if (secondsDisabled) {
-            $seconds.find('.add-button').addClass('disabled');
-        }
-        else {
-            $seconds.find('.add-button').removeClass('disabled');
-        }
-    }
-
-    function configureDisabledForView() {
-        var viewFilterExists = filterExists(ViewNameFilter) || filterExists(PathFilter);
-        $('select[name="path"]').attr('disabled', viewFilterExists);
-        $('select[name="view-name"]').attr('disabled', viewFilterExists);
-        var $addButtons = $('div.view-filter .add-button');
-        if (viewFilterExists) {
-            $addButtons.addClass('disabled');
-        }
-        else {
-            $addButtons.removeClass('disabled');
-        }
-    }
-    function configureDisabled() {
-        configureDisabledForDateTime();
-        configureDisabledForView();
-    }
-
-    function renderFilters() {
-        clear();
-        console.log(filters);
-        for (var idx in filters) {
-            var filter = filters[idx];
-            var $button = $('<button class="delete-button" onclick="deleteFilter(this);">X</button>');
-            var $typ = $('<input class="typ" form="filter-form2" type="hidden" value="' + filter.name + '" name="filter-' + idx + '-typ">');
-            var $value = $('<input class="value" form="filter-form2" type="hidden" value="' + filter.value + '" name="filter-' + idx + '-value">');
-            var $span = $('<span>' + filter.desc + '</span>');
-            var $activeFilter = $('<div class="active-filter"></div>');
-            $activeFilter.append($typ);
-            $activeFilter.append($value);
-            $activeFilter.append($button);
-            $activeFilter.append($span);
-            $('#filter-section').append($activeFilter);
-        }
-        configureDisabled();
-    }
-
-    $(document).ready(function () {
-        configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
-        configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
-        configureSpanFontColors($('#num-queries-div').find('.numeric'), 10, 500);
-        initFilters();
-        $('.datetimepicker').datetimepicker()
-                .datetimepicker({ step: 10});
-    });
-</script>
-{% block js %}
-{% endblock %}
+    </script>
+    {% block js %}
+    {% endblock %}
 
 </head>
 
-<body onload="{% block onload %}{% endblock %}" class="cbp-spmenu-push">
-<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
-    <h3>Filters</h3>
+<body onload="{% block onload %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+{% block top %}
 
-    <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
-
-    <section id="filter-section">
-        {% for filter in filters %}
-            <div class="active-filter">
-                <input form="filter-form2" class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
-                <input form="filter-form2" class="value" type="hidden" value="{{ filter.value }}" name="filter-{{ forloop.counter0 }}-value">
-                <button class="delete-button" onclick="deleteFilter(this);">X</button>
-                <span>{{ filter.str }}</span>
-            </div>
-        {% endfor %}
-        <div class="button-div">
-            <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>
-        </div>
-    </section>
-
-    <div id="seconds-filter" class="date-filter">
-        <input type="number" name="seconds" placeholder="seconds ago">
-        <button class="add-button" onclick="addSecondsFilter();">+</button>
-    </div>
-    <div id="before-date-filter" class="date-filter">
-        <input type="text" class="datetimepicker" placeholder="before date" name="before-date">
-        <button class="add-button" onclick="addBeforeDateFilter();">+</button>
-    </div>
-    <div id="after-date-filter" class="date-filter">
-        <input type="text" class="datetimepicker" placeholder="after date" name="after-date">
-        <button class="add-button" onclick="addAfterDateFilter();">+</button>
-    </div>
-    <div class="view-filter">
-        <select name="view-name">
-            {% for view_name in view_names %}
-                <option>{{ view_name }}</option>
-            {% endfor %}
-        </select>
-        <button class="add-button" onclick="addViewNameFilter();">+</button>
-    </div>
-    <div class="view-filter">
-        <select name="path">
-            {% for path in options_paths %}
-                <option>{{ path }}</option>
-            {% endfor %}
-
-        </select>
-        <button class="add-button" onclick="addPathFilter();">+</button>
-    </div>
-
-
-</nav>
+{% endblock %}
 <div id="content">
     <div id="header">
         <div class="menu">

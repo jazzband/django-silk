@@ -7,6 +7,7 @@ from django.test import TestCase
 import pytz
 
 from silk import models
+from silk.profile_filters import NameFilter, FunctionNameFilter
 from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter
 from silk.tests import MockSuite
 
@@ -107,3 +108,21 @@ class TestBeforeDateFilter(TestCase):
         new_dt = timezone.make_aware(new_dt, pytz.UTC)
         self.assertFilter(new_dt, f)
 
+
+class TestProfileFilters(TestCase):
+
+    def test_view_name_filter(self):
+        profiles = mock_suite.mock_profiles(n=10)
+        p = random.choice(profiles)
+        name = p.view_name
+        requuests = models.Profile.objects.filter(NameFilter(name))
+        for p in requuests:
+            self.assertTrue(p.view_name == name)
+
+    def test_path_filter(self):
+        profiles = mock_suite.mock_profiles(n=10)
+        p = random.choice(profiles)
+        path = p.path
+        requuests = models.Profile.objects.filter(FunctionNameFilter(path))
+        for p in requuests:
+            self.assertTrue(p.path == path)
