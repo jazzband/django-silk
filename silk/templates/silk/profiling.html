@@ -50,10 +50,13 @@
         }
 
         function configureDisabled() {
+            console.log('hi');
             var $functionNameFilter = $('#function-name-filter');
             var $nameFilter = $('#name-filter');
             $('#no-active-filters').css('display', profileFilters.length ? 'none' : 'block');
-            configureDisabledForNames()
+            console.log($('#no-active-filters').css('display'))
+            configureDisabledForNames();
+
         }
 
         function configureDisabledForNames() {
@@ -91,8 +94,11 @@
         }
 
 
-        $(document).ready(function () {
 
+
+        $(document).ready(function () {
+            _initFilters(profileFilters);
+            configureDisabled()
         });
     </script>
 {% endblock %}
