@@ -82,6 +82,7 @@
         </td>
         <td>
             <select name="view-name">
+                <option value="" disabled selected>view</option>
                 {% for view_name in view_names %}
                     <option>{{ view_name }}</option>
                 {% endfor %}
@@ -94,6 +95,7 @@
         </td>
         <td>
             <select name="path">
+                <option value="" disabled selected>path</option>
                 {% for path in options_paths %}
                     <option>{{ path }}</option>
                 {% endfor %}

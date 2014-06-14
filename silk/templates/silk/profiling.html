@@ -174,11 +174,12 @@
             <button class="add-button" onclick="addFunctionNameFilter();">+</button>
         </td>
         <td>
-            <select name="function-name">
-                {% for function_name in options_func_names %}
+                <select name="function-name">
+                <option value="" disabled selected>function</option>
+                    {% for function_name in options_func_names %}
                     <option>{{ function_name }}</option>
-                {% endfor %}
-            </select>
+                    {% endfor %}
+                </select>
         </td>
     </tr>
     <tr id="name-filter" class="name-filter">
@@ -187,6 +188,7 @@
         </td>
         <td>
             <select name="name">
+                <option value="" disabled selected>name</option>
                 {% for name in options_names %}
                     <option>{{ name }}</option>
                 {% endfor %}
