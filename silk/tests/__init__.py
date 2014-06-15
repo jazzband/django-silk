@@ -11,3 +11,4 @@ from silk.tests.test_config_auth import *
 from silk.tests.test_config_max_body_size import *
 from silk.tests.test_config_meta import *
 from silk.tests.test_view_sql_detail import *
+from silk.tests.test_filters import *

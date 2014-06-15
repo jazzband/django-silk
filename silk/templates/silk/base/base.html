@@ -5,6 +5,7 @@
     <title>Silky</title>
     <link rel="stylesheet" href="{% static "silk/css/fonts.css" %}"/>
     <link rel="stylesheet" href="{% static "silk/css/colors.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.10.4.min.css" %}"/>
     <style>
         body {
             font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
@@ -123,10 +124,12 @@
             margin-bottom: 5px;
         }
 
+
     </style>
     {% block style %}
     {% endblock %}
-    <script src="{% static 'silk/lib/jquery.min.js'  %}"></script>
+    <script src="{% static 'silk/lib/jquery.min.js' %}"></script>
+    <script src="{% static 'silk/lib/jquery-ui-1.10.4.min.js' %}"></script>
     <script src="{% static 'silk/js/cell.js' %}"></script>
     <script>
         $(document).ready(function () {
@@ -139,7 +142,11 @@
     {% endblock %}
 
 </head>
-<body onload="{% block onload %}{% endblock %}">
+
+<body onload="{% block onload %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+{% block top %}
+
+{% endblock %}
 <div id="content">
     <div id="header">
         <div class="menu">

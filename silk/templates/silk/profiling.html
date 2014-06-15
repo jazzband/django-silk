@@ -1,4 +1,5 @@
 {% extends 'silk/base/root_base.html' %}
+{% load staticfiles %}
 {% load inclusion %}
 
 {% block menu %}
@@ -21,35 +22,7 @@
 
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
-    <div class="menu-item ">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Name:
-                    <select name="name" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_names %}
-                            <option value="{{ option }}"
-                                    {% if option == name %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="menu-item ">
 
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Function Name:
-                    <select name="func_name" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_func_names %}
-                            <option value="{{ option }}"
-                                    {% if option == func_name %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
     <div class="menu-item">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
@@ -78,6 +51,89 @@
             </div>
         </div>
     </div>
+    {{ block.super }}
+{% endblock %}
+
+{% block filters %}
+    <tr id="overall-time-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addOverallTimeFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="overall-time" placeholder="overall time">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Database</h4></td>
+    </tr>
+    <tr id="num-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addNumQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="num-queries" placeholder="num. queries">
+        </td>
+    </tr>
+    <tr id="time-spent-on-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addTimeSpentOnQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="time-spent-on-queries" placeholder="time spent on queries">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Date Range</h4></td>
+    </tr>
+    <tr id="seconds-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addSecondsFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="seconds" placeholder="seconds ago">
+        </td>
+    </tr>
+    <tr id="before-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
+    </tr>
+    <tr id="after-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addAfterDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Profiling</h4></td>
+    </tr>
+    <tr id="function-name-filter" class="name-filter">
+        <td>
+            <button class="add-button" onclick="addFunctionNameFilter();">+</button>
+        </td>
+        <td>
+            <select name="function-name">
+                <option value="" disabled selected>function</option>
+                {% for function_name in options_func_names %}
+                    <option>{{ function_name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr id="name-filter" class="name-filter">
+        <td>
+            <button class="add-button" onclick="addNameFilter();">+</button>
+        </td>
+        <td>
+            <select name="name">
+                <option value="" disabled selected>name</option>
+                {% for name in options_names %}
+                    <option>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
 {% endblock %}
 
 {% block data %}
