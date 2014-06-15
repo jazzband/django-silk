@@ -7,8 +7,7 @@ from django.test import TestCase
 import pytz
 
 from silk import models
-from silk.profile_filters import NameFilter, FunctionNameFilter
-from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter
+from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter, NameFilter, FunctionNameFilter
 from silk.tests import MockSuite
 
 
