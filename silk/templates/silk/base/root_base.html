@@ -104,6 +104,11 @@
         color: white;
     }
 
+    .active-filter td {
+        padding: 0;
+        margin: 0;
+    }
+
     #cbp-spmenu-s2 button {
         color: white;
         background: none;
@@ -152,6 +157,8 @@
         font-size: 20px;
         font-weight: bold;
     }
+
+
 
     .add-button.disabled {
         color: darkgray !important;
@@ -242,6 +249,13 @@
         top: 7px;
         left: 1px;
     }
+
+    h4 {
+        padding: 0;
+        margin: 5px;
+        color: white;
+        font-weight: lighter;
+    }
     </style>
     <!-- End Custom Styles -->
 {% endblock %}
@@ -259,14 +273,7 @@
 {% block top %}
     <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
         <h3>Filters</h3>
-
-        <p>
-            Build up filters using the form below in order to narrow down the requests
-            to what you're looking for.
-        </p>
-
         <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
-
 
         <table id="filter-section">
 
@@ -282,11 +289,9 @@
                     <td>
                         <input form="filter-form2" class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
                         <input form="filter-form2" class="value" type="hidden" value="{{ filter.value }}" name="filter-{{ forloop.counter0 }}-value">
-                        <button class="add-button delete-button" onclick="deleteFilter(this);">-</button>
+                        <button class="add-button delete-button" onclick="deleteFilter(this);"><span>-</span></button>
                     </td>
-                    <td>
-                        {{ filter.str }}
-                    </td>
+                    <td>{{ filter.str }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -306,7 +311,6 @@
     <script src="{% static 'silk/lib/jquery.datetimepicker.js' %}"></script>
     <script src="{% static 'silk/js/filters.js' %}"></script>
 
-    <!-- Begin Custom JS -->
     <script>
         $(document).ready(function () {
             $('.datetimepicker').datetimepicker()
@@ -319,7 +323,6 @@
             });
         });
     </script>
-    <!-- End Custom JS -->
 
 {% endblock %}
 

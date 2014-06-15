@@ -137,11 +137,11 @@ class FunctionNameFilter(BaseFilter):
 
 class NumQueriesFilter(BaseFilter):
     def __init__(self, n):
-        value = n
+        value = int(n)
         super(NumQueriesFilter, self).__init__(value, num_queries__gte=n)
 
     def __str__(self):
-        return '#queries > %d' % self.value
+        return '#queries >= %s' % self.value
 
     def contribute_to_query_set(self, query_set):
         return query_set.annotate(num_queries=Count('queries'))
@@ -149,11 +149,11 @@ class NumQueriesFilter(BaseFilter):
 
 class TimeSpentOnQueriesFilter(BaseFilter):
     def __init__(self, n):
-        value = n
+        value = int(n)
         super(TimeSpentOnQueriesFilter, self).__init__(value, db_time__gte=n)
 
     def __str__(self):
-        return 'DB Time > %d' % self.value
+        return 'DB Time >= %s' % self.value
 
     def contribute_to_query_set(self, query_set):
         return query_set.annotate(db_time=Sum('queries__time_taken'))
@@ -161,9 +161,9 @@ class TimeSpentOnQueriesFilter(BaseFilter):
 
 class OverallTimeFilter(BaseFilter):
     def __init__(self, n):
-        value = n
+        value = int(n)
         super(OverallTimeFilter, self).__init__(value, time_taken__gte=n)
 
     def __str__(self):
-        return 'Time > %d' % self.value
+        return 'Time >= %s' % self.value
 

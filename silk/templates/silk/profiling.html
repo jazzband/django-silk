@@ -20,39 +20,6 @@
 
 {% endblock %}
 
-{% block js %}
-
-    <script src="{% static 'silk/js/filters.js' %}"></script>
-
-
-    {{ block.super }}
-    <script>
-        function configureDisabled() {
-            console.log('hi');
-            var $functionNameFilter = $('#function-name-filter');
-            var $nameFilter = $('#name-filter');
-            var $noactivefilters = $('#no-active-filters');
-            $noactivefilters.css('display', profileFilters.length ? 'none' : 'block');
-            console.log($noactivefilters.css('display'));
-            configureDisabledForNames();
-            configureDisabledForDateTime();
-        }
-
-        function configureDisabledForNames() {
-            var nameFilterExists = filterExists(NameFilter) || filterExists(FunctionNameFilter);
-            $('select[name="name"]').attr('disabled', nameFilterExists);
-            $('select[name="function-name"]').attr('disabled', nameFilterExists);
-            var $addButtons = $('.name-filter .add-button');
-            if (nameFilterExists) {
-                $addButtons.addClass('disabled');
-            }
-            else {
-                $addButtons.removeClass('disabled');
-            }
-        }
-    </script>
-{% endblock %}
-
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
 
@@ -88,6 +55,36 @@
 {% endblock %}
 
 {% block filters %}
+    <tr id="overall-time-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addOverallTimeFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="overall-time" placeholder="overall time">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Database</h4></td>
+    </tr>
+    <tr id="num-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addNumQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="num-queries" placeholder="num. queries">
+        </td>
+    </tr>
+    <tr id="time-spent-on-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addTimeSpentOnQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="time-spent-on-queries" placeholder="time spent on queries">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Date Range</h4></td>
+    </tr>
     <tr id="seconds-filter" class="date-filter">
         <td>
             <button class="add-button" onclick="addSecondsFilter();">+</button>
@@ -108,17 +105,20 @@
         </td>
         <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
     </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Profiling</h4></td>
+    </tr>
     <tr id="function-name-filter" class="name-filter">
         <td>
             <button class="add-button" onclick="addFunctionNameFilter();">+</button>
         </td>
         <td>
-                <select name="function-name">
+            <select name="function-name">
                 <option value="" disabled selected>function</option>
-                    {% for function_name in options_func_names %}
+                {% for function_name in options_func_names %}
                     <option>{{ function_name }}</option>
-                    {% endfor %}
-                </select>
+                {% endfor %}
+            </select>
         </td>
     </tr>
     <tr id="name-filter" class="name-filter">

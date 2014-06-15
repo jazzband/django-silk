@@ -6,15 +6,6 @@
     {% root_menu request %}
 {% endblock %}
 
-{% block style %}
-    {{ block.super }}
-
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-{% endblock %}
-
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
     <div class="menu-item ">
@@ -49,6 +40,36 @@
 {% endblock %}
 
 {% block filters %}
+    <tr id="overall-time-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addOverallTimeFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="overall-time" placeholder="overall time">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Database</h4></td>
+    </tr>
+    <tr id="num-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addNumQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="num-queries" placeholder="num. queries">
+        </td>
+    </tr>
+    <tr id="time-spent-on-queries-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addTimeSpentOnQueriesFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="time-spent-on-queries" placeholder="time spent on queries">
+        </td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Date Range</h4></td>
+    </tr>
     <tr id="seconds-filter" class="date-filter">
         <td>
             <button class="add-button" onclick="addSecondsFilter();">+</button>
@@ -68,6 +89,9 @@
             <button class="add-button" onclick="addAfterDateFilter();">+</button>
         </td>
         <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
+    </tr>
+    <tr class="filter-heading">
+        <td colspan="2"><h4>Request</h4></td>
     </tr>
     <tr id="view-name-filter" class="view-filter">
         <td>

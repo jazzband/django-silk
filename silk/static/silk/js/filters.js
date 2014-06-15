@@ -52,6 +52,28 @@ function FunctionNameFilter(value) {
 
 FunctionNameFilter.prototype = Object.create(Filter.prototype, {});
 
+
+function NumQueriesFilter(value) {
+    Filter.call(this, value, '#queries >= ' + value);
+    this.name = 'NumQueriesFilter';
+}
+
+NumQueriesFilter.prototype = Object.create(Filter.prototype, {});
+
+function TimeSpentOnQueriesFilter(value) {
+    Filter.call(this, value, 'DB Time >= ' + value);
+    this.name = 'TimeSpentOnQueriesFilter';
+}
+
+TimeSpentOnQueriesFilter.prototype = Object.create(Filter.prototype, {});
+
+function OverallTimeFilter(value) {
+    Filter.call(this, value, 'Time >= ' + value);
+    this.name = 'OverallTimeFilter';
+}
+
+OverallTimeFilter.prototype = Object.create(Filter.prototype, {});
+
 ///
 /// Filter Operations
 ///
@@ -76,64 +98,54 @@ function deleteFilter(button) {
 }
 
 function addSecondsFilter() {
-    var $input = $('input[name="seconds"]');
-    if (!$input.attr('disabled')) {
-        var seconds = $input.val();
-        filters.push(new SecondsFilter(seconds));
-        $input.val('');
-        renderFilters();
-    }
+    addFilter($('input[name="seconds"]'), SecondsFilter);
 }
 
 function addBeforeDateFilter() {
-    var $input = $('input[name="before-date"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new BeforeDateFilter($input.val()));
-        $input.val('');
-        renderFilters();
-    }
+    addFilter($('input[name="before-date"]'), BeforeDateFilter);
 }
 
 
 function addAfterDateFilter() {
-    var $input = $('input[name="after-date"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new AfterDateFilter($input.val()));
-        $input.val('');
-        renderFilters();
-    }
+    addFilter($('input[name="after-date"]'), AfterDateFilter);
 }
 
 function addNameFilter() {
-    var $input = $('select[name="name"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new NameFilter($input.val()));
-        renderFilters();
-    }
+    addFilter($('select[name="name"]'), NameFilter);
 }
 
 function addFunctionNameFilter() {
-    var $input = $('select[name="function-name"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new FunctionNameFilter($input.val()));
-        renderFilters();
-    }
+    addFilter($('select[name="function-name"]'), FunctionNameFilter);
 }
 
 function addViewNameFilter() {
-    var $input = $('select[name="view-name"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new ViewNameFilter($input.val()));
-        renderFilters();
-    }
+    addFilter($('select[name="view-name"]'), ViewNameFilter);
 }
 
-function addPathFilter() {
-    var $input = $('select[name="path"]');
-    if (!$input.attr('disabled')) {
-        filters.push(new PathFilter($input.val()));
-        renderFilters();
+function addFilter(selector, filter) {
+    if (!selector.attr('disabled')) {
+        var val = selector.val();
+        if (val.toString().trim()) {
+            filters.push(new filter(val));
+            renderFilters();
+            selector.val(null);
+        }
     }
+}
+function addPathFilter() {
+    addFilter($('select[name="path"]'), PathFilter);
+}
+
+function addNumQueriesFilter() {
+    addFilter($('input[name="num-queries"]'), NumQueriesFilter);
+}
+
+function addOverallTimeFilter() {
+    addFilter($('input[name="overall-time"]'), OverallTimeFilter);
+}
+
+function addTimeSpentOnQueriesFilter() {
+    addFilter($('input[name="time-spent-on-queries"]'), TimeSpentOnQueriesFilter);
 }
 
 ///
@@ -193,12 +205,48 @@ function configureDisabledForView() {
     }
 }
 
-/**
- * This should be overridden in the views that implement filtering.
- */
+function configureDisabledForNames() {
+    var nameFilterExists = filterExists(NameFilter) || filterExists(FunctionNameFilter);
+    $('select[name="name"]').attr('disabled', nameFilterExists);
+    $('select[name="function-name"]').attr('disabled', nameFilterExists);
+    var $addButtons = $('.name-filter .add-button');
+    if (nameFilterExists) {
+        $addButtons.addClass('disabled');
+    }
+    else {
+        $addButtons.removeClass('disabled');
+    }
+}
+
+function configureDisabledForDatabase() {
+    _configureDisabled('input[name="num-queries"]', NumQueriesFilter, '#num-queries-filter');
+    _configureDisabled('input[name="time-spent-on-queries"]', TimeSpentOnQueriesFilter, '#time-spent-on-queries-filter');
+}
+
+
+function _configureDisabled(inputSelector, filterClass, filterSelector) {
+    var sel = $(inputSelector);
+    var exists = filterExists(filterClass);
+    var $addButtons = $(filterSelector).find('.add-button');
+    sel.attr('disabled', exists);
+    if (exists) {
+        $addButtons.addClass('disabled');
+    }
+    else {
+        $addButtons.removeClass('disabled');
+    }
+}
+
+function configureDisabledForOverallTime() {
+    _configureDisabled('input[name="overall-time"]', OverallTimeFilter, '#overall-time-filter');
+}
+
 function configureDisabled() {
     configureDisabledForDateTime();
     configureDisabledForView();
+    configureDisabledForNames();
+    configureDisabledForDatabase();
+    configureDisabledForOverallTime();
     $('#no-active-filters').css('display', filters.length ? 'none' : 'block');
 }
 
