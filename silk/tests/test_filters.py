@@ -56,7 +56,7 @@ class TestRequestFilters(TestCase):
     def test_num_queries_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         counts = sorted([x.queries.count() for x in requests])
-        c = counts[floor(len(counts) / 2)]
+        c = counts[int(floor(len(counts) / 2))]
         num_queries_filter = NumQueriesFilter(c)
         query_set = models.Request.objects.all()
         query_set = num_queries_filter.contribute_to_query_set(query_set)
@@ -67,7 +67,7 @@ class TestRequestFilters(TestCase):
     def test_time_spent_queries_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         time_taken = sorted(sum(q.time_taken for q in x.queries.all()) for x in requests)
-        c = time_taken[floor(len(time_taken) / 2)]
+        c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = TimeSpentOnQueriesFilter(c)
         query_set = models.Request.objects.all()
         query_set = time_taken_filter.contribute_to_query_set(query_set)
@@ -78,7 +78,7 @@ class TestRequestFilters(TestCase):
     def test_time_spent_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         time_taken = sorted(x.time_taken for x in requests)
-        c = time_taken[floor(len(time_taken) / 2)]
+        c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = OverallTimeFilter(c)
         query_set = models.Request.objects.all()
         query_set = time_taken_filter.contribute_to_query_set(query_set)
@@ -166,7 +166,7 @@ class TestProfileFilters(TestCase):
     def test_num_queries_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
         counts = sorted([x.queries.count() for x in profiles])
-        c = counts[floor(len(counts) / 2)]
+        c = counts[int(floor(len(counts) / 2))]
         num_queries_filter = NumQueriesFilter(c)
         query_set = models.Profile.objects.all()
         query_set = num_queries_filter.contribute_to_query_set(query_set)
@@ -177,7 +177,7 @@ class TestProfileFilters(TestCase):
     def test_time_spent_queries_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
         time_taken = sorted(sum(q.time_taken for q in x.queries.all()) for x in profiles)
-        c = time_taken[floor(len(time_taken) / 2)]
+        c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = TimeSpentOnQueriesFilter(c)
         query_set = models.Profile.objects.all()
         query_set = time_taken_filter.contribute_to_query_set(query_set)
@@ -188,7 +188,7 @@ class TestProfileFilters(TestCase):
     def test_time_spent_filter(self):
         profiles = [mock_suite.mock_request() for _ in range(0, 10)]
         time_taken = sorted(x.time_taken for x in profiles)
-        c = time_taken[floor(len(time_taken) / 2)]
+        c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = OverallTimeFilter(c)
         query_set = models.Profile.objects.all()
         query_set = time_taken_filter.contribute_to_query_set(query_set)
