@@ -39,6 +39,7 @@ setup(
         'requests>=2,<=3',
         'sqlparse>=0.1,<0.2',
         'Jinja2>=2.7,<3',
-        'autopep8>=1,<2'
+        'autopep8>=1,<2',
+        'pytz==2014.2'
     ]
 )
