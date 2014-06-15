@@ -23,7 +23,7 @@ class ProfilingView(View):
     session_key_profile_filters = 'session_key_profile_filters'
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(ProfilingView, self).__init__(**kwargs)
 
     def _get_distinct_values(self, field, silk_request):
         if silk_request:
