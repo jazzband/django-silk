@@ -22,6 +22,9 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_PERMISSIONS': default_permissions,
         'SILKY_MAX_REQUEST_BODY_SIZE': -1,
         'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
+        'SILKY_ELASTICSEARCH_HOST': 'localhost',
+        'SILKY_ELASTICSEARCH_PORT': 9200,
+        'SILKY_ELASTICSEARCH_INDEX': 'silk'
     }
 
     def _setup(self):
