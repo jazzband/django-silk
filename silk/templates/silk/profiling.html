@@ -1,4 +1,5 @@
 {% extends 'silk/base/root_base.html' %}
+{% load staticfiles %}
 {% load inclusion %}
 
 {% block menu %}
@@ -21,40 +22,18 @@
 
 {% block js %}
 
-
+    <script src="{% static 'silk/js/filters.js' %}"></script>
 
 
     {{ block.super }}
     <script>
-        var profileFilters = [];
-
-        function NameFilter(value) {
-            Filter.call(this, value, 'Name == ' + value);
-            this.name = 'NameFilter';
-        }
-        NameFilter.prototype = Object.create(Filter.prototype, {});
-
-        function FunctionNameFilter(value) {
-            Filter.call(this, value, 'Function Name == ' + value);
-            this.name = 'FunctionNameFilter';
-        }
-
-        FunctionNameFilter.prototype = Object.create(Filter.prototype, {});
-
-        function deleteFilter(button) {
-            _deleteFilter(button, profileFilters);
-        }
-
-        function filterExists(filterType) {
-            return _filterExists(filterType, profileFilters);
-        }
-
         function configureDisabled() {
             console.log('hi');
             var $functionNameFilter = $('#function-name-filter');
             var $nameFilter = $('#name-filter');
-            $('#no-active-filters').css('display', profileFilters.length ? 'none' : 'block');
-            console.log($('#no-active-filters').css('display'))
+            var $noactivefilters = $('#no-active-filters');
+            $noactivefilters.css('display', profileFilters.length ? 'none' : 'block');
+            console.log($noactivefilters.css('display'));
             configureDisabledForNames();
             configureDisabledForDateTime();
         }
@@ -71,46 +50,6 @@
                 $addButtons.removeClass('disabled');
             }
         }
-
-        function renderFilters() {
-            _renderFilters(profileFilters);
-            configureDisabled();
-        }
-
-        function addSecondsFilter() {
-            _addSecondsFilter(profileFilters);
-        }
-
-
-        function addBeforeDateFilter() {
-            _addBeforeDataFilter(profileFilters);
-        }
-
-        function addAfterDateFilter() {
-            _addAfterDateFilter(profileFilters);
-        }
-
-        function addNameFilter() {
-            var $input = $('select[name="name"]');
-            if (!$input.attr('disabled')) {
-                profileFilters.push(new NameFilter($input.val()));
-                renderFilters();
-            }
-        }
-
-        function addFunctionNameFilter() {
-            var $input = $('select[name="function-name"]');
-            if (!$input.attr('disabled')) {
-                profileFilters.push(new FunctionNameFilter($input.val()));
-                renderFilters();
-            }
-        }
-
-
-        $(document).ready(function () {
-            _initFilters(profileFilters);
-            configureDisabled()
-        });
     </script>
 {% endblock %}
 

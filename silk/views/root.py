@@ -50,6 +50,7 @@ class RootView(View):
         if path:
             query_set = query_set.filter(path=path)
         for f in filters:
+            query_set = f.contribute_to_query_set(query_set)
             query_set = query_set.filter(f)
         return list(query_set[:show])
 

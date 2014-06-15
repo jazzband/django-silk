@@ -9,6 +9,7 @@ from django.db import transaction
 import sqlparse
 
 
+
 # Seperated out so can use in tests w/o models
 def _time_taken(start_time, end_time):
     d = end_time - start_time
@@ -110,7 +111,6 @@ class Response(models.Model):
         else:
             raw = {}
         return CaseInsensitiveDictionary(raw)
-
 
 
 class SQLQueryManager(models.Manager):
