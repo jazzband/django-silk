@@ -24,7 +24,8 @@ class TestRootViewDefaults(TestCase):
 
 class TestContext(TestCase):
     def test_default(self):
-        request = Mock(spec_set=['GET'])
+        request = Mock(spec_set=['GET', 'session'])
+        request.session = {}
         request.GET = {}
         context = RootView()._create_context(request)
         self.assertDictContainsSubset({
@@ -38,7 +39,8 @@ class TestContext(TestCase):
         self.assertIn('results', context)
 
     def test_get(self):
-        request = Mock(spec_set=['GET'])
+        request = Mock(spec_set=['GET', 'session'])
+        request.session = {}
         show = 10
         path = '/path/to/somewhere/'
         order_by = 'Path'

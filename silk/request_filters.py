@@ -1,7 +1,9 @@
-"""Django queryset filters used by the requests view"""
+"""
+Django queryset filters used by the requests view
+"""
 from datetime import timedelta, datetime
 
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from django.utils import timezone
 
 from silk.templatetags.filters import _silk_date_time
@@ -29,6 +31,15 @@ class BaseFilter(Q):
         filter_class = globals()[typ]
         val = d.get('value', None)
         return filter_class(val)
+
+    def contribute_to_query_set(self, query_set):
+        """
+        make any changes to the query-set before the query is applied,
+        e.g. annotate with extra fields
+        :param query_set: a django queryset
+        :return: a new query set that this filter can then be used with
+        """
+        return query_set
 
 
 class SecondsFilter(BaseFilter):
@@ -122,3 +133,37 @@ class FunctionNameFilter(BaseFilter):
 
     def __str__(self):
         return 'func_name == %s' % self.value
+
+
+class NumQueriesFilter(BaseFilter):
+    def __init__(self, n):
+        value = int(n)
+        super(NumQueriesFilter, self).__init__(value, num_queries__gte=n)
+
+    def __str__(self):
+        return '#queries >= %s' % self.value
+
+    def contribute_to_query_set(self, query_set):
+        return query_set.annotate(num_queries=Count('queries'))
+
+
+class TimeSpentOnQueriesFilter(BaseFilter):
+    def __init__(self, n):
+        value = int(n)
+        super(TimeSpentOnQueriesFilter, self).__init__(value, db_time__gte=n)
+
+    def __str__(self):
+        return 'DB Time >= %s' % self.value
+
+    def contribute_to_query_set(self, query_set):
+        return query_set.annotate(db_time=Sum('queries__time_taken'))
+
+
+class OverallTimeFilter(BaseFilter):
+    def __init__(self, n):
+        value = int(n)
+        super(OverallTimeFilter, self).__init__(value, time_taken__gte=n)
+
+    def __str__(self):
+        return 'Time >= %s' % self.value
+

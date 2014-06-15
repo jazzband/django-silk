@@ -1,10 +1,9 @@
 import json
 import logging
 import sys
-from django.core.urlresolvers import resolve
 
+from django.core.urlresolvers import resolve
 from django.utils.encoding import DjangoUnicodeDecodeError
-from rest_framework.reverse import reverse
 
 from silk import models
 from silk.collector import DataCollector

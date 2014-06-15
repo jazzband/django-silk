@@ -55,8 +55,9 @@ class TestProfilingViewGetObjects(TestCase):
 
 class TestProfilingContext(TestCase):
     def test_default(self):
-        request = Mock(spec_set=['GET'])
+        request = Mock(spec_set=['GET', 'session'])
         request.GET = {}
+        request.session = {}
         context = ProfilingView()._create_context(request)
         self.assertDictContainsSubset({
                                           'show': ProfilingView.default_show,
@@ -69,7 +70,8 @@ class TestProfilingContext(TestCase):
         self.assertIn('results', context)
 
     def test_get(self):
-        request = Mock(spec_set=['GET'])
+        request = Mock(spec_set=['GET', 'session'])
+        request.session = {}
         show = 10
         func_name = 'func_name'
         name = 'name'
