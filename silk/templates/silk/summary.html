@@ -29,56 +29,105 @@
             margin-top: 8px;
             font-size: 12px;
         }
+
+        .no-data {
+            font-size: 12px;
+            font-style: oblique;
+            margin-left: 10px;
+        }
     </style>
 {% endblock %}
 {% block data %}
     <div class="wrapper">
         <div class="inner">
             <h1>Summary</h1>
+
             <p>Silk looks at application performance from three perspectives: the overall time spent on each request,
                 the number of database queries and the time spent on those database queries.</p>
-            <p>The below gives you a summary of those perspectives. You can use the filtering tab to change the date range of the
-            summary.</p>
-            <div class="summary-cell">
-                <div class="num"><span class="numeric">{{ num_requests }}</span></div>
-                <div class="desc">Requests</div>
-            </div>
-            <div class="summary-cell">
-                <div class="num"><span class="numeric">{{ num_profiles }}</span></div>
-                <div class="desc">Profiles</div>
-            </div>
-            <div class="summary-cell">
-                <div class="num"><span class="numeric">{{ avg_overall_time | floatformat:0 }}<span class="unit">ms</span></span></div>
-                <div class="desc">Avg. Time</div>
-            </div>
-            <div class="summary-cell">
-                <div class="num"><span class="numeric">{{ avg_num_queries | floatformat:2 }}</span></div>
-                <div class="desc">Avg. #Queries</div>
-            </div>
-            <div class="summary-cell">
-                <div class="num"><span class="numeric">{{ avg_time_spent_on_queries |floatformat:0 }}<span class="unit">ms</span></span></div>
-                <div class="desc">Avg. DB Time</div>
-            </div>
+
+            <p>The below gives you a summary of those perspectives. <b>You can use the filtering tab to change the date range of the
+                summary.</b></p>
+
+            {% if num_requests %}
+
+                <div class="summary-cell">
+                    <div class="num"><span class="numeric">{{ num_requests }}</span></div>
+                    <div class="desc">Requests</div>
+                </div>
+                <div class="summary-cell">
+                    <div class="num"><span class="numeric">{{ num_profiles }}</span></div>
+                    <div class="desc">Profiles</div>
+                </div>
+                <div class="summary-cell">
+                    <div class="num"><span class="numeric">{{ avg_overall_time | floatformat:0 }}<span class="unit">ms</span></span></div>
+                    <div class="desc">Avg. Time</div>
+                </div>
+                <div class="summary-cell">
+                    <div class="num"><span class="numeric">{{ avg_num_queries | floatformat:2 }}</span></div>
+                    <div class="desc">Avg. #Queries</div>
+                </div>
+                <div class="summary-cell">
+                    <div class="num"><span class="numeric">{{ avg_time_spent_on_queries |floatformat:0 }}<span class="unit">ms</span></span></div>
+                    <div class="desc">Avg. DB Time</div>
+                </div>
+            {% else %}
+                <p class="no-data">No data</p>
+            {% endif %}
 
             <h2>Most Time Overall</h2>
 
             <p>The below are the worst requests from your longest running views.</p>
-            {% for x in longest_queries_by_view %}
-                {% request_summary x %}
-            {% endfor %}
+            {% if longest_queries_by_view %}
+                {% for x in longest_queries_by_view %}
+                    {% request_summary x %}
+                {% endfor %}
+            {% else %}
+                <p class="no-data">No data</p>
+            {% endif %}
             <h2>Most Time Spent in Database</h2>
 
             <p>The below are the worst requests from your views that spend the most time in the database.</p>
-            {% for x in most_time_spent_in_db %}
-                {% request_summary x %}
-            {% endfor %}
+            {% if most_time_spent_in_db %}
+                {% for x in most_time_spent_in_db %}
+                    {% request_summary x %}
+                {% endfor %}
+            {% else %}
+                <p class="no-data">No data</p>
+            {% endif %}
             <h2>Most Database Queries</h2>
 
             <p>The below are the worst requests from your views that send the most database queries.</p>
-            {% for x in most_queries %}
-                {% request_summary x %}
-            {% endfor %}
+            {% if most_queries %}
+                {% for x in most_queries %}
+                    {% request_summary x %}
+                {% endfor %}
+            {% else %}
+                <p class="no-data">No data</p>
+            {% endif %}
         </div>
     </div>
 
+{% endblock %}
+
+{% block filters %}
+    <tr id="seconds-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addSecondsFilter();">+</button>
+        </td>
+        <td>
+            <input type="number" name="seconds" placeholder="seconds ago">
+        </td>
+    </tr>
+    <tr id="before-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
+    </tr>
+    <tr id="after-date-filter" class="date-filter">
+        <td>
+            <button class="add-button" onclick="addAfterDateFilter();">+</button>
+        </td>
+        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
+    </tr>
 {% endblock %}
