@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>silk - Silky smooth profiling for the Django Framework</title>
+    <!-- social media tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@mtford90">
+    <meta name="twitter:title" content="Silk">
+    <meta name="twitter:description" content="Silky smooth profiling for the Django Framework">
+    <meta name=" twitter:creator " content="@mtford90 ">
+    <!--   TODO <meta name="twitter:image:src " content="">-->
+    <meta property="og:title " content="Silk" />
+    <meta property="og:type " content="website" />
+    <!--   TODO  <meta property="og:url " content="http://"/>-->
+    <!--    TODO <meta property="og:image " content="https://s3-eu-west-1.amazonaws.com/mosayc-ire/mosayc_icon.png "/>-->
+    <meta property="og:description " content="Silky smooth profiling for the Django Framework">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="assets/css/fonts.css" />
+    <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,400,500,700' rel='stylesheet' type='text/css'>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fira Sans';
+            background-color: rgb(51, 51, 68);
+            color: white;
+            text-align: center;
+            font-style: normal;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+        }
+        #title {
+            font-size: 48px;
+            font-weight: 500;
+        }
+        #title-desc {
+            font-size: 14px;
+            font-weight: 300;
+        }
+        div.img {
+            width: 300px;;
+            height: 200px;
+            background-color: white;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .container {
+            width: 320px;
+        }
+        @media (min-width: 768px) {
+            #title {
+                text-align: right;
+            }
+            #title-desc {
+                text-align: left;
+                position: relative;
+                right: 26px;
+                top: 33px;
+            }
+            .container {
+                width: 768px;
+            }
+            #bottom-container {
+                width: 470px;
+            }
+            div.img {
+                width: 464px;
+                height: 338px;
+                background-color: white;
+            }
+        }
+        @media (min-width: 992px) {
+            .container {
+                width: 768px;
+            }
+            #bottom-container {
+                width: 768px;
+            }
+            div.img {
+                width: 232px;
+                height: 169px;
+                background-color: white;
+            }
+        }
+        /**
+        * Override bootstrap to maintain styles for a bit longer than usual.
+        */
+        @media (min-width: 768px) {
+            .col-md-5 {
+                width: 41.66666667%;
+            }
+            .col-md-1,
+            .col-md-2,
+            .col-md-3,
+            .col-md-4,
+            .col-md-5,
+            .col-md-6,
+            .col-md-7,
+            .col-md-8,
+            .col-md-9,
+            .col-md-10,
+            .col-md-11,
+            .col-md-12 {
+                float: left;
+            }
+        }
+        .menu {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .menu .desc {
+            width: 352;
+        }
+        div.outer-image {
+            font-size: 12px;
+        }
+        div.inner-image {
+            margin: auto;
+        }
+        .outer-image {} #img-1 {
+            background: url('assets/images/1.png');
+            background-size: cover;
+        }
+        #img-2 {
+            background: url('assets/images/2.png');
+            background-size: cover;
+        }
+        #img-3 {
+            background: url('assets/images/3.png');
+            background-size: cover;
+        }
+        a {
+            color: white;
+            text-decoration: underline
+        }
+        a:hover {
+            color: white;
+        }
+        .row {
+            padding-top: 50px;
+        }
+        #button {
+            padding-top: 20px;
+            padding-bottom: 40px;;
+        }
+        #button img {
+            padding-left: 10px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5" id="title">
+                silk.
+            </div>
+            <div class="col-md-7" id="title-desc">
+                Silky smooth profiling for the Django Framework
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="bottom-container">
+        <div class="row">
+            <div class="col-md-4 outer-image">
+                <div id="img-1" class="img"></div>
+                <span>Profile blocks of code for speed and database queries using the built-in decorator and context manager.</span>
+            </div>
+            <div class="col-md-4 outer-image">
+                <div id="img-2" class="img"></div>
+                <span>Profile blocks of code for speed and database queries using the built-in decorator and context manager.</span>
+            </div>
+            <div class="col-md-4 outer-image">
+                <div id="img-3" class="img"></div>
+                <span>Profile blocks of code for speed and database queries using the built-in decorator and context manager.</span>
+            </div>
+        </div>
+        <div class=" row menu">
+            <div class="desc">Play with the <a href="#">live demo</a>, checkout the source on github, read the docs or download from PyPi:</div>
+            <div id="button">
+                <img src="assets/images/github.png" width=40>
+                <img src="assets/images/rtd.png" width=40>
+                <img src="assets/images/python.png" width=40>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+</html>
