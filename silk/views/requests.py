@@ -14,7 +14,7 @@ from silk.request_filters import BaseFilter
 __author__ = 'mtford'
 
 
-class RootView(View):
+class RequestsView(View):
     show = [5, 10, 25, 100, 250]
     default_show = 25
 

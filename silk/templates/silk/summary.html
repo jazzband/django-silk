@@ -1,0 +1,84 @@
+{% extends 'silk/base/root_base.html' %}
+{% load inclusion %}
+{% block menu %}
+    {% root_menu request %}
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        .wrapper {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .inner {
+            margin: auto;
+            width: 960px;
+        }
+
+        .summary-cell {
+            display: inline-block;
+            text-align: center;
+            padding: 10px;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-cell .desc {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+{% block data %}
+    <div class="wrapper">
+        <div class="inner">
+            <h1>Summary</h1>
+            <p>Silk looks at application performance from three perspectives: the overall time spent on each request,
+                the number of database queries and the time spent on those database queries.</p>
+            <p>The below gives you a summary of those perspectives. You can use the filtering tab to change the date range of the
+            summary.</p>
+            <div class="summary-cell">
+                <div class="num"><span class="numeric">{{ num_requests }}</span></div>
+                <div class="desc">Requests</div>
+            </div>
+            <div class="summary-cell">
+                <div class="num"><span class="numeric">{{ num_profiles }}</span></div>
+                <div class="desc">Profiles</div>
+            </div>
+            <div class="summary-cell">
+                <div class="num"><span class="numeric">{{ avg_overall_time | floatformat:0 }}<span class="unit">ms</span></span></div>
+                <div class="desc">Avg. Time</div>
+            </div>
+            <div class="summary-cell">
+                <div class="num"><span class="numeric">{{ avg_num_queries | floatformat:2 }}</span></div>
+                <div class="desc">Avg. #Queries</div>
+            </div>
+            <div class="summary-cell">
+                <div class="num"><span class="numeric">{{ avg_time_spent_on_queries |floatformat:0 }}<span class="unit">ms</span></span></div>
+                <div class="desc">Avg. DB Time</div>
+            </div>
+
+            <h2>Most Time Overall</h2>
+
+            <p>The below are the worst requests from your longest running views.</p>
+            {% for x in longest_queries_by_view %}
+                {% request_summary x %}
+            {% endfor %}
+            <h2>Most Time Spent in Database</h2>
+
+            <p>The below are the worst requests from your views that spend the most time in the database.</p>
+            {% for x in most_time_spent_in_db %}
+                {% request_summary x %}
+            {% endfor %}
+            <h2>Most Database Queries</h2>
+
+            <p>The below are the worst requests from your views that send the most database queries.</p>
+            {% for x in most_queries %}
+                {% request_summary x %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
