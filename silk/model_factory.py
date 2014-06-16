@@ -133,7 +133,6 @@ class ResponseModelFactory(object):
         super(ResponseModelFactory, self).__init__()
         self.response = response
 
-
     def construct_response_model(self):
         silk_request = DataCollector().request
         assert silk_request, 'Cant construct a response model if there is no request model'
