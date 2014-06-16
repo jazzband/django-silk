@@ -1,0 +1,16 @@
+/**
+*   Fira Sans
+*/
+
+@font-face
+{
+    font-family: lightfont;
+    src: url(../fonts/fira/FiraSans-Regular.woff);
+}
+
+@font-face
+{
+    font-family: boldfont;
+    src: url(../fonts/fira/FiraSans-Medium.woff);
+}
+
