@@ -6,6 +6,17 @@
     {% root_menu request %}
 {% endblock %}
 
+{% block js %}
+{{ block.super }}
+    <script>
+
+    $(document).ready(function () {
+         initFilters();
+            initFilterButton();
+    });
+    </script>
+{% endblock %}
+
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
     <div class="menu-item ">

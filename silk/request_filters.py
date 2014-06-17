@@ -9,6 +9,10 @@ from django.utils import timezone
 from silk.templatetags.filters import _silk_date_time
 
 
+class FilterValidationError(Exception):
+    pass
+
+
 class BaseFilter(Q):
     def __init__(self, value=None, *args, **kwargs):
         self.value = value
@@ -45,7 +49,10 @@ class BaseFilter(Q):
 class SecondsFilter(BaseFilter):
     def __init__(self, n):
         if n:
-            value = int(n)
+            try:
+                value = int(n)
+            except ValueError as e:
+                raise FilterValidationError(e)
             now = timezone.now()
             frm_dt = now - timedelta(seconds=value)
             super(SecondsFilter, self).__init__(value, start_time__gt=frm_dt)
@@ -57,16 +64,25 @@ class SecondsFilter(BaseFilter):
         return '>%d seconds ago' % self.value
 
 
+def _parse(dt, fmt):
+    """attempt to coerce dt into a datetime given fmt, otherwise raise
+    a FilterValidationError"""
+    try:
+        dt = datetime.strptime(dt, fmt)
+    except TypeError:
+        if not isinstance(dt, datetime):
+            raise FilterValidationError('Must be a datetime object')
+    except ValueError as e:
+        raise FilterValidationError(e)
+    return dt
+
+
 class BeforeDateFilter(BaseFilter):
     fmt = '%Y/%m/%d %H:%M'
 
     def __init__(self, dt):
-        try:
-            dt = datetime.strptime(dt, self.fmt)
-        except TypeError:  # Assume its a datetime
-            pass
-        value = dt
-        super(BeforeDateFilter, self).__init__(value, start_time__lt=dt)
+        value = _parse(dt, self.fmt)
+        super(BeforeDateFilter, self).__init__(value, start_time__lt=value)
 
     @property
     def serialisable_value(self):
@@ -80,12 +96,8 @@ class AfterDateFilter(BaseFilter):
     fmt = '%Y/%m/%d %H:%M'
 
     def __init__(self, dt):
-        try:
-            dt = datetime.strptime(dt, self.fmt)
-        except TypeError:  # Assume its a datetime
-            pass
-        value = dt
-        super(AfterDateFilter, self).__init__(value, start_time__gt=dt)
+        value = _parse(dt, self.fmt)
+        super(AfterDateFilter, self).__init__(value, start_time__gt=value)
 
     @property
     def serialisable_value(self):
@@ -137,7 +149,10 @@ class FunctionNameFilter(BaseFilter):
 
 class NumQueriesFilter(BaseFilter):
     def __init__(self, n):
-        value = int(n)
+        try:
+            value = int(n)
+        except ValueError as e:
+            raise FilterValidationError(e)
         super(NumQueriesFilter, self).__init__(value, num_queries__gte=n)
 
     def __str__(self):
@@ -149,7 +164,10 @@ class NumQueriesFilter(BaseFilter):
 
 class TimeSpentOnQueriesFilter(BaseFilter):
     def __init__(self, n):
-        value = int(n)
+        try:
+            value = int(n)
+        except ValueError as e:
+            raise FilterValidationError(e)
         super(TimeSpentOnQueriesFilter, self).__init__(value, db_time__gte=n)
 
     def __str__(self):
@@ -161,7 +179,10 @@ class TimeSpentOnQueriesFilter(BaseFilter):
 
 class OverallTimeFilter(BaseFilter):
     def __init__(self, n):
-        value = int(n)
+        try:
+            value = int(n)
+        except ValueError as e:
+            raise FilterValidationError(e)
         super(OverallTimeFilter, self).__init__(value, time_taken__gte=n)
 
     def __str__(self):

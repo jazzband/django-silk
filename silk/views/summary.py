@@ -1,3 +1,5 @@
+import logging
+
 from django.core.context_processors import csrf
 from django.db.models import Avg, Count, Sum, Max
 from django.shortcuts import render_to_response
@@ -7,7 +9,10 @@ from django.views.generic import View
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.profiling.dynamic import _get_module
-from silk.request_filters import BaseFilter
+from silk.request_filters import BaseFilter, FilterValidationError
+
+
+logger = logging.getLogger('silk')
 
 
 def filters_from_request(request):
@@ -27,8 +32,11 @@ def filters_from_request(request):
             typ = raw_filter['typ']
             module = _get_module('silk.request_filters')
             filter_class = getattr(module, typ)
-            f = filter_class(value)
-            filters[ident] = f
+            try:
+                f = filter_class(value)
+                filters[ident] = f
+            except FilterValidationError:
+                logger.warn('Validation error when processing filter %s(%s)' % (typ, value))
     return filters
 
 
@@ -48,7 +56,7 @@ class SummaryView(View):
         return taken__aggregate['num']
 
     def _longest_query_by_view(self, filters):
-        r = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:4]
+        r = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:6]
         requests = []
         for view_name, max in r:
             request = models.Request.objects.get(time_taken=max, view_name=view_name)
@@ -57,7 +65,7 @@ class SummaryView(View):
 
     def _time_spent_in_db_by_view(self, filters):
         queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).order_by('-t')
-        views = [r[0] for r in queryset[:4]]
+        views = [r[0] for r in queryset[:6]]
         requests = []
         for view in views:
             try:
@@ -69,7 +77,7 @@ class SummaryView(View):
 
     def _num_queries_by_view(self, filters):
         queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Count('queries')).order_by('-t')
-        views = [r[0] for r in queryset[:4]]
+        views = [r[0] for r in queryset[:6]]
         requests = []
         for view in views:
             try:
