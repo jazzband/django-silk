@@ -35,21 +35,147 @@
             font-style: oblique;
             margin-left: 10px;
         }
+
+        h2 {
+            margin-bottom: 0;;
+        }
+
+        .resizing-input {
+            display: inline-block;
+        }
+
+        .resizing-input input, .resizing-input span {
+            font-size: 12px;
+            font-family: Sans-serif;
+            white-space: pre;
+            padding: 5px;
+        }
+
+        .resizing-input input:focus {
+            outline: none;
+        }
+
+        #filters {
+            font-style: oblique;
+            font-size: 12px;
+        }
+
+        #filters a {
+            text-decoration: underline;
+        }
     </style>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            var $inputs = $('.resizing-input');
+
+            function resizeForText(text) {
+                var $this = $(this);
+                if (!text.trim()) {
+                    text = $this.attr('placeholder').trim();
+                }
+                var $span = $this.parent().find('span');
+                $span.text(text);
+                var $inputSize = $span.width();
+                $this.css("width", $inputSize);
+            }
+
+            $inputs.find('input').keypress(function (e) {
+                if (e.which && e.charCode) {
+                    var c = String.fromCharCode(e.keyCode | e.charCode);
+                    var $this = $(this);
+                    resizeForText.call($this, $this.val() + c);
+                }
+            });
+
+            $inputs.find('input').keyup(function (e) { // Backspace event only fires for keyup
+                if (e.keyCode === 8 || e.keyCode === 46) {
+                    resizeForText.call($(this), $(this).val());
+                }
+            });
+
+            $inputs.find('input').each(function () {
+                var $this = $(this);
+                resizeForText.call($this, $this.val())
+            });
+
+            $inputs.focusout(function () {
+                $('#filter-form').submit();
+            });
+
+            $('.datetimepicker').datetimepicker({
+                step: 10,
+                onChangeDateTime: function (dp, $input) {
+                    resizeForText.call($input, $input.val())
+                }
+            });
+
+            console.log()
+        });
+
+    </script>
 {% endblock %}
 {% block data %}
     <div class="wrapper">
         <div class="inner">
-            <h1>Summary</h1>
-
-            <p>Silk looks at application performance from three perspectives: the overall time spent on each request,
-                the number of database queries and the time spent on those database queries.</p>
-
-            <p>The below gives you a summary of those perspectives. <b>You can use the filtering tab to change the date range of the
-                summary.</b></p>
-
+            <div id="filters">
+                <form action="." name="filter-form" id="filter-form" method="post">
+                    {% csrf_token %}
+                </form>
+                <div class="resizing-input">
+                    Using requests that executed
+                    <input form="filter-form"
+                           class="typ"
+                           type="hidden"
+                           value="SecondsFilter"
+                           name="filter-seconds-typ">
+                    <input type="text"
+                           placeholder="seconds"
+                           form="filter-form"
+                           name="filter-seconds-value"
+                           value="{{ filters.seconds.value }}"
+                            >
+                    seconds ago,
+                    <span style="display:none"></span>
+                </div>
+                <div class="resizing-input">
+                    before
+                    <input form="filter-form"
+                           class="typ"
+                           type="hidden"
+                           value="BeforeDateFilter"
+                           name="filter-beforedate-typ">
+                    <input class="datetimepicker"
+                           type="text"
+                           placeholder="date"
+                           form="filter-form"
+                           name="filter-beforedate-value"
+                            value="{{ filters.beforedate.value }}"
+                            />,
+                    <span style="display:none"></span>
+                </div>
+                <div class="resizing-input">
+                    and after
+                    <input form="filter-form"
+                           class="typ"
+                           type="hidden"
+                           value="AfterDateFilter"
+                           name="filter-afterdate-typ">
+                    <input class="datetimepicker"
+                           type="text"
+                           placeholder="date"
+                           form="filter-form"
+                           name="filter-afterdate-value"
+                           value="{{ filters.afterdate.value }}"
+                            >.
+                    <span style="display:none"></span>
+                </div>
+            </div>
+            <h2>Summary</h2>
             {% if num_requests %}
-
                 <div class="summary-cell">
                     <div class="num"><span class="numeric">{{ num_requests }}</span></div>
                     <div class="desc">Requests</div>
@@ -73,10 +199,7 @@
             {% else %}
                 <p class="no-data">No data</p>
             {% endif %}
-
             <h2>Most Time Overall</h2>
-
-            <p>The below are the worst requests from your longest running views.</p>
             {% if longest_queries_by_view %}
                 {% for x in longest_queries_by_view %}
                     {% request_summary x %}
@@ -85,8 +208,6 @@
                 <p class="no-data">No data</p>
             {% endif %}
             <h2>Most Time Spent in Database</h2>
-
-            <p>The below are the worst requests from your views that spend the most time in the database.</p>
             {% if most_time_spent_in_db %}
                 {% for x in most_time_spent_in_db %}
                     {% request_summary x %}
@@ -95,8 +216,6 @@
                 <p class="no-data">No data</p>
             {% endif %}
             <h2>Most Database Queries</h2>
-
-            <p>The below are the worst requests from your views that send the most database queries.</p>
             {% if most_queries %}
                 {% for x in most_queries %}
                     {% request_summary x %}
@@ -109,25 +228,6 @@
 
 {% endblock %}
 
-{% block filters %}
-    <tr id="seconds-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addSecondsFilter();">+</button>
-        </td>
-        <td>
-            <input type="number" name="seconds" placeholder="seconds ago">
-        </td>
-    </tr>
-    <tr id="before-date-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
-        </td>
-        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
-    </tr>
-    <tr id="after-date-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addAfterDateFilter();">+</button>
-        </td>
-        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
-    </tr>
-{% endblock %}
+{# Hide filter hamburger menu #}
+{% block top %}{% endblock %}
+{% block filter %}{% endblock %}

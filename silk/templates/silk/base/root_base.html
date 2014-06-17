@@ -312,16 +312,14 @@
     <script src="{% static 'silk/js/filters.js' %}"></script>
 
     <script>
-        $(document).ready(function () {
-            $('.datetimepicker').datetimepicker()
-                    .datetimepicker({ step: 10});
+        function initFilterButton() {
             $('#filter-button').click(function () {
                 $(this).toggleClass('active');
                 $('body').toggleClass('cbp-spmenu-push-toleft');
                 $('#cbp-spmenu-s2').toggleClass('cbp-spmenu-open');
                 initFilters();
             });
-        });
+        }
     </script>
 
 {% endblock %}
