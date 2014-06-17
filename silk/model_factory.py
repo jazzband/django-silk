@@ -168,12 +168,9 @@ class ResponseModelFactory(object):
     def __init__(self, response):
         super(ResponseModelFactory, self).__init__()
         self.response = response
+        self.request = DataCollector().request
 
-
-    def construct_response_model(self):
-        silk_request = DataCollector().request
-        assert silk_request, 'Cant construct a response model if there is no request model'
-        Logger.debug('Creating response model for request model with pk %s' % silk_request.pk)
+    def body(self):
         body = ''
         content_type, char_set = _parse_content_type(self.response.get('Content-Type', ''))
         content = self.response.content
@@ -203,15 +200,22 @@ class ResponseModelFactory(object):
                 else:
                     if size > max_body_size:
                         content = ''
-                        Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, silk_request.path, max_body_size))
+                        Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, self.request.path, max_body_size))
                     else:
-                        Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, silk_request.path, max_body_size))
+                        Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, self.request.path, max_body_size))
             if content_type in content_types_json:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4)
                 except (TypeError, ValueError):
-                    Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (silk_request.pk, content_type))
+                    Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (self.request.pk, content_type))
+        return body, content
+
+    def construct_response_model(self):
+
+        assert self.request, 'Cant construct a response model if there is no request model'
+        Logger.debug('Creating response model for request model with pk %s' % self.request.pk)
+        b, content = self.body()
         raw_headers = self.response._headers
         headers = {}
         for k, v in raw_headers.items():
@@ -221,10 +225,10 @@ class ResponseModelFactory(object):
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(request=silk_request,
+        silky_response = models.Response.objects.create(request=self.request,
                                                         status_code=self.response.status_code,
                                                         encoded_headers=json.dumps(headers),
-                                                        body=body)
+                                                        body=b)
         # Text fields are encoded as UTF-8 in Django and hence will try to coerce
         # anything to we pass to UTF-8. Some stuff like binary will fail.
         try:
