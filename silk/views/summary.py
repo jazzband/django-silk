@@ -1,5 +1,3 @@
-import logging
-
 from django.core.context_processors import csrf
 from django.db.models import Avg, Count, Sum, Max
 from django.shortcuts import render_to_response
@@ -8,36 +6,7 @@ from django.views.generic import View
 
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.profiling.dynamic import _get_module
-from silk.request_filters import BaseFilter, FilterValidationError
-
-
-logger = logging.getLogger('silk')
-
-
-def filters_from_request(request):
-    raw_filters = {}
-    for key in request.POST:
-        splt = key.split('-')
-        if splt[0].startswith('filter'):
-            ident = splt[1]
-            typ = splt[2]
-            if not ident in raw_filters:
-                raw_filters[ident] = {}
-            raw_filters[ident][typ] = request.POST[key]
-    filters = {}
-    for ident, raw_filter in raw_filters.items():
-        value = raw_filter['value']
-        if value.strip():
-            typ = raw_filter['typ']
-            module = _get_module('silk.request_filters')
-            filter_class = getattr(module, typ)
-            try:
-                f = filter_class(value)
-                filters[ident] = f
-            except FilterValidationError:
-                logger.warn('Validation error when processing filter %s(%s)' % (typ, value))
-    return filters
+from silk.request_filters import BaseFilter, filters_from_request
 
 
 class SummaryView(View):

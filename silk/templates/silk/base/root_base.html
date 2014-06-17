@@ -158,8 +158,6 @@
         font-weight: bold;
     }
 
-
-
     .add-button.disabled {
         color: darkgray !important;
     }
@@ -250,12 +248,47 @@
         left: 1px;
     }
 
+    .resizing-input {
+        display: inline-block;
+    }
+
+    .resizing-input input, .resizing-input span {
+        font-size: 13px;
+        font-family: Sans-serif;
+        white-space: pre;
+        background-color: transparent;
+        color: white;
+        padding: 0;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    .resizing-input input:focus {
+        outline: none;
+    }
+
+    .resizing-input input {
+
+    }
+
     h4 {
         padding: 0;
-        margin: 5px;
+        margin: 3px;
+        margin-left: 10px;
         color: white;
         font-weight: lighter;
+        font-size: 20px;
     }
+
+    .filter-section {
+        color: white;
+        font-size: 12px;
+        line-height: 18px;
+        padding: 10px;
+    }
+
     </style>
     <!-- End Custom Styles -->
 {% endblock %}
@@ -273,30 +306,13 @@
 {% block top %}
     <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
         <h3>Filters</h3>
+
         <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
 
-        <table id="filter-section">
 
-            {% block filters %}
+        {% block filters %}
 
-            {% endblock %}
-
-        </table>
-        <h3>Active</h3>
-        <table id="active-filter-section">
-            {% for filter in filters %}
-                <tr class="active-filter">
-                    <td>
-                        <input form="filter-form2" class="typ" type="hidden" value="{{ filter.typ }}" name="filter-{{ forloop.counter0 }}-typ">
-                        <input form="filter-form2" class="value" type="hidden" value="{{ filter.value }}" name="filter-{{ forloop.counter0 }}-value">
-                        <button class="add-button delete-button" onclick="deleteFilter(this);"><span>-</span></button>
-                    </td>
-                    <td>{{ filter.str }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-
-        <p id="no-active-filters" style="{% if filters %}display:none{% endif %}">No active filters</p>
+        {% endblock %}
 
         <div class="button-div">
             <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>

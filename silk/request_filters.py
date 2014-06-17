@@ -2,11 +2,14 @@
 Django queryset filters used by the requests view
 """
 from datetime import timedelta, datetime
+import logging
 
 from django.db.models import Q, Count, Sum
 from django.utils import timezone
+from silk.profiling.dynamic import _get_module
 
 from silk.templatetags.filters import _silk_date_time
+logger = logging.getLogger('silk')
 
 
 class FilterValidationError(Exception):
@@ -188,3 +191,27 @@ class OverallTimeFilter(BaseFilter):
     def __str__(self):
         return 'Time >= %s' % self.value
 
+
+def filters_from_request(request):
+    raw_filters = {}
+    for key in request.POST:
+        splt = key.split('-')
+        if splt[0].startswith('filter'):
+            ident = splt[1]
+            typ = splt[2]
+            if not ident in raw_filters:
+                raw_filters[ident] = {}
+            raw_filters[ident][typ] = request.POST[key]
+    filters = {}
+    for ident, raw_filter in raw_filters.items():
+        value = raw_filter.get('value', '')
+        if value.strip():
+            typ = raw_filter['typ']
+            module = _get_module('silk.request_filters')
+            filter_class = getattr(module, typ)
+            try:
+                f = filter_class(value)
+                filters[ident] = f
+            except FilterValidationError:
+                logger.warn('Validation error when processing filter %s(%s)' % (typ, value))
+    return filters

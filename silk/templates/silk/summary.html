@@ -40,80 +40,25 @@
             margin-bottom: 0;;
         }
 
-        .resizing-input {
-            display: inline-block;
-        }
-
-        .resizing-input input, .resizing-input span {
-            font-size: 12px;
-            font-family: Sans-serif;
-            white-space: pre;
-            padding: 5px;
-        }
-
-        .resizing-input input:focus {
-            outline: none;
-        }
-
         #filters {
             font-style: oblique;
             font-size: 12px;
         }
 
-        #filters a {
-            text-decoration: underline;
-        }
     </style>
 {% endblock %}
 
 {% block js %}
     {{ block.super }}
     <script>
+
+
         $(document).ready(function () {
+            initFilters();
             var $inputs = $('.resizing-input');
-
-            function resizeForText(text) {
-                var $this = $(this);
-                if (!text.trim()) {
-                    text = $this.attr('placeholder').trim();
-                }
-                var $span = $this.parent().find('span');
-                $span.text(text);
-                var $inputSize = $span.width();
-                $this.css("width", $inputSize);
-            }
-
-            $inputs.find('input').keypress(function (e) {
-                if (e.which && e.charCode) {
-                    var c = String.fromCharCode(e.keyCode | e.charCode);
-                    var $this = $(this);
-                    resizeForText.call($this, $this.val() + c);
-                }
-            });
-
-            $inputs.find('input').keyup(function (e) { // Backspace event only fires for keyup
-                if (e.keyCode === 8 || e.keyCode === 46) {
-                    resizeForText.call($(this), $(this).val());
-                }
-            });
-
-            $inputs.find('input').each(function () {
-                var $this = $(this);
-                resizeForText.call($this, $this.val())
-            });
-
             $inputs.focusout(function () {
                 $('#filter-form').submit();
             });
-
-            $('.datetimepicker').datetimepicker({
-                step: 10,
-                onChangeDateTime: function (dp, $input) {
-                    resizeForText.call($input, $input.val())
-                }
-            });
-
-            console.log()
         });
 
     </script>

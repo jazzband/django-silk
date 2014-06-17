@@ -7,13 +7,13 @@
 {% endblock %}
 
 {% block js %}
-{{ block.super }}
+    {{ block.super }}
     <script>
 
-    $(document).ready(function () {
-         initFilters();
+        $(document).ready(function () {
+            initFilters();
             initFilterButton();
-    });
+        });
     </script>
 {% endblock %}
 
@@ -49,87 +49,152 @@
     </div>
     {{ block.super }}
 {% endblock %}
-
+>
 {% block filters %}
-    <tr id="overall-time-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addOverallTimeFilter();">+</button>
-        </td>
-        <td>
-            <input type="number" name="overall-time" placeholder="overall time">
-        </td>
-    </tr>
-    <tr class="filter-heading">
-        <td colspan="2"><h4>Database</h4></td>
-    </tr>
-    <tr id="num-queries-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addNumQueriesFilter();">+</button>
-        </td>
-        <td>
-            <input type="number" name="num-queries" placeholder="num. queries">
-        </td>
-    </tr>
-    <tr id="time-spent-on-queries-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addTimeSpentOnQueriesFilter();">+</button>
-        </td>
-        <td>
-            <input type="number" name="time-spent-on-queries" placeholder="time spent on queries">
-        </td>
-    </tr>
-    <tr class="filter-heading">
-        <td colspan="2"><h4>Date Range</h4></td>
-    </tr>
-    <tr id="seconds-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addSecondsFilter();">+</button>
-        </td>
-        <td>
-            <input type="number" name="seconds" placeholder="seconds ago">
-        </td>
-    </tr>
-    <tr id="before-date-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addBeforeDateFilter();">+</button>
-        </td>
-        <td><input type="text" class="datetimepicker" placeholder="before date" name="before-date"></td>
-    </tr>
-    <tr id="after-date-filter" class="date-filter">
-        <td>
-            <button class="add-button" onclick="addAfterDateFilter();">+</button>
-        </td>
-        <td><input type="text" class="datetimepicker" placeholder="after date" name="after-date"></td>
-    </tr>
-    <tr class="filter-heading">
-        <td colspan="2"><h4>Request</h4></td>
-    </tr>
-    <tr id="view-name-filter" class="view-filter">
-        <td>
-            <button class="add-button" onclick="addViewNameFilter();">+</button>
-        </td>
-        <td>
-            <select name="view-name">
-                <option value="" disabled selected>view</option>
-                {% for view_name in view_names %}
-                    <option>{{ view_name }}</option>
-                {% endfor %}
-            </select>
-        </td>
-    </tr>
-    <tr id="path-filter" class="view-filter">
-        <td>
-            <button class="add-button" onclick="addPathFilter();">+</button>
-        </td>
-        <td>
-            <select name="path">
-                <option value="" disabled selected>path</option>
-                {% for path in options_paths %}
-                    <option>{{ path }}</option>
-                {% endfor %}
-            </select>
-        </td>
-    </tr>
+    <h4>Request</h4>
+
+    <div class="filter-section">Took longer than
+
+        <div class="resizing-input">
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="OverallTimeFilter"
+                   name="filter-overalltime-typ"/>
+            <input type="text"
+                   placeholder="seconds"
+                   form="filter-form2"
+                   name="filter-overalltime-value"
+                   value="{{ filters.overalltime.value }}"/>
+            <span style="display:none"></span>
+        </div>
+        seconds,
+        executed more than
+        <div class="resizing-input">
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="NumQueriesFilter"
+                   name="filter-numqueriesfilter-typ"/>
+            <input
+                    type="text"
+                    placeholder="n"
+                    form="filter-form2"
+                    name="filter-numqueriesfilter-value"
+                    value="{{ filters.numqueriesfilter.value }}"/>
+            <span style="display:none"></span>
+        </div>
+        queries,
+        and spent longer than
+        <div class="resizing-input">
+
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="TimeSpentFilter"
+                   name="filter-timespentfilter-typ"/>
+            <input
+                    type="text"
+                    placeholder="seconds"
+                    form="filter-form2"
+                    name="filter-timespentfilter-value"
+                    value="{{ filters.timespentfilter.value }}"/>
+            <span style="display:none"></span>
+        </div>
+        seconds executing queries.
+    </div>
+
+
+
+    <h4>Date Range</h4>
+    <div class="filter-section">
+        Executed
+        <div class="resizing-input">
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="SecondsFilter"
+                   name="filter-seconds-typ">
+            <input type="text"
+                   placeholder="seconds"
+                   form="filter-form2"
+                   name="filter-seconds-value"
+                   value="{{ filters.seconds.value }}"
+                    >
+            <span style="display:none"></span>
+        </div>
+        seconds ago, before
+        <div class="resizing-input">
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="BeforeDateFilter"
+                   name="filter-beforedate-typ">
+            <input class="datetimepicker"
+                   type="text"
+                   placeholder="date"
+                   form="filter-form2"
+                   name="filter-beforedate-value"
+                   value="{{ filters.beforedate.value }}"
+                    />
+            <span style="display:none"></span>
+        </div>
+        , and after
+        <div class="resizing-input">
+
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="AfterDateFilter"
+                   name="filter-afterdate-typ">
+            <input class="datetimepicker"
+                   type="text"
+                   placeholder="date"
+                   form="filter-form2"
+                   name="filter-afterdate-value"
+                   value="{{ filters.afterdate.value }}"
+                    >
+            <span style="display:none"></span>
+        </div>
+        .
+    </div>
+    <h4>Request</h4>
+    <div class="filter-section">
+        <div>
+           <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="ViewNameFilter"
+                   name="filter-viewname-typ">
+            <label>View:
+                <select  form="filter-form2" name="filter-viewname-value">
+                    <option value="" {% if not filters.viewname.value %}selected{% endif %}></option>
+                    {% for view_name in view_names %}
+                        <option {% if view_name == filters.viewname.value%}selected{% endif %}>{{ view_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+        </div>
+        <div>
+                 <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="PathFilter"
+                   name="filter-path-typ">
+            <label>Path:
+                <select form="filter-form2" name="filter-path-value">
+                    <option value="" {% if not filters.path.value %}selected{% endif %}></option>
+                    {% for path in options_paths %}
+                        <option {% if path == filters.path.value%}selected{% endif %}>{{ path }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+        </div>
+
+
+    </div>
 {% endblock %}
 
 {% block data %}
