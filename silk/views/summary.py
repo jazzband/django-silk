@@ -27,8 +27,8 @@ class SummaryView(View):
     def _longest_query_by_view(self, filters):
         r = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:6]
         requests = []
-        for view_name, max in r:
-            request = models.Request.objects.get(time_taken=max, view_name=view_name)
+        for view_name, m in r:
+            request = models.Request.objects.filter(*filters).get(time_taken=m, view_name=view_name)
             requests.append(request)
         return requests
 
@@ -38,7 +38,7 @@ class SummaryView(View):
         requests = []
         for view in views:
             try:
-                r = models.Request.objects.filter(view_name=view).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
+                r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
                 requests.append(r)
             except IndexError:
                 pass
