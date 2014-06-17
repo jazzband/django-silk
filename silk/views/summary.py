@@ -86,5 +86,5 @@ class SummaryView(View):
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
-        request.session[self.filters_key] = {ident: filter.as_dict() for ident, filter in filters.items()}
+        request.session[self.filters_key] = {ident: f.as_dict() for ident, f in filters.items()}
         return render_to_response('silk/summary.html', self._create_context(request))

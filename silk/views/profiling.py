@@ -7,7 +7,7 @@ from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import Profile, Request
 from silk.profiling.dynamic import _get_module
-from silk.request_filters import BaseFilter
+from silk.request_filters import BaseFilter, filters_from_request
 
 
 class ProfilingView(View):
@@ -92,7 +92,7 @@ class ProfilingView(View):
             show = int(show)
         func_name = request.GET.get('func_name', None)
         name = request.GET.get('name', None)
-        filters = request.session.get(self.session_key_profile_filters, [])
+        filters = request.session.get(self.session_key_profile_filters, {})
         context = {
             'show': show,
             'order_by': order_by,
@@ -111,13 +111,12 @@ class ProfilingView(View):
             context['func_name'] = func_name
         if name:
             context['name'] = name
-
         objs = self._get_objects(show=show,
                                  order_by=order_by,
                                  func_name=func_name,
                                  silk_request=silk_request,
                                  name=name,
-                                 filters=[BaseFilter.from_dict(x) for x in filters])
+                                 filters=[BaseFilter.from_dict(x) for _, x in filters.items()])
         context['results'] = objs
         return context
 
@@ -130,22 +129,6 @@ class ProfilingView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
-        raw_filters = {}
-        for key in request.POST:
-            splt = key.split('-')
-            if splt[0].startswith('filter'):
-                ident = splt[1]
-                typ = splt[2]
-                if not ident in raw_filters:
-                    raw_filters[ident] = {}
-                raw_filters[ident][typ] = request.POST[key]
-        filters = []
-        for _, raw_filter in raw_filters.items():
-            typ = raw_filter['typ']
-            value = raw_filter['value']
-            module = _get_module('silk.request_filters')
-            filter_class = getattr(module, typ)
-            f = filter_class(value)
-            filters.append(f)
-        request.session[self.session_key_profile_filters] = [x.as_dict() for x in filters]
+        filters = filters_from_request(request)
+        request.session[self.session_key_profile_filters] = {ident: f.as_dict() for ident, f in filters.items()}
         return render_to_response('silk/profiling.html', self._create_context(request))
