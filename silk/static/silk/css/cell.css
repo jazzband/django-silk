@@ -4,6 +4,9 @@
     padding: 10px;
     margin-left: 10px;
     margin-top: 10px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
 }
 
 .cell div {
