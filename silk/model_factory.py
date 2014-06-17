@@ -1,9 +1,9 @@
 import json
 import logging
 import sys
+import traceback
 
 from django.core.urlresolvers import resolve
-from django.utils.encoding import DjangoUnicodeDecodeError
 
 from silk import models
 from silk.collector import DataCollector
@@ -23,6 +23,26 @@ content_type_html = ['text/html']
 content_type_css = ['text/css']
 
 
+def _parse_content_type(content_type):
+    """best efforts on pulling out the content type and encoding from Content-Type header"""
+    try:
+        content_type = content_type.strip()
+    except AttributeError:
+        pass
+    char_set = None
+    if content_type.strip():
+        splt = content_type.split(';')
+        content_type = splt[0]
+        try:
+            raw_char_set = splt[1].strip()
+            key, char_set = raw_char_set.split('=')
+            if key != 'charset':
+                char_set = None
+        except (IndexError, ValueError):
+            pass
+    return content_type, char_set
+
+
 class RequestModelFactory(object):
     """Produce Request models from Django request objects"""
 
@@ -32,9 +52,7 @@ class RequestModelFactory(object):
 
     def content_type(self):
         content_type = self.request.META.get('CONTENT_TYPE', '')
-        if content_type:
-            content_type = content_type.split(';')[0]
-        return content_type
+        return _parse_content_type(content_type)
 
     def encoded_headers(self):
         """
@@ -59,12 +77,11 @@ class RequestModelFactory(object):
                 pass
         return json.dumps(headers)
 
-    def _body(self, raw_body):
+    def _body(self, raw_body, content_type):
         """
         Encode body as JSON if possible so can be used as a dictionary in generation
         of curl/django test client code
         """
-        content_type = self.content_type()
         body = ''
         if content_type in content_type_form:
             body = self.request.POST
@@ -74,25 +91,42 @@ class RequestModelFactory(object):
         return body
 
     def body(self):
+        content_type, char_set = self.content_type()
         raw_body = self.request.body
-        max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
-        body = ''
-        if max_size > -1:
-            Logger.debug('A max request size is set so checking size')
-            size = sys.getsizeof(raw_body, default=None)
-            request_identifier = self.request.path
-            if not size:
-                Logger.error('No way in which to get size of request body for %s, will ignore it', request_identifier)
-            elif size <= max_size:
-                Logger.debug('Request %s has body of size %d which is less than %d so will save the body' % (request_identifier, size, max_size))
-                body = self._body(raw_body)
-            else:
-                Logger.debug('Request %s has body of size %d which is greater than %d, therefore ignoring' % (request_identifier, size, max_size))
+        if char_set:
+            try:
+                raw_body = raw_body.decode(char_set)
+            except AttributeError:
+                pass
+            except Exception as e:
+                Logger.error('Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
+                traceback.print_exc()
                 raw_body = None
         else:
-            Logger.debug('No maximum request body size is set, continuing.')
-            body = self._body(raw_body)
-        return body, raw_body  # Can't read body twice.
+            # Default to an attempt at UTF-8 decoding.
+            try:
+                raw_body = raw_body.decode('UTF-8')
+            except AttributeError:
+                pass
+        max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
+        body = ''
+        if raw_body:
+            if max_size > -1:
+                Logger.debug('A max request size is set so checking size')
+                size = sys.getsizeof(raw_body, default=None)
+                request_identifier = self.request.path
+                if not size:
+                    Logger.error('No way in which to get size of request body for %s, will ignore it', request_identifier)
+                elif size <= max_size:
+                    Logger.debug('Request %s has body of size %d which is less than %d so will save the body' % (request_identifier, size, max_size))
+                    body = self._body(raw_body, content_type)
+                else:
+                    Logger.debug('Request %s has body of size %d which is greater than %d, therefore ignoring' % (request_identifier, size, max_size))
+                    raw_body = None
+            else:
+                Logger.debug('No maximum request body size is set, continuing.')
+                body = self._body(raw_body, content_type)
+        return body, raw_body
 
     def query_params(self):
         query_params = self.request.GET
@@ -118,9 +152,11 @@ class RequestModelFactory(object):
             query_params=query_params,
             view_name=view_name,
             body=body)
+        # Text fields are encoded as UTF-8 in Django and hence will try to coerce
+        # anything to we pass to UTF-8. Some stuff like binary will fail.
         try:
             request_model.raw_body = raw_body
-        except DjangoUnicodeDecodeError:
+        except UnicodeDecodeError:
             Logger.debug('NYI: Binary request bodies')  # TODO
         Logger.debug('Created new request model with pk %s' % request_model.pk)
         return request_model
@@ -139,31 +175,43 @@ class ResponseModelFactory(object):
         assert silk_request, 'Cant construct a response model if there is no request model'
         Logger.debug('Creating response model for request model with pk %s' % silk_request.pk)
         body = ''
-        content_type = self.response.get('Content-Type', '').split(';')[0]
+        content_type, char_set = _parse_content_type(self.response.get('Content-Type', ''))
         content = self.response.content
-        max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE
-        if max_body_size > -1:
-            Logger.debug('Max size of response body defined so checking')
-            size = sys.getsizeof(content, None)
-            if not size:
-                Logger.error('Could not get size of response body. Ignoring')
-                content = ''
-            else:
-                if size > max_body_size:
-                    content = ''
-                    Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, silk_request.path, max_body_size))
-                else:
-                    Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, silk_request.path, max_body_size))
-        try:  # py3
-            content = content.decode('UTF-8')
-        except AttributeError:  # py2
-            pass
-        if content_type in content_types_json:
-            # TODO: Perhaps theres a way to format the JSON without parsing it?
+        if char_set:
             try:
-                body = json.dumps(json.loads(content), sort_keys=True, indent=4)
-            except (TypeError, ValueError):
-                Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (silk_request.pk, content_type))
+                content = content.decode(char_set)
+            except AttributeError:
+                pass
+            except Exception as e:
+                Logger.error('Unable to decode response body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
+                traceback.print_exc()
+                content = None
+        else:
+            # Default to an attempt at UTF-8 decoding.
+            try:
+                content = content.decode('UTF-8')
+            except AttributeError:
+                pass
+        if content:
+            max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE
+            if max_body_size > -1:
+                Logger.debug('Max size of response body defined so checking')
+                size = sys.getsizeof(content, None)
+                if not size:
+                    Logger.error('Could not get size of response body. Ignoring')
+                    content = ''
+                else:
+                    if size > max_body_size:
+                        content = ''
+                        Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, silk_request.path, max_body_size))
+                    else:
+                        Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, silk_request.path, max_body_size))
+            if content_type in content_types_json:
+                # TODO: Perhaps theres a way to format the JSON without parsing it?
+                try:
+                    body = json.dumps(json.loads(content), sort_keys=True, indent=4)
+                except (TypeError, ValueError):
+                    Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (silk_request.pk, content_type))
         raw_headers = self.response._headers
         headers = {}
         for k, v in raw_headers.items():
@@ -177,6 +225,8 @@ class ResponseModelFactory(object):
                                                         status_code=self.response.status_code,
                                                         encoded_headers=json.dumps(headers),
                                                         body=body)
+        # Text fields are encoded as UTF-8 in Django and hence will try to coerce
+        # anything to we pass to UTF-8. Some stuff like binary will fail.
         try:
             silky_response.raw_body = content
         except UnicodeDecodeError:
