@@ -24,24 +24,21 @@ class SummaryView(View):
         taken__aggregate = models.Request.objects.filter(*filters).annotate(time_spent=Sum('time_taken')).aggregate(num=Avg('time_spent'))
         return taken__aggregate['num']
 
+    # TODO: Find a more efficient way to do this. Currently has to go to DB num. views + 1 times and is prob quite expensive
     def _longest_query_by_view(self, filters):
-        r = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:6]
+        values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:6]
         requests = []
-        for view_name, max in r:
-            request = models.Request.objects.get(time_taken=max, view_name=view_name)
+        for view_name, _ in values_list:
+            request = models.Request.objects.filter(view_name=view_name, *filters).order_by('-time_taken')[0]
             requests.append(request)
         return requests
 
     def _time_spent_in_db_by_view(self, filters):
-        queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).order_by('-t')
-        views = [r[0] for r in queryset[:6]]
+        values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).order_by('-t')
         requests = []
-        for view in views:
-            try:
-                r = models.Request.objects.filter(view_name=view).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
-                requests.append(r)
-            except IndexError:
-                pass
+        for view, _ in values_list:
+            r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
+            requests.append(r)
         return requests
 
     def _num_queries_by_view(self, filters):
