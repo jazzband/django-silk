@@ -98,10 +98,14 @@ class RequestModelFactory(object):
                 raw_body = raw_body.decode(char_set)
             except AttributeError:
                 pass
+            except LookupError:  # If no encoding exists, default to UTF-8
+                try:
+                    raw_body = raw_body.decode('UTF-8')
+                except AttributeError:
+                    pass
             except Exception as e:
                 Logger.error('Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
                 traceback.print_exc()
-                raw_body = None
         else:
             # Default to an attempt at UTF-8 decoding.
             try:
@@ -179,10 +183,14 @@ class ResponseModelFactory(object):
                 content = content.decode(char_set)
             except AttributeError:
                 pass
+            except LookupError:  # If no encoding exists, default to UTF-8
+                try:
+                    content = content.decode('UTF-8')
+                except AttributeError:
+                    pass
             except Exception as e:
                 Logger.error('Unable to decode response body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
                 traceback.print_exc()
-                content = None
         else:
             # Default to an attempt at UTF-8 decoding.
             try:

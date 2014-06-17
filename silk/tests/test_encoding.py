@@ -77,8 +77,8 @@ class TestEncodingForRequests(TestCase):
         mock_request.get = mock_request.META.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
-        self.assertFalse(body)
-        self.assertFalse(raw_body)
+        self.assertDictEqual(json.loads(body, encoding='UTF-8'), d)
+        self.assertEqual(raw_body, raw_body)
 
 
 class TestEncodingForResponse(TestCase):
@@ -148,5 +148,5 @@ class TestEncodingForResponse(TestCase):
         mock.get = mock._headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
-        self.assertFalse(body)
-        self.assertFalse(content)
+        self.assertDictEqual(json.loads(body, encoding='UTF-8'), d)
+        self.assertEqual(mock.content.decode('UTF-8'), content)
