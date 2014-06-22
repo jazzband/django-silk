@@ -106,6 +106,7 @@ Note that dynamic profiling behaves in a similar fashion to that of the python m
 we modify the function in-place e.g:
 
 .. code-block:: python
+
 	""" my.module """
 	from another.module import foo
 
@@ -114,13 +115,13 @@ we modify the function in-place e.g:
 	# ...do some other stuff
 
 
-,we would profile ``foo`` by dynamically decorating `my.module.foo` as opposed to ``another.module.foo``:
+We would profile ``foo`` by dynamically decorating `my.module.foo` as opposed to ``another.module.foo``:
 
 .. code-block:: python
+
 	SILKY_DYNAMIC_PROFILING = [{
 	    'module': 'my.module',
 	    'function': 'foo'
 	}]
 
-If we were to apply the dynamic profile to the functions source module ``another.module.foo`` *after*
-it has already been imported, no profiling would be triggered.
+If we were to apply the dynamic profile to the functions source module ``another.module.foo`` *after* it has already been imported, no profiling would be triggered.
