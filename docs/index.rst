@@ -6,23 +6,49 @@
 Silk
 ================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
+   quickstart
    profiling
 
-Silk is a live profiling and inspection tool for the Django framework. Silk can:
+Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection..
 
-- Intercept HTTP requests and responses for further inspection
-- Time execution of requests
-- Intercept database queries per request
-- Profile blocks of code 
-	- Timing
-	- Database queries
+A **live demo** is available `here`_.
 
-A live demo is available at http://mtford.co.uk/silk/.
+.. _here: http://mtford.co.uk/silk/
+
+Features
+--------
+
+- Inspect HTTP requests and responses
+
+  - Query parameters
+
+  - Headers
+
+  - Bodies
+
+  - Execution Time
+
+  - Database Queries
+
+    - Number
+
+    - Time taken 
+
+- SQL query inspection
+
+- Profiling of arbritary code blocks via a Python context manager and decorator
+
+  - Execution Time
+
+  - Database Queries
+
+  - Can also be injected dynamically at runtime e.g. if read-only dependency.
+
+- Authentication/Authorisation for production use
+
 
 Requirements
 ------------
