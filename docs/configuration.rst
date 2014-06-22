@@ -50,6 +50,6 @@ the following to your `settings.py`:
 
 Silk will then record how long it takes to save everything down to the database at the end of each request:
 
-.. image:: meta.png
+.. image:: /images/meta.png
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
