@@ -227,7 +227,9 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'silk', u'silk Documentation',
-     [u'Michael Ford'], 1)
+     [u'Michael Ford'], 1),
+        ('profiling', 'Profiling', u'Profiling',
+     [u'Michael Ford'], 2),
 ]
 
 # If true, show URL addresses after external links.
