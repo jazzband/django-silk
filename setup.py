@@ -13,7 +13,7 @@ setup(
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
-    description='A Django app for profiling other Django apps',
+    description='Silky smooth profiling for the Django Framework',
     long_description=README,
     url='http://www.mtford.co.uk/projects/silk/',
     author='Michael Ford',

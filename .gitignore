@@ -64,3 +64,7 @@ dist
 
 # Pip
 /src
+
+# Sphinx
+
+_html
