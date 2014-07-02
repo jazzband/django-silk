@@ -11,5 +11,4 @@ It primarily consists of:
 -  A user interface for inspection and visualisation of the above.
 
 Documentation is available at https://github.com/mtford90/silk and a live demo is available at
-http://mtford.co.uk/silk/, where the tool is actively profiling my
-website and blog!
+http://mtford.co.uk/silk/.

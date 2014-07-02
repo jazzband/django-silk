@@ -2,33 +2,21 @@
 
 [![Build Status](https://travis-ci.org/mtford90/silk.svg?branch=master)](https://travis-ci.org/mtford90/silk)
 
-Silk is a live profiling and inspection tool for the Django framework. It primarily consists of:
+Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
-* Middleware for intercepting Requests/Responses
-* A wrapper around SQL execution for profiling of database queries
-* A context manager/decorator for profiling blocks of code and functions either manually or dynamically. 
-* A user interface for inspection and visualisation of the above.
+<img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/1.png" width="720px"/>
 
-Documentation is below and a live demo is available at [http://mtford.co.uk/silk/](http://mtford.co.uk/silk/), where the tool is actively profiling my website and blog!
+Documentation is available [here](http://silk.readthedocs.org/en/latest/) and there is also [live demo](http://mtford.co.uk/silk/) to play around with.
 
 ## Contents
 
 * [Requirements](#requirements)
-* [Features](#features) 
-    * [Request Inspection](#request-inspection)
-    * [SQL Inspection](#sql-inspection)
-    * [Profiling](#profiling)
-        * [Decorator](#decorator)
-        * [Context Manager](#context-manager)
-* [Experimental Features](#experimental-features)
-    * [Dynamic Profiling](#dynamic-profiling)
-    * [Code Generation](#code-generation)
 * [Installation](#installation)
+* [Features](#features) 
 * [Configuration](#configuration)
     * [Authentication/Authorisation](#authentication-authorisation)
     * [Request/Response bodies](#request-response-bodies)
     * [Meta-Profiling](#meta-profiling)
-* [Roadmap](#roadmap)
 
 ## Requirements
 
@@ -39,7 +27,69 @@ Silk has been tested with:
 
 I left out Django <1.5 due to the change in `{% url %}` syntax. Python 2.6 is missing `collections.Counter`. Python 3.0 and 3.1 are not available via Travis and also are missing the `u'xyz'` syntax for unicode. Workarounds can likely be found for all these if there is any demand. Django 1.7 is currently untested.
 
+## Installation
+
+Via pip into a virtualenv:
+
+```bash
+pip install django-silk
+```
+
+In `settings.py` add the following:
+
+```python
+MIDDLEWARE_CLASSES = ( 
+    ...
+    'silk.middleware.SilkyMiddleware',
+    ...
+)
+
+INSTALLED_APPS = (
+    ...
+    'silk'
+)
+```
+
+Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+
+To enable access to the user interface add the following to your `urls.py`:
+
+```python
+urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
+```
+
+before running syncdb:
+
+```python
+python manage.py syncdb
+```
+
+Silk will automatically begin interception of requests and you can proceed to add profiling
+if required. The UI can be reached at `/silk/`
+
+### Alternative Installation
+
+Via [github tags](https://github.com/mtford90/silk/releases):
+
+```bash
+pip install django-silk-<version>.tar.gz
+```
+
+You can install from master using the following, but please be aware that the version in master
+may not be working for all versions specified in [requirements](#requirements)
+
+```bash
+pip install -e git+https://github.com/mtford90/silk.git#egg=silk
+```
+
 ## Features
+
+Silk primarily consists of:
+
+* Middleware for intercepting Requests/Responses
+* A wrapper around SQL execution for profiling of database queries
+* A context manager/decorator for profiling blocks of code and functions either manually or dynamically. 
+* A user interface for inspection and visualisation of the above.
 
 ### Request Inspection
 
@@ -132,11 +182,7 @@ def post(request, post_id):
     	})
 ```
 
-## Experimental Features
-
-The below features are still in need of thorough testing and should be considered experimental.
-
-### Dynamic Profiling
+#### Dynamic Profiling
 
 One of Silk's more interesting features is dynamic profiling. If for example we wanted to profile a function in a dependency to which we only have read-only access (e.g. system python libraries owned by root) we can add the following to `settings.py` to apply a decorator at runtime:
 
@@ -244,61 +290,6 @@ Silk currently generates two bits of code per request:
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/9.png" width="720px"/>
 
 Both are intended for use in replaying the request. The curl command can be used to replay via command-line and the python code can be used within a Django unit test or simply as a standalone script.
-
-## Installation
-
-Via pip into a virtualenv:
-
-```bash
-pip install django-silk
-```
-
-Via [github tags](https://github.com/mtford90/silk/releases):
-
-```bash
-pip install django-silk-<version>.tar.gz
-```
-
-You can install from master using the following, but please be aware that the version in master
-may not be working for all versions specified in [requirements](#requirements)
-
-```bash
-pip install -e git+https://github.com/mtford90/silk.git#egg=silk
-```
-
-Once silk is installed on your system/venv we then need to configure your Django project.
-
-In `settings.py` add the following:
-
-```python
-MIDDLEWARE_CLASSES = ( 
-    ...
-    'silk.middleware.SilkyMiddleware',
-    ...
-)
-
-INSTALLED_APPS = (
-    ...
-    'silk'
-)
-```
-
-Note: The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
-
-To enable access to the user interface add the following to your `urls.py`:
-
-```python
-urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
-```
-
-before running syncdb:
-
-```python
-python manage.py syncdb
-```
-
-Silk will automatically begin interception of requests and you can proceed to add profiling
-if required. The UI can be reached at `/silk/`
 
 ## Configuration
 

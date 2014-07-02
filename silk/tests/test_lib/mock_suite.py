@@ -1,3 +1,4 @@
+import calendar
 from datetime import timedelta
 import json
 import os
@@ -21,6 +22,7 @@ class MockSuite(object):
     profile_names = ['slow_bit_of_code', 'terrible_dependency', 'what_on_earth_is_this_code_doing']
     file_path = [os.path.realpath(__file__)]
     func_names = ['', '', '', 'foo', 'bar']
+    view_names = ['app:blah', 'index', 'root', 'xxx:xyx']
     sql_queries = ['''
     SELECT Book.title AS Title,
     COUNT(*) AS Authors
@@ -45,12 +47,12 @@ class MockSuite(object):
   ''',
                    '''
                    SELECT A.Col1, A.Col2, B.Col1,B.Col2
-      FROM (SELECT RealTableZ.Col1, RealTableY.Col2, RealTableY.ID as ID
+      FROM (SELECT RealTableZ.Col1, RealTableY.Col2, RealTableY.ID AS ID
               FROM RealTableZ
    LEFT OUTER JOIN RealTableY
                 ON RealTableZ.ForeignKeyY=RealTableY.ID
              WHERE RealTableY.Col11>14
-            ) As B
+            ) AS B
         INNER JOIN A
                 ON A.ForeignKeyY=B.ID
                    ''']
@@ -139,11 +141,15 @@ class MockSuite(object):
         num_sql_queries = random.randint(0, 20)
         request_content_type = random.choice(self.request_content_types)
         request_body = random.choice(self.request_content[request_content_type])
+        time_taken = end_time - start_time
+        time_taken = time_taken.total_seconds()
         request = models.Request.objects.create(method=self._random_method(),
                                                 path=self._random_path(),
                                                 num_sql_queries=num_sql_queries,
                                                 start_time=start_time,
                                                 end_time=end_time,
+                                                view_name=random.choice(self.view_names),
+                                                time_taken=time_taken,
                                                 encoded_headers=json.dumps({'content-type': request_content_type}),
                                                 body=request_body)
         response_content_type = random.choice(self.response_content_types)

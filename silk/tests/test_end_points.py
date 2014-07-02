@@ -26,6 +26,10 @@ class TestEndPoints(TestCase):
         for _ in range(0, 100):
             mock_suite.mock_request()
 
+    def test_summary(self):
+        response = self.client.get(silky_reverse('summary'))
+        self.assertTrue(response.status_code == 200)
+
     def test_requests(self):
         response = self.client.get(silky_reverse('requests'))
         self.assertTrue(response.status_code == 200)
