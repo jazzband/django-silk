@@ -35,6 +35,7 @@ class TestSerialisation(TestCase):
     """
     Test serialisation of Django model -> Dictionary ready to be sent to Elasticsearch
     """
+
     @classmethod
     def setUpClass(cls):
         _clear_elasticsearch()
@@ -100,3 +101,21 @@ class TestSerialisation(TestCase):
         expected = ('profiles',)
         for k in expected:
             self.assertIn(k, serialisable)
+
+
+class TestSave(TestCase):
+    """
+    Test serialisation of Django model -> Dictionary ready to be sent to Elasticsearch
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        _clear_elasticsearch()
+
+    @classmethod
+    def tearDownClass(cls):
+        _clear_elasticsearch()
+
+    def test_save_request(self):
+        r = mock_suite.mock_request()
+        print(TestESIndexer(r).http_insert())

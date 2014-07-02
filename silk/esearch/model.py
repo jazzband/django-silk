@@ -6,6 +6,8 @@ in that we never actually modify anything after the fact and so it's time effici
 What it gains in time, we lose in space efficiency however.
 """
 import collections
+import json
+import logging
 
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField, DateTimeField, Field
 from django.db.models.fields.related import ForeignRelatedObjectsDescriptor
@@ -13,6 +15,8 @@ import rawes
 import six
 
 from silk.config import SilkyConfig
+
+Logger = logging.getLogger('silk')
 
 
 class ExtraField():
@@ -175,21 +179,25 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         path = self.POST.format(index=index, type=es_type)
         return path
 
+    def pretty_dict(self, serialisable):
+        return json.dumps(serialisable, sort_keys=True, indent=4)
+
     def _http_insert(self, serialisable):
         es = self._get_http_connection()
         path = self._insert_path()
-        es.post(path, serialisable)
+        Logger.debug('Inserting: %s' % self.pretty_dict(serialisable))
+        return es.post(path, serialisable)
 
     def _http_bulk_insert(self, serialisables):
         pass
 
     def http_insert(self):
         serialisable = self.serialisable
-        # I think checking for Iterable is better than duck typing/EAFP in this case?
-        if isinstance(serialisable, collections.Iterable):
-            self._http_bulk_insert(serialisable)
+        # Note: Could check for iterable, but django models are iterable
+        if isinstance(serialisable, list) or isinstance(serialisable, tuple):
+            return self._http_bulk_insert(serialisable)
         else:
-            self._http_insert(serialisable)
+            return self._http_insert(serialisable)
 
     def get_index(self):
         """
@@ -204,7 +212,9 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         """
         host = SilkyConfig().SILKY_ELASTICSEARCH_HOST
         port = SilkyConfig().SILKY_ELASTICSEARCH_PORT
-        return rawes.Elastic('%s:%d' % (host, port))
+        connstring = '%s:%d' % (host, port)
+        Logger.debug('Creating ES connection with connection string ' + connstring)
+        return rawes.Elastic(connstring)
 
     def _get_es_type(self):
         """
