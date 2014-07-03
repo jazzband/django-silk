@@ -5,16 +5,16 @@ It's rather inefficient at the moment in that relations are nested JSON. This is
 in that we never actually modify anything after the fact and so it's time efficient.
 What it gains in time, we lose in space efficiency however.
 """
-import collections
 import json
 import logging
 
-from django.db.models import ForeignKey, ManyToManyField, OneToOneField, DateTimeField, Field
+from django.db.models import ForeignKey, ManyToManyField, OneToOneField, DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignRelatedObjectsDescriptor
 import rawes
 import six
 
 from silk.config import SilkyConfig
+
 
 Logger = logging.getLogger('silk')
 
@@ -103,9 +103,12 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
             # Safer not to duck type here I think
             if isinstance(f, Field):
                 fields[f.name] = f
-        for k, v in self._dir_map(model).items():
-            if self._is_django_object_manager(v):
-                fields[k] = v
+        if self.follow_reverse:
+            for k, v in self._dir_map(model).items():
+                if self._is_django_object_manager(v):
+                    # We only want related managers, not the models own managers
+                    if v.model != model.__class__:
+                        fields[k] = v
         # noinspection PyUnresolvedReferences
         extra_fields = self._opts['extra_fields']
         for f in extra_fields:
@@ -141,12 +144,9 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
                 elif isinstance(field, ForeignKey) or \
                         isinstance(field, OneToOneField):
                     value = ESIndexer(value, follow_reverse=False).serialisable
-                # NOTE: I know this works for reverse many-to-many, but no idea
-                # whether it works for anything else. Can cross that bridge if ever
-                # get to it
                 elif isinstance(field, ManyToManyField):
                     all_related = list(value.all())
-                    value = ESIndexer(all_related).serialisable
+                    value = ESIndexer(all_related, follow_reverse=False).serialisable
                 elif self.follow_reverse and (isinstance(field, ForeignRelatedObjectsDescriptor) or \
                                                       self._is_django_object_manager(field)):
                     all_related = list(value.all())
@@ -175,7 +175,7 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         :return: the path for use in POSTing new data to ES
         """
         index = self.get_index()
-        es_type = self._get_es_type()
+        es_type = self.get_es_type()
         path = self.POST.format(index=index, type=es_type)
         return path
 
@@ -186,10 +186,22 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         es = self._get_http_connection()
         path = self._insert_path()
         Logger.debug('Inserting: %s' % self.pretty_dict(serialisable))
-        return es.post(path, serialisable)
+        return es.post(path, data=serialisable)
 
     def _http_bulk_insert(self, serialisables):
-        pass
+        es = self._get_http_connection()
+        prelude = json.dumps({
+            'index': {
+                '_index': self.get_index(),
+                '_type': self.get_es_type()
+            }
+        }) + '\n'
+        data = ''
+        for d in serialisables:
+            data += prelude + json.dumps(d) + '\n'
+        if Logger.isEnabledFor(logging.DEBUG):
+            Logger.debug('Inserting: \n%s' % data)
+        return es.post('/_bulk', data=data)
 
     def http_insert(self):
         serialisable = self.serialisable
@@ -203,10 +215,11 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         """
         :return: the elasticsearch index to use
         """
-        index = SilkyConfig().SILKY_ELASTICSEARCH_INDEX or self.index
+        index = self.index or SilkyConfig().SILKY_ELASTICSEARCH_INDEX
         return index
 
-    def _get_http_connection(self):
+    @classmethod
+    def _get_http_connection(cls):
         """
         :return: a rawes connection to the configured elasticsearch instance
         """
@@ -216,7 +229,7 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         Logger.debug('Creating ES connection with connection string ' + connstring)
         return rawes.Elastic(connstring)
 
-    def _get_es_type(self):
+    def get_es_type(self):
         """
         :return: the elasticsearch type to use
         """
@@ -224,7 +237,11 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         if not es_type and self.model_class:
             es_type = self.model_class.__name__
         else:
-            es_type = self.model.__class__.__name__
+            model = self.model
+            if issubclass(model.__class__, Model):
+                es_type = model.__class__.__name__
+            else:
+                es_type = model[0].__class__.__name__
         return es_type
 
 

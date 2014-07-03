@@ -4,6 +4,7 @@ from django.test import TestCase
 from rawes.elastic_exception import ElasticException
 
 from silk.esearch.model import ESIndexer
+from silk.models import Request
 from silk.tests import MockSuite
 
 
@@ -12,23 +13,21 @@ mock_suite = MockSuite()
 TTW = 0.5  # Time to wait for changes to ES to be effective
 
 
+class TestESIndexer(ESIndexer):
+    index = 'test_index'
+
+
 def _clear_elasticsearch():
     """
     Clear the test index of any data.
     """
-    indexer = ESIndexer(None)
-    es = indexer._get_http_connection()
-    path = indexer._insert_path()
+    es = TestESIndexer._get_http_connection()
     try:
-        es.delete(path)
+        es.delete('/' + TestESIndexer.index)
     except ElasticException as e:
         if e.status_code != 404:
             raise
     sleep(TTW)
-
-
-class TestESIndexer(ESIndexer):
-    index = 'test_index'
 
 
 class TestSerialisation(TestCase):
@@ -38,10 +37,6 @@ class TestSerialisation(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        _clear_elasticsearch()
-
-    @classmethod
-    def tearDownClass(cls):
         _clear_elasticsearch()
 
     def test_standard_fields(self):
@@ -103,19 +98,64 @@ class TestSerialisation(TestCase):
             self.assertIn(k, serialisable)
 
 
-class TestSave(TestCase):
+class TestSaveRequest(TestCase):
     """
-    Test serialisation of Django model -> Dictionary ready to be sent to Elasticsearch
+    Test saving of models to Elasticsearch
     """
 
     @classmethod
     def setUpClass(cls):
         _clear_elasticsearch()
+        r = mock_suite.mock_request()
+        cls.response = TestESIndexer(r).http_insert()
+
+    def test_index(self):
+        """
+        Attaching an index to the model should override the default index
+        """
+        self.assertEqual(self.response['_index'], TestESIndexer.index)
+
+    def test_type(self):
+        """
+        The elasticsearch type should match the model class.
+        """
+        self.assertEqual(self.response['_type'], Request.__name__)
+
+    def test_id(self):
+        """
+        Ensure that was actually saved down with an identifier
+        """
+        self.assertIn('_id', self.response)
+
+
+class TestSaveRequestBulk(TestCase):
+    """
+    Test saving a list of models to Elasticsearch
+    """
 
     @classmethod
-    def tearDownClass(cls):
+    def setUpClass(cls):
         _clear_elasticsearch()
+        requests = [mock_suite.mock_request() for _ in range(0, 10)]
+        cls.response = TestESIndexer(requests).http_insert()
 
-    def test_save_request(self):
-        r = mock_suite.mock_request()
-        print(TestESIndexer(r).http_insert())
+    def test_index(self):
+        """
+        Attaching an index to the model should override the default index
+        """
+        for d in self.response['items']:
+            v = d.values()[0]
+            self.assertEqual(v['_index'], TestESIndexer.index)
+
+    def test_no_errors(self):
+        self.assertFalse(self.response['errors'])
+
+    def test_type(self):
+        """
+        The elasticsearch type should match the model class.
+        """
+        for d in self.response['items']:
+            v = d.values()[0]
+            self.assertEqual(v['_type'], Request.__name__)
+
+
