@@ -158,4 +158,3 @@ class TestSaveRequestBulk(TestCase):
             v = d.values()[0]
             self.assertEqual(v['_type'], Request.__name__)
 
-

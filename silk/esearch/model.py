@@ -247,3 +247,6 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
 
 class RequestIndexer(ESIndexer):
     queries = ExtraField()
+
+
+

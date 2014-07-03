@@ -9,9 +9,26 @@ from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.request_filters import BaseFilter, filters_from_request
 
 
-class SummaryView(View):
-    filters_key = 'summary_filters'
+FILTERS_KEY = 'summary_filters'
 
+
+class SummaryContextFactory(object):
+    """
+    Generate a context dictionary providing a summary of Silk's state.
+    """
+    def __init__(self, request):
+        super(SummaryContextFactory, self).__init__()
+        self.raw_filters = request.session.get(FILTERS_KEY, {})
+        self.filters = [BaseFilter.from_dict(filter_d) for _, filter_d in self.raw_filters.items()]
+
+    def get_context(self):
+        """
+        :return: dictionary to be used as context
+        """
+        pass
+
+
+class DjangoSummaryContextFactory(SummaryContextFactory):
     def _avg_num_queries(self, filters):
         queries__aggregate = models.Request.objects.filter(*filters).annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
         return queries__aggregate['num']
@@ -53,22 +70,33 @@ class SummaryView(View):
                 pass
         return requests
 
-    def _create_context(self, request):
-        raw_filters = request.session.get(self.filters_key, {})
-        filters = [BaseFilter.from_dict(filter_d) for _, filter_d in raw_filters.items()]
-        avg_overall_time = self._avg_num_queries(filters)
+    def get_context(self):
+        """
+        :return: dictionary to be used as context
+        """
+        avg_overall_time = self._avg_num_queries(self.filters)
         c = {
-            'request': request,
-            'num_requests': models.Request.objects.filter(*filters).count(),
-            'num_profiles': models.Profile.objects.filter(*filters).count(),
+            'num_requests': models.Request.objects.filter(*self.filters).count(),
+            'num_profiles': models.Profile.objects.filter(*self.filters).count(),
             'avg_num_queries': avg_overall_time,
-            'avg_time_spent_on_queries': self._avg_time_spent_on_queries(filters),
-            'avg_overall_time': self._avg_overall_time(filters),
-            'longest_queries_by_view': self._longest_query_by_view(filters),
-            'most_time_spent_in_db': self._time_spent_in_db_by_view(filters),
-            'most_queries': self._num_queries_by_view(filters),
-            'filters': raw_filters
+            'avg_time_spent_on_queries': self._avg_time_spent_on_queries(self.filters),
+            'avg_overall_time': self._avg_overall_time(self.filters),
+            'longest_queries_by_view': self._longest_query_by_view(self.filters),
+            'most_time_spent_in_db': self._time_spent_in_db_by_view(self.filters),
+            'most_queries': self._num_queries_by_view(self.filters),
+            'filters': self.raw_filters
         }
+        return c
+
+
+class ElasticsearchSummaryContextFactory(SummaryContextFactory):
+    pass
+
+
+class SummaryView(View):
+    def _create_context(self, request):
+        c = DjangoSummaryContextFactory(request).get_context()
+        c['request'] = request
         c.update(csrf(request))
         return c
 
@@ -83,5 +111,5 @@ class SummaryView(View):
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
-        request.session[self.filters_key] = {ident: f.as_dict() for ident, f in filters.items()}
+        request.session[FILTERS_KEY] = {ident: f.as_dict() for ident, f in filters.items()}
         return render_to_response('silk/summary.html', self._create_context(request))
