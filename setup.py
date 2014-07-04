@@ -40,6 +40,8 @@ setup(
         'sqlparse>=0.1,<0.2',
         'Jinja2>=2.7,<3',
         'autopep8>=1,<2',
-        'pytz==2014.2'
+        'rawes>=5,<6',
+        'pytz==2014.2',
+        'pyeqs>=0.8.1<1'
     ]
 )
