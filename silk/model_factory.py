@@ -103,6 +103,8 @@ class RequestModelFactory(object):
                     raw_body = raw_body.decode('UTF-8')
                 except AttributeError:
                     pass
+                except UnicodeDecodeError:
+                    raw_body = ''
             except Exception as e:
                 Logger.error('Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
                 traceback.print_exc()
@@ -112,6 +114,8 @@ class RequestModelFactory(object):
                 raw_body = raw_body.decode('UTF-8')
             except AttributeError:
                 pass
+            except UnicodeDecodeError:
+                raw_body = ''
         max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
         body = ''
         if raw_body:
@@ -193,6 +197,8 @@ class ResponseModelFactory(object):
                     content = content.decode('UTF-8')
                 except AttributeError:
                     pass
+                except UnicodeDecodeError:
+                    content = ''
             except Exception as e:
                 Logger.error('Unable to decode response body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
                 traceback.print_exc()
@@ -202,6 +208,8 @@ class ResponseModelFactory(object):
                 content = content.decode('UTF-8')
             except AttributeError:
                 pass
+            except UnicodeDecodeError:
+                content = ''
         if content:
             max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE
             if max_body_size > -1:

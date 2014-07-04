@@ -98,7 +98,7 @@ class TestSerialisation(TestCase):
             self.assertIn(k, serialisable)
 
 
-class TestSaveRequest(TestCase):
+class TestSaveRequestHTTP(TestCase):
     """
     Test saving of models to Elasticsearch
     """
@@ -128,7 +128,7 @@ class TestSaveRequest(TestCase):
         self.assertIn('_id', self.response)
 
 
-class TestSaveRequestBulk(TestCase):
+class TestSaveRequestBulkHTTP(TestCase):
     """
     Test saving a list of models to Elasticsearch
     """
@@ -158,3 +158,37 @@ class TestSaveRequestBulk(TestCase):
             v = d.values()[0]
             self.assertEqual(v['_type'], Request.__name__)
 
+#
+# class TestSaveRequestUDP(TestCase):
+#     @classmethod
+#     def setUpClass(cls):
+#         _clear_elasticsearch()
+#         cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
+#         SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE = 0
+#         SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE = 0
+#
+#     def test_x(self):
+#         indexer = TestESIndexer(self.requests)
+#         print(indexer.udp_insert())
+#         sleep(3)
+#         es = TestESIndexer._get_http_connection()
+#         response = es.get(indexer._insert_path() + '/_search', data={
+#             'query': {
+#                 'match_all': {}
+#             }
+#         }, params={
+#             'size': 2
+#         })
+#         print(response)
+#
+#
+# if __name__ == '__main__':
+#     es = rawes.Elastic()
+#     response = es.get('/test_index/type1/_search', data={
+#         'query': {
+#             'match_all': {}
+#         }
+#     }, params={
+#         'size': 2
+#     })
+#     print (response)

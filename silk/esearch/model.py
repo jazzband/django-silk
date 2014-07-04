@@ -7,6 +7,8 @@ What it gains in time, we lose in space efficiency however.
 """
 import json
 import logging
+import socket
+from sys import getsizeof
 
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField, DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignRelatedObjectsDescriptor
@@ -55,6 +57,7 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
     model_class = None
     index = None
     es_type = None
+    datagram_bytes = 65536
 
     POST = '/{index}/{type}/'
 
@@ -170,6 +173,7 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
             # singular
             return self._serialisable(self.model)
 
+
     def _insert_path(self):
         """
         :return: the path for use in POSTing new data to ES
@@ -188,8 +192,7 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         Logger.debug('Inserting: %s' % self.pretty_dict(serialisable))
         return es.post(path, data=serialisable)
 
-    def _http_bulk_insert(self, serialisables):
-        es = self._get_http_connection()
+    def _get_bulk_data(self, serialisables):
         prelude = json.dumps({
             'index': {
                 '_index': self.get_index(),
@@ -199,17 +202,47 @@ class ESIndexer(six.with_metaclass(ESIndexerMeta, object)):
         data = ''
         for d in serialisables:
             data += prelude + json.dumps(d) + '\n'
+        return data
+
+    def _http_bulk_insert(self, serialisables):
+        es = self._get_http_connection()
+        data = self._get_bulk_data(serialisables)
         if Logger.isEnabledFor(logging.DEBUG):
             Logger.debug('Inserting: \n%s' % data)
         return es.post('/_bulk', data=data)
 
+    def _is_iterable(self, serialisable):
+        return isinstance(serialisable, list) or isinstance(serialisable, tuple)
+
     def http_insert(self):
         serialisable = self.serialisable
         # Note: Could check for iterable, but django models are iterable
-        if isinstance(serialisable, list) or isinstance(serialisable, tuple):
+        if self._is_iterable(serialisable):
             return self._http_bulk_insert(serialisable)
         else:
             return self._http_insert(serialisable)
+
+    # def _get_data_grams(self, serialisables):
+    #     data = self._get_bulk_data(serialisables)
+    #     individual = data.split('\n')
+    #     datagrams = []
+    #     while len(individual):
+    #         datagrams.append('\n'.join(individual[0:2]))
+    #         individual = individual[2:]
+    #     return datagrams
+
+    # def udp_insert(self):
+    #     serialisables = self.serialisable
+    #     if not self._is_iterable(self.serialisable):
+    #         serialisables = [serialisables]
+    #     datagrams = self._get_data_grams(serialisables)
+    #     conn_tuple = (SilkyConfig().SILKY_ELASTICSEARCH_HOST, SilkyConfig().SILKY_ELASTICSEARCH_PORT)
+    #     for datagram in datagrams:
+    #         print 'Sending message %s of size ' % (datagram) + str(getsizeof(datagram, 0))
+    #         sock = socket.socket(socket.AF_INET,
+    #                              socket.SOCK_DGRAM)
+    #         sock.sendto(datagram, conn_tuple)
+    #     return self._get_bulk_data(serialisables)
 
     def get_index(self):
         """
