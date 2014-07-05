@@ -31,17 +31,16 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires= [
-        'Django>=1.5,<1.7',
-        'Pygments>=1.6<1.7',
-        'six>=1.6<1.7',
-        'simplejson>=3,<4',
-        'python-dateutil>=2,<3',
-        'requests>=2,<=3',
-        'sqlparse>=0.1,<0.2',
-        'Jinja2>=2.7,<3',
-        'autopep8>=1,<2',
-        'rawes>=5,<6',
-        'pytz>2014.2',
-        'pyeqs>=0.8.1<1'
+        'Django >=1.5<1.7',
+        'Pygments >=1.6<1.7',
+        'six >=1.6<1.7',
+        'simplejson >=3<4',
+        'python-dateutil >=2<3',
+        'requests>=2<=3',
+        'sqlparse>=0.1<0.2',
+        'Jinja2>=2.7<3',
+        'autopep8>=1<2',
+        'rawes>=5<6',
+        'pytz>=2014.2'
     ]
 )
