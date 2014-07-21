@@ -8,3 +8,4 @@ sqlparse==0.1.11
 Jinja2==2.7.2
 autopep8==1.0.2
 pytz>2014.2
+mock==1.0.1
