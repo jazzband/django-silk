@@ -18,9 +18,9 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.sessions',
+    'south',
     'silk',
-    'example_app',
-    # 'South'
+    'example_app'
 )
 
 MIDDLEWARE_CLASSES = (
