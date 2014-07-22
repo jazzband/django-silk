@@ -32,8 +32,7 @@ def silky_reverse(name, *args, **kwargs):
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
     fpath = silky_reverse('summary')
-    path = '/'.join(fpath.split('/')[0:-1])
-    silky = request.path.startswith(path)
+    silky = request.path.startswith(fpath)
     ignored = request.path in SilkyConfig().SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
