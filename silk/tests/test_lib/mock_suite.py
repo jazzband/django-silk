@@ -129,7 +129,6 @@ class MockSuite(object):
             profiles.append(profile)
         return profiles
 
-
     def _random_time(self):
         start_time = timezone.now()
         duration = timedelta(milliseconds=random.randint(0, 3000))

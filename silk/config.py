@@ -1,7 +1,8 @@
 from copy import copy
-from silk.singleton import Singleton
 
 import six
+
+from silk.singleton import Singleton
 
 
 def default_permissions(user):
@@ -9,8 +10,8 @@ def default_permissions(user):
         return user.is_staff
     return False
 
-class SilkyConfig(six.with_metaclass(Singleton, object)):
 
+class SilkyConfig(six.with_metaclass(Singleton, object)):
     defaults = {
         'SILKY_DYNAMIC_PROFILING': [],
         'SILKY_IGNORE_PATHS': [],
@@ -26,6 +27,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
 
     def _setup(self):
         from django.conf import settings
+
         options = {option: getattr(settings, option) for option in dir(settings) if option.startswith('SILKY')}
         self.attrs = copy(self.defaults)
         self.attrs.update(options)

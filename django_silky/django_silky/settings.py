@@ -19,7 +19,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'silk',
-    'example_app'
+    'example_app',
+    # 'South'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,7 +88,14 @@ STATICFILES_FINDERS = (
 
 STATIC_ROOT = '/tmp/static/'
 
+if not os.path.exists(STATIC_ROOT):
+    os.mkdir(STATIC_ROOT)
+
 MEDIA_ROOT = BASE_DIR + '/media/'
+MEDIA_URL = '/media/'
+
+if not os.path.exists(MEDIA_ROOT):
+    os.mkdir(MEDIA_ROOT)
 
 TEMPLATE_DIRS = (
     BASE_DIR

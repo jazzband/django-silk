@@ -26,7 +26,11 @@ def execute_sql(self, *args, **kwargs):
         if not q:
             raise EmptyResultSet
     except EmptyResultSet:
-        if kwargs.get('result_type', 'multi') == 'multi':
+        try:
+            result_type = args[0]
+        except IndexError:
+            result_type = kwargs.get('result_type', 'multi')
+        if result_type == 'multi':
             return iter([])
         else:
             return
