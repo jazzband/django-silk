@@ -193,7 +193,7 @@
     @media screen and (-webkit-min-device-pixel-ratio: 0) {
         /*safari and chrome*/
         select {
-            height: 30px;
+{#            height: 30px;#}
             line-height: 30px;
             background: #f4f4f4;
         }
@@ -205,20 +205,8 @@
         padding: 0;
     }
 
-    @-moz-document url-prefix() {
-        /* targets Firefox only */
-        select {
-            padding: 15px 0 !important;
-        }
-    }
 
-    @media screen\0 {
-        /* IE Hacks: targets IE 8, 9 and 10 */
-        select {
-            height: 30px;
-            line-height: 30px;
-        }
-    }
+
 
     #cbp-spmenu-s2 p {
         margin-bottom: 10px;
