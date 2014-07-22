@@ -55,6 +55,7 @@ docs/_build/
 dist
 .idea
 *db.sqlite*
+/django_silky/media
 
 # Vagrant
 .vagrant
@@ -66,5 +67,4 @@ dist
 /src
 
 # Sphinx
-
 _html

@@ -14,3 +14,6 @@ class Product(models.Model):
 class Blind(Product):
     name = TextField()
     child_safe = BooleanField()
+
+    def __str__(self):
+        return self.name

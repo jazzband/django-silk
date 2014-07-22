@@ -1,15 +1,23 @@
 <html>
 <head>
-
+<style>
+    .blind {
+        max-width: 200px
+    }
+</style>
 </head>
 <body>
+<h1>Example App</h1>
+<p>Use this app for testing and playing around with Silk. Displays a range of Blinds. Use admin to add them.</p>
 <table>
     <tr>
+        <th>Photo</th>
         <th>Name</th>
         <th>Child safe?</th>
     </tr>
     {% for blind in blinds %}
         <tr>
+            <td>{% if blind.photo %}<img class="blind" src="{{ blind.photo.url }}">{% endif %}</td>
             <td>{{ blind.name }}</td>
             <td>{% if blind.child_safe %}Yes{% else %}No{% endif %}</td>
         </tr>
