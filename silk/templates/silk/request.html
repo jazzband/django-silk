@@ -70,8 +70,8 @@
         }
 
         .headers td {
-            padding-bottom:5px;
-            padding-left:5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
         }
 
         .headers .key {
@@ -139,15 +139,17 @@
                     <pre><code>{{ silk_request.body }}</code></pre>
                 {% endif %}
             {% endif %}
-            {% heading 'Response Headers' %}
-            <table class="headers">
-                {% for k, v in silk_request.response.headers.items %}
-                    <tr>
-                        <td class="key">{{ k.upper }}</td>
-                        <td class="value">{{ v }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+            {% if silk_request.response.headers %}
+                {% heading 'Response Headers' %}
+                <table class="headers">
+                    {% for k, v in silk_request.response.headers.items %}
+                        <tr>
+                            <td class="key">{{ k.upper }}</td>
+                            <td class="value">{{ v }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
             {% if silk_request.response.raw_body %}
                 {% heading 'Raw Response Body' %}
                 {% if silk_request.response.raw_body|length > 1000 %}
