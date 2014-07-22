@@ -1,5 +1,6 @@
 {% extends 'silk/base/root_base.html' %}
 {% load inclusion %}
+{% load staticfiles %}
 {% block menu %}
     {% root_menu request %}
 {% endblock %}
@@ -51,6 +52,15 @@
             font-weight: bold;
         }
 
+        #filter-image {
+            width: 20px;
+        }
+
+        #filter-cell {
+            padding-left: 5px;
+        }
+
+
     </style>
 {% endblock %}
 
@@ -76,54 +86,65 @@
                 <form action="." name="filter-form" id="filter-form" method="post">
                     {% csrf_token %}
                 </form>
-                <div class="resizing-input">
-                    Using requests that executed
-                    <input form="filter-form"
-                           class="typ"
-                           type="hidden"
-                           value="SecondsFilter"
-                           name="filter-seconds-typ">
-                    <input type="text"
-                           placeholder="seconds"
-                           form="filter-form"
-                           name="filter-seconds-value"
-                           value="{{ filters.seconds.value }}"
-                            >
-                    seconds ago,
-                    <span style="display:none"></span>
-                </div>
-                <div class="resizing-input">
-                    before
-                    <input form="filter-form"
-                           class="typ"
-                           type="hidden"
-                           value="BeforeDateFilter"
-                           name="filter-beforedate-typ">
-                    <input class="datetimepicker"
-                           type="text"
-                           placeholder="date"
-                           form="filter-form"
-                           name="filter-beforedate-value"
-                           value="{{ filters.beforedate.value }}"
-                            />,
-                    <span style="display:none"></span>
-                </div>
-                <div class="resizing-input">
-                    and after
-                    <input form="filter-form"
-                           class="typ"
-                           type="hidden"
-                           value="AfterDateFilter"
-                           name="filter-afterdate-typ">
-                    <input class="datetimepicker"
-                           type="text"
-                           placeholder="date"
-                           form="filter-form"
-                           name="filter-afterdate-value"
-                           value="{{ filters.afterdate.value }}"
-                            >.
-                    <span style="display:none"></span>
-                </div>
+                <table id="filter-table">
+                    <tr>
+                        <td>
+                            <img id="filter-image" src="{% static 'silk/filter2.png' %}">
+
+                        </td>
+                        <td id="filter-cell">
+                            <div class="resizing-input">
+                                Using requests that executed
+                                <input form="filter-form"
+                                       class="typ"
+                                       type="hidden"
+                                       value="SecondsFilter"
+                                       name="filter-seconds-typ">
+                                <input type="text"
+                                       placeholder="seconds"
+                                       form="filter-form"
+                                       name="filter-seconds-value"
+                                       value="{{ filters.seconds.value }}"
+                                        >
+                                seconds ago,
+                                <span style="display:none"></span>
+                            </div>
+                            <div class="resizing-input">
+                                before
+                                <input form="filter-form"
+                                       class="typ"
+                                       type="hidden"
+                                       value="BeforeDateFilter"
+                                       name="filter-beforedate-typ">
+                                <input class="datetimepicker"
+                                       type="text"
+                                       placeholder="date"
+                                       form="filter-form"
+                                       name="filter-beforedate-value"
+                                       value="{{ filters.beforedate.value }}"
+                                        />,
+                                <span style="display:none"></span>
+                            </div>
+                            <div class="resizing-input">
+                                and after
+                                <input form="filter-form"
+                                       class="typ"
+                                       type="hidden"
+                                       value="AfterDateFilter"
+                                       name="filter-afterdate-typ">
+                                <input class="datetimepicker"
+                                       type="text"
+                                       placeholder="date"
+                                       form="filter-form"
+                                       name="filter-afterdate-value"
+                                       value="{{ filters.afterdate.value }}"
+                                        >.
+                                <span style="display:none"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
             </div>
             <h2>Summary</h2>
             {% if num_requests %}
