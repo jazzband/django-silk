@@ -1,4 +1,5 @@
 import logging
+import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 
@@ -28,9 +29,14 @@ def silky_reverse(name, *args, **kwargs):
         r = reverse(name, *args, **kwargs)
     return r
 
-
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
+
+    # don't trap every request
+    if SilkyConfig().SILKY_INTERCEPT_PERCENT < 100:
+        if random.random() > SilkyConfig().SILKY_INTERCEPT_PERCENT/100.0:
+            return False
+
     fpath = silky_reverse('summary')
     silky = request.path.startswith(fpath)
     ignored = request.path in SilkyConfig().SILKY_IGNORE_PATHS

@@ -340,3 +340,11 @@ request:
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/meta.png"/>
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
+
+### Recording a Fraction of Requests
+
+On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
+
+```python
+SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
+```
