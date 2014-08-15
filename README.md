@@ -60,7 +60,7 @@ urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')
 
 before running syncdb:
 
-```python
+```bash
 python manage.py syncdb
 ```
 
@@ -347,4 +347,11 @@ On high-load sites it may be helpful to only record a fraction of the requests t
 
 ```python
 SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
+```
+### Clearing logged data
+
+A management command will wipe out all logged data:
+
+```bash
+python manage.py silk_clear_request_log
 ```
