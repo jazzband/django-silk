@@ -45,7 +45,7 @@ class Request(models.Model):
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
     method = CharField(max_length=10)
-    start_time = DateTimeField(default=timezone.now)
+    start_time = DateTimeField(default=timezone.now, db_index=True)
     view_name = CharField(max_length=300, db_index=True, blank=True, default='')
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
@@ -94,7 +94,7 @@ class Request(models.Model):
 
 
 class Response(models.Model):
-    request = OneToOneField('Request', related_name='response')
+    request = OneToOneField('Request', related_name='response', db_index=True)
     status_code = IntegerField()
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
@@ -140,7 +140,7 @@ class SQLQuery(models.Model):
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    request = ForeignKey('Request', related_name='queries', null=True, blank=True)
+    request = ForeignKey('Request', related_name='queries', null=True, blank=True, db_index=True)
     traceback = TextField()
     objects = SQLQueryManager()
 
@@ -198,7 +198,7 @@ class BaseProfile(models.Model):
     name = CharField(max_length=300, blank=True, default='')
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    request = ForeignKey('Request', null=True, blank=True)
+    request = ForeignKey('Request', null=True, blank=True, db_index=True)
     time_taken = FloatField(blank=True, null=True)
 
     class Meta:
@@ -217,7 +217,7 @@ class Profile(BaseProfile):
     end_line_num = IntegerField(null=True, blank=True)
     func_name = CharField(max_length=300, blank=True, default='')
     exception_raised = BooleanField(default=False)
-    queries = ManyToManyField('SQLQuery', related_name='profiles')
+    queries = ManyToManyField('SQLQuery', related_name='profiles', db_index=True)
     dynamic = BooleanField(default=False)
 
     @property
