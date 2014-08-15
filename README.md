@@ -55,7 +55,7 @@ Note: The middleware is placement sensitive. If the middleware before `silk.midd
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
-urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
+urlpatterns += patterns('', url(r'^silk/', include('silk.urls', namespace='silk')))
 ```
 
 before running syncdb:
