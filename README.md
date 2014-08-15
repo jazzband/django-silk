@@ -125,6 +125,12 @@ Before diving into the stack trace to figure out where this request is coming fr
 
 ### Profiling 
 
+Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.
+
+```
+SILKY_PYTHON_PROFILER = True
+```
+
 Silk can also be used to profile random blocks of code/functions. It provides a decorator and a context
 manager for this purpose. 
 

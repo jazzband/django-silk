@@ -53,6 +53,7 @@ class Request(models.Model):
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
+    pyprofile = TextField(blank=True, default='')
 
     @property
     def total_meta_time(self):

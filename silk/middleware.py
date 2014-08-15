@@ -88,6 +88,7 @@ class SilkyMiddleware(object):
     def _process_response(self, response):
         with silk_meta_profiler():
             collector = DataCollector()
+            collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
                 silk_response = ResponseModelFactory(response).construct_response_model()

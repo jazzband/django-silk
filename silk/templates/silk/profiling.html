@@ -16,6 +16,10 @@
         .name-div {
             font-weight: bold;
         }
+
+        #pyprofile-container {
+            padding: 0 1em;
+        }
     </style>
 
 {% endblock %}
@@ -222,5 +226,12 @@
                 {% profile_summary profile %}
             </a>
         {% endfor %}
+    {% endif %}
+
+    {% if silk_request.pyprofile %}
+        <div id="pyprofile-container">
+        <h2>Python Profile</h2>
+        <pre class="pyprofile">{{silk_request.pyprofile}}</pre>
+        </div>
     {% endif %}
 {% endblock %}
