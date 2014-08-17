@@ -55,12 +55,12 @@ Note: The middleware is placement sensitive. If the middleware before `silk.midd
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
-urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
+urlpatterns += patterns('', url(r'^silk/', include('silk.urls', namespace='silk')))
 ```
 
 before running syncdb:
 
-```python
+```bash
 python manage.py syncdb
 ```
 
@@ -124,6 +124,12 @@ Before diving into the stack trace to figure out where this request is coming fr
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/5.png" width="720px"/>
 
 ### Profiling 
+
+Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.
+
+```
+SILKY_PYTHON_PROFILER = True
+```
 
 Silk can also be used to profile random blocks of code/functions. It provides a decorator and a context
 manager for this purpose. 
@@ -340,3 +346,18 @@ request:
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/meta.png"/>
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
+
+### Recording a Fraction of Requests
+
+On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
+
+```python
+SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
+```
+### Clearing logged data
+
+A management command will wipe out all logged data:
+
+```bash
+python manage.py silk_clear_request_log
+```

@@ -23,6 +23,8 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_PERMISSIONS': default_permissions,
         'SILKY_MAX_REQUEST_BODY_SIZE': -1,
         'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
+        'SILKY_INTERCEPT_PERCENT': 100,
+        'SILKY_PYTHON_PROFILER': False,
     }
 
     def _setup(self):

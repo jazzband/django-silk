@@ -99,10 +99,10 @@
 
             <table>
                 <tr>
-                    <th class="left-aligned">Time</th>
+                    <th class="left-aligned">At</th>
                     <th class="left-aligned">Tables</th>
                     <th class="right-aligned">Num. Joins</th>
-                    <th class="right-aligned">Execution Time</th>
+                    <th class="right-aligned">Execution Time (ms)</th>
                 </tr>
                 {% for sql_query in items %}
                     <!-- TODO: Pretty grimy... -->
@@ -115,7 +115,7 @@
                            {% url "silk:request_sql_detail" silk_request.id sql_query.id %}\
                        {% endif %}\
                         ';">
-                        <td class="left-aligned">{{ sql_query.start_time }}</td>
+                        <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                         <td class="right-aligned">{{ sql_query.num_joins }}</td>
                         <td class="right-aligned">{{ sql_query.time_taken }}</td>

@@ -1,4 +1,5 @@
 import logging
+import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 
@@ -28,12 +29,19 @@ def silky_reverse(name, *args, **kwargs):
         r = reverse(name, *args, **kwargs)
     return r
 
+fpath = silky_reverse('summary')
+config = SilkyConfig()
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-    fpath = silky_reverse('summary')
+
+    # don't trap every request
+    if config.SILKY_INTERCEPT_PERCENT < 100:
+        if random.random() > config.SILKY_INTERCEPT_PERCENT/100.0:
+            return False
+
     silky = request.path.startswith(fpath)
-    ignored = request.path in SilkyConfig().SILKY_IGNORE_PATHS
+    ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
 
@@ -42,7 +50,7 @@ class SilkyMiddleware(object):
         super(SilkyMiddleware, self).__init__()
 
     def _apply_dynamic_mappings(self):
-        dynamic_profile_configs = SilkyConfig().SILKY_DYNAMIC_PROFILING
+        dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:
             module = conf.get('module')
             function = conf.get('function')
@@ -67,6 +75,7 @@ class SilkyMiddleware(object):
     def process_request(self, request):
         request_model = None
         if _should_intercept(request):
+            request.silk_is_intercepted = True
             self._apply_dynamic_mappings()
             if not hasattr(SQLCompiler, '_execute_sql'):
                 SQLCompiler._execute_sql = SQLCompiler.execute_sql
@@ -79,6 +88,7 @@ class SilkyMiddleware(object):
     def _process_response(self, response):
         with silk_meta_profiler():
             collector = DataCollector()
+            collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
                 silk_response = ResponseModelFactory(response).construct_response_model()
@@ -91,6 +101,6 @@ class SilkyMiddleware(object):
 
 
     def process_response(self, request, response):
-        if _should_intercept(request):
+        if getattr(request, 'silk_is_intercepted', False):
             self._process_response(response)
         return response

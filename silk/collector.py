@@ -1,5 +1,7 @@
 from threading import local
 
+import cProfile, pstats, StringIO
+
 from six import with_metaclass
 
 from silk import models
@@ -72,6 +74,9 @@ class DataCollector(with_metaclass(Singleton, object)):
     def configure(self, request=None):
         self.request = request
         self._configure()
+        if SilkyConfig().SILKY_PYTHON_PROFILER:
+            self.pythonprofiler = cProfile.Profile()
+            self.pythonprofiler.enable()
 
     def clear(self):
         self.request = None
@@ -106,7 +111,19 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.meta_time_spent_queries = query_time
             self.request.save()
 
+    def stop_python_profiler(self):
+        if hasattr(self, 'pythonprofiler'):
+            self.pythonprofiler.disable()
+
     def finalise(self):
+        if hasattr(self, 'pythonprofiler'):
+            s = StringIO.StringIO()
+            ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
+            ps.print_stats()
+            profile_text = s.getvalue()
+            profile_text = "\n".join(profile_text.split("\n")[0:256]) # don't record too much because it can overflow the field storage size
+            self.request.pyprofile = profile_text
+
         for _, query in self.queries.items():
             query_model = models.SQLQuery.objects.create(**query)
             query['model'] = query_model
