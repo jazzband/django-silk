@@ -17,7 +17,7 @@
             font-weight: bold;
         }
 
-        #pyprofile-container {
+        .container {
             padding: 0 1em;
         }
 
@@ -227,7 +227,11 @@
 {% endblock %}
 
 {% block data %}
+
     {% if results %}
+        <div class="container">
+            <h2>Silk Profiler</h2>
+        </div>
         {% for profile in results %}
             <a href="
             {% if silk_request %}
@@ -239,11 +243,19 @@
                 {% profile_summary profile %}
             </a>
         {% endfor %}
+    {% else %}
+        <div class="container">
+            <h2>Silk Profiler</h2>
+
+            <div class="description">No Silk profiling was performed for this request. Use the silk_profile
+                decorator/context manager to do so.
+            </div>
+        </div>
     {% endif %}
 
     {% if silk_request.pyprofile %}
-        <div id="pyprofile-container">
-            <h2>Python Profile</h2>
+        <div class="container">
+            <h2>Python Profiler</h2>
 
             <div class="description">The below is a dump from the cPython profiler.</div>
             <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>

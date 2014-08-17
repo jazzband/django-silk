@@ -118,7 +118,7 @@ class DataCollector(with_metaclass(Singleton, object)):
 
     def finalise(self):
         if hasattr(self, 'pythonprofiler'):
-            s = StringIO.StringIO()
+            s = StringIO()
             ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
