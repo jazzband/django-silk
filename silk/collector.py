@@ -1,7 +1,8 @@
 from threading import local
 
-import cProfile, pstats, StringIO
+import cProfile, pstats
 
+from six import StringIO
 from six import with_metaclass
 
 from silk import models
