@@ -20,6 +20,19 @@
         #pyprofile-container {
             padding: 0 1em;
         }
+
+        .description {
+
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .pyprofile {
+            overflow: scroll;
+            max-height: 650px;
+        }
     </style>
 
 {% endblock %}
@@ -230,8 +243,10 @@
 
     {% if silk_request.pyprofile %}
         <div id="pyprofile-container">
-        <h2>Python Profile</h2>
-        <pre class="pyprofile">{{silk_request.pyprofile}}</pre>
+            <h2>Python Profile</h2>
+
+            <div class="description">The below is a dump from the cPython profiler.</div>
+            <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
         </div>
     {% endif %}
 {% endblock %}
