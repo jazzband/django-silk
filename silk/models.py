@@ -91,6 +91,8 @@ class Request(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+        if self.raw_body is None:
+            self.raw_body = ''
         super(Request, self).save(*args, **kwargs)
 
 
