@@ -88,6 +88,10 @@ class Request(models.Model):
         return self.headers.get('content-type', None)
 
     def save(self, *args, **kwargs):
+        # sometimes django requests return the body as 'None'
+        if self.raw_body is None: self.raw_body = ''
+        if self.body is None: self.body = ''
+
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
