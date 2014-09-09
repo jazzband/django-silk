@@ -150,19 +150,22 @@ class SQLQuery(models.Model):
 
     @property
     def tables_involved(self):
-        """A rreally ather rudimentary way to work out tables involved in a query.
+        """A really rather rudimentary way to work out tables involved in a query.
         TODO: Can probably parse the SQL using sqlparse etc and pull out table info that way?"""
         components = [x.strip() for x in self.query.split()]
         tables = []
         for idx, c in enumerate(components):
             # TODO: If django uses aliases on column names they will be falsely identified as tables...
-            if c.lower() == 'from' or c.lower() == 'join' or c.lower() == 'as':
+            if c.lower() in ['from', 'join', 'as', 'into', 'update']:
                 try:
                     nxt = components[idx + 1]
-                    if not nxt.startswith('('):  # Subquery
-                        stripped = nxt.strip().strip(',')
-                        if stripped:
-                            tables.append(stripped)
+                    if nxt.startswith('('):  # Subquery
+                        continue
+                    if nxt.startswith('@'):  # Temporary table
+                        continue
+                    stripped = nxt.strip().strip(',')
+                    if stripped:
+                        tables.append(stripped)
                 except IndexError:  # Reach the end
                     pass
         return tables
