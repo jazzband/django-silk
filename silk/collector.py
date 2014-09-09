@@ -108,7 +108,6 @@ class DataCollector(with_metaclass(Singleton, object)):
             query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
             self.request.meta_num_queries = num_queries
             self.request.meta_time_spent_queries = query_time
-            self.request.save()
 
     def stop_python_profiler(self):
         if hasattr(self, 'pythonprofiler'):

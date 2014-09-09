@@ -49,8 +49,8 @@ def execute_sql(self, *args, **kwargs):
             request = DataCollector().request
             if request:
                 query_dict['request'] = request
-            if self.query.model.__module__ != 'silk.models':
-                DataCollector().register_query(query_dict)
-            else:
+            if self.query.model.__module__.startswith('silk.'):
                 DataCollector().register_silk_query(query_dict)
+            else:
+                DataCollector().register_query(query_dict)
     return self._execute_sql(*args, **kwargs)

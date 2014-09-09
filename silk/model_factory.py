@@ -153,7 +153,7 @@ class RequestModelFactory(object):
         view_name = resolved.url_name
         if namespace:
             view_name = namespace + ':' + view_name
-        request_model = models.Request.objects.create(
+        request_model = models.Request(
             path=path,
             encoded_headers=self.encoded_headers(),
             method=self.request.method,
@@ -240,10 +240,10 @@ class ResponseModelFactory(object):
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(request=self.request,
-                                                        status_code=self.response.status_code,
-                                                        encoded_headers=json.dumps(headers),
-                                                        body=b)
+        silky_response = models.Response(request=self.request,
+                                         status_code=self.response.status_code,
+                                         encoded_headers=json.dumps(headers),
+                                         body=b)
         # Text fields are encoded as UTF-8 in Django and hence will try to coerce
         # anything to we pass to UTF-8. Some stuff like binary will fail.
         try:

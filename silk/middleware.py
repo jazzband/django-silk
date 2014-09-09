@@ -37,7 +37,7 @@ def _should_intercept(request):
 
     # don't trap every request
     if config.SILKY_INTERCEPT_PERCENT < 100:
-        if random.random() > config.SILKY_INTERCEPT_PERCENT/100.0:
+        if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
     silky = request.path.startswith(fpath)
@@ -81,8 +81,8 @@ class SilkyMiddleware(object):
                 SQLCompiler._execute_sql = SQLCompiler.execute_sql
                 SQLCompiler.execute_sql = execute_sql
             request_model = RequestModelFactory(request).construct_request_model()
+            request_model.save()
         DataCollector().configure(request_model)
-
 
 
     def _process_response(self, response):
@@ -95,9 +95,10 @@ class SilkyMiddleware(object):
                 silk_response.save()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
-                silk_request.save()
             else:
                 Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+        if silk_request:
+            silk_request.save()
 
 
     def process_response(self, request, response):
