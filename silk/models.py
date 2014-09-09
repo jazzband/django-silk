@@ -59,8 +59,7 @@ class Request(models.Model):
     def total_meta_time(self):
         return (self.meta_time or 0) + (self.meta_time_spent_queries or 0)
 
-    # defined in atomic transaction within SQLQuery save()/delete() as well
-    # as in bulk_create of SQLQueryManager
+    # Set in DataCollector.finalise() and SQLQuery's delete().
     # TODO: This is probably a bad way to do this, .count() will prob do?
     num_sql_queries = IntegerField(default=0)
 
@@ -118,24 +117,13 @@ class Response(models.Model):
 
 class SQLQueryManager(models.Manager):
     def bulk_create(self, *args, **kwargs):
-        """ensure that num_sql_queries remains consistent. Bulk create does not call
-        the model save() method and hence we must add this logic here too"""
         if len(args):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
-        with transaction.commit_on_success():
-            request_counter = Counter([x.request_id for x in objs])
-            requests = Request.objects.filter(pk__in=request_counter.keys())
-            # TODO: Not that there is ever more than one request (but there could be eventually)
-            # but perhaps there is a cleaner way of apply the increment from the counter without iterating
-            # and saving individually? e.g. bulk update but with diff. increments. Couldn't come up with this
-            # off hand.
-            for r in requests:
-                r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
-                r.save()
-            save = super(SQLQueryManager, self).bulk_create(*args, **kwargs)
-            return save
+        for obj in objs:
+            obj.calculate_time_taken()
+        return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -179,15 +167,14 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @transaction.commit_on_success()
-    def save(self, *args, **kwargs):
+    def calculate_time_taken(self):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
-        if not self.pk:
-            if self.request:
-                self.request.num_sql_queries += 1
-                self.request.save()
+
+    @transaction.commit_on_success()
+    def save(self, *args, **kwargs):
+        self.calculate_time_taken()
         super(SQLQuery, self).save(*args, **kwargs)
 
     @transaction.commit_on_success()
