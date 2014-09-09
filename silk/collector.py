@@ -46,6 +46,15 @@ class DataCollector(with_metaclass(Singleton, object)):
         self.local.objects = {}
         self.local.temp_identifier = 0
 
+    def start_meta_block(self):
+        self.local.is_in_meta_block = True
+
+    def end_meta_block(self):
+        self.local.is_in_meta_block = False
+
+    def is_in_meta_block(self):
+        return getattr(self.local, 'is_in_meta_block', False)
+
     @property
     def objects(self):
         return getattr(self.local, 'objects', None)
@@ -71,7 +80,6 @@ class DataCollector(with_metaclass(Singleton, object)):
         return self._get_objects(TYP_PROFILES)
 
     def configure(self, request=None):
-        self.request = request
         self._configure()
         if SilkyConfig().SILKY_PYTHON_PROFILER:
             self.pythonprofiler = cProfile.Profile()
@@ -97,7 +105,10 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.objects[typ][ident] = arg
 
     def register_query(self, *args):
-        self.register_objects(TYP_QUERIES, *args)
+        if self.is_in_meta_block():
+            self.register_objects(TYP_SILK_QUERIES, *args)
+        else:
+            self.register_objects(TYP_QUERIES, *args)
 
     def register_profile(self, *args):
         self.register_objects(TYP_PROFILES, *args)
@@ -125,6 +136,7 @@ class DataCollector(with_metaclass(Singleton, object)):
         query_models_to_create = []
         use_bulk_insert = getattr(connection.features, 'can_return_id_from_bulk_insert', False)
         for _, query in self.queries.items():
+            query['request'] = self.request
             self.request.num_sql_queries += 1
             query_model = models.SQLQuery(**query)
             query['model'] = query_model
@@ -156,6 +168,6 @@ class DataCollector(with_metaclass(Singleton, object)):
                 profile.queries = profile_query_models
                 profile.save()
         self._record_meta_profiling()
-
-    def register_silk_query(self, *args):
-        self.register_objects(TYP_SILK_QUERIES, *args)
+        # Add the final save() to the queries count.
+        if SilkyConfig().SILKY_META:
+            self.request.meta_num_queries += 1

@@ -3,17 +3,15 @@ import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 
-from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
 
 from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
-from silk.models import _time_taken
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
-from silk.sql import execute_sql
+from silk.sql import wrap_cursor_execute
 
 
 Logger = logging.getLogger('silk')
@@ -49,6 +47,7 @@ class SilkyMiddleware(object):
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
 
+
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:
@@ -71,18 +70,16 @@ class SilkyMiddleware(object):
             else:
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
-    @silk_meta_profiler()
     def process_request(self, request):
-        request_model = None
         if _should_intercept(request):
-            request.silk_is_intercepted = True
-            self._apply_dynamic_mappings()
-            if not hasattr(SQLCompiler, '_execute_sql'):
-                SQLCompiler._execute_sql = SQLCompiler.execute_sql
-                SQLCompiler.execute_sql = execute_sql
-            request_model = RequestModelFactory(request).construct_request_model()
-            request_model.save()
-        DataCollector().configure(request_model)
+            DataCollector().configure()
+            with silk_meta_profiler():
+                request.silk_is_intercepted = True
+                self._apply_dynamic_mappings()
+                wrap_cursor_execute()
+                request_model = RequestModelFactory(request).construct_request_model()
+                request_model.save()
+                DataCollector().request = request_model
 
 
     def _process_response(self, response):
