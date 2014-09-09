@@ -96,6 +96,7 @@ class SilkyMiddleware(object):
                 Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
         if silk_request:
             silk_request.save()
+        DataCollector().clear()
 
 
     def process_response(self, request, response):
