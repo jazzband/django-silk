@@ -3,15 +3,17 @@ import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 
+from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
 
 from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
+from silk.models import _time_taken
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
-from silk.sql import wrap_cursor_execute
+from silk.sql import execute_sql
 
 
 Logger = logging.getLogger('silk')
@@ -35,7 +37,7 @@ def _should_intercept(request):
 
     # don't trap every request
     if config.SILKY_INTERCEPT_PERCENT < 100:
-        if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
+        if random.random() > config.SILKY_INTERCEPT_PERCENT/100.0:
             return False
 
     silky = request.path.startswith(fpath)
@@ -46,7 +48,6 @@ def _should_intercept(request):
 class SilkyMiddleware(object):
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
-
 
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
@@ -70,16 +71,18 @@ class SilkyMiddleware(object):
             else:
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
+    @silk_meta_profiler()
     def process_request(self, request):
+        request_model = None
         if _should_intercept(request):
-            DataCollector().configure()
-            with silk_meta_profiler():
-                request.silk_is_intercepted = True
-                self._apply_dynamic_mappings()
-                wrap_cursor_execute()
-                request_model = RequestModelFactory(request).construct_request_model()
-                request_model.save()
-                DataCollector().request = request_model
+            request.silk_is_intercepted = True
+            self._apply_dynamic_mappings()
+            if not hasattr(SQLCompiler, '_execute_sql'):
+                SQLCompiler._execute_sql = SQLCompiler.execute_sql
+                SQLCompiler.execute_sql = execute_sql
+            request_model = RequestModelFactory(request).construct_request_model()
+        DataCollector().configure(request_model)
+
 
 
     def _process_response(self, response):
@@ -92,11 +95,9 @@ class SilkyMiddleware(object):
                 silk_response.save()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
+                silk_request.save()
             else:
                 Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
-        if silk_request:
-            silk_request.save()
-        DataCollector().clear()
 
 
     def process_response(self, request, response):
