@@ -27,6 +27,7 @@ class silk_meta_profiler(object):
         return SilkyConfig().SILKY_META
 
     def __enter__(self):
+        DataCollector().start_meta_block()
         if self._should_meta_profile:
             self.start_time = timezone.now()
 
@@ -44,6 +45,7 @@ class silk_meta_profiler(object):
             else:
                 Logger.error('Cant perform meta profile due to no request model in DataCollector. '
                              'Has Silk middleware been installed properly?')
+        DataCollector().end_meta_block()
 
 
     def __call__(self, target):
