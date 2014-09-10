@@ -11,8 +11,6 @@ from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
-from django.db import connection
-
 TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
 TYP_QUERIES = 'queries'
@@ -46,15 +44,6 @@ class DataCollector(with_metaclass(Singleton, object)):
         self.local.objects = {}
         self.local.temp_identifier = 0
 
-    def start_meta_block(self):
-        self.local.is_in_meta_block = True
-
-    def end_meta_block(self):
-        self.local.is_in_meta_block = False
-
-    def is_in_meta_block(self):
-        return getattr(self.local, 'is_in_meta_block', False)
-
     @property
     def objects(self):
         return getattr(self.local, 'objects', None)
@@ -79,7 +68,12 @@ class DataCollector(with_metaclass(Singleton, object)):
     def profiles(self):
         return self._get_objects(TYP_PROFILES)
 
+    @property
+    def silk_queries(self):
+        return self._get_objects('silk_queries')
+
     def configure(self, request=None):
+        self.request = request
         self._configure()
         if SilkyConfig().SILKY_PYTHON_PROFILER:
             self.pythonprofiler = cProfile.Profile()
@@ -105,10 +99,7 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.objects[typ][ident] = arg
 
     def register_query(self, *args):
-        if self.is_in_meta_block():
-            self.register_objects(TYP_SILK_QUERIES, *args)
-        else:
-            self.register_objects(TYP_QUERIES, *args)
+        self.register_objects(TYP_QUERIES, *args)
 
     def register_profile(self, *args):
         self.register_objects(TYP_PROFILES, *args)
@@ -119,6 +110,7 @@ class DataCollector(with_metaclass(Singleton, object)):
             query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
             self.request.meta_num_queries = num_queries
             self.request.meta_time_spent_queries = query_time
+            self.request.save()
 
     def stop_python_profiler(self):
         if hasattr(self, 'pythonprofiler'):
@@ -130,22 +122,12 @@ class DataCollector(with_metaclass(Singleton, object)):
             ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
-            profile_text = "\n".join(profile_text.split("\n")[0:256])  # don't record too much because it can overflow the field storage size
+            profile_text = "\n".join(profile_text.split("\n")[0:256]) # don't record too much because it can overflow the field storage size
             self.request.pyprofile = profile_text
 
-        query_models_to_create = []
-        use_bulk_insert = getattr(connection.features, 'can_return_id_from_bulk_insert', False)
         for _, query in self.queries.items():
-            query['request'] = self.request
-            self.request.num_sql_queries += 1
-            query_model = models.SQLQuery(**query)
+            query_model = models.SQLQuery.objects.create(**query)
             query['model'] = query_model
-            if use_bulk_insert:
-                query_models_to_create.append(query_model)
-            else:
-                query_model.save()
-        if query_models_to_create:
-            models.SQLQuery.objects.bulk_create(query_models_to_create, set_primary_keys=True)
         for _, profile in self.profiles.items():
             profile_query_models = []
             if TYP_QUERIES in profile:
@@ -168,6 +150,6 @@ class DataCollector(with_metaclass(Singleton, object)):
                 profile.queries = profile_query_models
                 profile.save()
         self._record_meta_profiling()
-        # Add the final save() to the queries count.
-        if SilkyConfig().SILKY_META:
-            self.request.meta_num_queries += 1
+
+    def register_silk_query(self, *args):
+        self.register_objects(TYP_SILK_QUERIES, *args)
