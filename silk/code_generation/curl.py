@@ -22,7 +22,7 @@ def _curl_process_params(body, content_type, query_params):
     modifier = None
     if query_params:
         try:
-            query_params = urlencode(query_params)
+            query_params = urlencode([(k, v.encode('utf8')) for k, v in query_params.items()])
         except TypeError:
             pass
         query_params = '?' + str(query_params)
