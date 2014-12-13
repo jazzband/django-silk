@@ -22,7 +22,7 @@ Documentation is available [here](http://silk.readthedocs.org/en/latest/) and th
 
 Silk has been tested with:
 
-* Django: 1.5, 1.6
+* Django: 1.5, 1.6, 1.7
 * Python: 2.7, 3.3, 3.4
 
 I left out Django <1.5 due to the change in `{% url %}` syntax. Python 2.6 is missing `collections.Counter`. Python 3.0 and 3.1 are not available via Travis and also are missing the `u'xyz'` syntax for unicode. Workarounds can likely be found for all these if there is any demand. Django 1.7 is currently untested.

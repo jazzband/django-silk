@@ -12,12 +12,12 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'silk.tests.data.dynamic',
+                'module': 'tests.tests.data.dynamic',
                 'function': 'foo'
             }
         ]
         middleware._apply_dynamic_mappings()
-        from silk.tests.data.dynamic import foo
+        from .data.dynamic import foo
 
         mock = Mock()
         mock.queries = []
@@ -30,14 +30,14 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'silk.tests.data.dynamic',
+                'module': 'tests.tests.data.dynamic',
                 'function': 'foo',
                 'start_line': 1,
                 'end_line': 2,
             }
         ]
         middleware._apply_dynamic_mappings()
-        from silk.tests.data.dynamic import foo
+        from .data.dynamic import foo
 
         mock = Mock()
         mock.queries = []
@@ -50,7 +50,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'silk.tests.data.dynamic',
+                'module': 'tests.tests.data.dynamic',
                 'function': 'foo2',
                 'start_line': 1,
                 'end_line': 7,
@@ -62,7 +62,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'silk.tests.data.dfsdf',
+                'module': 'tests.tests.data.dfsdf',
                 'function': 'foo'
             }
         ]
@@ -72,7 +72,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'silk.tests.data.dynamic',
+                'module': 'tests.tests.data.dynamic',
                 'function': 'bar'
             }
         ]
@@ -82,7 +82,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'dfgdf': 'silk.tests.data.dynamic',
+                'dfgdf': 'tests.tests.data.dynamic',
                 'funcgdfgtion': 'bar'
             }
         ]

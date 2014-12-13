@@ -7,7 +7,7 @@ import json
 import unittest
 import subprocess
 
-from silk.tests.util import PORT, construct_echo_process
+from .util import PORT, construct_echo_process
 
 
 

@@ -7,7 +7,7 @@ from silk.config import SilkyConfig
 from silk import models
 from silk.middleware import silky_reverse
 
-from silk.tests import MockSuite
+from .test_lib.mock_suite import MockSuite
 
 
 class TestEndPoints(TestCase):
