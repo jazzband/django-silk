@@ -1,19 +1,13 @@
 language: python
-python: 
-    - "2.7"
-    - "3.3"
-    - "3.4"
+install:
+  - pip install tox
+script:
+  - tox
 env:
-    - DJANGO_VERSION=1.5
-    - DJANGO_VERSION=1.6
-
-
-install: 
-    - pip install -q Django==$DJANGO_VERSION
-    - pip install -r requirements.txt
-
-script: 
-    - cp -r silk django_silky/silk
-    - cd django_silky
-    - ./manage.py test silk
-
+  - TOXENV=py27
+  - TOXENV=py32
+  - TOXENV=py33
+  - TOXENV=py34
+  - TOXENV=django15
+  - TOXENV=django16
+  - TOXENV=django17
