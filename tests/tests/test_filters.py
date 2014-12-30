@@ -10,7 +10,8 @@ import pytz
 from silk import models
 from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter, NameFilter, FunctionNameFilter, NumQueriesFilter, TimeSpentOnQueriesFilter, \
     OverallTimeFilter
-from silk.tests import MockSuite, delete_all_models
+from .test_lib.mock_suite import MockSuite
+from .util import delete_all_models
 
 
 mock_suite = MockSuite()

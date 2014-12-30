@@ -4,7 +4,7 @@ from mock import NonCallableMock
 from silk.collector import DataCollector
 from silk.middleware import SilkyMiddleware
 
-from silk.tests.util import delete_all_models
+from .util import delete_all_models
 from silk.config import SilkyConfig
 from silk.models import Request
 

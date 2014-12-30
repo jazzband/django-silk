@@ -4,7 +4,7 @@ from mock import Mock, NonCallableMock, NonCallableMagicMock, patch
 from silk.collector import DataCollector
 from silk.models import SQLQuery, Request
 from silk.sql import execute_sql
-from silk.tests.util import delete_all_models
+from .util import delete_all_models
 
 
 def mock_sql():

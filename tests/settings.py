@@ -1,4 +1,5 @@
 import os
+import django
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -18,10 +19,19 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.sessions',
-    # 'south',
     'silk',
+    # Added so tests will pass for django 1.5
+    #'tests',
     'example_app'
 )
+
+# A quick hack to get tests to pass for django 1.5
+if django.VERSION < (1, 6):
+    INSTALLED_APPS += ("tests", )
+    ROOT_URLCONF = 'tests.urls'
+
+else:
+     ROOT_URLCONF = 'urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -33,9 +43,7 @@ MIDDLEWARE_CLASSES = (
     'silk.middleware.SilkyMiddleware'
 )
 
-ROOT_URLCONF = 'django_silky.urls'
-
-WSGI_APPLICATION = 'django_silky.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
 
@@ -98,7 +106,7 @@ if not os.path.exists(MEDIA_ROOT):
     os.mkdir(MEDIA_ROOT)
 
 TEMPLATE_DIRS = (
-    BASE_DIR
+    BASE_DIR,
 )
 
 # A tuple of template loader classes, specified as strings. Each Loader class

@@ -8,7 +8,7 @@ from silk.middleware import silky_reverse
 
 from silk.views.sql_detail import SQLDetailView
 
-from silk.tests import MockSuite
+from .test_lib.mock_suite import MockSuite
 
 
 class TestViewSQLDetail(TestCase):

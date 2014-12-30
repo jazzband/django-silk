@@ -61,7 +61,7 @@ class TestProfileFunction(TestCase):
 
         # noinspection PyUnresolvedReferences
         with patch.object(MyClass, 'foo', foo):
-            profile_function_or_method('silk.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
+            profile_function_or_method('tests.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
             mock_data_collector = Mock()
             mock_data_collector.queries = []
             mock_data_collector.request = Request()
@@ -80,7 +80,7 @@ class TestProfileFunction(TestCase):
     def test_func_as_str(self):
         name = foo.__name__
         line_num = six.get_function_code(foo).co_firstlineno
-        profile_function_or_method('silk.tests.test_dynamic_profiling', 'foo', 'test')
+        profile_function_or_method('tests.tests.test_dynamic_profiling', 'foo', 'test')
         mock_data_collector = Mock()
         mock_data_collector.queries = []
         mock_data_collector.request = Request()
