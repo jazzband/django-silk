@@ -20,4 +20,3 @@
     gulp.task('test-python', shell.task(['./tests/manage.py test']));
 
 })();
-

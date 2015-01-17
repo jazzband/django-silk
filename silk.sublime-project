@@ -1,0 +1,16 @@
+{
+    "folders": [{
+        "follow_symlinks": true,
+        "path": ".",
+        "folder_exclude_patterns": [
+            ".idea",
+            "bower_components",
+            "node_modules"
+        ],
+        "file_exclude_patterns": [
+            ".gitmodules",
+            ".gitignore",
+            "LICENSE"
+        ]
+    }]
+}
