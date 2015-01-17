@@ -68,3 +68,9 @@ dist
 
 # Sphinx
 _html
+
+# Tox
+.tox.ini.swp
+
+# Node
+node_modules

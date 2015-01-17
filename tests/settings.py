@@ -20,8 +20,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'silk',
-    # Added so tests will pass for django 1.5
-    #'tests',
     'example_app'
 )
 

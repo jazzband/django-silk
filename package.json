@@ -1,0 +1,27 @@
+{
+  "name": "silk",
+  "version": "1.0.0",
+  "description": "[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mtford90/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtford90/silk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtford90/silk/issues"
+  },
+  "homepage": "https://github.com/mtford90/silk",
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "gulp-shell": "^0.2.11"
+  }
+}
