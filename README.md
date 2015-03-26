@@ -8,8 +8,6 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 <img src="https://raw.githubusercontent.com/mtford90/silk/master/screenshots/1.png" width="720px"/>
 
-Documentation is available [here](http://silk.readthedocs.org/en/latest/) and there is also [live demo](http://mtford.co.uk/silk/) to play around with.
-
 ## Contents
 
 * [Requirements](#requirements)
