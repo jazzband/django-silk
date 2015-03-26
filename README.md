@@ -363,3 +363,12 @@ A management command will wipe out all logged data:
 ```bash
 python manage.py silk_clear_request_log
 ```
+
+### Deleting the silk tables (e.g. after an upgrade)
+
+```bash
+ ./manage.py sqlclear silk | ./manage.py dbshell
+ ./manage.py syncdb
+```
+
+Note that this will destroy all data.
