@@ -15,7 +15,6 @@ from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
 
-
 Logger = logging.getLogger('silk')
 
 
@@ -29,20 +28,31 @@ def silky_reverse(name, *args, **kwargs):
         r = reverse(name, *args, **kwargs)
     return r
 
+
 fpath = silky_reverse('summary')
 config = SilkyConfig()
+
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
 
     # don't trap every request
     if config.SILKY_INTERCEPT_PERCENT < 100:
-        if random.random() > config.SILKY_INTERCEPT_PERCENT/100.0:
+        if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
     silky = request.path.startswith(fpath)
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
+
+
+class TestMiddleware(object):
+
+    def process_response(self, request, response):
+        return response
+
+    def process_request(self, request):
+        return
 
 
 class SilkyMiddleware(object):
@@ -84,7 +94,6 @@ class SilkyMiddleware(object):
         DataCollector().configure(request_model)
 
 
-
     def _process_response(self, response):
         with silk_meta_profiler():
             collector = DataCollector()
@@ -97,7 +106,8 @@ class SilkyMiddleware(object):
                 collector.finalise()
                 silk_request.save()
             else:
-                Logger.error('No request model was available when processing response. Did something go wrong in process_request/process_view?')
+                Logger.error(
+                    'No request model was available when processing response. Did something go wrong in process_request/process_view?')
 
 
     def process_response(self, request, response):

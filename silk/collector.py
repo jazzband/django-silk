@@ -1,6 +1,8 @@
+import contextlib
 from threading import local
 
 import cProfile, pstats
+import logging
 
 from six import StringIO
 from six import with_metaclass
@@ -15,6 +17,15 @@ TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
 TYP_QUERIES = 'queries'
 
+Logger = logging.getLogger('silk')
+
+
+def raise_middleware_error():
+    raise RuntimeError(
+        'Silk middleware has not been installed correctly. Ordering must ensure that Silk middleware can '
+        'execute process_request and process_response. If an earlier middleware returns from either of '
+        'these methods, Silk will not have the chance to inspect the request/response objects.')
+
 
 class DataCollector(with_metaclass(Singleton, object)):
     """
@@ -28,11 +39,16 @@ class DataCollector(with_metaclass(Singleton, object)):
         self.local = local()
         self._configure()
 
+    def ensure_middleware_installed(self):
+        if not hasattr(self.local, 'temp_identifier'):
+            raise_middleware_error()
+
     @property
     def request(self):
         return getattr(self.local, 'request', None)
 
     def get_identifier(self):
+        self.ensure_middleware_installed()
         self.local.temp_identifier += 1
         return self.local.temp_identifier
 
@@ -87,6 +103,7 @@ class DataCollector(with_metaclass(Singleton, object)):
         raise SilkNotConfigured(err + ' Is the middleware installed correctly?')
 
     def register_objects(self, typ, *args):
+        self.ensure_middleware_installed()
         for arg in args:
             ident = self.get_identifier()
             objects = self.objects
@@ -122,7 +139,8 @@ class DataCollector(with_metaclass(Singleton, object)):
             ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
-            profile_text = "\n".join(profile_text.split("\n")[0:256]) # don't record too much because it can overflow the field storage size
+            profile_text = "\n".join(
+                profile_text.split("\n")[0:256])  # don't record too much because it can overflow the field storage size
             self.request.pyprofile = profile_text
 
         for _, query in self.queries.items():

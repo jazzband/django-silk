@@ -37,13 +37,13 @@ class silk_meta_profiler(object):
             if exception_raised:
                 Logger.error('Exception when performing meta profiling, dumping trace below')
                 traceback.print_exception(exc_type, exc_val, exc_tb)
-            request = DataCollector().request
+            request = getattr(DataCollector().local, 'request', None)
             if request:
                 curr = request.meta_time or 0
                 request.meta_time = curr + _time_taken(self.start_time, end_time)
-            else:
-                Logger.error('Cant perform meta profile due to no request model in DataCollector. '
-                             'Has Silk middleware been installed properly?')
+            # else:
+            #     Logger.error('Cant perform meta profile due to no request model in DataCollector. '
+            #                  'Has Silk middleware been installed properly?')
 
 
     def __call__(self, target):
@@ -57,8 +57,8 @@ class silk_meta_profiler(object):
                     curr = request.meta_time or 0
                     request.meta_time = curr + _time_taken(start_time, end_time)
                 else:
-                    Logger.error('Cant perform meta profile due to no request model in DataCollector. '
-                                 'Has Silk middleware been installed properly?')
+                    # Logger.error('Cant perform meta profile due to no request model in DataCollector. '
+                    #              'Has Silk middleware been installed properly?')
                     result = target(*args, **kwargs)
                 return result
 
