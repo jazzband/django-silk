@@ -129,7 +129,7 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
-        with transaction.commit_on_success():
+        with transaction.atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
             # TODO: Not that there is ever more than one request (but there could be eventually)
@@ -184,7 +184,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @transaction.commit_on_success()
+    @transaction.atomic()
     def save(self, *args, **kwargs):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
@@ -195,7 +195,7 @@ class SQLQuery(models.Model):
                 self.request.save()
         super(SQLQuery, self).save(*args, **kwargs)
 
-    @transaction.commit_on_success()
+    @transaction.atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
