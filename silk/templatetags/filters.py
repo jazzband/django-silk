@@ -54,6 +54,7 @@ def _process_microseconds(dt_strftime):
     return time + micro[1:]
 
 
+
 def _silk_date_time(dt):
     today = timezone.now().date()
     if dt.date() == today:
@@ -63,7 +64,7 @@ def _silk_date_time(dt):
         return _process_microseconds(dt.strftime('%Y.%m.%d %H:%M.%f'))
 
 
-@register.filter
+@register.filter(expects_localtime=True)
 def silk_date_time(dt):
     return _silk_date_time(dt)
 
