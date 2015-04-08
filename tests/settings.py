@@ -20,8 +20,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'silk',
+    'django_nose',
     'example_app'
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # A quick hack to get tests to pass for django 1.5
 if django.VERSION < (1, 6):
@@ -29,7 +32,7 @@ if django.VERSION < (1, 6):
     ROOT_URLCONF = 'tests.urls'
 
 else:
-     ROOT_URLCONF = 'urls'
+    ROOT_URLCONF = 'urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -45,11 +48,11 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': DB_NAME,
+        'TEST_NAME': DB_NAME
     }
 }
 
