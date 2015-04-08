@@ -12,4 +12,4 @@ install:
     - pip install -r tests/test-requirements.txt
 
 script: 
-    - python tests/manage.py test
+    - cd project && python manage.py test && cd -
