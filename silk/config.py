@@ -24,6 +24,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_MAX_REQUEST_BODY_SIZE': -1,
         'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
         'SILKY_INTERCEPT_PERCENT': 100,
+        'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
     }
 

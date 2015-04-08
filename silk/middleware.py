@@ -32,12 +32,14 @@ def silky_reverse(name, *args, **kwargs):
 fpath = silky_reverse('summary')
 config = SilkyConfig()
 
-
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-
+    # Check custom intercept logic.
+    if config.SILKY_INTERCEPT_FUNC:
+        if not config.SILKY_INTERCEPT_FUNC(request):
+            return False
     # don't trap every request
-    if config.SILKY_INTERCEPT_PERCENT < 100:
+    elif config.SILKY_INTERCEPT_PERCENT < 100:
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
