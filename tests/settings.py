@@ -24,13 +24,7 @@ INSTALLED_APPS = (
 )
 
 
-# A quick hack to get tests to pass for django 1.5
-if django.VERSION < (1, 6):
-    INSTALLED_APPS += ("tests", )
-    ROOT_URLCONF = 'tests.urls'
-
-else:
-    ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
