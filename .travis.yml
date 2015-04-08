@@ -3,9 +3,3 @@ install:
   - pip install tox
 script:
   - tox
-env:
-  - TOXENV=py27
-  - TOXENV=py34
-  - TOXENV=django15
-  - TOXENV=django16
-  - TOXENV=django17
