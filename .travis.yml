@@ -12,6 +12,4 @@ install:
     - pip install -r tests/test-requirements.txt
 
 script: 
-    - cp -r silk django_silky/silk
-    - cd tests
-    - python manage.py test
+    - python tests/manage.py test
