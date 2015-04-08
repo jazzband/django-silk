@@ -10,7 +10,6 @@ from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
-from silk.models import _time_taken
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
