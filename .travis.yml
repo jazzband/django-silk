@@ -5,6 +5,7 @@ python:
 env:
     - DJANGO_VERSION=1.6.8
     - DJANGO_VERSION=1.7.7
+    - DJANGO_VERSION=1.8
 
 install:
     - pip install -q Django==$DJANGO_VERSION
