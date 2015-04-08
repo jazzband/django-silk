@@ -14,7 +14,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'tests.tests.data.dynamic',
+                'module': 'tests.data.dynamic',
                 'function': 'foo'
             }
         ]
@@ -30,7 +30,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'tests.tests.data.dynamic',
+                'module': 'tests.data.dynamic',
                 'function': 'foo',
                 'start_line': 1,
                 'end_line': 2,
@@ -48,7 +48,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'tests.tests.data.dynamic',
+                'module': 'tests.data.dynamic',
                 'function': 'foo2',
                 'start_line': 1,
                 'end_line': 7,
@@ -60,7 +60,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'tests.tests.data.dfsdf',
+                'module': 'tests.data.dfsdf',
                 'function': 'foo'
             }
         ]
@@ -70,7 +70,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'module': 'tests.tests.data.dynamic',
+                'module': 'tests.data.dynamic',
                 'function': 'bar'
             }
         ]
@@ -80,7 +80,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware = SilkyMiddleware()
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
-                'dfgdf': 'tests.tests.data.dynamic',
+                'dfgdf': 'tests.data.dynamic',
                 'funcgdfgtion': 'bar'
             }
         ]

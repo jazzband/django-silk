@@ -24,7 +24,7 @@ INSTALLED_APPS = (
 )
 
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'project.urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
