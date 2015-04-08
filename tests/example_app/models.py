@@ -13,7 +13,7 @@ class Product(models.Model):
 
 class Blind(Product):
     name = TextField()
-    child_safe = BooleanField()
+    child_safe = BooleanField(default=False)
 
     def __str__(self):
         return self.name
