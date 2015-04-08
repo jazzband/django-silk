@@ -9,7 +9,7 @@ env:
 
 install:
     - pip install -q Django==$DJANGO_VERSION
-    - pip install -r tests/test-requirements.txt
+    - pip install -r requirements.txt
 
 script: 
     - cd project && python manage.py test && cd -
