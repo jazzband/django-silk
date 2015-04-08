@@ -12,9 +12,9 @@ from .test_lib.mock_suite import MockSuite
 
 
 class TestViewSQLDetail(TestCase):
-
     @classmethod
     def setUpClass(cls):
+        super(TestViewSQLDetail, cls).setUpClass()
         SilkyConfig().SILKY_AUTHENTICATION = False
         SilkyConfig().SILKY_AUTHORISATION = False
 

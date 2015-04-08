@@ -20,6 +20,7 @@ def mock_sql():
 class TestCall(TestCase):
     @classmethod
     def setUpClass(cls):
+        super(TestCall, cls).setUpClass()
         DataCollector().configure(request=None)
         delete_all_models(SQLQuery)
         cls.mock_sql, cls.query_string = mock_sql()

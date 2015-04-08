@@ -20,7 +20,7 @@ mock_suite = MockSuite()
 class TestRequestFilters(TestCase):
     @classmethod
     def setUpClass(cls):
-        pass
+        super(TestRequestFilters, cls).setUpClass()
 
     def _time_stamp(self, dt):
         return calendar.timegm(dt.utctimetuple())
@@ -96,6 +96,7 @@ class TestRequestAfterDateFilter(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(TestRequestAfterDateFilter, cls).setUpClass()
         cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
 
     def test_after_date_filter(self):
@@ -124,6 +125,7 @@ class TestRequestBeforeDateFilter(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(TestRequestBeforeDateFilter, cls).setUpClass()
         cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
 
     def test_before_date_filter(self):

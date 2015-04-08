@@ -48,6 +48,7 @@ class TestProfilerRequests(TestCase):
 class TestProfilertContextManager(TestCase):
     @classmethod
     def setUpClass(cls):
+        super(TestProfilertContextManager, cls).setUpClass()
         r = Request.objects.create()
         DataCollector().configure(r)
         with silk_profile(name='test_profile'):
@@ -70,6 +71,7 @@ class TestProfilertContextManager(TestCase):
 class TestProfilerDecorator(TestCase):
     @classmethod
     def setUpClass(cls):
+        super(TestProfilerDecorator, cls).setUpClass()
         DataCollector().configure(Request.objects.create())
 
         @silk_profile()

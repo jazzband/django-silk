@@ -70,6 +70,7 @@ class TestGetObjects(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(TestGetObjects, cls).setUpClass()
         cls.requests = [MockSuite().mock_request() for _ in range(0, 50)]
 
     def test_defaults(self):
