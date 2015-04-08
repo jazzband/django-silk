@@ -9,7 +9,7 @@ env:
 
 install:
     - pip install -q Django==$DJANGO_VERSION
-    - pip install -r requirements.txt
+    - pip install -r tests/test-requirements.txt
 
 script: 
     - cp -r silk django_silky/silk
