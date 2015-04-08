@@ -1,7 +1,7 @@
-Pygments==1.6
+Pygments>=2.0,<2.1
 six==1.6.0
 simplejson==3.1.2
-python-dateutil==2.2
+python-dateutil>=2.4,<2.5
 requests==2.2.1
 sqlparse==0.1.11
 Jinja2==2.7.2
@@ -9,3 +9,4 @@ autopep8==1.0.2
 pytz>2014.2
 mock==1.0.1
 Pillow==2.5.1
+nose
