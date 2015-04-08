@@ -25,7 +25,7 @@ Silk has been tested with:
 * Django: 1.5, 1.6, 1.7
 * Python: 2.7, 3.3, 3.4
 
-I left out Django <1.5 due to the change in `{% url %}` syntax. Python 2.6 is missing `collections.Counter`. Python 3.0 and 3.1 are not available via Travis and also are missing the `u'xyz'` syntax for unicode. Workarounds can likely be found for all these if there is any demand. Django 1.7 is currently untested.
+I left out Django <1.5 due to the change in `{% url %}` syntax. Python 2.6 is missing `collections.Counter`. Python 3.0 and 3.1 are not available via Travis and also are missing the `u'xyz'` syntax for unicode. Workarounds can likely be found for all these if there is any demand. Django 1.8 is currently untested.
 
 ## Installation
 
@@ -353,9 +353,26 @@ Note that in the above screenshot, this means that the request took 29ms (22ms f
 
 On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
 
+Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
+
 ```python
 SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 ```
+
+### Custom Logic for Recording Requests
+
+On high-load sites it may also be helpful to write your own logic for when to intercept requests.To do this add the following to your `settings.py`:
+
+Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
+
+```python
+
+def my_custom_logic(request):
+    return 'record_requests' in request.session
+
+SILKY_INTERCEPT_FUNC = my_custom_logic # log only session has recording enabled.
+```
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:
