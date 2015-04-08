@@ -1,6 +1,7 @@
 import json
 import multiprocessing
 import random
+from mock import Mock
 from six import b
 
 # noinspection PyUnresolvedReferences
@@ -8,6 +9,7 @@ from six.moves.BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 # noinspection PyUnresolvedReferences
 
 from six.moves.urllib.parse import urlparse, parse_qs
+from silk.models import Request
 
 PORT = random.randint(8000, 9000)
 try:  # Py3
@@ -15,9 +17,6 @@ try:  # Py3
     Process = context.Process
 except AttributeError:  # Py2
     Process = getattr(multiprocessing, 'Process')
-
-
-
 
 
 def delete_all_models(model_class):
@@ -28,9 +27,8 @@ def delete_all_models(model_class):
     :return:
     """
     while model_class.objects.count():
-            ids = model_class.objects.values_list('pk', flat=True)[:80]
-            model_class.objects.filter(pk__in = ids).delete()
-
+        ids = model_class.objects.values_list('pk', flat=True)[:80]
+        model_class.objects.filter(pk__in=ids).delete()
 
 
 def construct_echo_process():
@@ -52,18 +50,18 @@ def run_echo_server():
             if query_parameters:
                 response['query_params'] = query_parameters
             try:
-                try:  #py2
+                try:  # py2
                     raw_content_len = self.headers.getheader('content-length')
-                except AttributeError:  #py3
+                except AttributeError:  # py3
                     raw_content_len = self.headers.get('content-length')
                 content_len = int(raw_content_len)
             except TypeError:
                 content_len = 0
             if content_len:
                 body = self.rfile.read(content_len)
-                try:  #py3
+                try:  # py3
                     body = body.decode('UTF-8')
-                except AttributeError:  #py2
+                except AttributeError:  # py2
                     pass
                 if body:
                     response['body'] = body
@@ -85,3 +83,13 @@ def run_echo_server():
     server_address = ('', PORT)
     httpd = HTTPServer(server_address, Handler)
     httpd.serve_forever()
+
+
+def mock_data_collector():
+    mock = Mock()
+    mock.queries = []
+    mock.local = Mock()
+    r = Request()
+    mock.local.request = r
+    mock.request = r
+    return mock

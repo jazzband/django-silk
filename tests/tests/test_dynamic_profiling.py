@@ -1,10 +1,11 @@
 from django.test import TestCase
-from mock import patch, Mock
+from mock import patch
 import six
 
 import silk
-from silk.models import Request
 from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
+
+from .util import mock_data_collector
 
 
 class TestGetModule(TestCase):
@@ -62,10 +63,8 @@ class TestProfileFunction(TestCase):
         # noinspection PyUnresolvedReferences
         with patch.object(MyClass, 'foo', foo):
             profile_function_or_method('tests.tests.test_dynamic_profiling', 'MyClass.foo', 'test')
-            mock_data_collector = Mock()
-            mock_data_collector.queries = []
-            mock_data_collector.request = Request()
-            with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
+            dc = mock_data_collector()
+            with patch('silk.profiling.profiler.DataCollector', return_value=dc) as mock_DataCollector:
                 MyClass().foo()
                 self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
                 call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]
@@ -81,10 +80,8 @@ class TestProfileFunction(TestCase):
         name = foo.__name__
         line_num = six.get_function_code(foo).co_firstlineno
         profile_function_or_method('tests.tests.test_dynamic_profiling', 'foo', 'test')
-        mock_data_collector = Mock()
-        mock_data_collector.queries = []
-        mock_data_collector.request = Request()
-        with patch('silk.profiling.profiler.DataCollector', return_value=mock_data_collector) as mock_DataCollector:
+        dc = mock_data_collector()
+        with patch('silk.profiling.profiler.DataCollector', return_value=dc) as mock_DataCollector:
             foo()
             self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
             call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]

@@ -6,6 +6,8 @@ from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request
 
+from .util import mock_data_collector
+
 
 class TestApplyDynamicMappings(TestCase):
     def test_dynamic_decorator(self):
@@ -19,9 +21,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware._apply_dynamic_mappings()
         from .data.dynamic import foo
 
-        mock = Mock()
-        mock.queries = []
-        mock.request = Request()
+        mock = mock_data_collector()
         with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()  # Should be wrapped in a decorator
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
@@ -39,9 +39,7 @@ class TestApplyDynamicMappings(TestCase):
         middleware._apply_dynamic_mappings()
         from .data.dynamic import foo
 
-        mock = Mock()
-        mock.queries = []
-        mock.request = Request()
+        mock = mock_data_collector()
         with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
             foo()
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)

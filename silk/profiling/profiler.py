@@ -15,6 +15,7 @@ from silk.models import _time_taken
 Logger = logging.getLogger('silk')
 
 
+# noinspection PyPep8Naming
 class silk_meta_profiler(object):
     """Used in the profiling of Silk itself."""
 
@@ -41,10 +42,6 @@ class silk_meta_profiler(object):
             if request:
                 curr = request.meta_time or 0
                 request.meta_time = curr + _time_taken(self.start_time, end_time)
-            # else:
-            #     Logger.error('Cant perform meta profile due to no request model in DataCollector. '
-            #                  'Has Silk middleware been installed properly?')
-
 
     def __call__(self, target):
         if self._should_meta_profile:
@@ -57,8 +54,6 @@ class silk_meta_profiler(object):
                     curr = request.meta_time or 0
                     request.meta_time = curr + _time_taken(start_time, end_time)
                 else:
-                    # Logger.error('Cant perform meta profile due to no request model in DataCollector. '
-                    #              'Has Silk middleware been installed properly?')
                     result = target(*args, **kwargs)
                 return result
 

@@ -9,6 +9,8 @@ from django.db import transaction
 from uuid import uuid1
 import sqlparse
 
+# Django 1.8 removes commit_on_success, django 1.5 does not have atomic
+atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
 
 
 # Seperated out so can use in tests w/o models
@@ -129,7 +131,7 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
-        with transaction.atomic():
+        with atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
             # TODO: Not that there is ever more than one request (but there could be eventually)
@@ -184,7 +186,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @transaction.atomic()
+    @atomic()
     def save(self, *args, **kwargs):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
@@ -195,7 +197,7 @@ class SQLQuery(models.Model):
                 self.request.save()
         super(SQLQuery, self).save(*args, **kwargs)
 
-    @transaction.atomic()
+    @atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
