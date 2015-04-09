@@ -17,6 +17,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
     * [Authentication/Authorisation](#authentication-authorisation)
     * [Request/Response bodies](#request-response-bodies)
     * [Meta-Profiling](#meta-profiling)
+    * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+    * [Clearing logged data](#clearing-logged-data)
 
 ## Requirements
 
@@ -359,7 +361,7 @@ Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
 SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 ```
 
-### Custom Logic for Recording Requests
+#### Custom Logic for Recording Requests
 
 On high-load sites it may also be helpful to write your own logic for when to intercept requests.To do this add the following to your `settings.py`:
 
@@ -380,12 +382,3 @@ A management command will wipe out all logged data:
 ```bash
 python manage.py silk_clear_request_log
 ```
-
-### Deleting the silk tables (e.g. after an upgrade)
-
-```bash
- ./manage.py sqlclear silk | ./manage.py dbshell
- ./manage.py syncdb
-```
-
-Note that this will destroy all data.
