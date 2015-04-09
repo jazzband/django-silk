@@ -13,7 +13,7 @@ install:
 
 script:
     - cd project
-    - python manage.py syncdb
-    - python manage.py migrate || true # Only for 1.7/1.8
-    - python manage.py test
+    - python manage.py syncdb --noinput
+    - python manage.py migrate --noinput || true # Only for 1.7/1.8
+    - python manage.py test --noinput
     - cd -
