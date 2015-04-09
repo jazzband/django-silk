@@ -12,4 +12,8 @@ install:
     - pip install -r requirements.txt
 
 script:
-    - cd project && python manage.py test && cd -
+    - cd project
+    - python manage.py syncdb
+    - python manage.py migrate || true # Only for 1.7/1.8
+    - python manage.py test
+    - cd -
