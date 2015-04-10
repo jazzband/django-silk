@@ -1,3 +1,4 @@
+import importlib
 import logging
 import random
 
@@ -32,21 +33,6 @@ def silky_reverse(name, *args, **kwargs):
 fpath = silky_reverse('summary')
 config = SilkyConfig()
 
-def _should_intercept(request):
-    """we want to avoid recording any requests/sql queries etc that belong to Silky"""
-    # Check custom intercept logic.
-    if config.SILKY_INTERCEPT_FUNC:
-        if not config.SILKY_INTERCEPT_FUNC(request):
-            return False
-    # don't trap every request
-    elif config.SILKY_INTERCEPT_PERCENT < 100:
-        if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
-            return False
-
-    silky = request.path.startswith(fpath)
-    ignored = request.path in config.SILKY_IGNORE_PATHS
-    return not (silky or ignored)
-
 
 class TestMiddleware(object):
 
@@ -57,9 +43,41 @@ class TestMiddleware(object):
         return
 
 
+def _sample_intercepts(request):
+    # don't trap every request
+    if config.SILKY_INTERCEPT_PERCENT < 100:
+        if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
+            return False
+
+
 class SilkyMiddleware(object):
+
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
+        if config.SILKY_INTERCEPT_FUNC:
+            # Dynamically load the custom intercept function here so we
+            # only pay the cost once for this process.
+            func_path = config.SILKY_INTERCEPT_FUNC
+            # Replace this with import_by_path in when minimum
+            # supported Django version >= 1.6.
+            mod_path, func_name = func_path.rsplit('.', 1)
+            custom_func = getattr(importlib.import_module(mod_path), func_name)
+            self._custom_should_intercept = custom_func
+        elif config.SILKY_INTERCEPT_PERCENT:
+            self._custom_should_intercept = _sample_intercepts
+        else:
+            self._custom_should_intercept = lambda x: return True
+
+    def _should_intercept(request):
+        """Determine whether or not this request will be intercepted."""
+        # First check custom logic.
+        if not self._custom_should_intercept(request):
+            return False
+
+        # We want to avoid recording any requests/sql queries etc that belong to Silky.
+        silky = request.path.startswith(fpath)
+        ignored = request.path in config.SILKY_IGNORE_PATHS
+        return not (silky or ignored)
 
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
@@ -86,7 +104,7 @@ class SilkyMiddleware(object):
     @silk_meta_profiler()
     def process_request(self, request):
         request_model = None
-        if _should_intercept(request):
+        if self._should_intercept(request):
             request.silk_is_intercepted = True
             self._apply_dynamic_mappings()
             if not hasattr(SQLCompiler, '_execute_sql'):

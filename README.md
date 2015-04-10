@@ -367,10 +367,11 @@ Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
 
 ```python
 
+# in some non-settings module.
 def my_custom_logic(request):
     return 'record_requests' in request.session
 
-SILKY_INTERCEPT_FUNC = my_custom_logic # log only session has recording enabled.
+SILKY_INTERCEPT_FUNC = 'path.to.my.custom.logic.method'  # log only sessions that have recording enabled.
 ```
 
 ### Clearing logged data
