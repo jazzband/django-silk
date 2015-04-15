@@ -1,156 +1,88 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import uuid
+import django.utils.timezone
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Request'
-        db.create_table('silk_request', (
-            ('id', self.gf('django.db.models.fields.CharField')(default=UUID('d56c4914-e34b-11e4-8fd4-902b343d4e33'), primary_key=True, max_length=36)),
-            ('path', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=300)),
-            ('query_params', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('raw_body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('method', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('start_time', self.gf('django.db.models.fields.DateTimeField')(db_index=True, default=datetime.datetime.now)),
-            ('view_name', self.gf('django.db.models.fields.CharField')(db_index=True, blank=True, default='', max_length=300)),
-            ('end_time', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True)),
-            ('time_taken', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
-            ('encoded_headers', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('meta_time', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
-            ('meta_num_queries', self.gf('django.db.models.fields.IntegerField')(blank=True, null=True)),
-            ('meta_time_spent_queries', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
-            ('pyprofile', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('num_sql_queries', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('silk', ['Request'])
+    dependencies = [
+    ]
 
-        # Adding model 'Response'
-        db.create_table('silk_response', (
-            ('id', self.gf('django.db.models.fields.CharField')(default=UUID('d56d8770-e34b-11e4-a160-902b343d4e33'), primary_key=True, max_length=36)),
-            ('request', self.gf('django.db.models.fields.related.OneToOneField')(related_name='response', to=orm['silk.Request'], unique=True)),
-            ('status_code', self.gf('django.db.models.fields.IntegerField')()),
-            ('raw_body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-            ('encoded_headers', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
-        ))
-        db.send_create_signal('silk', ['Response'])
-
-        # Adding model 'SQLQuery'
-        db.create_table('silk_sqlquery', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('query', self.gf('django.db.models.fields.TextField')()),
-            ('start_time', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True, default=datetime.datetime.now)),
-            ('end_time', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True)),
-            ('time_taken', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
-            ('request', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='queries', null=True, to=orm['silk.Request'])),
-            ('traceback', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('silk', ['SQLQuery'])
-
-        # Adding model 'Profile'
-        db.create_table('silk_profile', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(blank=True, default='', max_length=300)),
-            ('start_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('end_time', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True)),
-            ('request', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['silk.Request'])),
-            ('time_taken', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
-            ('file_path', self.gf('django.db.models.fields.CharField')(blank=True, default='', max_length=300)),
-            ('line_num', self.gf('django.db.models.fields.IntegerField')(blank=True, null=True)),
-            ('end_line_num', self.gf('django.db.models.fields.IntegerField')(blank=True, null=True)),
-            ('func_name', self.gf('django.db.models.fields.CharField')(blank=True, default='', max_length=300)),
-            ('exception_raised', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('dynamic', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('silk', ['Profile'])
-
-        # Adding M2M table for field queries on 'Profile'
-        m2m_table_name = db.shorten_name('silk_profile_queries')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('profile', models.ForeignKey(orm['silk.profile'], null=False)),
-            ('sqlquery', models.ForeignKey(orm['silk.sqlquery'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['profile_id', 'sqlquery_id'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Request'
-        db.delete_table('silk_request')
-
-        # Deleting model 'Response'
-        db.delete_table('silk_response')
-
-        # Deleting model 'SQLQuery'
-        db.delete_table('silk_sqlquery')
-
-        # Deleting model 'Profile'
-        db.delete_table('silk_profile')
-
-        # Removing M2M table for field queries on 'Profile'
-        db.delete_table(db.shorten_name('silk_profile_queries'))
-
-
-    models = {
-        'silk.profile': {
-            'Meta': {'object_name': 'Profile'},
-            'dynamic': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'end_line_num': ('django.db.models.fields.IntegerField', [], {'blank': 'True', 'null': 'True'}),
-            'end_time': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True'}),
-            'exception_raised': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'file_path': ('django.db.models.fields.CharField', [], {'blank': 'True', 'default': "''", 'max_length': '300'}),
-            'func_name': ('django.db.models.fields.CharField', [], {'blank': 'True', 'default': "''", 'max_length': '300'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'line_num': ('django.db.models.fields.IntegerField', [], {'blank': 'True', 'null': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'blank': 'True', 'default': "''", 'max_length': '300'}),
-            'queries': ('django.db.models.fields.related.ManyToManyField', [], {'db_index': 'True', 'related_name': "'profiles'", 'symmetrical': 'False', 'to': "orm['silk.SQLQuery']"}),
-            'request': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'null': 'True', 'to': "orm['silk.Request']"}),
-            'start_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'time_taken': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'})
-        },
-        'silk.request': {
-            'Meta': {'object_name': 'Request'},
-            'body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'encoded_headers': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'end_time': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True'}),
-            'id': ('django.db.models.fields.CharField', [], {'default': "UUID('d56ed09e-e34b-11e4-9814-902b343d4e33')", 'primary_key': 'True', 'max_length': '36'}),
-            'meta_num_queries': ('django.db.models.fields.IntegerField', [], {'blank': 'True', 'null': 'True'}),
-            'meta_time': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
-            'meta_time_spent_queries': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
-            'method': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
-            'num_sql_queries': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'path': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300'}),
-            'pyprofile': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'query_params': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'raw_body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'start_time': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'default': 'datetime.datetime.now'}),
-            'time_taken': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
-            'view_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'blank': 'True', 'default': "''", 'max_length': '300'})
-        },
-        'silk.response': {
-            'Meta': {'object_name': 'Response'},
-            'body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'encoded_headers': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'id': ('django.db.models.fields.CharField', [], {'default': "UUID('d56ef9c0-e34b-11e4-8443-902b343d4e33')", 'primary_key': 'True', 'max_length': '36'}),
-            'raw_body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'request': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'response'", 'to': "orm['silk.Request']", 'unique': 'True'}),
-            'status_code': ('django.db.models.fields.IntegerField', [], {})
-        },
-        'silk.sqlquery': {
-            'Meta': {'object_name': 'SQLQuery'},
-            'end_time': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'query': ('django.db.models.fields.TextField', [], {}),
-            'request': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'queries'", 'null': 'True', 'to': "orm['silk.Request']"}),
-            'start_time': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True', 'default': 'datetime.datetime.now'}),
-            'time_taken': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
-            'traceback': ('django.db.models.fields.TextField', [], {})
-        }
-    }
-
-    complete_apps = ['silk']
+    operations = [
+        migrations.CreateModel(
+            name='Profile',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('name', models.CharField(max_length=300, blank=True, default='')),
+                ('start_time', models.DateTimeField(default=django.utils.timezone.now)),
+                ('end_time', models.DateTimeField(blank=True, null=True)),
+                ('time_taken', models.FloatField(blank=True, null=True)),
+                ('file_path', models.CharField(max_length=300, blank=True, default='')),
+                ('line_num', models.IntegerField(blank=True, null=True)),
+                ('end_line_num', models.IntegerField(blank=True, null=True)),
+                ('func_name', models.CharField(max_length=300, blank=True, default='')),
+                ('exception_raised', models.BooleanField(default=False)),
+                ('dynamic', models.BooleanField(default=False)),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='Request',
+            fields=[
+                ('id', models.CharField(max_length=36, primary_key=True, default=uuid.uuid1, serialize=False)),
+                ('path', models.CharField(db_index=True, max_length=300)),
+                ('query_params', models.TextField(blank=True, default='')),
+                ('raw_body', models.TextField(blank=True, default='')),
+                ('body', models.TextField(blank=True, default='')),
+                ('method', models.CharField(max_length=10)),
+                ('start_time', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('view_name', models.CharField(db_index=True, blank=True, default='', max_length=300)),
+                ('end_time', models.DateTimeField(blank=True, null=True)),
+                ('time_taken', models.FloatField(blank=True, null=True)),
+                ('encoded_headers', models.TextField(blank=True, default='')),
+                ('meta_time', models.FloatField(blank=True, null=True)),
+                ('meta_num_queries', models.IntegerField(blank=True, null=True)),
+                ('meta_time_spent_queries', models.FloatField(blank=True, null=True)),
+                ('pyprofile', models.TextField(blank=True, default='')),
+                ('num_sql_queries', models.IntegerField(default=0)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Response',
+            fields=[
+                ('id', models.CharField(max_length=36, primary_key=True, default=uuid.uuid1, serialize=False)),
+                ('status_code', models.IntegerField()),
+                ('raw_body', models.TextField(blank=True, default='')),
+                ('body', models.TextField(blank=True, default='')),
+                ('encoded_headers', models.TextField(blank=True, default='')),
+                ('request', models.OneToOneField(to='silk.Request', related_name='response')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SQLQuery',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('query', models.TextField()),
+                ('start_time', models.DateTimeField(default=django.utils.timezone.now, blank=True, null=True)),
+                ('end_time', models.DateTimeField(blank=True, null=True)),
+                ('time_taken', models.FloatField(blank=True, null=True)),
+                ('traceback', models.TextField()),
+                ('request', models.ForeignKey(to='silk.Request', blank=True, null=True, related_name='queries')),
+            ],
+        ),
+        migrations.AddField(
+            model_name='profile',
+            name='queries',
+            field=models.ManyToManyField(to='silk.SQLQuery', db_index=True, related_name='profiles'),
+        ),
+        migrations.AddField(
+            model_name='profile',
+            name='request',
+            field=models.ForeignKey(to='silk.Request', blank=True, null=True),
+        ),
+    ]
