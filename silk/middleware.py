@@ -1,6 +1,7 @@
 import importlib
 import logging
 import random
+import types
 
 from django.core.urlresolvers import reverse, NoReverseMatch
 
@@ -11,7 +12,6 @@ from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
-from silk.models import _time_taken
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
@@ -54,7 +54,7 @@ class SilkyMiddleware(object):
 
     def __init__(self):
         super(SilkyMiddleware, self).__init__()
-        if config.SILKY_INTERCEPT_FUNC:
+        if config.SILKY_INTERCEPT_FUNC and type(config.SILKY_INTERCEPT_FUNC) == str:
             # Dynamically load the custom intercept function here so we
             # only pay the cost once for this process.
             func_path = config.SILKY_INTERCEPT_FUNC
@@ -63,12 +63,15 @@ class SilkyMiddleware(object):
             mod_path, func_name = func_path.rsplit('.', 1)
             custom_func = getattr(importlib.import_module(mod_path), func_name)
             self._custom_should_intercept = custom_func
+        elif (config.SILKY_INTERCEPT_FUNC and
+              type(config.SILKY_INTERCEPT_FUNC) == types.FunctionType):
+            self._custom_should_intercept = config.SILKY_INTERCEPT_FUNC
         elif config.SILKY_INTERCEPT_PERCENT:
             self._custom_should_intercept = _sample_intercepts
         else:
-            self._custom_should_intercept = lambda x: return True
+            self._custom_should_intercept = lambda x: True
 
-    def _should_intercept(request):
+    def _should_intercept(self, request):
         """Determine whether or not this request will be intercepted."""
         # First check custom logic.
         if not self._custom_should_intercept(request):
