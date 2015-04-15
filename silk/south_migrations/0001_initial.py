@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding model 'Request'
         db.create_table('silk_request', (
-            ('id', self.gf('django.db.models.fields.CharField')(default=UUID('d56c4914-e34b-11e4-8fd4-902b343d4e33'), primary_key=True, max_length=36)),
+            ('id', self.gf('django.db.models.fields.CharField')(primary_key=True, max_length=36)),
             ('path', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=300)),
             ('query_params', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
             ('raw_body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
@@ -31,7 +31,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Response'
         db.create_table('silk_response', (
-            ('id', self.gf('django.db.models.fields.CharField')(default=UUID('d56d8770-e34b-11e4-a160-902b343d4e33'), primary_key=True, max_length=36)),
+            ('id', self.gf('django.db.models.fields.CharField')(primary_key=True, max_length=36)),
             ('request', self.gf('django.db.models.fields.related.OneToOneField')(related_name='response', to=orm['silk.Request'], unique=True)),
             ('status_code', self.gf('django.db.models.fields.IntegerField')()),
             ('raw_body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
@@ -118,7 +118,7 @@ class Migration(SchemaMigration):
             'body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
             'encoded_headers': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
             'end_time': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True'}),
-            'id': ('django.db.models.fields.CharField', [], {'default': "UUID('d56ed09e-e34b-11e4-9814-902b343d4e33')", 'primary_key': 'True', 'max_length': '36'}),
+            'id': ('django.db.models.fields.CharField', [], {'primary_key': 'True', 'max_length': '36'}),
             'meta_num_queries': ('django.db.models.fields.IntegerField', [], {'blank': 'True', 'null': 'True'}),
             'meta_time': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
             'meta_time_spent_queries': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
@@ -136,7 +136,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Response'},
             'body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
             'encoded_headers': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
-            'id': ('django.db.models.fields.CharField', [], {'default': "UUID('d56ef9c0-e34b-11e4-8443-902b343d4e33')", 'primary_key': 'True', 'max_length': '36'}),
+            'id': ('django.db.models.fields.CharField', [], {'primary_key': 'True', 'max_length': '36'}),
             'raw_body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
             'request': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'response'", 'to': "orm['silk.Request']", 'unique': 'True'}),
             'status_code': ('django.db.models.fields.IntegerField', [], {})
