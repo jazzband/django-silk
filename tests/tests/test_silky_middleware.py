@@ -3,7 +3,7 @@ from django.test import TestCase
 from mock import patch, Mock
 
 from silk.config import SilkyConfig
-from silk.middleware import SilkyMiddleware, _should_intercept
+from silk.middleware import SilkyMiddleware
 from silk.models import Request
 
 
@@ -100,14 +100,14 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_non_silk_request(self):
         request = Request()
         request.path = '/myapp/foo'
-        should_intercept = _should_intercept(request)
+        should_intercept = SilkyMiddleware()._should_intercept(request)
 
         self.assertTrue(should_intercept)
 
     def test_should_intercept_silk_request(self):
         request = Request()
         request.path = reverse('silk:summary')
-        should_intercept = _should_intercept(request)
+        should_intercept = SilkyMiddleware()._should_intercept(request)
 
         self.assertFalse(should_intercept)
 
@@ -117,7 +117,6 @@ class TestShouldIntercept(TestCase):
         ]
         request = Request()
         request.path = '/ignorethis'
-        should_intercept = _should_intercept(request)
+        should_intercept = SilkyMiddleware()._should_intercept(request)
 
         self.assertFalse(should_intercept)
-
