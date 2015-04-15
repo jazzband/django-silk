@@ -20,8 +20,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'silk',
-    'example_app',
-    'south'
+    'example_app'
 )
 
 ROOT_URLCONF = 'project.urls'
