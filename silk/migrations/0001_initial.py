@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('body', models.TextField(blank=True, default='')),
                 ('method', models.CharField(max_length=10)),
                 ('start_time', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('view_name', models.CharField(db_index=True, blank=True, default='', max_length=300)),
+                ('view_name', models.CharField(db_index=True, blank=True, default='', max_length=300, null=True)),
                 ('end_time', models.DateTimeField(blank=True, null=True)),
                 ('time_taken', models.FloatField(blank=True, null=True)),
                 ('encoded_headers', models.TextField(blank=True, default='')),
