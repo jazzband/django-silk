@@ -17,7 +17,7 @@ class Migration(SchemaMigration):
             ('body', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
             ('method', self.gf('django.db.models.fields.CharField')(max_length=10)),
             ('start_time', self.gf('django.db.models.fields.DateTimeField')(db_index=True, default=datetime.datetime.now)),
-            ('view_name', self.gf('django.db.models.fields.CharField')(db_index=True, blank=True, default='', max_length=300)),
+            ('view_name', self.gf('django.db.models.fields.CharField')(db_index=True, blank=True, default='', max_length=300, null=True)),
             ('end_time', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True)),
             ('time_taken', self.gf('django.db.models.fields.FloatField')(blank=True, null=True)),
             ('encoded_headers', self.gf('django.db.models.fields.TextField')(blank=True, default='')),
