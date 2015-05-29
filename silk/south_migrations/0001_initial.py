@@ -130,7 +130,7 @@ class Migration(SchemaMigration):
             'raw_body': ('django.db.models.fields.TextField', [], {'blank': 'True', 'default': "''"}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'default': 'datetime.datetime.now'}),
             'time_taken': ('django.db.models.fields.FloatField', [], {'blank': 'True', 'null': 'True'}),
-            'view_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'blank': 'True', 'default': "''", 'max_length': '300'})
+            'view_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'blank': 'True', 'default': "''", 'max_length': '300', 'null': 'True'})
         },
         'silk.response': {
             'Meta': {'object_name': 'Response'},
