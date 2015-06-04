@@ -4,8 +4,8 @@ from threading import local
 import cProfile, pstats
 import logging
 
-from six import StringIO
-from six import with_metaclass
+from silk.utils.six import StringIO
+from silk.utils.six import with_metaclass
 
 from silk import models
 from silk.config import SilkyConfig

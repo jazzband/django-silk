@@ -4,7 +4,7 @@ import autopep8
 
 import jinja2
 # noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import urlencode
+from silk.utils.six.moves.urllib.parse import urlencode
 from silk.profiling.dynamic import is_str_typ
 from silk.profiling.profiler import silk_profile
 

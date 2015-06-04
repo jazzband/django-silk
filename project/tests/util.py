@@ -2,13 +2,13 @@ import json
 import multiprocessing
 import random
 from mock import Mock
-from six import b
+from silk.utils.six import b
 
 # noinspection PyUnresolvedReferences
-from six.moves.BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+from silk.utils.six.moves.BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 # noinspection PyUnresolvedReferences
 
-from six.moves.urllib.parse import urlparse, parse_qs
+from silk.utils.six.moves.urllib.parse import urlparse, parse_qs
 from silk.models import Request
 
 PORT = random.randint(8000, 9000)

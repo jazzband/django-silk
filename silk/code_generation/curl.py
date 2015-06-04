@@ -2,7 +2,7 @@ import json
 # import urllib
 
 # noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import urlencode
+from silk.utils.six.moves.urllib.parse import urlencode
 
 import jinja2
 from silk.profiling.profiler import silk_profile

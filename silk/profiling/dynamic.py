@@ -4,7 +4,7 @@ import logging
 import sys
 import re
 
-import six
+from silk.utils import six
 
 from silk.profiling.profiler import silk_profile
 

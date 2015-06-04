@@ -33,7 +33,6 @@ setup(
     install_requires= [
         'Django',
         'Pygments',
-        'six',
         'simplejson',
         'python-dateutil',
         'requests',

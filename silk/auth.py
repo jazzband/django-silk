@@ -9,7 +9,7 @@ from silk.config import SilkyConfig
 
 
 # noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import urlparse
+from silk.utils.six.moves.urllib.parse import urlparse
 
 def login_possibly_required(function=None, **kwargs):
     if SilkyConfig().SILKY_AUTHENTICATION:

@@ -1,6 +1,6 @@
 from copy import copy
 
-import six
+import silk.utils.six as six
 
 from silk.singleton import Singleton
 
