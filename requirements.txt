@@ -10,3 +10,4 @@ pytz>2014.2
 mock==1.0.1
 Pillow==2.5.1
 south>=1.0
+django>=1.8
