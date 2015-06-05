@@ -21,10 +21,18 @@
   },
   "homepage": "https://github.com/mtford90/silk",
   "devDependencies": {
+    "async": "^1.2.0",
+    "babel-core": "^5.5.3",
+    "babel-loader": "^5.1.4",
     "gulp": "^3.8.10",
+    "gulp-rename": "^1.2.2",
     "gulp-scss": "^1.1.1",
     "gulp-shell": "^0.4.2",
     "gulp-util": "^3.0.5",
-    "q": "^1.4.1"
+    "gulp-webpack": "^1.4.0",
+    "node-libs-browser": "^0.5.2",
+    "q": "^1.4.1",
+    "underscore": "^1.8.3",
+    "webpack": "^1.9.10"
   }
 }
