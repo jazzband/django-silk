@@ -1,15 +1,11 @@
 .numeric {
-    font-weight: normal;
-}
+  font-weight: normal; }
 
 .unit {
-    font-weight: normal;
-}
+  font-weight: normal; }
 
 .numeric .unit {
-    font-size: 12px;
-}
+  font-size: 12px; }
 
 .numeric {
-    font-size: 20px;
-}
+  font-size: 20px; }

@@ -5,18 +5,17 @@
     "use strict";
 
     var gulp = require('gulp'),
-        shell = require('gulp-shell');
+        plugins = require('gulp-load-plugins')();
 
-    var PYTHON_FILES = [
-        'silk/**/*.py',
-        'tests/tests/**/*.py',
-        'tests/*.py'
-    ];
 
     gulp.task('watch', function () {
-        gulp.watch(PYTHON_FILES, ['test-python']);
+        gulp.watch('scss/**/*.scss', ['scss']);
     });
 
-    gulp.task('test-python', shell.task(['./tests/manage.py test']));
+    gulp.task('scss', function () {
+        gulp.src('scss/**/*.scss')
+            .pipe(plugins.scss())
+            .pipe(gulp.dest('silk/static/silk/css'))
+    });
 
 })();

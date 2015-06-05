@@ -74,3 +74,11 @@ _html
 
 # Node
 node_modules
+
+
+
+.gulp-scss-cache
+.sass-cache
+
+*~
+.DS_Store
