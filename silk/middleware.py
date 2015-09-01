@@ -86,6 +86,7 @@ class SilkyMiddleware(object):
     def process_request(self, request):
         request_model = None
         if _should_intercept(request):
+            Logger.debug('process_request')
             request.silk_is_intercepted = True
             self._apply_dynamic_mappings()
             if not hasattr(SQLCompiler, '_execute_sql'):
@@ -96,6 +97,7 @@ class SilkyMiddleware(object):
 
 
     def _process_response(self, response):
+        Logger.debug('Process response')
         with silk_meta_profiler():
             collector = DataCollector()
             collector.stop_python_profiler()
@@ -105,10 +107,15 @@ class SilkyMiddleware(object):
                 silk_response.save()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
-                silk_request.save()
             else:
                 Logger.error(
                     'No request model was available when processing response. Did something go wrong in process_request/process_view?')
+        # Need to save the data outside the silk_meta_profiler
+        # Otherwise the  meta time collected in the context manager
+        # is not taken in account
+        if silk_request:
+            silk_request.save()
+        Logger.debug('Process response done.')
 
 
     def process_response(self, request, response):
