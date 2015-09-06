@@ -2,6 +2,7 @@ import json
 import logging
 import sys
 import traceback
+from uuid import UUID
 
 from django.core.urlresolvers import resolve
 
@@ -21,6 +22,12 @@ content_type_form = ['multipart/form-data',
                      'application/x-www-form-urlencoded']
 content_type_html = ['text/html']
 content_type_css = ['text/css']
+
+
+class DefaultEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, UUID):
+            return str(o)
 
 
 def _parse_content_type(content_type):
@@ -75,7 +82,8 @@ class RequestModelFactory(object):
                 del headers['COOKIE']
             except KeyError:
                 pass
-        return json.dumps(headers)
+
+        return json.dumps(headers, cls=DefaultEncoder)
 
     def _body(self, raw_body, content_type):
         """
