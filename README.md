@@ -322,6 +322,12 @@ def my_custom_perms(user):
 SILKY_PERMISSIONS = my_custom_perms
 ```
 
+You can also use a `lambda`.
+
+```python
+SILKY_PERMISSIONS = lambda user: user.is_superuser
+```
+
 ### Request/Response bodies
 
 By default, Silk will save down the request and response bodies for each request for future viewing
@@ -366,11 +372,17 @@ On high-load sites it may also be helpful to write your own logic for when to in
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
 
 ```python
-
 def my_custom_logic(request):
     return 'record_requests' in request.session
 
 SILKY_INTERCEPT_FUNC = my_custom_logic # log only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# log only session has recording enabled.
+SILKY_INTERCEPT_FUNC = lambda request: 'record_requests' in request.session
 ```
 
 ### Clearing logged data
