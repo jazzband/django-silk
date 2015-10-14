@@ -8,7 +8,7 @@ from django.db.models import Q, Count, Sum
 from django.utils import timezone
 from silk.profiling.dynamic import _get_module
 
-from silk.templatetags.filters import _silk_date_time
+from silk.templatetags.silk_filters import _silk_date_time
 logger = logging.getLogger('silk')
 
 

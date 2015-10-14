@@ -1,4 +1,4 @@
-{% load filters %}
+{% load silk_filters %}
 <div class="cell">
     <div class="timestamp-div">{{ silk_request.start_time | silk_date_time }}</div>
     <div class="method-div">{% if silk_request.response.status_code %}{{ silk_request.response.status_code }} {% endif %}{{ silk_request.method }}</div>
