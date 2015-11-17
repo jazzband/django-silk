@@ -1,4 +1,4 @@
-{% load filters %}
+{% load silk_filters %}
 <div class="cell">
     <div class="timestamp-div">{{ profile.start_time | silk_date_time }}</div>
     <div class="name-div">{% if profile.name %}{{ profile.name }}{% elif profile.func_name %}{{ profile.func_name }}{% endif %}</div>
