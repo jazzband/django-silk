@@ -1,6 +1,6 @@
 #Silk
 
-*Silk has now moved to the django-silk organization and is looking for contributors!*
+*Silk has now moved to the django-silk organization and is looking for contributors - if you think you can help out, please get in touch!*
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mtford90/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
