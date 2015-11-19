@@ -10,4 +10,4 @@ It primarily consists of:
    functions either manually or dynamically.
 -  A user interface for inspection and visualisation of the above.
 
-Documentation is available at https://github.com/mtford90/silk.
+Documentation is available at https://github.com/django-silk/silk.
