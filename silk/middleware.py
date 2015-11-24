@@ -28,7 +28,7 @@ def silky_reverse(name, *args, **kwargs):
     return r
 
 
-fpath = silky_reverse('summary')
+get_fpath = lambda: silky_reverse('summary')
 config = SilkyConfig()
 
 def _should_intercept(request):
@@ -42,7 +42,7 @@ def _should_intercept(request):
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
-    silky = request.path.startswith(fpath)
+    silky = request.path.startswith(get_fpath())
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
