@@ -8,7 +8,6 @@ from silk.utils import six
 
 from silk.profiling.profiler import silk_profile
 
-
 Logger = logging.getLogger('silk')
 
 
@@ -219,5 +218,3 @@ def inject_context_manager_func(module, func, start_line, end_line, name):
         setattr(cls, func_name, new_func)
     else:
         setattr(module, func_name, new_func)
-
-

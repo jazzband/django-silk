@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
-
 register = Library()
 
 
@@ -54,7 +53,6 @@ def _process_microseconds(dt_strftime):
     return time + micro[1:]
 
 
-
 def _silk_date_time(dt):
     today = timezone.now().date()
     if dt.date() == today:
@@ -87,7 +85,6 @@ def body_filter(value):
         return 'Too big!'
     else:
         return value
-
 
 spacify.needs_autoescape = True
 filepath_urlify.needs_autoescape = True

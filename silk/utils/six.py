@@ -1,5 +1,4 @@
 """Utilities for writing code that runs on Python 2 and 3"""
-
 # Copyright (c) 2010-2014 Benjamin Peterson
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +26,6 @@ import types
 __author__ = "Benjamin Peterson <benjamin@python.org>"
 __version__ = "1.6.0"
 
-
 # Useful for very coarse version differentiation.
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -51,6 +49,8 @@ else:
         # Jython always uses 32 bits.
         MAXSIZE = int((1 << 31) - 1)
     else:
+
+
         # It's possible to have sizeof(long) != sizeof(Py_ssize_t).
         class X(object):
             def __len__(self):
@@ -84,7 +84,7 @@ class _LazyDescr(object):
 
     def __get__(self, obj, tp):
         result = self._resolve()
-        setattr(obj, self.name, result) # Invokes __set__.
+        setattr(obj, self.name, result)  # Invokes __set__.
         # This is a bit ugly, but it avoids running this again.
         delattr(obj.__class__, self.name)
         return result
@@ -166,10 +166,8 @@ class MovedAttribute(_LazyDescr):
         return getattr(module, self.attr)
 
 
-
 class _MovedItems(_LazyModule):
     """Lazy loading of moved objects"""
-
 
 _moved_attributes = [
     MovedAttribute("cStringIO", "cStringIO", "io", "StringIO"),
@@ -246,7 +244,6 @@ moves = sys.modules[__name__ + ".moves"] = _MovedItems(__name__ + ".moves")
 class Module_six_moves_urllib_parse(_LazyModule):
     """Lazy loading of moved objects in six.moves.urllib_parse"""
 
-
 _urllib_parse_moved_attributes = [
     MovedAttribute("ParseResult", "urlparse", "urllib.parse"),
     MovedAttribute("SplitResult", "urlparse", "urllib.parse"),
@@ -277,7 +274,6 @@ sys.modules[__name__ + ".moves.urllib_parse"] = sys.modules[__name__ + ".moves.u
 class Module_six_moves_urllib_error(_LazyModule):
     """Lazy loading of moved objects in six.moves.urllib_error"""
 
-
 _urllib_error_moved_attributes = [
     MovedAttribute("URLError", "urllib2", "urllib.error"),
     MovedAttribute("HTTPError", "urllib2", "urllib.error"),
@@ -294,7 +290,6 @@ sys.modules[__name__ + ".moves.urllib_error"] = sys.modules[__name__ + ".moves.u
 
 class Module_six_moves_urllib_request(_LazyModule):
     """Lazy loading of moved objects in six.moves.urllib_request"""
-
 
 _urllib_request_moved_attributes = [
     MovedAttribute("urlopen", "urllib2", "urllib.request"),
@@ -343,7 +338,6 @@ sys.modules[__name__ + ".moves.urllib_request"] = sys.modules[__name__ + ".moves
 class Module_six_moves_urllib_response(_LazyModule):
     """Lazy loading of moved objects in six.moves.urllib_response"""
 
-
 _urllib_response_moved_attributes = [
     MovedAttribute("addbase", "urllib", "urllib.response"),
     MovedAttribute("addclosehook", "urllib", "urllib.response"),
@@ -361,7 +355,6 @@ sys.modules[__name__ + ".moves.urllib_response"] = sys.modules[__name__ + ".move
 
 class Module_six_moves_urllib_robotparser(_LazyModule):
     """Lazy loading of moved objects in six.moves.urllib_robotparser"""
-
 
 _urllib_robotparser_moved_attributes = [
     MovedAttribute("RobotFileParser", "robotparser", "urllib.robotparser"),
@@ -386,7 +379,6 @@ class Module_six_moves_urllib(types.ModuleType):
     def __dir__(self):
         return ['parse', 'error', 'request', 'response', 'robotparser']
 
-
 sys.modules[__name__ + ".moves.urllib"] = Module_six_moves_urllib(__name__ + ".moves.urllib")
 
 
@@ -403,7 +395,7 @@ def remove_move(name):
         try:
             del moves.__dict__[name]
         except KeyError:
-            raise AttributeError("no such move, %r" % (name,))
+            raise AttributeError("no such move, %r" % (name, ))
 
 
 if PY3:
@@ -460,8 +452,10 @@ else:
     def get_unbound_function(unbound):
         return unbound.im_func
 
+
     def create_bound_method(func, obj):
         return types.MethodType(func, obj, obj.__class__)
+
 
     class Iterator(object):
 
@@ -471,7 +465,6 @@ else:
     callable = callable
 _add_doc(get_unbound_function,
          """Get the function out of a possibly unbound function""")
-
 
 get_method_function = operator.attrgetter(_meth_func)
 get_method_self = operator.attrgetter(_meth_self)
@@ -485,13 +478,16 @@ def iterkeys(d, **kw):
     """Return an iterator over the keys of a dictionary."""
     return iter(getattr(d, _iterkeys)(**kw))
 
+
 def itervalues(d, **kw):
     """Return an iterator over the values of a dictionary."""
     return iter(getattr(d, _itervalues)(**kw))
 
+
 def iteritems(d, **kw):
     """Return an iterator over the (key, value) pairs of a dictionary."""
     return iter(getattr(d, _iteritems)(**kw))
+
 
 def iterlists(d, **kw):
     """Return an iterator over the (key, [values]) pairs of a dictionary."""
@@ -501,12 +497,14 @@ def iterlists(d, **kw):
 if PY3:
     def b(s):
         return s.encode("latin-1")
+
+
     def u(s):
         return s
     unichr = chr
     if sys.version_info[1] <= 1:
         def int2byte(i):
-            return bytes((i,))
+            return bytes((i, ))
     else:
         # This is about 2x faster than the implementation above on 3.2+
         int2byte = operator.methodcaller("to_bytes", 1, "big")
@@ -519,15 +517,23 @@ if PY3:
 else:
     def b(s):
         return s
+
+
     # Workaround for standalone backslash
     def u(s):
         return unicode(s.replace(r'\\', r'\\\\'), "unicode_escape")
     unichr = unichr
     int2byte = chr
+
+
     def byte2int(bs):
         return ord(bs[0])
+
+
     def indexbytes(buf, i):
         return ord(buf[i])
+
+
     def iterbytes(buf):
         return (ord(byte) for byte in buf)
     import StringIO
@@ -558,11 +564,9 @@ else:
             _locs_ = _globs_
         exec("""exec _code_ in _globs_, _locs_""")
 
-
     exec_("""def reraise(tp, value, tb=None):
     raise tp, value, tb
 """)
-
 
 print_ = getattr(moves.builtins, "print", None)
 if print_ is None:
@@ -571,6 +575,7 @@ if print_ is None:
         fp = kwargs.pop("file", sys.stdout)
         if fp is None:
             return
+
         def write(data):
             if not isinstance(data, basestring):
                 data = str(data)
@@ -626,8 +631,10 @@ def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""
     return meta("NewBase", bases, {})
 
+
 def add_metaclass(metaclass):
     """Class decorator for creating a class with a metaclass."""
+
     def wrapper(cls):
         orig_vars = cls.__dict__.copy()
         orig_vars.pop('__dict__', None)

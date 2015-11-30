@@ -7,7 +7,6 @@ from silk.utils.six.moves.urllib.parse import urlencode
 import jinja2
 from silk.profiling.profiler import silk_profile
 
-
 curl_template = """
 curl {% if method %}-X {{ method }}{% endif %}
 {% if content_type %}-H 'Content-Type: {{ content_type }}'{% endif %}
@@ -50,6 +49,7 @@ def _curl_process_params(body, content_type, query_params):
     # TODO: Clean up.
     return modifier, body, query_params, content_type, extra
 
+
 def curl_cmd(url, method=None, query_params=None, body=None, content_type=None):
     if not content_type:
         content_type = 'text/plain'
@@ -62,4 +62,3 @@ def curl_cmd(url, method=None, query_params=None, body=None, content_type=None):
                              modifier=modifier,
                              content_type=content_type,
                              extra=extra).split('\n'))
-

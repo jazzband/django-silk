@@ -10,7 +10,6 @@ from silk import models
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 
-
 Logger = logging.getLogger('silk')
 
 content_types_json = ['application/json',

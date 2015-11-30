@@ -78,7 +78,6 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['profile_id', 'sqlquery_id'])
 
-
     def backwards(self, orm):
         # Deleting model 'Request'
         db.delete_table('silk_request')
@@ -94,7 +93,6 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field queries on 'Profile'
         db.delete_table(db.shorten_name('silk_profile_queries'))
-
 
     models = {
         'silk.profile': {

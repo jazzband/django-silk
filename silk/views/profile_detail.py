@@ -10,7 +10,7 @@ class ProfilingDetailView(View):
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
-    def get(self, request,  *_, **kwargs):
+    def get(self, request, *_, **kwargs):
         profile_id = kwargs['profile_id']
         silk_request_id = kwargs.get('request_id', None)
         context = {

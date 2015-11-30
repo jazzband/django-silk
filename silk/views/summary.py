@@ -78,7 +78,6 @@ class SummaryView(View):
         c = self._create_context(request)
         return render_to_response('silk/summary.html', c)
 
-
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):

@@ -9,7 +9,6 @@ from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
 
-
 urlpatterns = patterns('silk.views',
                        url(r'^$', SummaryView.as_view(), name='summary'),
                        url(r'^requests/$', RequestsView.as_view(), name='requests'),
@@ -25,5 +24,3 @@ urlpatterns = patterns('silk.views',
                        url(r'^profile/(?P<profile_id>[0-9]+)/sql/$', SQLView.as_view(), name='profile_sql'),
                        url(r'^profile/(?P<profile_id>[0-9]+)/sql/(?P<sql_id>[0-9]+)/$', SQLDetailView.as_view(), name='profile_sql_detail'),
                        url(r'^profiling/$', ProfilingView.as_view(), name='profiling'))
-
-

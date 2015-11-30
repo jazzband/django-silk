@@ -10,7 +10,6 @@ from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request
 from silk.request_filters import BaseFilter, filters_from_request
 
-
 __author__ = 'mtford'
 
 
@@ -25,7 +24,6 @@ class RequestsView(View):
 
     def _get_paths(self):
         return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
-
 
     def _get_objects(self, show=None, order_by=None, path=None, filters=None):
         if not filters:

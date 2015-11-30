@@ -40,7 +40,3 @@ class RequestView(View):
             'request': request
         }
         return render_to_response('silk/request.html', context)
-
-
-
-

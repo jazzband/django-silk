@@ -1,7 +1,8 @@
 import contextlib
 from threading import local
 
-import cProfile, pstats
+import cProfile
+import pstats
 import logging
 
 from silk.utils.six import StringIO

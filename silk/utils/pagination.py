@@ -13,4 +13,3 @@ def _page(request, query_set):
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
     return page
-

@@ -25,6 +25,7 @@ def _encode_query_params(query_params):
     query_params = '?' + query_params
     return query_params
 
+
 def gen(path,
         method=None,
         query_params=None,

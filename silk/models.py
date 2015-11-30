@@ -68,7 +68,6 @@ class Request(models.Model):
     # TODO: This is probably a bad way to do this, .count() will prob do?
     num_sql_queries = IntegerField(default=0)
 
-
     @property
     def time_spent_on_sql_queries(self):
         # TODO: Perhaps there is a nicer way to do this with Django aggregates?
@@ -93,8 +92,10 @@ class Request(models.Model):
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
-        if self.raw_body is None: self.raw_body = ''
-        if self.body is None: self.body = ''
+        if self.raw_body is None:
+            self.raw_body = ''
+        if self.body is None:
+            self.body = ''
 
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time

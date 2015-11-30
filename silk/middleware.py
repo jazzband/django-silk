@@ -27,9 +27,9 @@ def silky_reverse(name, *args, **kwargs):
         r = reverse(name, *args, **kwargs)
     return r
 
-
 fpath = silky_reverse('summary')
 config = SilkyConfig()
+
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
@@ -95,7 +95,6 @@ class SilkyMiddleware(object):
             request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model)
 
-
     def _process_response(self, response):
         Logger.debug('Process response')
         with silk_meta_profiler():
@@ -116,7 +115,6 @@ class SilkyMiddleware(object):
         if silk_request:
             silk_request.save()
         Logger.debug('Process response done.')
-
 
     def process_response(self, request, response):
         if getattr(request, 'silk_is_intercepted', False):
