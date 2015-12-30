@@ -160,14 +160,14 @@ class RequestModelFactory(object):
         path = self.request.path
         resolved = resolve(path)
         try:
-          # view_name is set in Django >= 1.8
-          view_name = resolved.view_name
+            # view_name is set in Django >= 1.8
+            view_name = resolved.view_name
         except AttributeError:
-          # support for Django 1.6 and 1.7 in which no view_name is set
-          view_name = resolved.url_name
-          namespace = resolved.namespace
-          if namespace:
-              view_name = namespace + ':' + view_name
+            # support for Django 1.6 and 1.7 in which no view_name is set
+            view_name = resolved.url_name
+            namespace = resolved.namespace
+            if namespace:
+                view_name = namespace + ':' + view_name
         request_model = models.Request.objects.create(
             path=path,
             encoded_headers=self.encoded_headers(),
