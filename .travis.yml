@@ -14,7 +14,6 @@ install:
 
 script:
     - cd project
-    - echo $DJANGO
     - ./tests/test_migrations.sh
     - python manage.py test --noinput
     - cd -
