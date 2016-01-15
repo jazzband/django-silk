@@ -48,12 +48,12 @@ class Request(models.Model):
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
-    method = CharField(max_length=10)
+    method = CharField(max_length=10) # XXX set choces?
     start_time = DateTimeField(default=timezone.now, db_index=True)
     view_name = CharField(max_length=300, db_index=True, blank=True, default='', null=True)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    encoded_headers = TextField(blank=True, default='')
+    encoded_headers = TextField(blank=True, default='') # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
@@ -84,6 +84,7 @@ class Request(models.Model):
             raw = json.loads(self.encoded_headers)
         else:
             raw = {}
+
         return CaseInsensitiveDictionary(raw)
 
     @property
@@ -94,12 +95,14 @@ class Request(models.Model):
         # sometimes django requests return the body as 'None'
         if self.raw_body is None:
             self.raw_body = ''
+
         if self.body is None:
             self.body = ''
 
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
         super(Request, self).save(*args, **kwargs)
 
 
