@@ -10,7 +10,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
-from .factories import RequestMinFactory, SQLQueryFactory
+from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
 
 # http://stackoverflow.com/questions/13397038/uuid-max-character-length
@@ -157,7 +157,46 @@ class RequestTest(TestCase):
 
 
 class ResponseTest(TestCase):
-    pass
+
+    def setUp(self):
+
+        self.obj = ResponseFactory.create()
+
+    def test_uuid_is_primary_key(self):
+
+        self.assertIsInstance(self.obj.id, uuid.UUID)
+
+    def test_is_1to1_related_to_request(self):
+
+        request = RequestMinFactory.create()
+        resp = models.Response.objects.create(status_code=200, request=request)
+
+        self.assertEqual(request.response, resp)
+
+    def test_headers_if_has_no_encoded_headers(self):
+
+        self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
+        self.assertFalse(self.obj.headers)
+
+    def test_headers_if_has_encoded_headers(self):
+
+        self.obj.encoded_headers = '{"some-header": "some_data"}'
+        self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
+        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+
+    def test_content_type_if_no_headers(self):
+
+        self.assertEqual(self.obj.content_type, None)
+
+    def test_content_type_if_no_specific_content_type(self):
+
+        self.obj.encoded_headers = '{"foo": "some_data"}'
+        self.assertEqual(self.obj.content_type, None)
+
+    def test_content_type_if_header_have_content_type(self):
+
+        self.obj.encoded_headers = '{"content-type": "some_data"}'
+        self.assertEqual(self.obj.content_type, "some_data")
 
 
 class SQLQueryManagerTest(TestCase):
