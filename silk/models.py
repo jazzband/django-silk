@@ -66,7 +66,7 @@ class Request(models.Model):
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
-    num_sql_queries = IntegerField(default=0)
+    num_sql_queries = IntegerField(default=0) # TODO replace with count()
 
     @property
     def time_spent_on_sql_queries(self):
@@ -127,6 +127,7 @@ class Response(models.Model):
         return CaseInsensitiveDictionary(raw)
 
 
+# TODO rewrite docstring
 class SQLQueryManager(models.Manager):
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
@@ -135,6 +136,7 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
+
         with atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
@@ -158,6 +160,7 @@ class SQLQuery(models.Model):
     traceback = TextField()
     objects = SQLQueryManager()
 
+    # TODO docstring
     @property
     def traceback_ln_only(self):
         return '\n'.join(self.traceback.split('\n')[::2])
@@ -177,13 +180,15 @@ class SQLQuery(models.Model):
         TODO: Can probably parse the SQL using sqlparse etc and pull out table info that way?"""
         components = [x.strip() for x in self.query.split()]
         tables = []
-        for idx, c in enumerate(components):
+
+        for idx, component in enumerate(components):
             # TODO: If django uses aliases on column names they will be falsely identified as tables...
-            if c.lower() == 'from' or c.lower() == 'join' or c.lower() == 'as':
+            if component.lower() == 'from' or component.lower() == 'join' or component.lower() == 'as':
                 try:
-                    nxt = components[idx + 1]
-                    if not nxt.startswith('('):  # Subquery
-                        stripped = nxt.strip().strip(',')
+                    _next = components[idx + 1]
+                    if not _next.startswith('('):  # Subquery
+                        stripped = _next.strip().strip(',')
+
                         if stripped:
                             tables.append(stripped)
                 except IndexError:  # Reach the end
@@ -192,13 +197,16 @@ class SQLQuery(models.Model):
 
     @atomic()
     def save(self, *args, **kwargs):
+
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
         if not self.pk:
             if self.request:
                 self.request.num_sql_queries += 1
                 self.request.save()
+
         super(SQLQuery, self).save(*args, **kwargs)
 
     @atomic()
