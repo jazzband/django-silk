@@ -14,7 +14,6 @@ install:
 
 script:
     - cd project
-    - python manage.py syncdb --noinput
-    - python manage.py migrate --noinput || true # Only for 1.7/1.8
+    - ./tests/test_migrations.sh
     - python manage.py test --noinput
     - cd -
