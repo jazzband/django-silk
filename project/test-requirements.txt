@@ -9,3 +9,5 @@ autopep8==1.0.2
 pytz>2014.2
 mock==1.0.1
 Pillow==2.5.1
+factory-boy==2.6.0
+freezegun==0.3.5
