@@ -4,6 +4,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request
+import logging
+Logger = logging.getLogger('silk')
 
 
 class Raw(View):
@@ -19,7 +21,8 @@ class Raw(View):
             if typ == 'request':
                 body = silk_request.raw_body if subtyp == 'raw' else silk_request.body
             elif typ == 'response':
-                body = silk_request.response.raw_body if subtyp == 'raw' else silk_request.response.body
+                Logger.debug(silk_request.response.raw_body_decoded)
+                body = silk_request.response.raw_body_decoded if subtyp == 'raw' else silk_request.response.body
             return render_to_response('silk/raw.html', {
                 'body': body
             })

@@ -2,6 +2,7 @@ import json
 import logging
 import sys
 import traceback
+import base64
 from uuid import UUID
 
 from django.core.urlresolvers import resolve
@@ -197,29 +198,6 @@ class ResponseModelFactory(object):
         body = ''
         content_type, char_set = _parse_content_type(self.response.get('Content-Type', ''))
         content = getattr(self.response, 'content', '')
-        if char_set and content:
-            try:
-                content = content.decode(char_set)
-            except AttributeError:
-                pass
-            except LookupError:  # If no encoding exists, default to UTF-8
-                try:
-                    content = content.decode('UTF-8')
-                except AttributeError:
-                    pass
-                except UnicodeDecodeError:
-                    content = ''
-            except Exception as e:
-                Logger.error('Unable to decode response body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
-                traceback.print_exc()
-        else:
-            # Default to an attempt at UTF-8 decoding.
-            try:
-                content = content.decode('UTF-8')
-            except AttributeError:
-                pass
-            except UnicodeDecodeError:
-                content = ''
         if content:
             max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE
             if max_body_size > -1:
@@ -259,10 +237,6 @@ class ResponseModelFactory(object):
                                                         status_code=self.response.status_code,
                                                         encoded_headers=json.dumps(headers),
                                                         body=b)
-        # Text fields are encoded as UTF-8 in Django and hence will try to coerce
-        # anything to we pass to UTF-8. Some stuff like binary will fail.
-        try:
-            silky_response.raw_body = content
-        except UnicodeDecodeError:
-            Logger.debug('NYI: Saving of binary response body')  # TODO
+        silky_response.raw_body = base64.b64encode(content)
+
         return silky_response
