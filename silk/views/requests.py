@@ -53,6 +53,14 @@ class RequestsView(View):
 
     session_key_request_filters = 'request_filters'
 
+    @property
+    def options_order_by(self):
+        return [{'value': x, 'label': self.order_by[x]['label']} for x in self.order_by.keys()]
+
+    @property
+    def options_order_dir(self):
+        return [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()]
+
     def _get_paths(self):
         return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
 
@@ -93,8 +101,8 @@ class RequestsView(View):
             'order_dir': order_dir,
             'request': request,
             'options_show': self.show,
-            'options_order_by': [{'value': x, 'label': self.order_by[x]['label']} for x in self.order_by.keys()],
-            'options_order_dir': [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()],
+            'options_order_by': self.options_order_by,
+            'options_order_dir': self.options_order_dir,
             'options_paths': self._get_paths(),
             'view_names': [x[0] for x in Request.objects.values_list('view_name').distinct()],
             'filters': raw_filters
