@@ -10,3 +10,4 @@ mock==1.0.1
 Pillow==2.5.1
 south>=1.0
 django>=1.8
+freezegun>=0.3,<0.4
