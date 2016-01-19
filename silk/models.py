@@ -1,5 +1,6 @@
 from collections import Counter
 import json
+import base64
 
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
@@ -125,6 +126,10 @@ class Response(models.Model):
         else:
             raw = {}
         return CaseInsensitiveDictionary(raw)
+
+    @property
+    def raw_body_decoded(self):
+        return base64.b64decode(self.raw_body)
 
 
 # TODO rewrite docstring
