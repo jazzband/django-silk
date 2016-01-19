@@ -19,7 +19,7 @@ class Raw(View):
         if typ and subtyp:
             silk_request = Request.objects.get(pk=request_id)
             if typ == 'request':
-                body = silk_request.raw_body_ if subtyp == 'raw' else silk_request.body
+                body = silk_request.raw_body if subtyp == 'raw' else silk_request.body
             elif typ == 'response':
                 Logger.debug(silk_request.response.raw_body_decoded)
                 body = silk_request.response.raw_body_decoded if subtyp == 'raw' else silk_request.response.body
