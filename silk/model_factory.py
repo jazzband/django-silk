@@ -237,6 +237,9 @@ class ResponseModelFactory(object):
                                                         status_code=self.response.status_code,
                                                         encoded_headers=json.dumps(headers),
                                                         body=b)
-        silky_response.raw_body = base64.b64encode(content)
 
+        try:
+            silky_response.raw_body = base64.b64encode(content)
+        except TypeError:
+            silky_response.raw_body = base64.b64encode(content.encode('utf-8'))
         return silky_response

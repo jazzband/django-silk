@@ -10,6 +10,7 @@ from silk.model_factory import RequestModelFactory, ResponseModelFactory
 DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
 HTTP_CONTENT_TYPE = 'Content-Type'
 
+
 class TestEncodingForRequests(TestCase):
     """
     Check that the RequestModelFactory deals with encodings correctly via charset
@@ -121,32 +122,32 @@ class TestEncodingForResponse(TestCase):
         mock = Mock()
         mock._headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': u'语'}
-        mock.content = json.dumps(d).encode('UTF-8')
+        mock.content = json.dumps(d)
         mock.get = mock._headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
-        self.assertEqual(content, mock.content.decode('UTF-8'))
+        self.assertEqual(content, mock.content)
 
     def test_utf_json_encoded_no_charset(self):
         """default to UTF-8"""
         mock = Mock()
         mock._headers = {HTTP_CONTENT_TYPE: 'application/json'}
         d = {'x': u'语'}
-        mock.content = json.dumps(d).encode('UTF-8')
+        mock.content = json.dumps(d)
         mock.get = mock._headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
-        self.assertEqual(content, mock.content.decode('UTF-8'))
+        self.assertEqual(content, mock.content)
 
     def test_invalid_encoding_json(self):
         mock = Mock()
         mock._headers = {HTTP_CONTENT_TYPE: 'application/json; charset=asdas-8'}
         d = {'x': u'语'}
-        mock.content = json.dumps(d).encode('UTF-8')
+        mock.content = json.dumps(d)
         mock.get = mock._headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
-        self.assertDictEqual(json.loads(body, encoding='UTF-8'), d)
-        self.assertEqual(mock.content.decode('UTF-8'), content)
+        self.assertDictEqual(json.loads(body), d)
+        self.assertEqual(mock.content, content)
