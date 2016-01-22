@@ -3,8 +3,8 @@
 *Silk has now moved to the django-silk organization and is looking for contributors - if you think you can help out, please get in touch!*
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/django-silk/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![Build Status](https://travis-ci.org/django-silk/silk.svg?branch=master)](https://travis-ci.org/django-silk/silk)
+[![Travis branch](https://img.shields.io/travis/django-silk/silk/master.svg)](https://travis-ci.org/django-silk/django-silk)
+[![PyPI](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 
 Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
