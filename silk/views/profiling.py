@@ -1,4 +1,7 @@
-from django.template.context_processors import csrf
+try:
+    from django.template.context_processors import csrf
+except ImportError:
+    from django.core.context_processors import csrf
 from django.db.models import Count, Sum
 from django.shortcuts import render_to_response
 from django.utils.decorators import method_decorator
