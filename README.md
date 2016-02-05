@@ -29,6 +29,7 @@ Silk has been tested with:
 
 * Django: 1.6, 1.7, 1.8
 * Python: 2.7, 3.3, 3.4
+* South: 1.0 or higher (for Django 1.6)
 
 ## Installation
 
@@ -67,6 +68,14 @@ before running syncdb:
 
 ```bash
 python manage.py syncdb
+```
+
+**Note:** If using Django 1.6, South 1.0 or newer is required. Use `SOUTH_MIGRATION_MODULES` in your settings configuration to reference the correct migrations folder as follows:
+
+```python
+SOUTH_MIGRATION_MODULES = {
+    'silk': 'silk.south_migrations',
+}
 ```
 
 Silk will automatically begin interception of requests and you can proceed to add profiling
