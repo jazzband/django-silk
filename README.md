@@ -141,7 +141,7 @@ Before diving into the stack trace to figure out where this request is coming fr
 
 Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.
 
-```
+```python
 SILKY_PYTHON_PROFILER = True
 ```
 
@@ -150,7 +150,7 @@ manager for this purpose.
 
 For example:
 
-```
+```python
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
@@ -193,7 +193,7 @@ class MyView(View):
 Using a context manager means we can add additional context to the name which can be useful for
 narrowing down slowness to particular database records.
 
-```
+```python
 def post(request, post_id):
     with silk_profile(name='View Blog Post #%d' % self.pk):
         p = Post.objects.get(pk=post_id)
@@ -206,7 +206,7 @@ def post(request, post_id):
 
 One of Silk's more interesting features is dynamic profiling. If for example we wanted to profile a function in a dependency to which we only have read-only access (e.g. system python libraries owned by root) we can add the following to `settings.py` to apply a decorator at runtime:
 
-```
+```python
 SILKY_DYNAMIC_PROFILING = [{
     'module': 'path.to.module',
     'function': 'MyClass.bar'
@@ -215,7 +215,7 @@ SILKY_DYNAMIC_PROFILING = [{
 
 which is roughly equivalent to:
 
-```
+```python
 class MyClass(object):
     @silk_profile()
     def bar(self):
