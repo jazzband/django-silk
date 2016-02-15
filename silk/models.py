@@ -54,7 +54,7 @@ class Request(models.Model):
     view_name = CharField(max_length=300, db_index=True, blank=True, default='', null=True)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    encoded_headers = TextField(blank=True, default='') # stores json
+    encoded_headers = TextField(blank=True, default='')  # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
@@ -67,7 +67,7 @@ class Request(models.Model):
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
-    num_sql_queries = IntegerField(default=0) # TODO replace with count()
+    num_sql_queries = IntegerField(default=0)  # TODO replace with count()
 
     @property
     def time_spent_on_sql_queries(self):
