@@ -2,6 +2,7 @@ import logging
 import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.db import transaction, IntegrityError
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
@@ -102,8 +103,13 @@ class SilkyMiddleware(object):
             collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
-                silk_response = ResponseModelFactory(response).construct_response_model()
-                silk_response.save()
+                try:
+                    with transaction.atomic():
+                        silk_response = ResponseModelFactory(response).construct_response_model()
+                        silk_response.save()
+                except IntegrityError as e:
+                    Logger.error('Silk error: {}'.format(e.message))
+
                 silk_request.end_time = timezone.now()
                 collector.finalise()
             else:
