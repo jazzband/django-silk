@@ -108,7 +108,7 @@ class SilkyMiddleware(object):
                         silk_response = ResponseModelFactory(response).construct_response_model()
                         silk_response.save()
                 except IntegrityError as e:
-                    Logger.error('Silk error: {}'.format(e.message))
+                    Logger.error('Silk IntegrityError: {}'.format(e))
 
                 silk_request.end_time = timezone.now()
                 collector.finalise()
