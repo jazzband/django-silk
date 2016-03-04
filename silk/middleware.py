@@ -96,6 +96,7 @@ class SilkyMiddleware(object):
             request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model)
 
+    @transaction.atomic()
     def _process_response(self, response):
         Logger.debug('Process response')
         with silk_meta_profiler():
@@ -103,15 +104,8 @@ class SilkyMiddleware(object):
             collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
-                try:
-                    with transaction.atomic():
-                        silk_response = ResponseModelFactory(response).construct_response_model()
-                        silk_response.save()
-                except IntegrityError as e:
-                    Logger.error('Silk IntegrityError: {}'.format(e))
-
-                silk_request.end_time = timezone.now()
-                collector.finalise()
+                silk_response = ResponseModelFactory(response).construct_response_model()
+                silk_response.save()
             else:
                 Logger.error(
                     'No request model was available when processing response. Did something go wrong in process_request/process_view?')
