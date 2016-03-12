@@ -23,7 +23,7 @@ class TestConfigMeta(TestCase):
         delete_all_models(Request)
         DataCollector().configure(Request.objects.create())
         response = self._mock_response()
-        SilkyMiddleware()._process_response(response)
+        SilkyMiddleware()._process_response('', response)
         self.assertTrue(response.status_code == 200)
         objs = Request.objects.all()
         self.assertEqual(objs.count(), 1)
