@@ -1,4 +1,4 @@
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.db.models import Avg, Count, Sum, Max
 from django.shortcuts import render_to_response
 from django.utils.decorators import method_decorator

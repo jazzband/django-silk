@@ -210,7 +210,7 @@ class SQLQuery(models.Model):
         if not self.pk:
             if self.request:
                 self.request.num_sql_queries += 1
-                self.request.save()
+                self.request.save(update_fields=['num_sql_queries'])
 
         super(SQLQuery, self).save(*args, **kwargs)
 
