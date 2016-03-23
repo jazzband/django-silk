@@ -233,7 +233,7 @@ class ResponseModelFactory(object):
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(request=self.request,
+        silky_response = models.Response.objects.create(request_id=self.request.id,
                                                         status_code=self.response.status_code,
                                                         encoded_headers=json.dumps(headers),
                                                         body=b)
