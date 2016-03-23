@@ -7,7 +7,7 @@ from django.db.models import DateTimeField, TextField, CharField, ForeignKey, In
     ManyToManyField, OneToOneField, FloatField
 from django.utils import timezone
 from django.db import transaction
-from uuid import uuid1
+from uuid import uuid4
 import sqlparse
 
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
@@ -44,7 +44,7 @@ class CaseInsensitiveDictionary(dict):
 
 
 class Request(models.Model):
-    id = CharField(max_length=36, default=uuid1, primary_key=True)
+    id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=300, db_index=True)
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
@@ -108,7 +108,7 @@ class Request(models.Model):
 
 
 class Response(models.Model):
-    id = CharField(max_length=36, default=uuid1, primary_key=True)
+    id = CharField(max_length=36, default=uuid4, primary_key=True)
     request = OneToOneField('Request', related_name='response', db_index=True)
     status_code = IntegerField()
     raw_body = TextField(blank=True, default='')
