@@ -105,7 +105,7 @@ class SilkyMiddleware(object):
             collector = DataCollector()
             collector.stop_python_profiler()
             silk_request = collector.request
-            if silk_request and not hasattr(silk_request, 'request'):
+            if silk_request and not hasattr(silk_request, 'response'):
                 silk_response = ResponseModelFactory(response).construct_response_model()
                 silk_response.save()
                 silk_request.end_time = timezone.now()
