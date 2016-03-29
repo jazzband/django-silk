@@ -93,8 +93,8 @@ class TestGetObjects(TestCase):
     def test_time_spent_db_with_path(self):
         request = random.choice(self.requests)
         query_set = RequestsView()._get_objects(order_by='db_time',
-                                            path=request.path)
-        num_results = len(query_set)
+                                                path=request.path)
+        num_results = query_set.count()
         self.assertTrue(num_results)
         for result in query_set:
             self.assertEqual(result.path, request.path)
