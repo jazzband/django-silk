@@ -1,12 +1,12 @@
 Pygments>=2.0,<2.1
 python-dateutil>=2.4,<2.5
-requests==2.2.1
+requests==2.10
 sqlparse==0.1.11
-Jinja2==2.7.2
+Jinja2==2.8
 autopep8==1.2.1
 pytz>2014.2
 mock==1.0.1
-Pillow==2.5.1
+Pillow==3.2
 south>=1.0
 django>=1.8
 freezegun>=0.3,<0.4
