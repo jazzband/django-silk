@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -36,4 +36,4 @@ class ProfilingDetailView(View):
                 else:
                     raise e
 
-        return render_to_response('silk/profile_detail.html', context)
+        return render('silk/profile_detail.html', context)
