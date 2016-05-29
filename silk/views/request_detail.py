@@ -1,6 +1,6 @@
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -39,4 +39,4 @@ class RequestView(View):
                           content_type=silk_request.content_type),
             'request': request
         }
-        return render_to_response('silk/request.html', context)
+        return render('silk/request.html', context)
