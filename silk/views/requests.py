@@ -5,7 +5,7 @@ except ImportError:
     from django.template.context_processors import csrf
 
 from django.db.models import Sum
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.profiling.dynamic import _get_module
@@ -121,11 +121,11 @@ class RequestsView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request):
-        return render_to_response('silk/requests.html', self._create_context(request))
+        return render('silk/requests.html', self._create_context(request))
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
         request.session[self.session_key_request_filters] = {ident: f.as_dict() for ident, f in filters.items()}
-        return render_to_response('silk/requests.html', self._create_context(request))
+        return render('silk/requests.html', self._create_context(request))

@@ -1,7 +1,7 @@
 import re
 from django.core.exceptions import PermissionDenied
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
@@ -84,4 +84,4 @@ class SQLDetailView(View):
             actual_line, code = _code(file_path, line_num)
             context['code'] = code
             context['actual_line'] = actual_line
-        return render_to_response('silk/sql_detail.html', context)
+        return render('silk/sql_detail.html', context)

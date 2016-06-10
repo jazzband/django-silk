@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -23,7 +23,7 @@ class Raw(View):
             elif typ == 'response':
                 Logger.debug(silk_request.response.raw_body_decoded)
                 body = silk_request.response.raw_body_decoded if subtyp == 'raw' else silk_request.response.body
-            return render_to_response('silk/raw.html', {
+            return render('silk/raw.html', {
                 'body': body
             })
         else:

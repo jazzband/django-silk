@@ -3,7 +3,7 @@ try:
 except ImportError:
     from django.core.context_processors import csrf
 from django.db.models import Count, Sum
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -127,11 +127,11 @@ class ProfilingView(View):
     @method_decorator(permissions_possibly_required)
 
     def get(self, request, *args, **kwargs):
-        return render_to_response('silk/profiling.html', self._create_context(request, *args, **kwargs))
+        return render('silk/profiling.html', self._create_context(request, *args, **kwargs))
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
         request.session[self.session_key_profile_filters] = {ident: f.as_dict() for ident, f in filters.items()}
-        return render_to_response('silk/profiling.html', self._create_context(request))
+        return render('silk/profiling.html', self._create_context(request))
