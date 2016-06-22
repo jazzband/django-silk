@@ -27,9 +27,9 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 1.6, 1.7, 1.8
-* Python: 2.7, 3.3, 3.4
-* South: 1.0 or higher (for Django 1.6)
+* Django: 1.6, 1.7, 1.8, 1.9, 1.10[dev]
+* Python: 2.7, 3.3, 3.4, 3.5
+
 
 ## Installation
 
@@ -61,22 +61,17 @@ INSTALLED_APPS = (
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
-urlpatterns += patterns('', url(r'^silk/', include('silk.urls', namespace='silk')))
+urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
 ```
 
-before running syncdb:
+before running migrate:
 
 ```bash
-python manage.py syncdb
+python manage.py makemigrations
+
+python manage.py migrate
 ```
 
-**Note:** If using Django 1.6, South 1.0 or newer is required. Use `SOUTH_MIGRATION_MODULES` in your settings configuration to reference the correct migrations folder as follows:
-
-```python
-SOUTH_MIGRATION_MODULES = {
-    'silk': 'silk.south_migrations',
-}
-```
 
 Silk will automatically begin interception of requests and you can proceed to add profiling
 if required. The UI can be reached at `/silk/`
