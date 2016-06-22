@@ -1,11 +1,9 @@
 import json
-# import urllib
 
 # noinspection PyUnresolvedReferences
 from silk.utils.six.moves.urllib.parse import urlencode
 
 import jinja2
-from silk.profiling.profiler import silk_profile
 
 curl_template = """
 curl {% if method %}-X {{ method }}{% endif %}
@@ -21,7 +19,9 @@ def _curl_process_params(body, content_type, query_params):
     modifier = None
     if query_params:
         try:
-            query_params = urlencode([(k, v.encode('utf8')) for k, v in query_params.items()])
+            query_params = urlencode(
+                [(k, v.encode('utf8')) for k, v in query_params.items()]
+            )
         except TypeError:
             pass
         query_params = '?' + str(query_params)
@@ -31,7 +31,8 @@ def _curl_process_params(body, content_type, query_params):
         modifier = '-d'
     # See http://curl.haxx.se/docs/manpage.html#-F
     # for multipart vs x-www-form-urlencoded
-    # x-www-form-urlencoded is same way as browser, multipart is RFC 2388 which allows file uploads.
+    # x-www-form-urlencoded is same way as browser,
+    # multipart is RFC 2388 which allows file uploads.
     elif 'multipart' in content_type or 'x-www-form-urlencoded' in content_type:
         try:
             body = ' '.join(['%s=%s' % (k, v) for k, v in body.items()])
@@ -53,7 +54,9 @@ def _curl_process_params(body, content_type, query_params):
 def curl_cmd(url, method=None, query_params=None, body=None, content_type=None):
     if not content_type:
         content_type = 'text/plain'
-    modifier, body, query_params, content_type, extra = _curl_process_params(body, content_type, query_params)
+    modifier, body, query_params, content_type, extra = _curl_process_params(
+        body, content_type, query_params
+    )
     t = jinja2.Template(curl_template)
     return ' '.join(t.render(url=url,
                              method=method,
