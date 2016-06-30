@@ -1,6 +1,6 @@
 from copy import copy
 
-import silk.utils.six as six
+from django.utils import six
 
 from silk.singleton import Singleton
 

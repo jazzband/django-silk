@@ -2,7 +2,7 @@ import logging
 import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.db import transaction, IntegrityError
+from django.db import transaction
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
