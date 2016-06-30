@@ -4,7 +4,7 @@ import logging
 import sys
 import re
 
-from silk.utils import six
+from django.utils import six
 
 from silk.profiling.profiler import silk_profile
 

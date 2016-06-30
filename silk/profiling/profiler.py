@@ -6,7 +6,7 @@ import traceback
 from django.conf import settings
 from django.utils import timezone
 
-import silk.utils.six as six
+from django.utils import six
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
