@@ -1,7 +1,7 @@
 import json
 
 # noinspection PyUnresolvedReferences
-from silk.utils.six.moves.urllib.parse import urlencode
+from django.utils.six.moves.urllib.parse import urlencode
 
 import jinja2
 

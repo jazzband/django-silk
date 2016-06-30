@@ -6,9 +6,6 @@ from django.utils.decorators import available_attrs
 
 from silk.config import SilkyConfig
 
-# noinspection PyUnresolvedReferences
-from silk.utils.six.moves.urllib.parse import urlparse
-
 
 def login_possibly_required(function=None, **kwargs):
     if SilkyConfig().SILKY_AUTHENTICATION:
