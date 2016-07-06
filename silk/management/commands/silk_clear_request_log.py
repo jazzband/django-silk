@@ -8,9 +8,12 @@ class Command(BaseCommand):
 
     @staticmethod
     def delete_model(model):
-        count = model.objects.count()
-        print("deleting %s %s objects" % (model.__name__, count))
-        model.objects.all().delete()
+        while True:
+            items_to_delete = list(
+                model.objects.values_list('pk', flat=True).all()[:1000])
+            if not items_to_delete:
+                break
+            model.objects.filter(pk__in=items_to_delete).delete()
 
     def handle(self, *args, **options):
         # Django takes a long time to traverse foreign key relations,
