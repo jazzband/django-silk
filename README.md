@@ -22,6 +22,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
     * [Meta-Profiling](#meta-profiling)
     * [Recording a fraction of requests](#recording-a-fraction-of-requests)
     * [Clearing logged data](#clearing-logged-data)
+* [Development](#development)
 
 ## Requirements
 
@@ -399,3 +400,32 @@ A management command will wipe out all logged data:
 ```bash
 python manage.py silk_clear_request_log
 ```
+
+### Development
+
+Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
+you can work on the project and on the `silk` module at the same time.
+
+In order to setup local development you should first instlal all the dependencies for the test `project`. From the
+root of the `project` directory:
+
+```bash
+pip install -r test-requirements.txt
+```
+
+You'll also need to install `silk`'s dependencies. From the root of the git repository:
+
+```bash
+pip install -r requirements.txt
+```
+
+At this point your virtual environment should have everything it needs to run both the sample `project` and 
+`silk` successfully.
+
+Now from the root of the sample `project` directory start the django server
+
+```bash
+python manage.py runserver
+```
+
+Happy profiling!
