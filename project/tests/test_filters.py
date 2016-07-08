@@ -21,7 +21,6 @@ from silk.request_filters import (
     OverallTimeFilter,
 )
 from .test_lib.mock_suite import MockSuite
-from .util import delete_all_models
 
 mock_suite = MockSuite()
 
@@ -157,7 +156,7 @@ class TestRequestBeforeDateFilter(TestCase):
 
 class TestProfileFilters(TestCase):
     def setUp(self):
-        delete_all_models(models.Profile)
+        models.Profile.objects.all().delete()
 
     def test_name_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
