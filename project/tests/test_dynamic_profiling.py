@@ -1,6 +1,6 @@
 from django.test import TestCase
 from mock import patch
-import silk.utils.six as six
+import six
 
 import silk
 from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
