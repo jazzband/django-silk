@@ -4,6 +4,7 @@ from mock import NonCallableMock
 from silk.collector import DataCollector
 from silk.middleware import SilkyMiddleware
 
+from .util import delete_all_models
 from silk.config import SilkyConfig
 from silk.models import Request
 
@@ -19,7 +20,7 @@ class TestConfigMeta(TestCase):
         return response
 
     def _execute_request(self):
-        Request.objects.all().delete()
+        delete_all_models(Request)
         DataCollector().configure(Request.objects.create())
         response = self._mock_response()
         SilkyMiddleware()._process_response('', response)
