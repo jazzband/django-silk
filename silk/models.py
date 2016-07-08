@@ -4,7 +4,7 @@ import base64
 
 from django.db import models
 from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
-    ManyToManyField, OneToOneField, FloatField
+    ManyToManyField, OneToOneField, FloatField, FileField
 from django.utils import timezone
 from django.db import transaction
 from uuid import uuid4
@@ -59,6 +59,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
+    prof_file = FileField(null=True)
 
     @property
     def total_meta_time(self):

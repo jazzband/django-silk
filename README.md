@@ -141,6 +141,14 @@ Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile prof
 SILKY_PYTHON_PROFILER = True
 ```
 
+If you'd like to also generate a binary `.prof` file that works with `snakeviz` or other cProfile tools set the following:
+
+```python
+SILKY_PYTHON_PROFILER_BINARY = True
+```
+
+A download button will become available with a binary `.prof` file for every request.
+
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
 manager for this purpose.
 
