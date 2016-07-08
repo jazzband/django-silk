@@ -404,9 +404,9 @@ python manage.py silk_clear_request_log
 ## Development
 
 Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
-you can work on the project and on the `silk` module at the same time.
+you can work on the sample `project` and on the `silk` package at the same time.
 
-In order to setup local development you should first instlal all the dependencies for the test `project`. From the
+In order to setup local development you should first install all the dependencies for the test `project`. From the
 root of the `project` directory:
 
 ```bash
