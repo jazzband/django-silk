@@ -7,8 +7,9 @@ import json
 import unittest
 import subprocess
 
-from .util import PORT, construct_echo_process
-
+# .util has disappeared so let's comment out the import for
+# now since nothing is using it and it's breaking the build
+# from .util import PORT, construct_echo_process
 
 
 # noinspection PyUnresolvedReferences
