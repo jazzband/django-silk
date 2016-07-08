@@ -401,7 +401,7 @@ A management command will wipe out all logged data:
 python manage.py silk_clear_request_log
 ```
 
-### Development
+## Development
 
 Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
 you can work on the project and on the `silk` module at the same time.
