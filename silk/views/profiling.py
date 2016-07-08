@@ -9,7 +9,6 @@ from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import Profile, Request
-from silk.profiling.dynamic import _get_module
 from silk.request_filters import BaseFilter, filters_from_request
 
 
@@ -125,7 +124,6 @@ class ProfilingView(View):
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
-
     def get(self, request, *args, **kwargs):
         return render(request, 'silk/profiling.html', self._create_context(request, *args, **kwargs))
 
