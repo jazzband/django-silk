@@ -39,4 +39,4 @@ class RequestView(View):
                           content_type=silk_request.content_type),
             'request': request
         }
-        return render('silk/request.html', context)
+        return render(request, 'silk/request.html', context)

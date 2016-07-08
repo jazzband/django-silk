@@ -23,7 +23,7 @@ class Raw(View):
             elif typ == 'response':
                 Logger.debug(silk_request.response.raw_body_decoded)
                 body = silk_request.response.raw_body_decoded if subtyp == 'raw' else silk_request.response.body
-            return render('silk/raw.html', {
+            return render(request, 'silk/raw.html', {
                 'body': body
             })
         else:
