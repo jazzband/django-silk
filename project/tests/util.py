@@ -11,6 +11,7 @@ def mock_data_collector():
     mock.request = r
     return mock
 
+
 def delete_all_models(model_class):
     """
     A sqlite3-safe deletion function to avoid "django.db.utils.OperationalError: too many SQL variables"
