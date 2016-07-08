@@ -57,6 +57,7 @@ dist
 *db.sqlite*
 /django_silky/media
 *.prof
+project/media/*
 
 # Vagrant
 .vagrant
