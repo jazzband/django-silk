@@ -127,11 +127,11 @@ class ProfilingView(View):
     @method_decorator(permissions_possibly_required)
 
     def get(self, request, *args, **kwargs):
-        return render('silk/profiling.html', self._create_context(request, *args, **kwargs))
+        return render(request, 'silk/profiling.html', self._create_context(request, *args, **kwargs))
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
         request.session[self.session_key_profile_filters] = {ident: f.as_dict() for ident, f in filters.items()}
-        return render('silk/profiling.html', self._create_context(request))
+        return render(request, 'silk/profiling.html', self._create_context(request))

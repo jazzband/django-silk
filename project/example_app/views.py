@@ -13,4 +13,4 @@ def index(request):
 
     with silk_profile(name='Why do this take so long?'):
         do_something_long()
-    return render('example_app/index.html', {'blinds': models.Blind.objects.all()})
+    return render(request, 'example_app/index.html', {'blinds': models.Blind.objects.all()})
