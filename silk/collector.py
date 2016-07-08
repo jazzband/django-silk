@@ -145,7 +145,7 @@ class DataCollector(with_metaclass(Singleton, object)):
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
                 file_name = "{}.prof".format(self.request.id)
-                with open(file_name, 'w+') as f:
+                with open(file_name, 'w+b') as f:
                     ps.dump_stats(f.name)
                     self.request.prof_file.save(f.name, File(f))
 
