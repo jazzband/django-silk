@@ -5,7 +5,7 @@ import traceback
 import base64
 from uuid import UUID
 
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, Resolver404
 
 from silk import models
 from silk.collector import DataCollector
@@ -155,20 +155,30 @@ class RequestModelFactory(object):
             encoded_query_params = json.dumps(query_params_dict)
         return encoded_query_params
 
-    def construct_request_model(self):
-        body, raw_body = self.body()
-        query_params = self.query_params()
-        path = self.request.path
-        resolved = resolve(path)
+    def view_name(self):
+        try:
+            resolved = resolve(self.request.path)
+        except Resolver404:
+            return None
+
         try:
             # view_name is set in Django >= 1.8
-            view_name = resolved.view_name
+            return resolved.view_name
         except AttributeError:
             # support for Django 1.6 and 1.7 in which no view_name is set
             view_name = resolved.url_name
             namespace = resolved.namespace
             if namespace:
                 view_name = namespace + ':' + view_name
+
+            return view_name
+
+    def construct_request_model(self):
+        body, raw_body = self.body()
+        query_params = self.query_params()
+        path = self.request.path
+        view_name = self.view_name()
+
         request_model = models.Request.objects.create(
             path=path,
             encoded_headers=self.encoded_headers(),

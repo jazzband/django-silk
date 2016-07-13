@@ -85,18 +85,19 @@ class SilkyMiddleware(object):
 
     @silk_meta_profiler()
     def process_request(self, request):
-        request_model = None
-        if _should_intercept(request):
-            Logger.debug('process_request')
-            request.silk_is_intercepted = True
-            self._apply_dynamic_mappings()
-            if not hasattr(SQLCompiler, '_execute_sql'):
-                SQLCompiler._execute_sql = SQLCompiler.execute_sql
-                SQLCompiler.execute_sql = execute_sql
-            request_model = RequestModelFactory(request).construct_request_model()
-            DataCollector().configure(request_model)
-        else:
-            DataCollector().clear()
+        DataCollector().clear()
+
+        if not _should_intercept(request):
+            return
+
+        Logger.debug('process_request')
+        request.silk_is_intercepted = True
+        self._apply_dynamic_mappings()
+        if not hasattr(SQLCompiler, '_execute_sql'):
+            SQLCompiler._execute_sql = SQLCompiler.execute_sql
+            SQLCompiler.execute_sql = execute_sql
+        request_model = RequestModelFactory(request).construct_request_model()
+        DataCollector().configure(request_model)
 
     @transaction.atomic()
     def _process_response(self, request, response):
