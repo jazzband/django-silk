@@ -1,5 +1,5 @@
 include LICENSE
-include README.rst
+include README*
 recursive-include silk/templates *
 recursive-include silk/static *
 recursive-include silk/code_generation/ *.py
