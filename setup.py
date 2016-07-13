@@ -1,16 +1,7 @@
 import os
 from setuptools import setup
 
-try:
-    from pypandoc import convert
-
-    def read_md(f): return convert(f, 'rst')
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
-
-    def read_md(f): return open(f, 'r').read()
-
-README = read_md('README.md')
+README = open('README.rst','r').read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
