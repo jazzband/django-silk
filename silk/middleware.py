@@ -15,7 +15,7 @@ from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.middleware')
 
 
 def silky_reverse(name, *args, **kwargs):

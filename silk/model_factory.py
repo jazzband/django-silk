@@ -11,7 +11,7 @@ from silk import models
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.model_factory')
 
 content_types_json = ['application/json',
                       'application/x-javascript',

@@ -8,7 +8,7 @@ from django.utils import six
 
 from silk.profiling.profiler import silk_profile
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.profiling.dynamic')
 
 
 def _get_module(module_name):

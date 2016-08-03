@@ -12,7 +12,7 @@ from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import _time_taken
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.profiling.profiler')
 
 
 # noinspection PyPep8Naming
