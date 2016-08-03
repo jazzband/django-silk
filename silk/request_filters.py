@@ -9,7 +9,7 @@ from django.utils import timezone
 from silk.profiling.dynamic import _get_module
 
 from silk.templatetags.silk_filters import _silk_date_time
-logger = logging.getLogger('silk')
+logger = logging.getLogger('silk.request_filters')
 
 
 class FilterValidationError(Exception):

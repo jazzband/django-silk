@@ -18,7 +18,7 @@ TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
 TYP_QUERIES = 'queries'
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.collector')
 
 
 def raise_middleware_error():
