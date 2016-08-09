@@ -212,7 +212,7 @@ class ResponseModelFactory(object):
                         Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, self.request.path, max_body_size))
                     else:
                         Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, self.request.path, max_body_size))
-            if content_type in content_types_json:
+            if content and content_type in content_types_json:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4)
