@@ -26,6 +26,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
+        'SILKY_PYTHON_PROFILER_RESULT_PATH': ''
     }
 
     def _setup(self):
