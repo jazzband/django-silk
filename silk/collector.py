@@ -1,5 +1,6 @@
 from threading import local
 
+import os.path
 import cProfile
 import pstats
 import logging
@@ -89,9 +90,13 @@ class DataCollector(with_metaclass(Singleton, object)):
         return self._get_objects('silk_queries')
 
     def configure(self, request=None):
+        silky_config = SilkyConfig()
+
         self.request = request
+        self.profiler_result_path = silky_config.SILKY_PYTHON_PROFILER_RESULT_PATH
         self._configure()
-        if SilkyConfig().SILKY_PYTHON_PROFILER:
+
+        if silky_config.SILKY_PYTHON_PROFILER:
             self.pythonprofiler = cProfile.Profile()
             self.pythonprofiler.enable()
 
@@ -144,7 +149,12 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = "{}.prof".format(self.request.id)
+                file_name = "{}.prof".format(
+                    os.path.join(
+                        self.profiler_result_path,
+                        str(self.request.id)
+                    )
+                )
                 with open(file_name, 'w+b') as f:
                     ps.dump_stats(f.name)
                     self.request.prof_file.save(f.name, File(f))
