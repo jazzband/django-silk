@@ -146,6 +146,11 @@ If you'd like to also generate a binary `.prof` file that works with `snakeviz` 
 ```python
 SILKY_PYTHON_PROFILER_BINARY = True
 ```
+You can specify where to store the generated binary `.prof` files to a path of your choosing.
+```python
+# Default path value is ''
+SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
+```
 
 A download button will become available with a binary `.prof` file for every request.
 
