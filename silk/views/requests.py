@@ -1,8 +1,8 @@
 try:
-    from django.core.context_processors import csrf
-except ImportError:
     # Django>=1.8
     from django.template.context_processors import csrf
+except ImportError:
+    from django.core.context_processors import csrf
 
 from django.db.models import Sum
 from django.shortcuts import render
