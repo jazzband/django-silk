@@ -58,9 +58,6 @@ class TestMiddleware(object):
 
 
 class SilkyMiddleware(object):
-    def __init__(self):
-        super(SilkyMiddleware, self).__init__()
-
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:
