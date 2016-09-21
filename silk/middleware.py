@@ -15,6 +15,13 @@ from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
 
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:  # Django < 1.10
+    # Works perfectly for everyone using MIDDLEWARE_CLASSES
+    MiddlewareMixin = object
+
+
 Logger = logging.getLogger('silk.middleware')
 
 
@@ -57,7 +64,7 @@ class TestMiddleware(object):
         return
 
 
-class SilkyMiddleware(object):
+class SilkyMiddleware(MiddlewareMixin):
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:
