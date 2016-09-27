@@ -134,7 +134,7 @@ class SilkyMiddleware(MiddlewareMixin):
                 try:
                     self._process_response(request, response)
                 except (AttributeError, OperationalError):
-                    print "Trying again"
+                    Logger.debug('Retrying _process_response')
                     self._process_response(request, response)
                 finally:
                     break
