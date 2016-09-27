@@ -1,6 +1,8 @@
 import logging
 import random
 
+from MySQLdb import OperationalError
+
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import transaction
 
@@ -128,5 +130,12 @@ class SilkyMiddleware(MiddlewareMixin):
 
     def process_response(self, request, response):
         if getattr(request, 'silk_is_intercepted', False):
-            self._process_response(request, response)
+            while True:
+                try:
+                    self._process_response(request, response)
+                except (AttributeError, OperationalError):
+                    print "Trying again"
+                    self._process_response(request, response)
+                finally:
+                    break
         return response
