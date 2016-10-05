@@ -47,6 +47,5 @@ setup(
         'Jinja2',
         'autopep8',
         'pytz',
-        'mysqlclient'
     ]
 )

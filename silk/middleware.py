@@ -1,10 +1,8 @@
 import logging
 import random
 
-from MySQLdb import OperationalError
-
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.db import transaction
+from django.db import transaction, DatabaseError
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
@@ -133,7 +131,7 @@ class SilkyMiddleware(MiddlewareMixin):
             while True:
                 try:
                     self._process_response(request, response)
-                except (AttributeError, OperationalError):
+                except (AttributeError, DatabaseError):
                     Logger.debug('Retrying _process_response')
                     self._process_response(request, response)
                 finally:
