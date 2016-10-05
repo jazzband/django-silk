@@ -52,7 +52,7 @@ class TestByteStringCompatForResponse(TestCase):
             mock = Mock()
             mock._headers = {HTTP_CONTENT_TYPE: 'application/json;'}
             d = {'k': 'v'}
-            mock.content = bytes(json.dumps(d), 'utf-8')
+            mock.content = bytes(json.dumps(d))
             mock.get = mock._headers.get
             factory = ResponseModelFactory(mock)
             body, content = factory.body()
@@ -66,7 +66,7 @@ class TestByteStringCompatForResponse(TestCase):
             mock = Mock()
             mock._headers = {HTTP_CONTENT_TYPE: 'application/json;'}
             d = {'k': 'v'}
-            mock.content = str(json.dumps(d), 'utf-8')
+            mock.content = str(json.dumps(d))
             mock.get = mock._headers.get
             factory = ResponseModelFactory(mock)
             body, content = factory.body()
@@ -84,7 +84,7 @@ class TestByteStringCompatForResponse(TestCase):
             mock.get = mock._headers.get
             factory = ResponseModelFactory(mock)
             body, content = factory.body()
-            self.assertDictEqual(json.loads(body), d)
+            self.assertDictEqual(json.loads(body), json.loads(d))
 
     # Testing invalid json throws exceptions within the test
     # def test_python2_invalid_content_compat(self):
