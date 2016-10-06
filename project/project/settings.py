@@ -34,9 +34,13 @@ MIDDLEWARE_CLASSES = (
 
 WSGI_APPLICATION = 'wsgi.application'
 
+DB = os.environ['DB']
+if DB == 'postgres':
+    DB = 'postgresql_psycopg2'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.' + os.environ['DB'],
+        'ENGINE': 'django.db.backends.' + DB,
         'NAME': os.environ['DB_NAME']
     }
 }
