@@ -34,12 +34,14 @@ MIDDLEWARE_CLASSES = (
 
 WSGI_APPLICATION = 'wsgi.application'
 
-DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
+DB = os.environ['DB']
+if DB == 'postgresql':
+    DB = 'postgresql_psycopg2'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_NAME
+        'ENGINE': 'django.db.backends.' + DB,
+        'NAME': os.environ['DB_NAME']
     }
 }
 
