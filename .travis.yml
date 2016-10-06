@@ -43,7 +43,7 @@ install:
     - if [[ "$DB" = "postgresql" ]]; then psql -c 'create database travis_ci_test;' -U postgres; fi
 
     # Handle MySQL
-    - if [[ "$DB" = "mysql" ]]; then pip install mysql-python; fi
+    - if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
     - if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
 
 script:
