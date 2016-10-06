@@ -35,7 +35,7 @@ MIDDLEWARE_CLASSES = (
 WSGI_APPLICATION = 'wsgi.application'
 
 DB = os.environ['DB']
-if DB == 'postgres':
+if DB == 'postgresql':
     DB = 'postgresql_psycopg2'
 
 DATABASES = {
