@@ -34,12 +34,10 @@ MIDDLEWARE_CLASSES = (
 
 WSGI_APPLICATION = 'wsgi.application'
 
-DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_NAME
+        'ENGINE': 'django.db.backends.' + os.environ['DB'],
+        'NAME': os.environ['DB_NAME']
     }
 }
 
