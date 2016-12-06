@@ -26,7 +26,6 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
-        'SILKY_PYTHON_PROFILER_RESULT_PATH': ''
     }
 
     def _setup(self):
@@ -34,6 +33,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
 
         options = {option: getattr(settings, option) for option in dir(settings) if option.startswith('SILKY')}
         self.attrs = copy(self.defaults)
+        self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
         self.attrs.update(options)
 
     def __init__(self):

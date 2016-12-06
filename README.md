@@ -146,9 +146,9 @@ If you'd like to also generate a binary `.prof` file that works with `snakeviz` 
 ```python
 SILKY_PYTHON_PROFILER_BINARY = True
 ```
-You can specify where to store the generated binary `.prof` files to a path of your choosing.
+You can specify where to store the generated binary `.prof` files to a path of your choosing. You must ensure the specified directory exists.
 ```python
-# Default path value is ''
+# If this is not set, MEDIA_ROOT will be used.
 SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ```
 
