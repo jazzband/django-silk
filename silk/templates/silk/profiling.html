@@ -257,7 +257,7 @@
         <div class="container">
             <h2>Python Profiler</h2>
             {% if silk_request.prof_file %}
-            <a href="{{ silk_request.prof_file.url }}" style="float:right;"><button>Download Binary cProfile Data</button></a>
+            <a href="{% url "silk:request_profile_download" request_id=silk_request.pk %}" style="float:right;"><button>Download Binary cProfile Data</button></a>
             {% endif %}
             <div class="description">The below is a dump from the cPython profiler.</div>
             <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
