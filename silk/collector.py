@@ -1,12 +1,10 @@
 from threading import local
 
-import os.path
 import cProfile
 import pstats
 import logging
 
 from django.utils.six import StringIO, with_metaclass
-from django.core.files import File
 
 from silk import models
 from silk.config import SilkyConfig
@@ -93,7 +91,6 @@ class DataCollector(with_metaclass(Singleton, object)):
         silky_config = SilkyConfig()
 
         self.request = request
-        self.profiler_result_path = silky_config.SILKY_PYTHON_PROFILER_RESULT_PATH
         self._configure()
 
         if silky_config.SILKY_PYTHON_PROFILER:
@@ -149,15 +146,11 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = "{}.prof".format(
-                    os.path.join(
-                        self.profiler_result_path,
-                        str(self.request.id)
-                    )
-                )
-                with open(file_name, 'w+b') as f:
+                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
                     ps.dump_stats(f.name)
-                    self.request.prof_file.save(f.name, File(f))
+                self.request.prof_file = f.name
+                self.request.save()
 
         for _, query in self.queries.items():
             query_model = models.SQLQuery.objects.create(**query)
