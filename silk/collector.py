@@ -58,6 +58,7 @@ class DataCollector(with_metaclass(Singleton, object)):
     def _configure(self):
         self.local.objects = {}
         self.local.temp_identifier = 0
+        self.local.pythonprofiler = None
 
     @property
     def objects(self):
@@ -94,8 +95,8 @@ class DataCollector(with_metaclass(Singleton, object)):
         self._configure()
 
         if silky_config.SILKY_PYTHON_PROFILER:
-            self.pythonprofiler = cProfile.Profile()
-            self.pythonprofiler.enable()
+            self.local.pythonprofiler = cProfile.Profile()
+            self.local.pythonprofiler.enable()
 
     def clear(self):
         self.request = None
@@ -132,13 +133,13 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.save()
 
     def stop_python_profiler(self):
-        if hasattr(self, 'pythonprofiler'):
-            self.pythonprofiler.disable()
+        if hasattr(self.local, 'pythonprofiler'):
+            self.local.pythonprofiler.disable()
 
     def finalise(self):
-        if hasattr(self, 'pythonprofiler'):
+        if hasattr(self.local, 'pythonprofiler'):
             s = StringIO()
-            ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
+            ps = pstats.Stats(self.local.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
             profile_text = "\n".join(
