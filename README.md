@@ -43,6 +43,14 @@ pip install django-silk
 In `settings.py` add the following:
 
 ```python
+# Django >= 1.10
+MIDDLEWARE = [
+    ...
+    'silk.middleware.SilkyMiddleware',
+    ...
+]
+
+# Django <= 1.9
 MIDDLEWARE_CLASSES = (
     ...
     'silk.middleware.SilkyMiddleware',
