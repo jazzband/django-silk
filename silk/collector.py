@@ -133,11 +133,11 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.save()
 
     def stop_python_profiler(self):
-        if hasattr(self.local, 'pythonprofiler'):
+        if getattr(self.local, 'pythonprofiler', None):
             self.local.pythonprofiler.disable()
 
     def finalise(self):
-        if hasattr(self.local, 'pythonprofiler'):
+        if getattr(self.local, 'pythonprofiler', None):
             s = StringIO()
             ps = pstats.Stats(self.local.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
