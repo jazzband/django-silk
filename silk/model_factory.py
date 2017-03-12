@@ -117,7 +117,10 @@ class RequestModelFactory(object):
                 except UnicodeDecodeError:
                     raw_body = ''
             except Exception as e:
-                Logger.error('Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
+                Logger.error(
+                    'Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:'
+                    % (char_set, e)
+                )
                 traceback.print_exc()
         else:
             # Default to an attempt at UTF-8 decoding.
@@ -135,12 +138,21 @@ class RequestModelFactory(object):
                 size = sys.getsizeof(raw_body, default=None)
                 request_identifier = self.request.path
                 if not size:
-                    Logger.error('No way in which to get size of request body for %s, will ignore it', request_identifier)
+                    Logger.error(
+                        'No way in which to get size of request body for %s, will ignore it',
+                        request_identifier
+                    )
                 elif size <= max_size:
-                    Logger.debug('Request %s has body of size %d which is less than %d so will save the body' % (request_identifier, size, max_size))
+                    Logger.debug(
+                        'Request %s has body of size %d which is less than %d so will save the body'
+                        % (request_identifier, size, max_size)
+                    )
                     body = self._body(raw_body, content_type)
                 else:
-                    Logger.debug('Request %s has body of size %d which is greater than %d, therefore ignoring' % (request_identifier, size, max_size))
+                    Logger.debug(
+                        'Request %s has body of size %d which is greater than %d, therefore ignoring'
+                        % (request_identifier, size, max_size)
+                    )
                     raw_body = None
             else:
                 Logger.debug('No maximum request body size is set, continuing.')
@@ -219,23 +231,36 @@ class ResponseModelFactory(object):
                 else:
                     if size > max_body_size:
                         content = ''
-                        Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, self.request.path, max_body_size))
+                        Logger.debug(
+                            'Size of %d for %s is bigger than %d so ignoring response body'
+                            % (size, self.request.path, max_body_size)
+                        )
                     else:
-                        Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, self.request.path, max_body_size))
+                        Logger.debug(
+                            'Size of %d for %s is less than %d so saving response body'
+                            % (size, self.request.path, max_body_size)
+                        )
             if content and content_type in content_types_json:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
                 if not isinstance(content, str):
-                    # byte string is not compatible with json.loads(...) and json.dumps(...) in python3
+                    # byte string is not compatible with json.loads(...)
+                    # and json.dumps(...) in python3
                     content = content.decode()
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4)
                 except (TypeError, ValueError):
-                    Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (self.request.pk, content_type))
+                    Logger.warn(
+                        'Response to request with pk %s has content type %s but was unable to parse it'
+                        % (self.request.pk, content_type)
+                    )
         return body, content
 
     def construct_response_model(self):
         assert self.request, 'Cant construct a response model if there is no request model'
-        Logger.debug('Creating response model for request model with pk %s' % self.request.pk)
+        Logger.debug(
+            'Creating response model for request model with pk %s'
+            % self.request.pk
+        )
         b, content = self.body()
         raw_headers = self.response._headers
         headers = {}
@@ -246,10 +271,12 @@ class ResponseModelFactory(object):
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(request_id=self.request.id,
-                                                        status_code=self.response.status_code,
-                                                        encoded_headers=json.dumps(headers),
-                                                        body=b)
+        silky_response = models.Response.objects.create(
+            request_id=self.request.id,
+            status_code=self.response.status_code,
+            encoded_headers=json.dumps(headers),
+            body=b
+        )
 
         try:
             silky_response.raw_body = base64.b64encode(content)
