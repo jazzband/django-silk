@@ -257,7 +257,10 @@ class ResponseModelFactory(object):
 
     def construct_response_model(self):
         assert self.request, 'Cant construct a response model if there is no request model'
-        Logger.debug('Creating response model for request model with pk %s' % self.request.pk)
+        Logger.debug(
+            'Creating response model for request model with pk %s'
+            % self.request.pk
+        )
         b, content = self.body()
         raw_headers = self.response._headers
         headers = {}
