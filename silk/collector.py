@@ -28,9 +28,9 @@ def raise_middleware_error():
 
 class DataCollector(with_metaclass(Singleton, object)):
     """
-    Provides the ability to save all models at the end of the request. We cannot save during
-    the request due to the possibility of atomic blocks and hence must collect data and perform
-    the save at the end.
+    Provides the ability to save all models at the end of the request. We
+    cannot save during the request due to the possibility of atomic blocks
+    and hence must collect data and perform the save at the end.
     """
 
     def __init__(self):
@@ -75,7 +75,9 @@ class DataCollector(with_metaclass(Singleton, object)):
     def _get_objects(self, typ):
         objects = self.objects
         if objects is None:
-            self._raise_not_configured('Attempt to access %s without initialisation.' % typ)
+            self._raise_not_configured(
+                'Attempt to access %s without initialisation.' % typ
+            )
         if not typ in objects:
             objects[typ] = {}
         return objects[typ]
@@ -111,9 +113,12 @@ class DataCollector(with_metaclass(Singleton, object)):
             ident = self.get_identifier()
             objects = self.objects
             if objects is None:
-                # This can happen if the SilkyMiddleware.process_request is not called for whatever reason.
-                # Perhaps if another piece of middleware is not playing ball.
-                self._raise_not_configured('Attempt to register object of type %s without initialisation. ')
+                # This can happen if the SilkyMiddleware.process_request is not
+                # called for whatever reason. Perhaps if another piece of
+                # middleware is not playing ball.
+                self._raise_not_configured(
+                    'Attempt to register object of type %s without initialisation. '
+                )
             if not typ in objects:
                 self.objects[typ] = {}
             self.objects[typ][ident] = arg
@@ -167,12 +172,16 @@ class DataCollector(with_metaclass(Singleton, object)):
                         try:
                             profile_query_models.append(query['model'])
                         except KeyError:
-                            raise SilkInternalInconsistency('Profile references a query dictionary that has not '
-                                                            'been converted into a Django model. This should '
-                                                            'never happen, please file a bug report')
+                            raise SilkInternalInconsistency(
+                                'Profile references a query dictionary that has not '
+                                'been converted into a Django model. This should '
+                                'never happen, please file a bug report'
+                            )
                     except KeyError:
-                        raise SilkInternalInconsistency('Profile references a query temp_id that does not exist. '
-                                                        'This should never happen, please file a bug report')
+                        raise SilkInternalInconsistency(
+                            'Profile references a query temp_id that does not exist. '
+                            'This should never happen, please file a bug report'
+                        )
             profile = models.Profile.objects.create(**profile)
             if profile_query_models:
                 profile.queries = profile_query_models
