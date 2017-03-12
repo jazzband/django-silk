@@ -116,9 +116,11 @@ class SilkyMiddleware(MiddlewareMixin):
                 silk_request.end_time = timezone.now()
                 collector.finalise()
             else:
-                Logger.error('No request model was available when processing response. '
-                             'Did something go wrong in process_request/process_view?'
-                             '\n' + str(request) + '\n\n' + str(response))
+                Logger.error(
+                    'No request model was available when processing response. '
+                    'Did something go wrong in process_request/process_view?'
+                    '\n' + str(request) + '\n\n' + str(response)
+                )
         # Need to save the data outside the silk_meta_profiler
         # Otherwise the  meta time collected in the context manager
         # is not taken in account
