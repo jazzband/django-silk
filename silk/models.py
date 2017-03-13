@@ -61,14 +61,14 @@ class ProfilerResultStorage(FileSystemStorage):
 
 class Request(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
-    path = CharField(max_length=300, db_index=True)
+    path = CharField(max_length=190, db_index=True)
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now, db_index=True)
     view_name = CharField(
-        max_length=300, db_index=True, blank=True,
+        max_length=190, db_index=True, blank=True,
         default='', null=True
     )
     end_time = DateTimeField(null=True, blank=True)
