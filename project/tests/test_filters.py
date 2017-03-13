@@ -1,18 +1,27 @@
 import calendar
+import random
 from datetime import timedelta, datetime
 from math import floor
-import random
 
-from django.utils import timezone
-from django.test import TestCase
 import pytz
+from django.test import TestCase
+from django.utils import timezone
 
 from silk import models
-from silk.request_filters import SecondsFilter, AfterDateFilter, BeforeDateFilter, ViewNameFilter, PathFilter, NameFilter, FunctionNameFilter, NumQueriesFilter, TimeSpentOnQueriesFilter, \
-    OverallTimeFilter
+from silk.request_filters import (
+    SecondsFilter,
+    AfterDateFilter,
+    BeforeDateFilter,
+    ViewNameFilter,
+    PathFilter,
+    NameFilter,
+    FunctionNameFilter,
+    NumQueriesFilter,
+    TimeSpentOnQueriesFilter,
+    OverallTimeFilter,
+)
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
-
 
 mock_suite = MockSuite()
 
@@ -42,16 +51,16 @@ class TestRequestFilters(TestCase):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         r = random.choice(requests)
         view_name = r.view_name
-        requuests = models.Request.objects.filter(ViewNameFilter(view_name))
-        for r in requuests:
+        requests = models.Request.objects.filter(ViewNameFilter(view_name))
+        for r in requests:
             self.assertTrue(r.view_name == view_name)
 
     def test_path_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         r = random.choice(requests)
         path = r.path
-        requuests = models.Request.objects.filter(PathFilter(path))
-        for r in requuests:
+        requests = models.Request.objects.filter(PathFilter(path))
+        for r in requests:
             self.assertTrue(r.path == path)
 
     def test_num_queries_filter(self):
@@ -90,8 +99,8 @@ class TestRequestFilters(TestCase):
 
 class TestRequestAfterDateFilter(TestCase):
     def assertFilter(self, dt, f):
-        requuests = models.Request.objects.filter(f)
-        for r in requuests:
+        requests = models.Request.objects.filter(f)
+        for r in requests:
             self.assertTrue(r.start_time > dt)
 
     @classmethod
@@ -119,8 +128,8 @@ class TestRequestAfterDateFilter(TestCase):
 
 class TestRequestBeforeDateFilter(TestCase):
     def assertFilter(self, dt, f):
-        requuests = models.Request.objects.filter(f)
-        for r in requuests:
+        requests = models.Request.objects.filter(f)
+        for r in requests:
             self.assertTrue(r.start_time < dt)
 
     @classmethod
@@ -154,16 +163,16 @@ class TestProfileFilters(TestCase):
         profiles = mock_suite.mock_profiles(n=10)
         p = random.choice(profiles)
         name = p.name
-        requuests = models.Profile.objects.filter(NameFilter(name))
-        for p in requuests:
+        requests = models.Profile.objects.filter(NameFilter(name))
+        for p in requests:
             self.assertTrue(p.name == name)
 
     def test_function_name_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
         p = random.choice(profiles)
         func_name = p.func_name
-        requuests = models.Profile.objects.filter(FunctionNameFilter(func_name))
-        for p in requuests:
+        requests = models.Profile.objects.filter(FunctionNameFilter(func_name))
+        for p in requests:
             self.assertTrue(p.func_name == func_name)
 
     def test_num_queries_filter(self):

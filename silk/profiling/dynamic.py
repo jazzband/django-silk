@@ -4,12 +4,11 @@ import logging
 import sys
 import re
 
-from silk.utils import six
+from django.utils import six
 
 from silk.profiling.profiler import silk_profile
 
-
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.profiling.dynamic')
 
 
 def _get_module(module_name):
@@ -219,5 +218,3 @@ def inject_context_manager_func(module, func, start_line, end_line, name):
         setattr(cls, func_name, new_func)
     else:
         setattr(module, func_name, new_func)
-
-

@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -10,7 +10,7 @@ class ProfilingDetailView(View):
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
-    def get(self, request,  *_, **kwargs):
+    def get(self, request, *_, **kwargs):
         profile_id = kwargs['profile_id']
         silk_request_id = kwargs.get('request_id', None)
         context = {
@@ -36,4 +36,4 @@ class ProfilingDetailView(View):
                 else:
                     raise e
 
-        return render_to_response('silk/profile_detail.html', context)
+        return render(request, 'silk/profile_detail.html', context)

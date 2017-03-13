@@ -1,15 +1,23 @@
 import os
 from setuptools import setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme_file:
-    README = readme_file.read()
+try:
+    from pypandoc import convert
+
+    def read_md(f): return convert(f, 'rst')
+except ImportError:
+    print("warning: pypandoc module not found, could not convert Markdown to RST")
+
+    def read_md(f): return open(f, 'r').read()
+
+README = read_md('README.md')
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-silk',
-    version='0.5.6',
+    version='0.7.3',
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
@@ -25,20 +33,19 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires= [
         'Django',
         'Pygments',
-        'simplejson',
         'python-dateutil',
         'requests',
         'sqlparse',
         'Jinja2',
         'autopep8',
-        'pytz'
+        'pytz',
     ]
 )

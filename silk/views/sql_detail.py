@@ -1,7 +1,7 @@
 import re
 from django.core.exceptions import PermissionDenied
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
@@ -35,7 +35,7 @@ def _code_context(file_path, line_num):
 class SQLDetailView(View):
     def _urlify(self, str):
         files = []
-        r = re.compile("(?P<src>/.*\.py)\", line (?P<num>[0-9]+).*")
+        r = re.compile('"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
         m = r.search(str)
         n = 1
         while m:
@@ -84,4 +84,4 @@ class SQLDetailView(View):
             actual_line, code = _code(file_path, line_num)
             context['code'] = code
             context['actual_line'] = actual_line
-        return render_to_response('silk/sql_detail.html', context)
+        return render(request, 'silk/sql_detail.html', context)

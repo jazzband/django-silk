@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
-
 register = Library()
 
 
@@ -27,7 +26,7 @@ def spacify(value, autoescape=None):
 
 
 def _urlify(str):
-    r = re.compile("(?P<src>/.*\.py)\", line (?P<num>[0-9]+).*")
+    r = re.compile('"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
     m = r.search(str)
     while m:
         group = m.groupdict()
@@ -52,7 +51,6 @@ def _process_microseconds(dt_strftime):
     time = '.'.join(splt[0:-1])
     micro = '%.3f' % float('0.' + micro)
     return time + micro[1:]
-
 
 
 def _silk_date_time(dt):
@@ -87,7 +85,6 @@ def body_filter(value):
         return 'Too big!'
     else:
         return value
-
 
 spacify.needs_autoescape = True
 filepath_urlify.needs_autoescape = True

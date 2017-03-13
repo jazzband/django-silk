@@ -152,13 +152,15 @@
             {% endif %}
             {% if silk_request.response.raw_body %}
                 {% heading 'Raw Response Body' %}
-                {% if silk_request.response.raw_body|length > 1000 %}
-                    The raw response body is <b>{{ silk_request.response.raw_body|length }}</b> characters long
-                    and hence is <b>too big</b> to show here.
-                    Click <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=raw">here</a> to view the raw response body.
-                {% else %}
-                    <pre>{{ silk_request.response.raw_body }}</pre>
-                {% endif %}
+                {% with raw_body=silk_request.response.raw_body_decoded %}
+                    {% if raw_body|length > 1000 %}
+                        The raw response body is <b>{{ raw_body|length }}</b> characters long
+                        and hence is <b>too big</b> to show here.
+                        Click <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=raw">here</a> to view the raw response body.
+                    {% else %}
+                        <pre>{{ raw_body }}</pre>
+                    {% endif %}
+                {% endwith %}
             {% endif %}
             {% if silk_request.response.body %}
                 {% heading 'Response Body' %}
@@ -176,7 +178,7 @@
             {% if curl %}
                 {% heading 'Curl' %}
                 <div class="description">
-                    Curl is a command-line utility for transfering data from servers. Paste the following into
+                    Curl is a command-line utility for transferring data from servers. Paste the following into
                     a terminal to repeat this request via command line.
                 </div>
                 <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>

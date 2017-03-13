@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
@@ -21,7 +21,8 @@ class SQLView(View):
         if request_id:
             silk_request = Request.objects.get(id=request_id)
             query_set = SQLQuery.objects.filter(request=silk_request).order_by('-start_time')
-            for q in query_set: q.start_time_relative = q.start_time - silk_request.start_time
+            for q in query_set:
+                q.start_time_relative = q.start_time - silk_request.start_time
             page = _page(request, query_set)
             context['silk_request'] = silk_request
         if profile_id:
@@ -32,4 +33,4 @@ class SQLView(View):
             raise KeyError('no profile_id or request_id')
         # noinspection PyUnboundLocalVariable
         context['items'] = page
-        return render_to_response('silk/sql.html', context)
+        return render(request, 'silk/sql.html', context)

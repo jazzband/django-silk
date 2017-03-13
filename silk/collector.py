@@ -1,11 +1,10 @@
-import contextlib
 from threading import local
 
-import cProfile, pstats
+import cProfile
+import pstats
 import logging
 
-from silk.utils.six import StringIO
-from silk.utils.six import with_metaclass
+from django.utils.six import StringIO, with_metaclass
 
 from silk import models
 from silk.config import SilkyConfig
@@ -17,7 +16,7 @@ TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
 TYP_QUERIES = 'queries'
 
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.collector')
 
 
 def raise_middleware_error():
@@ -29,9 +28,9 @@ def raise_middleware_error():
 
 class DataCollector(with_metaclass(Singleton, object)):
     """
-    Provides the ability to save all models at the end of the request. We cannot save during
-    the request due to the possibility of atomic blocks and hence must collect data and perform
-    the save at the end.
+    Provides the ability to save all models at the end of the request. We
+    cannot save during the request due to the possibility of atomic blocks
+    and hence must collect data and perform the save at the end.
     """
 
     def __init__(self):
@@ -59,6 +58,7 @@ class DataCollector(with_metaclass(Singleton, object)):
     def _configure(self):
         self.local.objects = {}
         self.local.temp_identifier = 0
+        self.local.pythonprofiler = None
 
     @property
     def objects(self):
@@ -75,7 +75,9 @@ class DataCollector(with_metaclass(Singleton, object)):
     def _get_objects(self, typ):
         objects = self.objects
         if objects is None:
-            self._raise_not_configured('Attempt to access %s without initialisation.' % typ)
+            self._raise_not_configured(
+                'Attempt to access %s without initialisation.' % typ
+            )
         if not typ in objects:
             objects[typ] = {}
         return objects[typ]
@@ -89,11 +91,14 @@ class DataCollector(with_metaclass(Singleton, object)):
         return self._get_objects('silk_queries')
 
     def configure(self, request=None):
+        silky_config = SilkyConfig()
+
         self.request = request
         self._configure()
-        if SilkyConfig().SILKY_PYTHON_PROFILER:
-            self.pythonprofiler = cProfile.Profile()
-            self.pythonprofiler.enable()
+
+        if silky_config.SILKY_PYTHON_PROFILER:
+            self.local.pythonprofiler = cProfile.Profile()
+            self.local.pythonprofiler.enable()
 
     def clear(self):
         self.request = None
@@ -108,9 +113,12 @@ class DataCollector(with_metaclass(Singleton, object)):
             ident = self.get_identifier()
             objects = self.objects
             if objects is None:
-                # This can happen if the SilkyMiddleware.process_request is not called for whatever reason.
-                # Perhaps if another piece of middleware is not playing ball.
-                self._raise_not_configured('Attempt to register object of type %s without initialisation. ')
+                # This can happen if the SilkyMiddleware.process_request is not
+                # called for whatever reason. Perhaps if another piece of
+                # middleware is not playing ball.
+                self._raise_not_configured(
+                    'Attempt to register object of type %s without initialisation. '
+                )
             if not typ in objects:
                 self.objects[typ] = {}
             self.objects[typ][ident] = arg
@@ -130,18 +138,25 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.save()
 
     def stop_python_profiler(self):
-        if hasattr(self, 'pythonprofiler'):
-            self.pythonprofiler.disable()
+        if getattr(self.local, 'pythonprofiler', None):
+            self.local.pythonprofiler.disable()
 
     def finalise(self):
-        if hasattr(self, 'pythonprofiler'):
+        if getattr(self.local, 'pythonprofiler', None):
             s = StringIO()
-            ps = pstats.Stats(self.pythonprofiler, stream=s).sort_stats('cumulative')
+            ps = pstats.Stats(self.local.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
             profile_text = "\n".join(
                 profile_text.split("\n")[0:256])  # don't record too much because it can overflow the field storage size
             self.request.pyprofile = profile_text
+
+            if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
+                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
+                    ps.dump_stats(f.name)
+                self.request.prof_file = f.name
+                self.request.save()
 
         for _, query in self.queries.items():
             query_model = models.SQLQuery.objects.create(**query)
@@ -157,12 +172,16 @@ class DataCollector(with_metaclass(Singleton, object)):
                         try:
                             profile_query_models.append(query['model'])
                         except KeyError:
-                            raise SilkInternalInconsistency('Profile references a query dictionary that has not '
-                                                            'been converted into a Django model. This should '
-                                                            'never happen, please file a bug report')
+                            raise SilkInternalInconsistency(
+                                'Profile references a query dictionary that has not '
+                                'been converted into a Django model. This should '
+                                'never happen, please file a bug report'
+                            )
                     except KeyError:
-                        raise SilkInternalInconsistency('Profile references a query temp_id that does not exist. '
-                                                        'This should never happen, please file a bug report')
+                        raise SilkInternalInconsistency(
+                            'Profile references a query temp_id that does not exist. '
+                            'This should never happen, please file a bug report'
+                        )
             profile = models.Profile.objects.create(**profile)
             if profile_query_models:
                 profile.queries = profile_query_models

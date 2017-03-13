@@ -1,9 +1,9 @@
 include LICENSE
-include README.rst
+include README*
 recursive-include silk/templates *
 recursive-include silk/static *
-recursive-include silk/code_generation/ *.py
-recursive-include silk/profiling/ *.py
-recursive-include silk/utils/ *.py
-recursive-include silk/views/ *.py
+recursive-include silk/code_generation *.py
+recursive-include silk/profiling *.py
+recursive-include silk/utils *.py
+recursive-include silk/views *.py
 recursive-include silk *.py

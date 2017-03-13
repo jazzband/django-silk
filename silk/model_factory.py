@@ -2,16 +2,16 @@ import json
 import logging
 import sys
 import traceback
+import base64
 from uuid import UUID
 
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, Resolver404
 
 from silk import models
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 
-
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.model_factory')
 
 content_types_json = ['application/json',
                       'application/x-javascript',
@@ -117,7 +117,10 @@ class RequestModelFactory(object):
                 except UnicodeDecodeError:
                     raw_body = ''
             except Exception as e:
-                Logger.error('Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
+                Logger.error(
+                    'Unable to decode request body using char_set %s due to error: %s. Will ignore. Stacktrace:'
+                    % (char_set, e)
+                )
                 traceback.print_exc()
         else:
             # Default to an attempt at UTF-8 decoding.
@@ -135,12 +138,21 @@ class RequestModelFactory(object):
                 size = sys.getsizeof(raw_body, default=None)
                 request_identifier = self.request.path
                 if not size:
-                    Logger.error('No way in which to get size of request body for %s, will ignore it', request_identifier)
+                    Logger.error(
+                        'No way in which to get size of request body for %s, will ignore it',
+                        request_identifier
+                    )
                 elif size <= max_size:
-                    Logger.debug('Request %s has body of size %d which is less than %d so will save the body' % (request_identifier, size, max_size))
+                    Logger.debug(
+                        'Request %s has body of size %d which is less than %d so will save the body'
+                        % (request_identifier, size, max_size)
+                    )
                     body = self._body(raw_body, content_type)
                 else:
-                    Logger.debug('Request %s has body of size %d which is greater than %d, therefore ignoring' % (request_identifier, size, max_size))
+                    Logger.debug(
+                        'Request %s has body of size %d which is greater than %d, therefore ignoring'
+                        % (request_identifier, size, max_size)
+                    )
                     raw_body = None
             else:
                 Logger.debug('No maximum request body size is set, continuing.')
@@ -155,15 +167,30 @@ class RequestModelFactory(object):
             encoded_query_params = json.dumps(query_params_dict)
         return encoded_query_params
 
+    def view_name(self):
+        try:
+            resolved = resolve(self.request.path)
+        except Resolver404:
+            return None
+
+        try:
+            # view_name is set in Django >= 1.8
+            return resolved.view_name
+        except AttributeError:
+            # support for Django 1.6 and 1.7 in which no view_name is set
+            view_name = resolved.url_name
+            namespace = resolved.namespace
+            if namespace:
+                view_name = namespace + ':' + view_name
+
+            return view_name
+
     def construct_request_model(self):
         body, raw_body = self.body()
         query_params = self.query_params()
         path = self.request.path
-        resolved = resolve(path)
-        namespace = resolved.namespace
-        view_name = resolved.url_name
-        if namespace:
-            view_name = namespace + ':' + view_name
+        view_name = self.view_name()
+
         request_model = models.Request.objects.create(
             path=path,
             encoded_headers=self.encoded_headers(),
@@ -193,29 +220,6 @@ class ResponseModelFactory(object):
         body = ''
         content_type, char_set = _parse_content_type(self.response.get('Content-Type', ''))
         content = getattr(self.response, 'content', '')
-        if char_set and content:
-            try:
-                content = content.decode(char_set)
-            except AttributeError:
-                pass
-            except LookupError:  # If no encoding exists, default to UTF-8
-                try:
-                    content = content.decode('UTF-8')
-                except AttributeError:
-                    pass
-                except UnicodeDecodeError:
-                    content = ''
-            except Exception as e:
-                Logger.error('Unable to decode response body using char_set %s due to error: %s. Will ignore. Stacktrace:' % (char_set, e))
-                traceback.print_exc()
-        else:
-            # Default to an attempt at UTF-8 decoding.
-            try:
-                content = content.decode('UTF-8')
-            except AttributeError:
-                pass
-            except UnicodeDecodeError:
-                content = ''
         if content:
             max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE
             if max_body_size > -1:
@@ -227,20 +231,36 @@ class ResponseModelFactory(object):
                 else:
                     if size > max_body_size:
                         content = ''
-                        Logger.debug('Size of %d for %s is bigger than %d so ignoring response body' % (size, self.request.path, max_body_size))
+                        Logger.debug(
+                            'Size of %d for %s is bigger than %d so ignoring response body'
+                            % (size, self.request.path, max_body_size)
+                        )
                     else:
-                        Logger.debug('Size of %d for %s is less than %d so saving response body' % (size, self.request.path, max_body_size))
-            if content_type in content_types_json:
+                        Logger.debug(
+                            'Size of %d for %s is less than %d so saving response body'
+                            % (size, self.request.path, max_body_size)
+                        )
+            if content and content_type in content_types_json:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
+                if not isinstance(content, str):
+                    # byte string is not compatible with json.loads(...)
+                    # and json.dumps(...) in python3
+                    content = content.decode()
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4)
                 except (TypeError, ValueError):
-                    Logger.warn('Response to request with pk %s has content type %s but was unable to parse it' % (self.request.pk, content_type))
+                    Logger.warn(
+                        'Response to request with pk %s has content type %s but was unable to parse it'
+                        % (self.request.pk, content_type)
+                    )
         return body, content
 
     def construct_response_model(self):
         assert self.request, 'Cant construct a response model if there is no request model'
-        Logger.debug('Creating response model for request model with pk %s' % self.request.pk)
+        Logger.debug(
+            'Creating response model for request model with pk %s'
+            % self.request.pk
+        )
         b, content = self.body()
         raw_headers = self.response._headers
         headers = {}
@@ -251,14 +271,15 @@ class ResponseModelFactory(object):
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(request=self.request,
-                                                        status_code=self.response.status_code,
-                                                        encoded_headers=json.dumps(headers),
-                                                        body=b)
-        # Text fields are encoded as UTF-8 in Django and hence will try to coerce
-        # anything to we pass to UTF-8. Some stuff like binary will fail.
+        silky_response = models.Response.objects.create(
+            request_id=self.request.id,
+            status_code=self.response.status_code,
+            encoded_headers=json.dumps(headers),
+            body=b
+        )
+
         try:
-            silky_response.raw_body = content
-        except UnicodeDecodeError:
-            Logger.debug('NYI: Saving of binary response body')  # TODO
+            silky_response.raw_body = base64.b64encode(content)
+        except TypeError:
+            silky_response.raw_body = base64.b64encode(content.encode('utf-8'))
         return silky_response

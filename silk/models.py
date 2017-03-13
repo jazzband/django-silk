@@ -1,13 +1,20 @@
 from collections import Counter
 import json
+import base64
 
+from django.core.files.storage import FileSystemStorage
 from django.db import models
-from django.db.models import DateTimeField, TextField, CharField, ForeignKey, IntegerField, BooleanField, F, \
-    ManyToManyField, OneToOneField, FloatField
+from django.db.models import (
+    DateTimeField, TextField, CharField, ForeignKey, IntegerField,
+    BooleanField, F, ManyToManyField, OneToOneField, FloatField,
+    FileField
+)
 from django.utils import timezone
 from django.db import transaction
-from uuid import uuid1
+from uuid import uuid4
 import sqlparse
+
+from silk.config import SilkyConfig
 
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
@@ -42,22 +49,36 @@ class CaseInsensitiveDictionary(dict):
             self[k] = v
 
 
+class ProfilerResultStorage(FileSystemStorage):
+    # the default storage will only store under MEDIA_ROOT, so we must define our own.
+    def __init__(self):
+        super(ProfilerResultStorage, self).__init__(
+            location=SilkyConfig().SILKY_PYTHON_PROFILER_RESULT_PATH,
+            base_url=''
+        )
+        self.base_url = None
+
+
 class Request(models.Model):
-    id = CharField(max_length=36, default=uuid1, primary_key=True)
+    id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=300, db_index=True)
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now, db_index=True)
-    view_name = CharField(max_length=300, db_index=True, blank=True, default='', null=True)
+    view_name = CharField(
+        max_length=300, db_index=True, blank=True,
+        default='', null=True
+    )
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    encoded_headers = TextField(blank=True, default='')
+    encoded_headers = TextField(blank=True, default='')  # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
+    prof_file = FileField(null=True, storage=ProfilerResultStorage())
 
     @property
     def total_meta_time(self):
@@ -66,17 +87,19 @@ class Request(models.Model):
     # defined in atomic transaction within SQLQuery save()/delete() as well
     # as in bulk_create of SQLQueryManager
     # TODO: This is probably a bad way to do this, .count() will prob do?
-    num_sql_queries = IntegerField(default=0)
-
+    num_sql_queries = IntegerField(default=0)  # TODO replace with count()
 
     @property
     def time_spent_on_sql_queries(self):
-        # TODO: Perhaps there is a nicer way to do this with Django aggregates?
-        # My initial thought was to perform:
-        # SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
-        # However this feature isnt available yet, however there has been talk for use of F objects
-        # within aggregates for four years here: https://code.djangoproject.com/ticket/14030
-        # It looks like this will go in soon at which point this should be changed.
+        """
+        TODO: Perhaps there is a nicer way to do this with Django aggregates?
+        My initial thought was to perform:
+        SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
+        However this feature isnt available yet, however there has been talk
+        for use of F objects within aggregates for four years
+        here: https://code.djangoproject.com/ticket/14030. It looks
+        like this will go in soon at which point this should be changed.
+        """
         return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
 
     @property
@@ -85,6 +108,7 @@ class Request(models.Model):
             raw = json.loads(self.encoded_headers)
         else:
             raw = {}
+
         return CaseInsensitiveDictionary(raw)
 
     @property
@@ -93,18 +117,22 @@ class Request(models.Model):
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
-        if self.raw_body is None: self.raw_body = ''
-        if self.body is None: self.body = ''
+        if self.raw_body is None:
+            self.raw_body = ''
+
+        if self.body is None:
+            self.body = ''
 
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
         super(Request, self).save(*args, **kwargs)
 
 
 class Response(models.Model):
-    id = CharField(max_length=36, default=uuid1, primary_key=True)
-    request = OneToOneField('Request', related_name='response', db_index=True)
+    id = CharField(max_length=36, default=uuid4, primary_key=True)
+    request = OneToOneField(Request, related_name='response', db_index=True)
     status_code = IntegerField()
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
@@ -122,7 +150,12 @@ class Response(models.Model):
             raw = {}
         return CaseInsensitiveDictionary(raw)
 
+    @property
+    def raw_body_decoded(self):
+        return base64.b64decode(self.raw_body)
 
+
+# TODO rewrite docstring
 class SQLQueryManager(models.Manager):
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
@@ -131,6 +164,7 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
+
         with atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
@@ -150,10 +184,14 @@ class SQLQuery(models.Model):
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
-    request = ForeignKey('Request', related_name='queries', null=True, blank=True, db_index=True)
+    request = ForeignKey(
+        Request, related_name='queries', null=True,
+        blank=True, db_index=True
+    )
     traceback = TextField()
     objects = SQLQueryManager()
 
+    # TODO docstring
     @property
     def traceback_ln_only(self):
         return '\n'.join(self.traceback.split('\n')[::2])
@@ -169,17 +207,24 @@ class SQLQuery(models.Model):
 
     @property
     def tables_involved(self):
-        """A rreally ather rudimentary way to work out tables involved in a query.
-        TODO: Can probably parse the SQL using sqlparse etc and pull out table info that way?"""
+        """
+        A really another rudimentary way to work out tables involved in a
+        query.
+        TODO: Can probably parse the SQL using sqlparse etc and pull out table
+        info that way?
+        """
         components = [x.strip() for x in self.query.split()]
         tables = []
-        for idx, c in enumerate(components):
-            # TODO: If django uses aliases on column names they will be falsely identified as tables...
-            if c.lower() == 'from' or c.lower() == 'join' or c.lower() == 'as':
+
+        for idx, component in enumerate(components):
+            # TODO: If django uses aliases on column names they will be falsely
+            # identified as tables...
+            if component.lower() == 'from' or component.lower() == 'join' or component.lower() == 'as':
                 try:
-                    nxt = components[idx + 1]
-                    if not nxt.startswith('('):  # Subquery
-                        stripped = nxt.strip().strip(',')
+                    _next = components[idx + 1]
+                    if not _next.startswith('('):  # Subquery
+                        stripped = _next.strip().strip(',')
+
                         if stripped:
                             tables.append(stripped)
                 except IndexError:  # Reach the end
@@ -188,13 +233,16 @@ class SQLQuery(models.Model):
 
     @atomic()
     def save(self, *args, **kwargs):
+
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
         if not self.pk:
             if self.request:
                 self.request.num_sql_queries += 1
-                self.request.save()
+                self.request.save(update_fields=['num_sql_queries'])
+
         super(SQLQuery, self).save(*args, **kwargs)
 
     @atomic()
@@ -208,7 +256,7 @@ class BaseProfile(models.Model):
     name = CharField(max_length=300, blank=True, default='')
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    request = ForeignKey('Request', null=True, blank=True, db_index=True)
+    request = ForeignKey(Request, null=True, blank=True, db_index=True)
     time_taken = FloatField(blank=True, null=True)
 
     class Meta:
@@ -227,7 +275,7 @@ class Profile(BaseProfile):
     end_line_num = IntegerField(null=True, blank=True)
     func_name = CharField(max_length=300, blank=True, default='')
     exception_raised = BooleanField(default=False)
-    queries = ManyToManyField('SQLQuery', related_name='profiles', db_index=True)
+    queries = ManyToManyField(SQLQuery, related_name='profiles', db_index=True)
     dynamic = BooleanField(default=False)
 
     @property

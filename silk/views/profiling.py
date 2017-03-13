@@ -1,12 +1,14 @@
-from django.core.context_processors import csrf
+try:
+    from django.template.context_processors import csrf
+except ImportError:
+    from django.core.context_processors import csrf
 from django.db.models import Count, Sum
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
 
 from silk.models import Profile, Request
-from silk.profiling.dynamic import _get_module
 from silk.request_filters import BaseFilter, filters_from_request
 
 
@@ -122,13 +124,12 @@ class ProfilingView(View):
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
-
     def get(self, request, *args, **kwargs):
-        return render_to_response('silk/profiling.html', self._create_context(request, *args, **kwargs))
+        return render(request, 'silk/profiling.html', self._create_context(request, *args, **kwargs))
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
         request.session[self.session_key_profile_filters] = {ident: f.as_dict() for ident, f in filters.items()}
-        return render_to_response('silk/profiling.html', self._create_context(request))
+        return render(request, 'silk/profiling.html', self._create_context(request))

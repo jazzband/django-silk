@@ -1,6 +1,6 @@
 from copy import copy
 
-import silk.utils.six as six
+from django.utils import six
 
 from silk.singleton import Singleton
 
@@ -33,6 +33,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
 
         options = {option: getattr(settings, option) for option in dir(settings) if option.startswith('SILKY')}
         self.attrs = copy(self.defaults)
+        self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
         self.attrs.update(options)
 
     def __init__(self):

@@ -1,5 +1,4 @@
 import os
-import django
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -7,8 +6,6 @@ SECRET_KEY = 'ey5!m&h-uj6c7dzp@(o1%96okkq4!&bjja%oi*v3r=2t(!$7os'
 
 DEBUG = True
 DEBUG_PROPAGATE_EXCEPTIONS = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -37,12 +34,14 @@ MIDDLEWARE_CLASSES = (
 
 WSGI_APPLICATION = 'wsgi.application'
 
-DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
+DB = os.environ['DB']
+if DB == 'postgresql':
+    DB = 'postgresql_psycopg2'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_NAME
+        'ENGINE': 'django.db.backends.' + DB,
+        'NAME': os.environ['DB_NAME']
     }
 }
 
@@ -96,30 +95,27 @@ MEDIA_URL = '/media/'
 if not os.path.exists(MEDIA_ROOT):
     os.mkdir(MEDIA_ROOT)
 
-TEMPLATE_DIRS = (
-    BASE_DIR,
-)
-
-# A tuple of template loader classes, specified as strings. Each Loader class
-# knows how to import templates from a particular source.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader'
-)
-
-# A tuple of callables that are used to populate the context in RequestContext.
-# These callables take a request object as their argument and return a dictionary of
-# items to be merged into the context.
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'django.contrib.auth.context_processors.auth'
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 SILKY_META = True
 SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
 # SILKY_AUTHENTICATION = True
 # SILKY_AUTHORISATION = True

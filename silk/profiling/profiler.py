@@ -3,17 +3,17 @@ import logging
 import time
 import traceback
 
+import django
 from django.conf import settings
 from django.utils import timezone
 
-import silk.utils.six as six
+from django.utils import six
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import _time_taken
 
-
-Logger = logging.getLogger('silk')
+Logger = logging.getLogger('silk.profiling.profiler')
 
 
 # noinspection PyPep8Naming
@@ -127,6 +127,8 @@ class silk_profile(object):
     def _silk_installed(self):
         app_installed = 'silk' in settings.INSTALLED_APPS
         middleware_installed = 'silk.middleware.SilkyMiddleware' in settings.MIDDLEWARE_CLASSES
+        if django.VERSION[:2] >= (1, 10):
+            middleware_installed = middleware_installed or 'silk.middleware.SilkyMiddleware' in settings.MIDDLEWARE
         return app_installed and middleware_installed
 
     def _should_profile(self):

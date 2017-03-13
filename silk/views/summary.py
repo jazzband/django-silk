@@ -1,6 +1,11 @@
-from django.core.context_processors import csrf
+try:
+    from django.core.context_processors import csrf
+except ImportError:
+    # Django>=1.8
+    from django.template.context_processors import csrf
+    
 from django.db.models import Avg, Count, Sum, Max
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -76,12 +81,11 @@ class SummaryView(View):
     @method_decorator(permissions_possibly_required)
     def get(self, request):
         c = self._create_context(request)
-        return render_to_response('silk/summary.html', c)
-
+        return render(request, 'silk/summary.html', c)
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
         request.session[self.filters_key] = {ident: f.as_dict() for ident, f in filters.items()}
-        return render_to_response('silk/summary.html', self._create_context(request))
+        return render(request, 'silk/summary.html', self._create_context(request))

@@ -2,18 +2,53 @@ language: python
 python: 
     - "2.7"
     - "3.4"
+    - "3.5"
 env:
-    - DJANGO="Django>=1.6.0,<1.7.0"
-    - DJANGO="Django>=1.7.0,<1.8.0"
-    - DJANGO="Django>=1.8.0,<1.9.0"
+    # PostgreSQL
+    - DJANGO="Django>=1.8.0,<1.9.0"   DB=postgresql DB_NAME=travis_ci_test
+    - DJANGO="Django>=1.9.0,<1.10.0"  DB=postgresql DB_NAME=travis_ci_test
+    - DJANGO="Django>=1.10.0,<1.11.0" DB=postgresql DB_NAME=travis_ci_test
+    - DJANGO="Django>=1.11b1,<2.0" DB=postgresql DB_NAME=travis_ci_test
+
+    # SQLite3
+    - DJANGO="Django>=1.8.0,<1.9.0"   DB=sqlite3 DB_NAME=db.sqlite3
+    - DJANGO="Django>=1.9.0,<1.10.0"  DB=sqlite3 DB_NAME=db.sqlite3
+    - DJANGO="Django>=1.10.0,<1.11.0" DB=sqlite3 DB_NAME=db.sqlite3
+    - DJANGO="Django>=1.11b1,<2.0" DB=sqlite3 DB_NAME=db.sqlite3
+
+    # MySQL
+    - DJANGO="Django>=1.8.0,<1.9.0"   DB=mysql DB_NAME=mysql_db
+    - DJANGO="Django>=1.9.0,<1.10.0"  DB=mysql DB_NAME=mysql_db
+    - DJANGO="Django>=1.10.0,<1.11.0" DB=mysql DB_NAME=mysql_db
+    - DJANGO="Django>=1.11b1,<2.0" DB=mysql DB_NAME=mysql_db
+
+
+matrix:
+  allow_failures:
+    - python: "2.7"
+      env: DJANGO="Django>=1.11b1,<2.0"
+    - python: "3.4"
+      env: DJANGO="Django>=1.11b1,<2.0"
+    - python: "3.5"
+      env: DJANGO="Django>=1.11b1,<2.0"
+
+
+  fast_finish: true
 
 install:
     - pip install -q $DJANGO
     - pip install -r requirements.txt
+    
+    # Handle PostgreSQL
+    - if [[ "$DB" = "postgresql" ]]; then pip install psycopg2; fi
+    - if [[ "$DB" = "postgresql" ]]; then psql -c 'create database travis_ci_test;' -U postgres; fi
+
+    # Handle MySQL
+    - if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
+    - if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
 
 script:
     - cd project
-    - python manage.py syncdb --noinput
-    - python manage.py migrate --noinput || true # Only for 1.7/1.8
+    - ./tests/test_migrations.sh
     - python manage.py test --noinput
     - cd -

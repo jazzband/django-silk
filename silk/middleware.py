@@ -2,6 +2,7 @@ import logging
 import random
 
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.db import transaction, DatabaseError
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
@@ -14,7 +15,14 @@ from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
 
-Logger = logging.getLogger('silk')
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:  # Django < 1.10
+    # Works perfectly for everyone using MIDDLEWARE_CLASSES
+    MiddlewareMixin = object
+
+
+Logger = logging.getLogger('silk.middleware')
 
 
 def silky_reverse(name, *args, **kwargs):
@@ -30,6 +38,7 @@ def silky_reverse(name, *args, **kwargs):
 
 fpath = silky_reverse('summary')
 config = SilkyConfig()
+
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
@@ -48,7 +57,6 @@ def _should_intercept(request):
 
 
 class TestMiddleware(object):
-
     def process_response(self, request, response):
         return response
 
@@ -56,10 +64,7 @@ class TestMiddleware(object):
         return
 
 
-class SilkyMiddleware(object):
-    def __init__(self):
-        super(SilkyMiddleware, self).__init__()
-
+class SilkyMiddleware(MiddlewareMixin):
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:
@@ -84,19 +89,22 @@ class SilkyMiddleware(object):
 
     @silk_meta_profiler()
     def process_request(self, request):
-        request_model = None
-        if _should_intercept(request):
-            Logger.debug('process_request')
-            request.silk_is_intercepted = True
-            self._apply_dynamic_mappings()
-            if not hasattr(SQLCompiler, '_execute_sql'):
-                SQLCompiler._execute_sql = SQLCompiler.execute_sql
-                SQLCompiler.execute_sql = execute_sql
-            request_model = RequestModelFactory(request).construct_request_model()
+        DataCollector().clear()
+
+        if not _should_intercept(request):
+            return
+
+        Logger.debug('process_request')
+        request.silk_is_intercepted = True
+        self._apply_dynamic_mappings()
+        if not hasattr(SQLCompiler, '_execute_sql'):
+            SQLCompiler._execute_sql = SQLCompiler.execute_sql
+            SQLCompiler.execute_sql = execute_sql
+        request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model)
 
-
-    def _process_response(self, response):
+    @transaction.atomic()
+    def _process_response(self, request, response):
         Logger.debug('Process response')
         with silk_meta_profiler():
             collector = DataCollector()
@@ -109,7 +117,10 @@ class SilkyMiddleware(object):
                 collector.finalise()
             else:
                 Logger.error(
-                    'No request model was available when processing response. Did something go wrong in process_request/process_view?')
+                    'No request model was available when processing response. '
+                    'Did something go wrong in process_request/process_view?'
+                    '\n' + str(request) + '\n\n' + str(response)
+                )
         # Need to save the data outside the silk_meta_profiler
         # Otherwise the  meta time collected in the context manager
         # is not taken in account
@@ -117,8 +128,14 @@ class SilkyMiddleware(object):
             silk_request.save()
         Logger.debug('Process response done.')
 
-
     def process_response(self, request, response):
         if getattr(request, 'silk_is_intercepted', False):
-            self._process_response(response)
+            while True:
+                try:
+                    self._process_response(request, response)
+                except (AttributeError, DatabaseError):
+                    Logger.debug('Retrying _process_response')
+                    self._process_response(request, response)
+                finally:
+                    break
         return response

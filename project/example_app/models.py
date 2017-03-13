@@ -5,7 +5,7 @@ from django.db.models import TextField, BooleanField, ImageField
 
 
 class Product(models.Model):
-    photo = ImageField(upload_to='products')
+    photo = ImageField(upload_to=b'products')
 
     class Meta:
         abstract = True

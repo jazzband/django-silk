@@ -13,7 +13,7 @@ def _code(file_path, line_num, end_line_num=None):
         for i, line in enumerate(f):
             if i in r:
                 lines += line
-            if i + 1 in range(line_num, end_line_num+1):
+            if i + 1 in range(line_num, end_line_num + 1):
                 actual_line.append(line)
     code = lines.split('\n')
     return actual_line, code

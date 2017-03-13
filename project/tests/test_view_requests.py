@@ -19,7 +19,7 @@ class TestRootViewDefaults(TestCase):
         self.assertIn(RequestsView.default_show, RequestsView.show)
 
     def test_order_by(self):
-        self.assertIn(RequestsView.defualt_order_by, RequestsView.order_by)
+        self.assertIn(RequestsView.default_order_by, RequestsView.order_by)
 
 
 class TestContext(TestCase):
@@ -30,9 +30,10 @@ class TestContext(TestCase):
         context = RequestsView()._create_context(request)
         self.assertDictContainsSubset({
                                           'show': RequestsView.default_show,
-                                          'order_by': RequestsView.defualt_order_by,
+                                          'order_by': RequestsView.default_order_by,
                                           'options_show': RequestsView.show,
-                                          'options_order_by': RequestsView.order_by,
+                                          'options_order_by': RequestsView().options_order_by,
+                                          'options_order_dir': RequestsView().options_order_dir,
                                           'options_paths': RequestsView()._get_paths()
                                       }, context)
         self.assertNotIn('path', context)
@@ -43,7 +44,7 @@ class TestContext(TestCase):
         request.session = {}
         show = 10
         path = '/path/to/somewhere/'
-        order_by = 'Path'
+        order_by = 'path'
         request.GET = {'show': show,
                        'path': path,
                        'order_by': order_by}
@@ -53,7 +54,8 @@ class TestContext(TestCase):
                                           'order_by': order_by,
                                           'path': path,
                                           'options_show': RequestsView.show,
-                                          'options_order_by': RequestsView.order_by,
+                                          'options_order_by': RequestsView().options_order_by,
+                                          'options_order_dir': RequestsView().options_order_dir,
                                           'options_paths': RequestsView()._get_paths()
                                       }, context)
         self.assertIn('results', context)
@@ -90,9 +92,9 @@ class TestGetObjects(TestCase):
 
     def test_time_spent_db_with_path(self):
         request = random.choice(self.requests)
-        query_set = RequestsView()._get_objects(order_by='Time on queries',
-                                            path=request.path)
-        num_results = len(query_set)
+        query_set = RequestsView()._get_objects(order_by='db_time',
+                                                path=request.path)
+        num_results = query_set.count()
         self.assertTrue(num_results)
         for result in query_set:
             self.assertEqual(result.path, request.path)
@@ -108,14 +110,14 @@ class TestOrderingRequestView(TestCase):
                 pass
 
     def test_ordering(self):
-        self.assertSorted(objects=RequestsView()._get_objects(order_by='Recent'),
+        self.assertSorted(objects=RequestsView()._get_objects(order_by='start_time'),
                           sort_field='start_time')
-        self.assertSorted(objects=RequestsView()._get_objects(order_by='Path'),
+        self.assertSorted(objects=RequestsView()._get_objects(order_by='path'),
                           sort_field='path')
-        self.assertSorted(objects=RequestsView()._get_objects(order_by='Num. Queries'),
+        self.assertSorted(objects=RequestsView()._get_objects(order_by='num_sql_queries'),
                           sort_field='num_sql_queries')
-        self.assertSorted(objects=RequestsView()._get_objects(order_by='Time'),
+        self.assertSorted(objects=RequestsView()._get_objects(order_by='time_taken'),
                           sort_field='time_taken')
-        self.assertSorted(objects=RequestsView()._get_objects(order_by='Time on queries'),
+        self.assertSorted(objects=RequestsView()._get_objects(order_by='db_time'),
                           sort_field='db_time')
 

@@ -1,12 +1,10 @@
-import urllib
-
 import autopep8
 
 import jinja2
 # noinspection PyUnresolvedReferences
-from silk.utils.six.moves.urllib.parse import urlencode
+from django.utils.six.moves.urllib.parse import urlencode
 from silk.profiling.dynamic import is_str_typ
-from silk.profiling.profiler import silk_profile
+
 
 template = """
 from django.test import Client
@@ -25,12 +23,14 @@ def _encode_query_params(query_params):
     query_params = '?' + query_params
     return query_params
 
+
 def gen(path,
         method=None,
         query_params=None,
         data=None,
         content_type=None):
-    """generates python code representing a call via django client. useful for use in testing"""
+    # generates python code representing a call via django client.
+    # useful for use in testing
     method = method.lower()
     t = jinja2.Template(template)
     if method == 'get':
@@ -49,4 +49,6 @@ def gen(path,
                      lower_case_method=method,
                      query_params=query_params,
                      content_type=content_type)
-    return autopep8.fix_code(r, options=autopep8.parse_args(['--aggressive', '']))
+    return autopep8.fix_code(
+        r, options=autopep8.parse_args(['--aggressive', ''])
+    )
