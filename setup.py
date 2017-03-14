@@ -4,16 +4,19 @@ from setuptools import setup
 try:
     from pypandoc import convert
 
-    def read_md(f): return convert(f, 'rst')
+    def read_md(f):
+        return convert(f, 'rst')
 except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
-    def read_md(f): return open(f, 'r').read()
+    def read_md(f):
+        return open(f, 'r').read()
 
 README = read_md('README.md')
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+
 
 setup(
     name='django-silk',
@@ -38,7 +41,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    install_requires= [
+    install_requires=[
         'Django',
         'Pygments',
         'python-dateutil',
