@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.models import Profile, Request
+from silk.models import Profile
 from silk.views.sql_detail import _code
 
 
@@ -12,7 +12,6 @@ class ProfilingDetailView(View):
     @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         profile_id = kwargs['profile_id']
-        silk_request_id = kwargs.get('request_id', None)
         context = {
             'request': request
         }
@@ -22,9 +21,8 @@ class ProfilingDetailView(View):
         context['profile'] = profile
         context['line_num'] = file_path
         context['file_path'] = line_num
-        if silk_request_id:
-            silk_request = Request.objects.get(pk=silk_request_id)
-            context['silk_request'] = silk_request
+        if profile.request:
+            context['silk_request'] = profile.request
         if file_path and line_num:
             try:
                 actual_line, code = _code(file_path, line_num, profile.end_line_num)

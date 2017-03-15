@@ -20,6 +20,22 @@
             font-size: 13px;
 
         }
+
+        a {
+            color: #45ADA8;
+        }
+
+        a:visited {
+            color: #45ADA8;
+        }
+
+        a:hover {
+            color: #547980;
+        }
+
+        a:active {
+            color: #594F4F;
+        }
     </style>
 {% endblock %}
 
@@ -52,6 +68,19 @@
                 <div id="error-div">
                     {{ code_error }}
                 </div>
+            {% endif %}
+
+            {% if silk_request.pyprofile %}
+            <div class="heading">
+                <div class="inner-heading">Python Profiler</div>
+            </div>
+            <div class="description">
+                The below is a dump from the cPython profiler.
+            </div>
+            {% if silk_request.prof_file %}
+            Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
+            {% endif %}
+            <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
             {% endif %}
 
         </div>
