@@ -170,7 +170,7 @@ class silk_profile(object):
 
             return wrapped_target
         else:
-            Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
+            Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
             return target
 
     def distinct_queries(self):
