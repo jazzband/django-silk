@@ -196,6 +196,8 @@ The silk decorator can be applied to both functions and methods
 ```python
 from silk.profiling.profiler import silk_profile
 
+
+# Profile a view function
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
@@ -203,6 +205,8 @@ def post(request, post_id):
         'post': p
     })
 
+
+# Profile a method in a view class
 class MyView(View):
     @silk_profile(name='View Blog Post')
     def get(self, request):
