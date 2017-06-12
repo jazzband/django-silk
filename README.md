@@ -194,6 +194,8 @@ Silk profiling not only provides execution time, but also collects SQL queries e
 The silk decorator can be applied to both functions and methods
 
 ```python
+from silk.profiling.profiler import silk_profile
+
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
