@@ -170,6 +170,9 @@ manager for this purpose.
 For example:
 
 ```python
+from silk.profiling.profiler import silk_profile
+
+
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
