@@ -1,4 +1,5 @@
-#Silk
+Silk
+====
 
 *Silk has now moved to the django-silk organization and is looking for contributors - if you think you can help out, please get in touch!*
 
