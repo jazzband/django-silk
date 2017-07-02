@@ -434,7 +434,13 @@ A management command will wipe out all logged data:
 python manage.py silk_clear_request_log
 ```
 
-## Development
+## Contributing
+
+[![Jazzband](https://jazzband.co/static/img/jazzband.svg)](https://jazzband.co/)
+
+This is a [Jazzband](https://jazzband.co/) project. By contributing you agree to abide by the [Contributor Code of Conduct](https://jazzband.co/about/conduct) and follow the [guidelines](https://jazzband.co/about/guidelines).
+
+### Development Environment
 
 Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
 you can work on the sample `project` and on the `silk` package at the same time.
