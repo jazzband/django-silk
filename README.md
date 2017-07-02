@@ -6,6 +6,7 @@
 [![TravisCI Build](https://img.shields.io/travis/django-silk/silk/master.svg)](https://travis-ci.org/django-silk/silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
 
 Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
@@ -433,7 +434,13 @@ A management command will wipe out all logged data:
 python manage.py silk_clear_request_log
 ```
 
-## Development
+## Contributing
+
+[![Jazzband](https://jazzband.co/static/img/jazzband.svg)](https://jazzband.co/)
+
+This is a [Jazzband](https://jazzband.co/) project. By contributing you agree to abide by the [Contributor Code of Conduct](https://jazzband.co/about/conduct) and follow the [guidelines](https://jazzband.co/about/guidelines).
+
+### Development Environment
 
 Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
 you can work on the sample `project` and on the `silk` package at the same time.
