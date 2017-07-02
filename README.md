@@ -23,7 +23,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
     * [Meta-Profiling](#meta-profiling)
     * [Recording a fraction of requests](#recording-a-fraction-of-requests)
     * [Clearing logged data](#clearing-logged-data)
-* [Development](#development)
+* [Contributing](#contributing)
+    * [Development Environment](#development-environment)
 
 ## Requirements
 
