@@ -132,7 +132,10 @@ class Request(models.Model):
 
 class Response(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
-    request = OneToOneField(Request, related_name='response', db_index=True)
+    request = OneToOneField(
+        Request, related_name='response', db_index=True,
+        on_delete=models.CASCADE,
+    )
     status_code = IntegerField()
     raw_body = TextField(blank=True, default='')
     body = TextField(blank=True, default='')
@@ -186,7 +189,7 @@ class SQLQuery(models.Model):
     time_taken = FloatField(blank=True, null=True)
     request = ForeignKey(
         Request, related_name='queries', null=True,
-        blank=True, db_index=True
+        blank=True, db_index=True, on_delete=models.CASCADE,
     )
     traceback = TextField()
     objects = SQLQueryManager()
@@ -256,7 +259,10 @@ class BaseProfile(models.Model):
     name = CharField(max_length=300, blank=True, default='')
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    request = ForeignKey(Request, null=True, blank=True, db_index=True)
+    request = ForeignKey(
+        Request, null=True, blank=True, db_index=True,
+        on_delete=models.CASCADE,
+       )
     time_taken = FloatField(blank=True, null=True)
 
     class Meta:
