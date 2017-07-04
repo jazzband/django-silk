@@ -173,6 +173,10 @@ class Response(models.Model):
             .values_list('id', flat=True)[:prune_count]
         cls.objects.filter(id__in=list(prune_rows)).delete()
 
+    def save(self, *args, **kwargs):
+        super(Response, self).save(*args, **kwargs)
+        Response.garbage_collect(force=False)
+
 
 # TODO rewrite docstring
 class SQLQueryManager(models.Manager):
