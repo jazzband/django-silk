@@ -199,6 +199,43 @@ class ResponseTest(TestCase):
         self.obj.encoded_headers = '{"content-type": "some_data"}'
         self.assertEqual(self.obj.content_type, "some_data")
 
+    def test_garbage_collect(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 100
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        obj = ResponseFactory.create()
+        self.assertTrue(models.Response.objects.filter(id=obj.id).exists())
+        models.Response.garbage_collect()
+        self.assertFalse(models.Response.objects.filter(id=obj.id).exists())
+
+    def test_probabilistic_garbage_collect(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        obj = ResponseFactory.create()
+        self.assertTrue(models.Response.objects.filter(id=obj.id).exists())
+        models.Response.garbage_collect()
+        self.assertTrue(models.Response.objects.filter(id=obj.id).exists())
+
+    def test_force_garbage_collect(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        obj = ResponseFactory.create(force=True)
+        self.assertTrue(models.Response.objects.filter(id=obj.id).exists())
+        models.Response.garbage_collect()
+        self.assertFalse(models.Response.objects.filter(id=obj.id).exists())
+
+    def test_greedy_garbage_collect(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 2
+        for x in range(3):
+            ResponseFactory.create(force=True)
+        self.assertEqual(Response.objects.count(), 3)
+        models.Response.garbage_collect(force=True)
+        self.assertEqual(Response.objects.count(), 1)
+
 
 class SQLQueryManagerTest(TestCase):
 
