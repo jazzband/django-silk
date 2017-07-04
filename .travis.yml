@@ -3,6 +3,7 @@ python:
     - "2.7"
     - "3.4"
     - "3.5"
+    - "3.6"
 env:
     # PostgreSQL
     - DJANGO="Django>=1.8.0,<1.9.0"   DB=postgresql DB_NAME=travis_ci_test
