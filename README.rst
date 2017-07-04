@@ -1,7 +1,7 @@
 Silk
 ====
 
-*Silk has now moved to the django-silk organization and is looking for
+*Silk has now moved to the `Jazzband <https://jazzband.co/>`__ organization and is looking for
 contributors - if you think you can help out, please get in touch!*
 
 |Gitter|
@@ -91,7 +91,7 @@ proceed to add profiling if required. The UI can be reached at
 Alternative Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Via `github tags <https://github.com/django-silk/silk/releases>`__:
+Via `github tags <https://github.com/jazzband/silk/releases>`__:
 
 .. code:: bash
 
@@ -103,7 +103,7 @@ in `requirements <#requirements>`__
 
 .. code:: bash
 
-    pip install -e git+https://github.com/django-silk/silk.git#egg=silk
+    pip install -e git+https://github.com/jazzband/silk.git#egg=silk
 
 Features
 --------
@@ -441,6 +441,6 @@ A management command will wipe out all logged data:
     python manage.py silk_clear_request_log
 
 .. |Gitter| image:: https://badges.gitter.im/Join%20Chat.svg
-   :target: https://gitter.im/django-silk/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-.. |Build Status| image:: https://travis-ci.org/django-silk/silk.svg?branch=master
-   :target: https://travis-ci.org/django-silk/silk
+   :target: https://gitter.im/jazzband/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. |Build Status| image:: https://travis-ci.org/jazzband/silk.svg?branch=master
+   :target: https://travis-ci.org/jazzband/silk
