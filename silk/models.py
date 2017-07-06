@@ -1,6 +1,7 @@
 from collections import Counter
 import json
 import base64
+import random
 
 from django.core.files.storage import FileSystemStorage
 from django.db import models
@@ -115,6 +116,24 @@ class Request(models.Model):
     def content_type(self):
         return self.headers.get('content-type', None)
 
+    @classmethod
+    def garbage_collect(cls, force=False):
+        """ Remove Request/Responses when we are at the SILKY_MAX_RECORDED_REQUESTS limit
+        Note that multiple in-flight requests may call this at once causing a
+        double collection """
+        check_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
+        check_percent /= 100.0
+        if check_percent < random.random() and not force:
+            return
+        target_count = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+        # Since garbage collection is probabilistic, the target count should
+        # be lowered to account for requests before the next garbage collection
+        target_count -= 1 / check_percent
+        prune_count = cls.objects.count() - target_count
+        prune_rows = cls.objects.order_by('request__start_time') \
+            .values_list('id', flat=True)[:prune_count]
+        cls.objects.filter(id__in=list(prune_rows)).delete()
+
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
         if self.raw_body is None:
@@ -128,6 +147,7 @@ class Request(models.Model):
             self.time_taken = interval.total_seconds() * 1000
 
         super(Request, self).save(*args, **kwargs)
+        Request.garbage_collect(force=False)
 
 
 class Response(models.Model):

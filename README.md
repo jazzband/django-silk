@@ -23,6 +23,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
     * [Request/Response bodies](#request-response-bodies)
     * [Meta-Profiling](#meta-profiling)
     * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+    * [Limiting request/response data](#limiting-request-response-data)
     * [Clearing logged data](#clearing-logged-data)
 * [Contributing](#contributing)
     * [Development Environment](#development-environment)
@@ -428,6 +429,20 @@ You can also use a `lambda`.
 SILKY_INTERCEPT_FUNC = lambda request: 'record_requests' in request.session
 ```
 
+### Limiting request/response data
+
+To make sure silky garbage collects old request/response data, a config var can be set to limit the number of request/response rows it stores.
+
+```python
+SILKY_MAX_RECORDED_REQUESTS = 10**4
+```
+
+The garbage collection is only run on a percentage of requests to reduce overhead.  It can be adjusted with this config:
+
+```python
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+```
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:
@@ -444,7 +459,7 @@ This is a [Jazzband](https://jazzband.co/) project. By contributing you agree to
 
 ### Development Environment
 
-Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
+Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so
 you can work on the sample `project` and on the `silk` package at the same time.
 
 In order to setup local development you should first install all the dependencies for the test `project`. From the
@@ -460,7 +475,7 @@ You'll also need to install `silk`'s dependencies. From the root of the git repo
 pip install -r requirements.txt
 ```
 
-At this point your virtual environment should have everything it needs to run both the sample `project` and 
+At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
 
 Now from the root of the sample `project` directory start the django server

@@ -114,6 +114,41 @@ class RequestTest(TestCase):
         self.obj.encoded_headers = '{"content-type": "some_data"}'
         self.assertEqual(self.obj.content_type, "some_data")
 
+    def test_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 100
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect()
+        self.assertFalse(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_probabilistic_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect()
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_force_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect(force=True)
+        self.assertFalse(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_greedy_garbage_collect(self):
+
+        models.Request.objects.delete()
+        for x in range(3):
+            RequestMinFactory.create()
+        self.assertEqual(models.Request.objects.count(), 3)
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 2
+        models.Request.garbage_collect(force=True)
+        self.assertEqual(models.Request.objects.count(), 1)
+
     def test_save_if_have_no_raw_body(self):
 
         obj = models.Request(path='/some/path/', method='get')
@@ -162,6 +197,13 @@ class ResponseTest(TestCase):
     def setUp(self):
 
         self.obj = ResponseFactory.create()
+        self.max_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
+        self.max_requests = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
+    def tearDown(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = self.max_percent
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = self.max_requests
 
     def test_uuid_is_primary_key(self):
 

@@ -53,3 +53,18 @@ Silk will then record how long it takes to save everything down to the database 
 .. image:: /images/meta.png
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
+
+Limiting request/response data
+----
+
+To make sure silky garbage collects old request/response data, a config var can be set to limit the number of request/response rows it stores.
+
+.. code-block:: python
+
+    SILKY_MAX_RECORDED_REQUESTS = 10**4
+
+The garbage collection is only run on a percentage of requests to reduce overhead.  It can be adjusted with this config:
+
+.. code-block:: python
+
+    SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
