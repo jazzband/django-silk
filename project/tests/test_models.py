@@ -10,6 +10,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
+from silk.config import SilkyConfig
 from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
 
@@ -140,7 +141,7 @@ class RequestTest(TestCase):
 
     def test_greedy_garbage_collect(self):
 
-        models.Request.objects.delete()
+        models.Request.objects.all().delete()
         for x in range(3):
             RequestMinFactory.create()
         self.assertEqual(models.Request.objects.count(), 3)
