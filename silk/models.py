@@ -128,7 +128,8 @@ class Request(models.Model):
         target_count = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
         # Since garbage collection is probabilistic, the target count should
         # be lowered to account for requests before the next garbage collection
-        target_count -= int(1 / check_percent)
+        if check_percent != 0:
+            target_count -= int(1 / check_percent)
         prune_count = max(cls.objects.count() - target_count, 0)
         prune_rows = cls.objects.order_by('start_time') \
             .values_list('id', flat=True)[:prune_count]
