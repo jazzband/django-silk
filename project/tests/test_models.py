@@ -29,6 +29,13 @@ class RequestTest(TestCase):
     def setUp(self):
 
         self.obj = RequestMinFactory.create()
+        self.max_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
+        self.max_requests = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
+    def tearDown(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = self.max_percent
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = self.max_requests
 
     def test_uuid_is_primary_key(self):
 
@@ -141,12 +148,12 @@ class RequestTest(TestCase):
 
     def test_greedy_garbage_collect(self):
 
-        models.Request.objects.all().delete()
         for x in range(3):
-            RequestMinFactory.create()
-        self.assertEqual(models.Request.objects.count(), 3)
+            obj = models.Request(path='/', method='get')
+            obj.save()
+        self.assertEqual(models.Request.objects.count(), 4)
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
-        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 2
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 3
         models.Request.garbage_collect(force=True)
         self.assertEqual(models.Request.objects.count(), 1)
 
@@ -198,13 +205,6 @@ class ResponseTest(TestCase):
     def setUp(self):
 
         self.obj = ResponseFactory.create()
-        self.max_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
-        self.max_requests = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
-
-    def tearDown(self):
-
-        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = self.max_percent
-        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = self.max_requests
 
     def test_uuid_is_primary_key(self):
 
