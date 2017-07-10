@@ -192,6 +192,16 @@ class OverallTimeFilter(BaseFilter):
         return 'Time >= %s' % self.value
 
 
+class StatusCodeFilter(BaseFilter):
+    def __init__(self, n):
+        try:
+            value = int(n)
+        except ValueError as e:
+            raise FilterValidationError(e)
+        super(StatusCodeFilter, self).__init__(value, response__status_code=n)
+
+
+
 def filters_from_request(request):
     raw_filters = {}
     for key in request.POST:
