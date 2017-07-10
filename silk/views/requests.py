@@ -65,7 +65,7 @@ class RequestsView(View):
         return [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()]
 
     def _get_paths(self):
-        return [x['path'] for x in Request.objects.values('path').distinct()]
+        return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
 
     def _get_status_codes(self):
         return [x['status_code'] for x in Response.objects.values('status_code').distinct()]
