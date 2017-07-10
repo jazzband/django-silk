@@ -2,6 +2,7 @@ import calendar
 import random
 from datetime import timedelta, datetime
 from math import floor
+from itertools import groupby
 
 import pytz
 from django.test import TestCase
@@ -19,6 +20,7 @@ from silk.request_filters import (
     NumQueriesFilter,
     TimeSpentOnQueriesFilter,
     OverallTimeFilter,
+    StatusCodeFilter,
 )
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
@@ -95,6 +97,17 @@ class TestRequestFilters(TestCase):
         filtered = query_set.filter(time_taken_filter)
         for f in filtered:
             self.assertGreaterEqual(f.time_taken, c)
+
+    def test_status_code_filter(self):
+        requests = [mock_suite.mock_request() for _ in range(0, 10)]
+        requests = sorted(requests, key=lambda x: x.response.status_code)
+        by_status_code = groupby(requests, key=lambda x: x.response.status_code)
+        for status_code, expected in by_status_code:
+            status_code_filter = StatusCodeFilter(status_code)
+            query_set = models.Request.objects.all()
+            query_set = status_code_filter.contribute_to_query_set(query_set)
+            filtered = query_set.filter(status_code_filter)
+            self.assertEqual(len(list(expected)), filtered.count())
 
 
 class TestRequestAfterDateFilter(TestCase):

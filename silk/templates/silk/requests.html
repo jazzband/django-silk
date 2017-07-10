@@ -204,6 +204,22 @@
 
         </div>
 
+        <div>
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="StatusCodeFilter"
+                   name="filter-status_code-typ">
+            <label>Status Code:
+                <select form="filter-form2" name="filter-status_code-value">
+                    <option value="" {% if not filters.status_code.value %}selected{% endif %}></option>
+                    {% for status_code in options_status_codes %}
+                        <option {% if status_code == filters.status_code.value %}selected{% endif %}>{{ status_code }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
 
     </div>
 {% endblock %}
