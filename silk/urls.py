@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from silk.views.profile_detail import ProfilingDetailView
 from silk.views.profile_download import ProfileDownloadView
-from silk.views.profile_json import ProfileJsonView
+from silk.views.profile_dot import ProfileDotView
 from silk.views.profiling import ProfilingView
 from silk.views.raw import Raw
 from silk.views.request_detail import RequestView
@@ -41,7 +41,7 @@ urlpatterns = [
     ),
     url(
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/json/$',
-        ProfileJsonView.as_view(),
+        ProfileDotView.as_view(),
         name='request_profile_json'
     ),
     url(
