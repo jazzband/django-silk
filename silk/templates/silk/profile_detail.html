@@ -5,6 +5,7 @@
 {% load staticfiles %}
 
 {% block js %}
+    <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>
     {{ block.super }}
 {% endblock %}
 
@@ -19,6 +20,12 @@
         #query-info-div .timestamp-div {
             font-size: 13px;
 
+        }
+
+        #pyprofile-div {
+            display: block;
+            margin: auto;
+            width: 960px;
         }
 
         .pyprofile {
@@ -40,6 +47,21 @@
         a:active {
             color: #594F4F;
         }
+
+        #graph-div {
+            padding: 25px;
+          background-color: white;
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+            margin-top: 25px;
+          width: 960px;
+          text-align: center; }
+
+        svg {
+          display: block;
+        }
+
     </style>
 {% endblock %}
 
@@ -63,7 +85,7 @@
                 </div>
             </div>
             <div class="description">
-                The below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
+                Below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
                 then this will show the range of lines that are covered by the profiling.
             </div>
             {% if code %}
@@ -74,18 +96,43 @@
                 </div>
             {% endif %}
 
-            {% if silk_request.pyprofile %}
+            {% if silk_request.prof_file %}
             <div class="heading">
-                <div class="inner-heading">Python Profiler</div>
+                <div class="inner-heading">Profile graph</div>
             </div>
             <div class="description">
-                The below is a dump from the cPython profiler.
+                Below is a graph of the profile, with the nodes coloured by the time taken (red is more time). This should give a good indication of the slowest path through the profiled code.</div>
+
+                <label for="cutoff">Prune nodes taking up less than </label>
+                <input id="cutoff" name="cutoff" type="range" step="1" min="1" max="100" value="5"
+                       oninput="updatePercent" onchange="updatePercent">
+                <span id="percent">5</span><span>% of the total time</span>
             </div>
-            {% if silk_request.prof_file %}
-            Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
+            <div id="graph-div">
+            </div>
+            <script>
+                 $(document).on('change','#cutoff', function(event){
+                    $('#percent').text($(event.target).val());
+                });
+                var result = Viz('digraph { 	graph [fontname=Arial, nodesep=0.125, ranksep=0.25]; 	node [fontcolor=white, fontname=Arial, height=0, shape=box, style=filled, width=0]; 	edge [fontname=Arial]; 	29 [color="#0d317d", fontcolor="#ffffff", fontsize="10.00", label="inspect:1435:getouterframes\n8.00%\n(0.00%)\n1×", tooltip="/usr/local/lib/python3.6/inspect.py"]; 	29 -> 197 [arrowsize="0.35", color="#0d317d", fontcolor="#0d317d", fontsize="10.00", label="8.00%\n16×", labeldistance="0.50", penwidth="0.50"]; 	59 [color="#0d307d", fontcolor="#ffffff", fontsize="10.00", label="inspect:684:getmodule\n7.87%\n(0.28%)\n16×", tooltip="/usr/local/lib/python3.6/inspect.py"]; 	59 -> 228 [arrowsize="0.35", color="#0d267a", fontcolor="#0d267a", fontsize="10.00", label="5.68%\n678×", labeldistance="0.50", penwidth="0.50"]; 	146 [color="#ff0100", fontcolor="#ffffff", fontsize="10.00", label="base:157:_get_response\n99.89%\n(0.01%)\n1×", tooltip="/home/moagstar/Projects/silk/.venv.3.6/lib/python3.6/site-packages/django/core/handlers/base.py"]; 	146 -> 296 [arrowsize="1.00", color="#ff0200", fontcolor="#ff0200", fontsize="10.00", label="99.85%\n1×", labeldistance="3.99", penwidth="3.99"]; 	156 [color="#0d307d", fontcolor="#ffffff", fontsize="10.00", label="inspect:730:findsource\n7.96%\n(0.01%)\n16×", tooltip="/usr/local/lib/python3.6/inspect.py"]; 	156 -> 59 [arrowsize="0.35", color="#0d307d", fontcolor="#0d307d", fontsize="10.00", label="7.87%\n16×", labeldistance="0.50", penwidth="0.50"]; 	197 [color="#0d317d", fontcolor="#ffffff", fontsize="10.00", label="inspect:1395:getframeinfo\n8.00%\n(0.01%)\n16×", tooltip="/usr/local/lib/python3.6/inspect.py"]; 	197 -> 156 [arrowsize="0.35", color="#0d307d", fontcolor="#0d307d", fontsize="10.00", label="7.96%\n16×", labeldistance="0.50", penwidth="0.50"]; 	228 [color="#0d267a", fontcolor="#ffffff", fontsize="10.00", label="posixpath:382:realpath\n5.68%\n(0.10%)\n678×", tooltip="/home/moagstar/Projects/silk/.venv.3.6/lib/python3.6/posixpath.py"]; 	250 [color="#f15b02", fontcolor="#ffffff", fontsize="10.00", label="~:0:<built-in method time.sleep>\n90.68%\n(90.68%)\n1×", tooltip="~"]; 	251 [color="#f15b02", fontcolor="#ffffff", fontsize="10.00", label="views:10:do_something_long\n90.69%\n(0.00%)\n1×", tooltip="/home/moagstar/Projects/silk/project/example_app/views.py"]; 	251 -> 250 [arrowsize="0.95", color="#f15b02", fontcolor="#f15b02", fontsize="10.00", label="90.68%\n1×", labeldistance="3.63", penwidth="3.63"]; 	295 [color="#f15b02", fontcolor="#ffffff", fontsize="10.00", label="profiler:139:wrapped_target\n90.74%\n(0.01%)\n1×", tooltip="/home/moagstar/Projects/silk/project/silk/profiling/profiler.py"]; 	295 -> 251 [arrowsize="0.95", color="#f15b02", fontcolor="#f15b02", fontsize="10.00", label="90.69%\n1×", labeldistance="3.63", penwidth="3.63"]; 	296 [color="#ff0200", fontcolor="#ffffff", fontsize="10.00", label="views:9:index\n99.85%\n(0.01%)\n1×", tooltip="/home/moagstar/Projects/silk/project/example_app/views.py"]; 	296 -> 295 [arrowsize="0.95", color="#f15b02", fontcolor="#f15b02", fontsize="10.00", label="90.74%\n1×", labeldistance="3.63", penwidth="3.63"]; 	296 -> 300 [arrowsize="0.35", color="#0d317d", fontcolor="#0d317d", fontsize="10.00", label="8.02%\n1×", labeldistance="0.50", penwidth="0.50"]; 	300 [color="#0d317d", fontcolor="#ffffff", fontsize="10.00", label="profiler:86:__enter__\n8.02%\n(0.00%)\n1×", tooltip="/home/moagstar/Projects/silk/project/silk/profiling/profiler.py"]; 	300 -> 29 [arrowsize="0.35", color="#0d317d", fontcolor="#0d317d", fontsize="10.00", label="8.00%\n1×", labeldistance="0.50", penwidth="0.50"]; } ');
+                $('#graph-div').append(result);
+            </script>
             {% endif %}
-            <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
-            {% endif %}
+
+            {% if silk_request.pyprofile %}
+            <div id="pyprofile-div">
+                <div class="heading">
+                    <div class="inner-heading">Python Profiler</div>
+                </div>
+                <div class="description">
+                    The below is a dump from the cPython profiler.
+                </div>
+                {% if silk_request.prof_file %}
+                Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
+                {% endif %}
+                <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
+                {% endif %}
+            </div>
 
         </div>
     </div>
