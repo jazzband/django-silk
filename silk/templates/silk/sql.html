@@ -5,6 +5,11 @@
 {% load staticfiles %}
 {% load silk_inclusion %}
 
+{% block js %}
+  <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
+  {{ block.super }}
+{% endblock %}
+
 {% block style %}
     <style>
         .right-aligned {
@@ -97,7 +102,7 @@
         {% endif %}
         <div id="table-div">
 
-            <table>
+            <table class="sortable">
                 <tr>
                     <th class="left-aligned">At</th>
                     <th class="left-aligned">Tables</th>
@@ -118,11 +123,12 @@
                         <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                         <td class="right-aligned">{{ sql_query.num_joins }}</td>
-                        <td class="right-aligned">{{ sql_query.time_taken }}</td>
+                        <td class="right-aligned">{{ sql_query.time_taken | floatformat:6 }}</td>
                     </tr>
                 {% endfor %}
 
             </table>
+            <script>//$('table').simple_datagrid();</script>
 
             <div id="table-pagination" class="pagination">
                 <div class="current">
