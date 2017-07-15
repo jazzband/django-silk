@@ -42,7 +42,7 @@ urlpatterns = [
     url(
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/json/$',
         ProfileDotView.as_view(),
-        name='request_profile_json'
+        name='request_profile_dot'
     ),
     url(
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profiling/$',
