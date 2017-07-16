@@ -78,7 +78,7 @@ class ProfileDotViewTestCase(TestCase):
 
             try:
                 # create dot
-                with tempfile.NamedTemporaryFile(delete=False) as dot:
+                with tempfile.NamedTemporaryFile('wb', delete=False) as dot:
                     dot.write(_create_dot(self._profile(), 5).encode('utf-8'))
 
                 # verify generated dot is valid
