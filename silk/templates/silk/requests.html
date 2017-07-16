@@ -220,6 +220,22 @@
             </label>
         </div>
 
+        <div>
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="MethodFilter"
+                   name="filter-method-typ">
+            <label>Method:
+                <select form="filter-form2" name="filter-method-value">
+                    <option value="" {% if not filters.method.value %}selected{% endif %}></option>
+                    {% for method in options_methods %}
+                        <option {% if method == filters.method.value %}selected{% endif %}>{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
 
     </div>
 {% endblock %}
