@@ -78,15 +78,17 @@ class ProfileDotViewTestCase(TestCase):
 
             try:
                 # create dot
-                with tempfile.NamedTemporaryFile('wb', delete=False) as dot:
-                    dot.write(_create_dot(self._profile(), 5).encode('utf-8'))
+                with tempfile.NamedTemporaryFile(delete=False) as dotfile:
+                    dot = _create_dot(self._profile(), 5)
+                    dot = dot.encode('utf-8') if PY3 else dot
+                    dotfile.write(dot)
 
                 # verify generated dot is valid
-                G = read_dot(dot.name)
+                G = read_dot(dotfile.name)
                 self.assertGreater(len(G.nodes()), 0)
 
             finally:
-                os.unlink(dot.name)
+                os.unlink(dotfile.name)
 
     def test_temp_file_from_file_field(self):
         """
