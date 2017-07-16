@@ -47,7 +47,7 @@ def _create_dot(profile, cutoff):
     edge_cutoff = 0.1 / 100.0
     profile.prune(node_cutoff, edge_cutoff, False)
 
-    with StringIO() as fp:
+    with closing(StringIO()) as fp:
         DotWriter(fp).graph(profile, TEMPERATURE_COLORMAP)
         return fp.getvalue()
 
