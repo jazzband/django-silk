@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from silk.views.profile_detail import ProfilingDetailView
 from silk.views.profile_download import ProfileDownloadView
+from silk.views.profile_dot import ProfileDotView
 from silk.views.profiling import ProfilingView
 from silk.views.raw import Raw
 from silk.views.request_detail import RequestView
@@ -37,6 +38,11 @@ urlpatterns = [
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/pyprofile/$',
         ProfileDownloadView.as_view(),
         name='request_profile_download'
+    ),
+    url(
+        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/json/$',
+        ProfileDotView.as_view(),
+        name='request_profile_dot'
     ),
     url(
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profiling/$',
