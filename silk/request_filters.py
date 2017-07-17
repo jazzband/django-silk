@@ -201,6 +201,10 @@ class StatusCodeFilter(BaseFilter):
         super(StatusCodeFilter, self).__init__(value, response__status_code=n)
 
 
+class MethodFilter(BaseFilter):
+    def __init__(self, value):
+        super(MethodFilter, self).__init__(value, method=value)
+
 
 def filters_from_request(request):
     raw_filters = {}

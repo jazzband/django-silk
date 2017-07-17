@@ -21,6 +21,7 @@ from silk.request_filters import (
     TimeSpentOnQueriesFilter,
     OverallTimeFilter,
     StatusCodeFilter,
+    MethodFilter,
 )
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
@@ -99,7 +100,7 @@ class TestRequestFilters(TestCase):
             self.assertGreaterEqual(f.time_taken, c)
 
     def test_status_code_filter(self):
-        requests = [mock_suite.mock_request() for _ in range(0, 10)]
+        requests = [mock_suite.mock_request() for _ in range(0, 50)]
         requests = sorted(requests, key=lambda x: x.response.status_code)
         by_status_code = groupby(requests, key=lambda x: x.response.status_code)
         for status_code, expected in by_status_code:
@@ -109,6 +110,16 @@ class TestRequestFilters(TestCase):
             filtered = query_set.filter(status_code_filter)
             self.assertEqual(len(list(expected)), filtered.count())
 
+    def test_method_filter(self):
+        requests = [mock_suite.mock_request() for _ in range(0, 50)]
+        requests = sorted(requests, key=lambda x: x.method)
+        by_method = groupby(requests, key=lambda x: x.method)
+        for method, expected in by_method:
+            method_filter = MethodFilter(method)
+            query_set = models.Request.objects.all()
+            query_set = method_filter.contribute_to_query_set(query_set)
+            filtered = query_set.filter(method_filter)
+            self.assertEqual(len(list(expected)), filtered.count())
 
 class TestRequestAfterDateFilter(TestCase):
     def assertFilter(self, dt, f):
