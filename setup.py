@@ -50,5 +50,6 @@ setup(
         'Jinja2',
         'autopep8',
         'pytz',
+        'gprof2dot',
     ]
 )
