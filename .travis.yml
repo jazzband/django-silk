@@ -47,5 +47,5 @@ deploy:
     secure: fjIlcaGw2esap2W4+dN458OU1Csr7BY4TQ1aUiuWfHK+IkcFWO9rl1UuSYCdPZutX03xZ7GP90eKfk0Ca/97fRw7K1ZoQI9WlYYTWm+eygvklU+H9O2Uz6mtWBEHnsBuAnt8wM9gHqaBm6Bv/1Np75Kxo47dUcS9NutSubLfsDc=
   on:
     tags: true
-    distributions: sdist bdist_wheel
+    distributions: "sdist bdist_wheel"
     repo: jazzband/silk
