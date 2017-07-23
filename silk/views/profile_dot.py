@@ -52,10 +52,6 @@ def _create_dot(profile, cutoff):
         return fp.getvalue()
 
 
-import functools
-
-
-@functools.lru_cache()
 def _get_dot(request_id, cutoff):
     silk_request = get_object_or_404(Request, pk=request_id, prof_file__isnull=False)
     profile = _create_profile(silk_request.prof_file)
