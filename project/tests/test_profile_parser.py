@@ -2,6 +2,7 @@
 from __future__ import print_function
 # std
 import cProfile
+import sys
 # 3rd party
 import contextlib2 as contextlib
 from six import StringIO, PY3
@@ -22,13 +23,22 @@ class ProfileParserTestCase(TestCase):
             stream.seek(0)
             actual = list(parse_profile(stream))
             if PY3:
-                expected = [
-                     ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
-                     ['1', '0.000', '0.000', '0.000', '0.000', '<string>:1(<module>)'],
-                     ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.exec}'],
-                     ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.print}'],
-                     ['1', '0.000', '0.000', '0.000', '0.000', "{method 'disable' of '_lsprof.Profiler' objects}"],
-                ]
+                if sys.version_info < (3,5):
+                    expected = [
+                         ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '<string>:1(<module>)'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method exec}'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method print}'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', "{method 'disable' of '_lsprof.Profiler' objects}"],
+                    ]
+                else:
+                    expected = [
+                         ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '<string>:1(<module>)'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.exec}'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.print}'],
+                         ['1', '0.000', '0.000', '0.000', '0.000', "{method 'disable' of '_lsprof.Profiler' objects}"],
+                    ]
             else:
                 expected = [
                     ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
