@@ -1,7 +1,7 @@
 import calendar
 import random
 from datetime import timedelta, datetime
-from math import floor, abs
+from math import floor
 from itertools import groupby
 
 import pytz
