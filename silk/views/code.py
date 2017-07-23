@@ -4,8 +4,10 @@ __author__ = 'mtford'
 
 
 def _code(file_path, line_num, end_line_num=None):
+    line_num = int(line_num)
     if not end_line_num:
         end_line_num = line_num
+    end_line_num = int(end_line_num)
     actual_line = []
     lines = ''
     with open(file_path, 'r') as f:
@@ -19,10 +21,23 @@ def _code(file_path, line_num, end_line_num=None):
     return actual_line, code
 
 
-def _code_context(file_path, line_num):
-    actual_line, code = _code(file_path, line_num)
-    context = {'code': code, 'file_path': file_path, 'line_num': line_num, 'actual_line': actual_line}
-    return context
+def _code_context(file_path, line_num, end_line_num=None, prefix=''):
+    actual_line, code = _code(file_path, line_num, end_line_num)
+    return {
+        prefix + 'code': code,
+        prefix + 'file_path': file_path,
+        prefix + 'line_num': line_num,
+        prefix + 'actual_line': actual_line
+    }
+
+
+def _code_context_from_request(request, end_line_num=None, prefix=''):
+    file_path = request.GET.get('file_path')
+    line_num = request.GET.get('line_num')
+    result = {}
+    if file_path is not None and line_num is not None:
+        result = _code_context(file_path, line_num, end_line_num, prefix)
+    return result
 
 
 def _should_display_file_name(file_name):

@@ -52,13 +52,21 @@ def _create_dot(profile, cutoff):
         return fp.getvalue()
 
 
+import functools
+
+
+@functools.lru_cache()
+def _get_dot(request_id, cutoff):
+    silk_request = get_object_or_404(Request, pk=request_id, prof_file__isnull=False)
+    profile = _create_profile(silk_request.prof_file)
+    result = dict(dot=_create_dot(profile, cutoff))
+    return HttpResponse(json.dumps(result).encode('utf-8'), content_type='application/json')
+
+
 class ProfileDotView(View):
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request, request_id):
-        silk_request = get_object_or_404(Request, pk=request_id, prof_file__isnull=False)
         cutoff = float(request.GET.get('cutoff', '') or 5)
-        profile = _create_profile(silk_request.prof_file)
-        result = dict(dot=_create_dot(profile, cutoff))
-        return HttpResponse(json.dumps(result).encode('utf-8'), content_type='application/json')
+        return _get_dot(request_id, cutoff)
