@@ -7,6 +7,7 @@
 {% block js %}
     <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>
     <script type="text/javascript" src="{% static 'silk/lib/svg-pan-zoom.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
     {{ block.super }}
 {% endblock %}
 
@@ -66,6 +67,26 @@
 
         svg {
           display: block;
+        }
+        
+        .file-path {
+            font-size: 13px;
+        }
+
+        .file-path>a {
+            color: black;
+        }
+
+        .file-path>a:hover {
+            color: #9dd0ff;
+        }
+
+        .file-path>a:active {
+            color: #594F4F;
+        }
+
+        #pyprofile-table {
+            margin-top: 25px;
         }
 
     </style>
@@ -143,13 +164,38 @@
                 <div class="heading">
                     <div class="inner-heading">Python Profiler</div>
                 </div>
+
                 <div class="description">
-                    The below is a dump from the cPython profiler.
+                    Below is a dump from the cPython profiler.
+                    {% if silk_request.prof_file %}
+                    Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
+                    {% endif %}
                 </div>
-                {% if silk_request.prof_file %}
-                Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
-                {% endif %}
-                <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
+
+                <table id='pyprofile-table' class="sortable">
+                    {% for row in silk_request.profile_table %}
+                        <tr>
+                            {% for column in row %}
+                                {% if forloop.parentloop.counter0 %}
+                                    <td>
+                                        {% if forloop.counter0 == file_column %}
+                                            <div class="file-path">
+                                                {{ column }}
+                                            </div>
+                                            {% if forloop.parentloop.counter0 == pos %}
+                                                {% code pyprofile_code pyprofile_actual_line %}
+                                            {% endif %}
+                                        {% else %}
+                                            {{ column }}
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <th>{{ column }}</th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
                 {% endif %}
             </div>
 
