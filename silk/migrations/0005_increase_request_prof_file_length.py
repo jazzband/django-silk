@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='request',
             name='prof_file',
-            field=models.FileField(max_length=300, null=True, storage=silk.models.ProfilerResultStorage(), upload_to=''),
+            field=models.FileField(max_length=300, null=True, storage=silk.models.silk_storage, upload_to=''),
         ),
     ]

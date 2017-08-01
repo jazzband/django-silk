@@ -4,7 +4,8 @@ import base64
 import random
 import re
 
-from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage, get_storage_class
 from django.db import models
 from django.db.models import (
     DateTimeField, TextField, CharField, ForeignKey, IntegerField,
@@ -22,6 +23,10 @@ from silk.config import SilkyConfig
 
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
+
+
+storage_class = getattr(settings, 'SILKY_STORAGE_CLASS', 'silk.models.ProfilerResultStorage')
+silk_storage = get_storage_class(storage_class)()
 
 
 # Seperated out so can use in tests w/o models
@@ -82,9 +87,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
-    prof_file = FileField(
-        max_length=300, null=True, storage=ProfilerResultStorage()
-    )
+    prof_file = FileField(max_length=300, null=True, storage=silk_storage)
 
     @property
     def total_meta_time(self):
