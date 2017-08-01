@@ -169,10 +169,10 @@ When enabled a graph visualisation generated using [gprof2dot](https://github.co
 A custom storage class can be used for the saved the generated binary `.prof` files:
  
 ```python
-SILKY_STORAGE_CLASS = 'path.to.StorageClass`
+SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
 
-The default storage class is `silk.models.ProfilerResultStorage`, and when using that you can specify a path of your choosing. You must ensure the specified directory exists.
+The default storage class is `silk.storage.ProfilerResultStorage`, and when using that you can specify a path of your choosing. You must ensure the specified directory exists.
 
 ```python
 # If this is not set, MEDIA_ROOT will be used.

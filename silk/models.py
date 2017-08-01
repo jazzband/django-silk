@@ -1,31 +1,30 @@
-from collections import Counter
-import json
 import base64
+import json
 import random
 import re
+from collections import Counter
+from uuid import uuid4
 
+import sqlparse
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage, get_storage_class
+from django.core.files.storage import get_storage_class
 from django.db import models
+from django.db import transaction
 from django.db.models import (
     DateTimeField, TextField, CharField, ForeignKey, IntegerField,
     BooleanField, F, ManyToManyField, OneToOneField, FloatField,
     FileField
 )
 from django.utils import timezone
-from django.db import transaction
-from uuid import uuid4
-import sqlparse
 from django.utils.safestring import mark_safe
 
-from silk.utils.profile_parser import parse_profile
 from silk.config import SilkyConfig
+from silk.utils.profile_parser import parse_profile
 
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
 
-
-storage_class = getattr(settings, 'SILKY_STORAGE_CLASS', 'silk.models.ProfilerResultStorage')
+storage_class = getattr(settings, 'SILKY_STORAGE_CLASS', 'silk.storage.ProfilerResultStorage')
 silk_storage = get_storage_class(storage_class)()
 
 
@@ -56,16 +55,6 @@ class CaseInsensitiveDictionary(dict):
         super(CaseInsensitiveDictionary, self).__init__()
         for k, v in d.items():
             self[k] = v
-
-
-class ProfilerResultStorage(FileSystemStorage):
-    # the default storage will only store under MEDIA_ROOT, so we must define our own.
-    def __init__(self):
-        super(ProfilerResultStorage, self).__init__(
-            location=SilkyConfig().SILKY_PYTHON_PROFILER_RESULT_PATH,
-            base_url=''
-        )
-        self.base_url = None
 
 
 class Request(models.Model):
