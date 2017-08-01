@@ -6,7 +6,6 @@ from collections import Counter
 from uuid import uuid4
 
 import sqlparse
-from django.conf import settings
 from django.core.files.storage import get_storage_class
 from django.db import models
 from django.db import transaction
@@ -24,7 +23,7 @@ from silk.utils.profile_parser import parse_profile
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
 
-storage_class = getattr(settings, 'SILKY_STORAGE_CLASS', 'silk.storage.ProfilerResultStorage')
+storage_class = SilkyConfig().SILKY_STORAGE_CLASS
 silk_storage = get_storage_class(storage_class)()
 
 
