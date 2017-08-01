@@ -23,8 +23,7 @@ from silk.utils.profile_parser import parse_profile
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
 
-storage_class = SilkyConfig().SILKY_STORAGE_CLASS
-silk_storage = get_storage_class(storage_class)()
+silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
 # Seperated out so can use in tests w/o models
