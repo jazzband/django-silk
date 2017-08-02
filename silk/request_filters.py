@@ -206,16 +206,21 @@ class MethodFilter(BaseFilter):
         super(MethodFilter, self).__init__(value, method=value)
 
 
-def filters_from_request(request):
+class RevisionFilter(BaseFilter):
+    def __init__(self, value):
+        super(RevisionFilter, self).__init__(value, revision=value)
+
+
+def filters_from_query_dict(query_dict):
     raw_filters = {}
-    for key in request.POST:
+    for key in query_dict:
         splt = key.split('-')
         if splt[0].startswith('filter'):
             ident = splt[1]
             typ = splt[2]
             if ident not in raw_filters:
                 raw_filters[ident] = {}
-            raw_filters[ident][typ] = request.POST[key]
+            raw_filters[ident][typ] = query_dict[key]
     filters = {}
     for ident, raw_filter in raw_filters.items():
         value = raw_filter.get('value', '')

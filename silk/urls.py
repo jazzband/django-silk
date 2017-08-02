@@ -10,6 +10,8 @@ from silk.views.requests import RequestsView
 from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
+from silk.views.distribution import DistributionView, DistributionDataView
+
 
 app_name = 'silk'
 urlpatterns = [
@@ -80,5 +82,19 @@ urlpatterns = [
         SQLDetailView.as_view(),
         name='profile_sql_detail'
     ),
-    url(r'^profiling/$', ProfilingView.as_view(), name='profiling')
+    url(
+        r'^profiling/$',
+        ProfilingView.as_view(),
+        name='profiling'
+    ),
+    url(
+        r'^distribution/(?P<group_by>[a-zA-Z_]+)?$',
+        DistributionView.as_view(),
+        name='distribution'
+    ),
+    url(
+        r'^distribution/data/$',
+        DistributionDataView.as_view(),
+        name='distribution_data'
+    ),
 ]

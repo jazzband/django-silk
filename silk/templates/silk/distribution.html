@@ -1,0 +1,69 @@
+{% extends 'silk/base/root_base.html' %}
+{% load silk_inclusion %}
+{% load staticfiles %}
+
+{% block menu %}
+    {% root_menu request %}
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'silk/lib/d3.v3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'silk/lib/distrochart.js' %}"></script>
+    <script type="text/javascript" src="{% static 'silk/lib/strftime.min.js' %}"></script>
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'silk/lib/url.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            initFilters();
+            initFilterButton();
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'silk/js/distribution.js' %}"></script>
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'silk/lib/distrochart.css' %}">
+    <style>
+        .container {
+            padding: 0 1em;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+        .chart-area {
+            background-color: #f3f3f3;
+        }
+    </style>
+{% endblock %}
+
+{% block filter %}
+    <form id="filter-form" action="." method="get"></form>
+    <div class="menu-item ">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Group By:
+                    <select name="group_by" form="filter-form" onchange="this.form.submit();">
+                            <option value="date">Date</option>
+                            <option value="revision">Revision</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}
+
+{% block filters %}
+    {% request_filter options_paths options_status_codes options_methods view_names filters %}
+{% endblock %}
+
+{% block data %}
+    <div class="container">
+        <h2 id="title"></h2>
+    </div>
+    <div class="chart-wrapper" id="chart-distro1">
+    </div>
+    <script type="text/javascript">initChart("{% url 'silk:distribution_data' %}");</script>
+{% endblock %}
