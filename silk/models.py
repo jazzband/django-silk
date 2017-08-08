@@ -4,7 +4,7 @@ import base64
 import random
 import re
 
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import get_storage_class
 from django.db import models
 from django.db.models import (
     DateTimeField, TextField, CharField, ForeignKey, IntegerField,
@@ -22,6 +22,8 @@ from silk.config import SilkyConfig
 
 # Django 1.8 removes commit_on_success, django 1.5 does not have atomic
 atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
+
+silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
 # Seperated out so can use in tests w/o models
@@ -53,16 +55,6 @@ class CaseInsensitiveDictionary(dict):
             self[k] = v
 
 
-class ProfilerResultStorage(FileSystemStorage):
-    # the default storage will only store under MEDIA_ROOT, so we must define our own.
-    def __init__(self):
-        super(ProfilerResultStorage, self).__init__(
-            location=SilkyConfig().SILKY_PYTHON_PROFILER_RESULT_PATH,
-            base_url=''
-        )
-        self.base_url = None
-
-
 class Request(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=190, db_index=True)
@@ -82,9 +74,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
-    prof_file = FileField(
-        max_length=300, null=True, storage=ProfilerResultStorage()
-    )
+    prof_file = FileField(max_length=300, null=True, storage=silk_storage)
 
     @property
     def total_meta_time(self):
