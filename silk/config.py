@@ -28,6 +28,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
+        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage'
     }
 
     def _setup(self):

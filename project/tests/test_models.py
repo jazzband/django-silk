@@ -10,6 +10,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
+from silk.storage import ProfilerResultStorage
 from silk.config import SilkyConfig
 from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
@@ -198,6 +199,10 @@ class RequestTest(TestCase):
         obj.save()
         self.assertEqual(obj.end_time, date)
         self.assertEqual(obj.time_taken, 3000.0)
+
+    def test_prof_file_default_storage(self):
+        obj = models.Request(path='/some/path/', method='get')
+        self.assertEqual(obj.prof_file.storage.__class__, ProfilerResultStorage)
 
 
 class ResponseTest(TestCase):
