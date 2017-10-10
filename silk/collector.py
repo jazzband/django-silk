@@ -1,14 +1,13 @@
+import cProfile
+import logging
+import pstats
 from threading import local
 
-import cProfile
-import pstats
-import logging
-
+import marshal
 from django.utils.six import StringIO, with_metaclass
-
 from silk import models
 from silk.config import SilkyConfig
-from silk.errors import SilkNotConfigured, SilkInternalInconsistency
+from silk.errors import SilkInternalInconsistency, SilkNotConfigured
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
@@ -149,8 +148,9 @@ class DataCollector(with_metaclass(Singleton, object)):
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
                 file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
-                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
-                    ps.dump_stats(f.name)
+                with self.request.prof_file.storage.open(file_name, 'w+b') as f:
+                    f.write(marshal.dumps(ps.stats))
+
                 self.request.prof_file = f.name
                 self.request.save()
 
