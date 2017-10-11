@@ -1,4 +1,5 @@
 import os
+
 from setuptools import setup
 
 try:
@@ -20,7 +21,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-silk',
-    version='2.0.0',
+    version='2.0.0-viralize',
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
