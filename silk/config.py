@@ -1,7 +1,6 @@
 from copy import copy
 
 from django.utils import six
-
 from silk.singleton import Singleton
 
 
@@ -28,7 +27,8 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
-        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage'
+        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
+        'SILKY_PROF_FILE_PREFIX': '',
     }
 
     def _setup(self):

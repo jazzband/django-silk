@@ -147,7 +147,9 @@ class DataCollector(with_metaclass(Singleton, object)):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
+                prefix = SilkyConfig().SILKY_PROF_FILE_PREFIX
                 file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                file_name = prefix + file_name
                 with self.request.prof_file.storage.open(file_name, 'w+b') as f:
                     f.write(marshal.dumps(ps.stats))
 
