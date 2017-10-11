@@ -1,7 +1,6 @@
 from copy import copy
 
 from django.utils import six
-
 from silk.singleton import Singleton
 
 
@@ -29,7 +28,11 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
+<<<<<<< HEAD
         'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware'
+=======
+        'SILKY_PROF_FILE_PREFIX': '',
+>>>>>>> ac34e51... Added possibility to specifiy prefix for prof files
     }
 
     def _setup(self):
