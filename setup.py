@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Define the Django Silk setup."""
 import os
+
 from setuptools import setup
 
 try:
@@ -21,7 +22,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-silk',
-    version='3.0.3',
+    version='3.0.3-viralize',
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
