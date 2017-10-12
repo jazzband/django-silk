@@ -74,7 +74,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
-    prof_file = FileField(max_length=300, null=True, storage=silk_storage)
+    prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
 
     @property
     def total_meta_time(self):
