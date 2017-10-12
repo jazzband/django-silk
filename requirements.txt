@@ -10,4 +10,4 @@ Pillow>=3.2
 django>=1.8
 freezegun>=0.3
 factory-boy>=2.8.1
-gprof2dot>=2016.10.13
+gprof2dot>=2016.10.13,<2017.09.19
