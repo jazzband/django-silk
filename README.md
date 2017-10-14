@@ -67,9 +67,9 @@ INSTALLED_APPS = (
 )
 ```
 
-**Note:** The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+**Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
 
-**Note:** If you're using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you'll get an encoding error.
+**Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
 To enable access to the user interface add the following to your `urls.py`:
 
@@ -117,7 +117,7 @@ Silk primarily consists of:
 
 ### Request Inspection
 
-The Silk middleware intercepts and stores requests and responses and stores them in the configured database.
+The Silk middleware intercepts and stores requests and responses in the configured database.
 These requests can then be filtered and inspecting using Silk's UI through the request overview:
 
 <img src="https://raw.githubusercontent.com/jazzband/silk/master/screenshots/1.png" width="720px"/>
@@ -155,18 +155,18 @@ Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile prof
 SILKY_PYTHON_PROFILER = True
 ```
 
-If you'd like to also generate a binary `.prof` file set the following:
+If you would like to also generate a binary `.prof` file set the following:
 
 ```python
 SILKY_PYTHON_PROFILER_BINARY = True
 ```
 
-When enabled a graph visualisation generated using [gprof2dot](https://github.com/jrfonseca/gprof2dot) and [viz.js](https://github.com/almende/vis) is shown in the profile detail page:
+When enabled, a graph visualisation generated using [gprof2dot](https://github.com/jrfonseca/gprof2dot) and [viz.js](https://github.com/almende/vis) is shown in the profile detail page:
 
 <img src="https://raw.githubusercontent.com/jazzband/silk/master/screenshots/10.png" width="720px"/>
 
 
-A custom storage class can be used for the saved the generated binary `.prof` files:
+A custom storage class can be used for the saved generated binary `.prof` files:
  
 ```python
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
@@ -390,7 +390,7 @@ SILKY_PERMISSIONS = lambda user: user.is_superuser
 
 By default, Silk will save down the request and response bodies for each request for future viewing
 no matter how large. If Silk is used in production under heavy volume with large bodies this can have
-a huge impact on space/time performance. This behaviour can be configured with following options:
+a huge impact on space/time performance. This behaviour can be configured with the following options:
 
 ```python
 SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
@@ -399,7 +399,7 @@ SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
 
 ### Meta-Profiling
 
-Sometimes its useful to be able to see what effect Silk is having on the request/response time. To do this add
+Sometimes it is useful to be able to see what effect Silk is having on the request/response time. To do this add
 the following to your `settings.py`:
 
 ```python
@@ -483,7 +483,7 @@ root of the `project` directory:
 pip install -r test-requirements.txt
 ```
 
-You'll also need to install `silk`'s dependencies. From the root of the git repository:
+You will also need to install `silk`'s dependencies. From the root of the git repository:
 
 ```bash
 pip install -r requirements.txt
