@@ -492,10 +492,27 @@ pip install -r requirements.txt
 At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
 
+Before running, you must set the `DB` and `DB_NAME` environment variables:
+
+```bash
+export DB=sqlite3
+export DB_NAME=db.sqlite3
+```
+
+For other combinations, check [`.travis.yml`](./.travis.yml).
+
 Now from the root of the sample `project` directory start the django server
 
 ```bash
 python manage.py runserver
+```
+
+#### Running the tests
+
+```bash
+cd project
+./tests/test_migrations.sh
+python manage.py test --noinput
 ```
 
 Happy profiling!
