@@ -1,7 +1,10 @@
 import os
 import random
 
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 from django.test import TestCase
 from silk.config import SilkyConfig
 from silk.middleware import silky_reverse
