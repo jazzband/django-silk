@@ -61,6 +61,7 @@ MIDDLEWARE_CLASSES = (
     ...
 )
 
+# All versions of django
 INSTALLED_APPS = (
     ...
     'silk'
