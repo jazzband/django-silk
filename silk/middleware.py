@@ -1,8 +1,11 @@
 import logging
 import random
 
-from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import transaction, DatabaseError
+try:
+    from django.urls import reverse, NoReverseMatch
+except ImportError:
+    from django.core.urlresolvers import reverse, NoReverseMatch
 
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone

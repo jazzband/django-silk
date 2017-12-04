@@ -5,7 +5,10 @@ import traceback
 import base64
 from uuid import UUID
 
-from django.core.urlresolvers import resolve, Resolver404
+try:
+    from django.urls import resolve, Resolver404
+except:
+    from django.core.urlresolvers import resolve, Resolver404
 
 from silk import models
 from silk.collector import DataCollector
