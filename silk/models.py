@@ -295,7 +295,7 @@ class BaseProfile(models.Model):
     request = ForeignKey(
         Request, null=True, blank=True, db_index=True,
         on_delete=models.CASCADE,
-       )
+    )
     time_taken = FloatField(blank=True, null=True)
 
     class Meta:
