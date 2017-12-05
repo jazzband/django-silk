@@ -97,7 +97,7 @@ class TestRequestFilters(TestCase):
         query_set = time_taken_filter.contribute_to_query_set(query_set)
         filtered = query_set.filter(time_taken_filter)
         for f in filtered:
-            self.assertGreaterEqual(f.time_taken, c)
+            self.assertGreaterEqual(round(f.time_taken), round(c))
 
     def test_status_code_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 50)]
