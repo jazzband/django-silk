@@ -45,7 +45,7 @@ class SQLDetailView(View):
         line_num = int(request.GET.get('line_num', 0))
         tb = sql_query.traceback_ln_only
         str, files = self._urlify(tb)
-        if file_path and not file_path in files:
+        if file_path and file_path not in files:
             raise PermissionDenied
         tb = [mark_safe(x) for x in str.split('\n')]
         context = {

@@ -118,7 +118,6 @@ class silk_profile(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._silk_installed() and self._should_profile():
             with silk_meta_profiler():
-                start_time = None
                 exception_raised = exc_type is not None
                 self.profile['exception_raised'] = exception_raised
                 self.profile['end_time'] = timezone.now()
@@ -177,7 +176,7 @@ class silk_profile(object):
             return target
 
     def distinct_queries(self):
-        queries = [x for x in self._queries_after if not x in self._queries_before]
+        queries = [x for x in self._queries_after if x not in self._queries_before]
         return queries
 
 
