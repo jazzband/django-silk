@@ -1,5 +1,8 @@
 from django import template
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except:
+    from django.core.urlresolvers import reverse
 
 register = template.Library()
 

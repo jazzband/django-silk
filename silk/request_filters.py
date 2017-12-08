@@ -213,7 +213,7 @@ def filters_from_request(request):
         if splt[0].startswith('filter'):
             ident = splt[1]
             typ = splt[2]
-            if not ident in raw_filters:
+            if ident not in raw_filters:
                 raw_filters[ident] = {}
             raw_filters[ident][typ] = request.POST[key]
     filters = {}

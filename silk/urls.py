@@ -11,6 +11,7 @@ from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
 
+app_name = 'silk'
 urlpatterns = [
     url(r'^$', SummaryView.as_view(), name='summary'),
     url(r'^requests/$', RequestsView.as_view(), name='requests'),

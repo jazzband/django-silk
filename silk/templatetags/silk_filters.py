@@ -9,12 +9,14 @@ from django.utils.safestring import mark_safe
 register = Library()
 
 
+def _no_op(x):
+    return x
+
+
 def _esc_func(autoescape):
     if autoescape:
-        esc = conditional_escape
-    else:
-        esc = lambda x: x
-    return esc
+        return conditional_escape
+    return _no_op
 
 
 @stringfilter
@@ -85,6 +87,7 @@ def body_filter(value):
         return 'Too big!'
     else:
         return value
+
 
 spacify.needs_autoescape = True
 filepath_urlify.needs_autoescape = True

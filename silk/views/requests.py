@@ -39,8 +39,8 @@ class RequestsView(View):
         },
         'db_time': {
             'label': 'Time on queries',
-            'additional_query_filter': lambda x: x.annotate(db_time=Sum('queries__time_taken')) \
-                .filter(db_time__gte=0)
+            'additional_query_filter': lambda x: x.annotate(db_time=Sum('queries__time_taken'))
+            .filter(db_time__gte=0)
         },
     }
     order_dir = {

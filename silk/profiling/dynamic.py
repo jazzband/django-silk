@@ -53,7 +53,7 @@ def profile_function_or_method(module, func, name=None):
     @param module: module object or module name in form 'path.to.module'
     @param func: function object or function name in form 'foo' or 'Class.method'
     """
-    if type(module) is str or type(module) is unicode:
+    if isinstance(module, six.string_types) or isinstance(module, six.text_type):
         module = _get_module(module)
     decorator = silk_profile(name, _dynamic=True)
     func_name = func

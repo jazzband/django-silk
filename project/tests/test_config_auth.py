@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse, NoReverseMatch
+try:
+    from django.urls import reverse, NoReverseMatch
+except ImportError:
+    from django.core.urlresolvers import reverse, NoReverseMatch
 from django.test import TestCase
 
 from silk.config import SilkyConfig, default_permissions

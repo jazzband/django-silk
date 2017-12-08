@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('raw_body', models.TextField(blank=True, default='')),
                 ('body', models.TextField(blank=True, default='')),
                 ('encoded_headers', models.TextField(blank=True, default='')),
-                ('request', models.OneToOneField(to='silk.Request', related_name='response')),
+                ('request', models.OneToOneField(to='silk.Request', related_name='response', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                 ('end_time', models.DateTimeField(blank=True, null=True)),
                 ('time_taken', models.FloatField(blank=True, null=True)),
                 ('traceback', models.TextField()),
-                ('request', models.ForeignKey(to='silk.Request', blank=True, null=True, related_name='queries')),
+                ('request', models.ForeignKey(to='silk.Request', blank=True, null=True, related_name='queries', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -83,6 +83,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='request',
-            field=models.ForeignKey(to='silk.Request', blank=True, null=True),
+            field=models.ForeignKey(to='silk.Request', blank=True, null=True, on_delete=models.CASCADE),
         ),
     ]
