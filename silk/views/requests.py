@@ -70,7 +70,7 @@ class RequestsView(View):
     def _get_status_codes(self):
         return [x['status_code'] for x in Response.objects.values('status_code').distinct()]
 
-    def _get_methods(selfs):
+    def _get_methods(self):
         return [x['method'] for x in Request.objects.values('method').distinct()]
 
     def _get_objects(self, show=None, order_by=None, order_dir=None, path=None, filters=None):

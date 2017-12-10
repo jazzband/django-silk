@@ -176,8 +176,7 @@ class silk_profile(object):
             return target
 
     def distinct_queries(self):
-        queries = [x for x in self._queries_after if x not in self._queries_before]
-        return queries
+        return [x for x in self._queries_after if x not in self._queries_before]
 
 
 @silk_profile()

@@ -150,8 +150,7 @@ def _new_func_from_source(source, func):
     combined.update(locals)
     Logger.debug('New src_str:\n %s' % src_str)
     six.exec_(src_str, combined, context)
-    new_func = context[func.__name__]
-    return new_func
+    return context[func.__name__]
 
 
 def _inject_context_manager_func(func, start_line, end_line, name):

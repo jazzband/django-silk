@@ -38,8 +38,7 @@ class ProfilingView(View):
             function_names.remove('')
         except ValueError:
             pass
-        function_names = [''] + function_names
-        return function_names
+        return [''] + function_names
 
     def _get_function_names(self, silk_request=None):
         return self._get_distinct_values('func_name', silk_request)

@@ -211,8 +211,7 @@ class SQLQueryManager(models.Manager):
             for r in requests:
                 r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
                 r.save()
-            save = super(SQLQueryManager, self).bulk_create(*args, **kwargs)
-            return save
+            return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -327,5 +326,4 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        time_spent = sum(x.time_taken for x in self.queries.all())
-        return time_spent
+        return sum(x.time_taken for x in self.queries.all())
