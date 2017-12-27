@@ -1,6 +1,6 @@
 {
   "name": "silk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jazzband/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)",
   "main": "index.js",
   "directories": {
