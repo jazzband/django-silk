@@ -97,7 +97,7 @@ if required. The UI can be reached at `/silk/`
 Via [github tags](https://github.com/jazzband/silk/releases):
 
 ```bash
-pip install django-silk-<version>.tar.gz
+pip install https://github.com/jazzband/silk/archive/<version>.tar.gz
 ```
 
 You can install from master using the following, but please be aware that the version in master
