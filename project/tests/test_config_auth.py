@@ -16,10 +16,7 @@ class TestAuth(TestCase):
         SilkyConfig().SILKY_AUTHENTICATION = True
         response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 302)
-        try:
-            url = response.url
-        except AttributeError:  # Django 1.5
-            url = response['location']
+        url = response.url
         try:
             # If we run tests within the django_silk project, a login url is available from example_app
             self.assertIn(reverse('login'), url)
