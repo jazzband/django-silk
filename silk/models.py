@@ -20,9 +20,6 @@ from django.utils.safestring import mark_safe
 from silk.utils.profile_parser import parse_profile
 from silk.config import SilkyConfig
 
-# Django 1.8 removes commit_on_success, django 1.5 does not have atomic
-atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
-
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
@@ -201,7 +198,7 @@ class SQLQueryManager(models.Manager):
         else:
             objs = kwargs.get('objs')
 
-        with atomic():
+        with transaction.atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
             # TODO: Not that there is ever more than one request (but there could be eventually)
@@ -266,7 +263,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @atomic()
+    @transaction.atomic()
     def save(self, *args, **kwargs):
 
         if self.end_time and self.start_time:
@@ -280,7 +277,7 @@ class SQLQuery(models.Model):
 
         super(SQLQuery, self).save(*args, **kwargs)
 
-    @atomic()
+    @transaction.atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()

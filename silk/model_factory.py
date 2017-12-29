@@ -178,17 +178,7 @@ class RequestModelFactory(object):
         except Resolver404:
             return None
 
-        try:
-            # view_name is set in Django >= 1.8
-            return resolved.view_name
-        except AttributeError:
-            # support for Django 1.7 in which no view_name is set
-            view_name = resolved.url_name
-            namespace = resolved.namespace
-            if namespace:
-                view_name = namespace + ':' + view_name
-
-            return view_name
+        return resolved.view_name
 
     def construct_request_model(self):
         body, raw_body = self.body()
