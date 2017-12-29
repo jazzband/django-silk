@@ -3,8 +3,10 @@ import random
 
 from django.db import transaction, DatabaseError
 try:
+    # Django >= 1.10
     from django.urls import reverse, NoReverseMatch
 except ImportError:
+    # Django < 2.0
     from django.core.urlresolvers import reverse, NoReverseMatch
 
 from django.db.models.sql.compiler import SQLCompiler

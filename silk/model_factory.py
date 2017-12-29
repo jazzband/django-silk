@@ -6,8 +6,10 @@ import base64
 from uuid import UUID
 
 try:
+    # Django >= 1.10
     from django.urls import resolve, Resolver404
-except:
+except ImportError:
+    # Django < 2.0
     from django.core.urlresolvers import resolve, Resolver404
 
 from silk import models
