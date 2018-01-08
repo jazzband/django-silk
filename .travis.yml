@@ -1,25 +1,25 @@
 language: python
 python:
-  - '2.7'
-  - '3.4'
-  - '3.5'
-  - '3.6'
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 env:
-  - DJANGO="Django>=1.8.0,<1.9.0"   DB=postgresql DB_NAME=travis_ci_test
-  - DJANGO="Django>=1.9.0,<1.10.0"  DB=postgresql DB_NAME=travis_ci_test
-  - DJANGO="Django>=1.10.0,<1.11.0" DB=postgresql DB_NAME=travis_ci_test
-  - DJANGO="Django>=1.11.0,<2.0"    DB=postgresql DB_NAME=travis_ci_test
-  - DJANGO="Django>=2.0,<2.1.0"     DB=postgresql DB_NAME=travis_ci_test
-  - DJANGO="Django>=1.8.0,<1.9.0"   DB=sqlite3 DB_NAME=db.sqlite3
-  - DJANGO="Django>=1.9.0,<1.10.0"  DB=sqlite3 DB_NAME=db.sqlite3
-  - DJANGO="Django>=1.10.0,<1.11.0" DB=sqlite3 DB_NAME=db.sqlite3
-  - DJANGO="Django>=1.11.0,<2.0"    DB=sqlite3 DB_NAME=db.sqlite3
-  - DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
-  - DJANGO="Django>=1.8.0,<1.9.0"   DB=mysql DB_NAME=mysql_db
-  - DJANGO="Django>=1.9.0,<1.10.0"  DB=mysql DB_NAME=mysql_db
-  - DJANGO="Django>=1.10.0,<1.11.0" DB=mysql DB_NAME=mysql_db
-  - DJANGO="Django>=1.11.0,<2.0"    DB=mysql DB_NAME=mysql_db
-  - DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=1.8.0,<1.9.0"   DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=1.9.0,<1.10.0"  DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=1.10.0,<1.11.0" DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=1.11.0,<2.0"    DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=2.0,<2.1.0"     DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=1.8.0,<1.9.0"   DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=1.9.0,<1.10.0"  DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=1.10.0,<1.11.0" DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=1.11.0,<2.0"    DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=1.8.0,<1.9.0"   DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=1.9.0,<1.10.0"  DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=1.10.0,<1.11.0" DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=1.11.0,<2.0"    DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
 matrix:
   allow_failures:
   - python: '2.7'
@@ -37,25 +37,26 @@ matrix:
     env: DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
   fast_finish: true
 install:
-  - travis_retry pip install -q $DJANGO
-  - travis_retry pip install -r requirements.txt
-  - travis_retry pip install -r project/test-requirements.txt
-  - if [[ "$DB" = "postgresql" ]]; then pip install psycopg2; fi
-  - if [[ "$DB" = "postgresql" ]]; then psql -c 'create database travis_ci_test;' -U
-    postgres; fi
-  - if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
-  - if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
+- travis_retry pip install -q $DJANGO
+- travis_retry pip install -r requirements.txt
+- travis_retry pip install -r project/test-requirements.txt
+- if [[ "$DB" = "postgresql" ]]; then pip install psycopg2; fi
+- if [[ "$DB" = "postgresql" ]]; then psql -c 'create database travis_ci_test;' -U
+  postgres; fi
+- if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
+- if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
 script:
-  - cd project
-  - "./tests/test_migrations.sh"
-  - python manage.py test --noinput
-  - cd -
+- cd project
+- "./tests/test_migrations.sh"
+- python manage.py test --noinput
+- cd -
 deploy:
   provider: pypi
   user: jazzband
+  server: https://jazzband.co/projects/silk/upload
   password:
-    secure: fjIlcaGw2esap2W4+dN458OU1Csr7BY4TQ1aUiuWfHK+IkcFWO9rl1UuSYCdPZutX03xZ7GP90eKfk0Ca/97fRw7K1ZoQI9WlYYTWm+eygvklU+H9O2Uz6mtWBEHnsBuAnt8wM9gHqaBm6Bv/1Np75Kxo47dUcS9NutSubLfsDc=
-  distributions: "sdist bdist_wheel"
+    secure: VqpIq4gsetWZFDG7XV72Tg+7zx0zRLcLXlLKM6XVN5LqARx4MVgNWD/lJvf5EWqvXPqcx6DAQN5c5nd35swWjET2XnAR0HO5Bc8F1U/gaHOlvdZBuOSb0PIzl1uPl4JHtwiRJckZELB/O8M8RgJzulZd+28TL37dsH+0baFZ05c=
+  distributions: sdist bdist_wheel
   on:
     tags: true
     repo: jazzband/silk
