@@ -8,10 +8,12 @@
 {% block js %}
   <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
   {{ block.super }}
+  <script>
       function openInNewTab(url) {
           var win = window.open(url, '_blank');
           win.focus();
       }
+  </script>
 {% endblock %}
 
 
