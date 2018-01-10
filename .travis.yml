@@ -53,10 +53,10 @@ script:
 deploy:
   provider: pypi
   user: jazzband
-  server: https://jazzband.co/projects/silk/upload
+  server: https://jazzband.co/projects/django-silk/upload
   password:
     secure: VqpIq4gsetWZFDG7XV72Tg+7zx0zRLcLXlLKM6XVN5LqARx4MVgNWD/lJvf5EWqvXPqcx6DAQN5c5nd35swWjET2XnAR0HO5Bc8F1U/gaHOlvdZBuOSb0PIzl1uPl4JHtwiRJckZELB/O8M8RgJzulZd+28TL37dsH+0baFZ05c=
   distributions: sdist bdist_wheel
   on:
     tags: true
-    repo: jazzband/silk
+    repo: jazzband/django-silk
