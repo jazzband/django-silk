@@ -2,7 +2,6 @@ import base64
 import json
 import random
 import re
-from uuid import uuid4
 
 import sqlparse
 from django.core.files.storage import get_storage_class
@@ -58,7 +57,6 @@ class CaseInsensitiveDictionary(dict):
 
 
 class Request(models.Model):
-    id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=190, db_index=True)
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
@@ -76,7 +74,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
-    prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
+    prof_file = FileField(max_length=300, default='', null=True, blank=True, storage=silk_storage)
 
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
@@ -192,7 +190,6 @@ class Request(models.Model):
 
 
 class Response(models.Model):
-    id = CharField(max_length=36, default=uuid4, primary_key=True)
     request = OneToOneField(
         Request, related_name='response', db_index=True,
         on_delete=models.CASCADE,
