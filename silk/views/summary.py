@@ -13,15 +13,15 @@ class SummaryView(View):
     filters_key = 'summary_filters'
 
     def _avg_num_queries(self, filters):
-        queries__aggregate = models.Request.objects.filter(*filters).annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
+        queries__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
         return queries__aggregate['num']
 
     def _avg_time_spent_on_queries(self, filters):
-        taken__aggregate = models.Request.objects.filter(*filters).annotate(time_spent=Sum('queries__time_taken')).aggregate(num=Avg('time_spent'))
+        taken__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(time_spent=Sum('queries__time_taken')).aggregate(num=Avg('time_spent'))
         return taken__aggregate['num']
 
     def _avg_overall_time(self, filters):
-        taken__aggregate = models.Request.objects.filter(*filters).annotate(time_spent=Sum('time_taken')).aggregate(num=Avg('time_spent'))
+        taken__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(time_spent=Sum('time_taken')).aggregate(num=Avg('time_spent'))
         return taken__aggregate['num']
 
     # TODO: Find a more efficient way to do this. Currently has to go to DB num. views + 1 times and is prob quite expensive
@@ -37,7 +37,8 @@ class SummaryView(View):
         values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(t__gte=0).order_by('-t')[:5]
         requests = []
         for view, _ in values_list:
-            r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
+            r = models.Request.objects.filter(view_name=view, *filters)[0]
+            r.t = models.Request.objects.filter(view_name=view, *filters).values('view_name').annotate(t=Sum('queries__time_taken')).order_by('-t')[0]['t']
             requests.append(r)
         return requests
 
@@ -47,7 +48,8 @@ class SummaryView(View):
         requests = []
         for view in views:
             try:
-                r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Count('queries')).order_by('-t')[0]
+                r = models.Request.objects.filter(view_name=view, *filters)[0]
+                r.t = models.Request.objects.filter(view_name=view, *filters).values('view_name').annotate(t=Count('queries')).order_by('-t')[0]['t']
                 requests.append(r)
             except IndexError:
                 pass

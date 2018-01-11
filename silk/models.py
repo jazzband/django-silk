@@ -13,7 +13,6 @@ from django.db.models import (
 )
 from django.utils import timezone
 from django.db import transaction
-from uuid import uuid4
 import sqlparse
 from django.utils.safestring import mark_safe
 
@@ -53,7 +52,6 @@ class CaseInsensitiveDictionary(dict):
 
 
 class Request(models.Model):
-    id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=190, db_index=True)
     query_params = TextField(blank=True, default='')
     raw_body = TextField(blank=True, default='')
@@ -71,7 +69,7 @@ class Request(models.Model):
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
-    prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
+    prof_file = FileField(max_length=300, default='', null=True, storage=silk_storage)
 
     @property
     def total_meta_time(self):
@@ -161,7 +159,6 @@ class Request(models.Model):
 
 
 class Response(models.Model):
-    id = CharField(max_length=36, default=uuid4, primary_key=True)
     request = OneToOneField(
         Request, related_name='response', db_index=True,
         on_delete=models.CASCADE,
