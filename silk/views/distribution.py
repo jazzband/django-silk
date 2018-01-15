@@ -48,11 +48,6 @@ class DistributionView(FilterableRequestsView):
 
 class DistributionDataView(FilterableRequestsView):
 
-    def _get_path_and_filters(self, request):
-        path, raw_filters, filters = super(DistributionDataView, self)._get_path_and_filters(request)
-        extra_filters = filters_from_query_dict(request.GET)
-        return path, raw_filters, filters + list(extra_filters.values())
-
     def to_csv(self, queryset):
         with contextlib.closing(StringIO()) as stream:
             writer = csv.writer(stream, delimiter=',')
@@ -74,7 +69,7 @@ class DistributionDataView(FilterableRequestsView):
             group_by = 'start_time'
 
         fields = group_by, 'time_taken'
-        queryset = self._get_objects(path, filters).values_list(*fields)
+        queryset = self._get_objects(path, filters).values_list(*fields).order_by(group_by)
         csv = self.to_csv((get_group(group), value) for group, value in queryset)
 
         return HttpResponse(csv, content_type='text/csv')

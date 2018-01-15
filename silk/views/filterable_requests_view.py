@@ -46,7 +46,23 @@ class FilterableRequestsView(View):
     def _get_path_and_filters(self, request):
         path = request.GET.get('path', None)
         raw_filters = request.session.get(self.session_key_request_filters, {})
-        filters = self.make_filters(raw_filters)
+
+        filter_classes = set(x.__name__ for x in BaseFilter.__subclasses__())
+
+        def get_filter_class_parameter(filter_class):
+            without_filter = filter_class.replace('Filter', '')
+            result = without_filter[0].lower() + without_filter[1:]
+            return result
+
+        url_filters = {
+            filter_class: dict(typ=filter_class, value=url_filter)
+            for filter_class in filter_classes
+            for filter_class_parameter in [get_filter_class_parameter(filter_class)]
+            for url_filter in [request.GET.get(filter_class_parameter, None)]
+            if url_filter is not None
+        }
+
+        filters = self.make_filters(dict(raw_filters, **url_filters))
         return path, raw_filters, filters
 
     def make_filters(self, raw_filters):
