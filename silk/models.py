@@ -135,14 +135,21 @@ class Request(models.Model):
         if check_percent < random.random() and not force:
             return
         target_count = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
         # Since garbage collection is probabilistic, the target count should
         # be lowered to account for requests before the next garbage collection
         if check_percent != 0:
             target_count -= int(1 / check_percent)
-        prune_count = max(cls.objects.count() - target_count, 0)
-        prune_rows = cls.objects.order_by('start_time') \
-            .values_list('id', flat=True)[:prune_count]
-        cls.objects.filter(id__in=list(prune_rows)).delete()
+
+        # Make sure we can delete everything if needed by settings
+        if target_count <= 0:
+            cls.objects.all().delete()
+            return
+        requests = cls.objects.order_by('-start_time')
+        if not requests:
+            return
+        time_cutoff = requests[target_count].start_time
+        cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
