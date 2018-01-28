@@ -2,15 +2,10 @@ import logging
 import random
 
 from django.db import transaction, DatabaseError
-try:
-    # Django >= 1.10
-    from django.urls import reverse, NoReverseMatch
-except ImportError:
-    # Django < 2.0
-    from django.core.urlresolvers import reverse, NoReverseMatch
-
+from django.urls import reverse, NoReverseMatch
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
+from django.utils.deprecation import MiddlewareMixin
 
 from silk.collector import DataCollector
 
@@ -19,13 +14,6 @@ from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
-
-try:
-    from django.utils.deprecation import MiddlewareMixin
-except ImportError:  # Django < 1.10
-    # Works perfectly for everyone using MIDDLEWARE_CLASSES
-    MiddlewareMixin = object
-
 
 Logger = logging.getLogger('silk.middleware')
 

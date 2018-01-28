@@ -32,8 +32,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 1.8, 1.9, 1.10, 1.11, 2.0
-* Python: 2.7, 3.3, 3.4, 3.5, 3.6
+* Django: 1.11, 2.0
+* Python: 2.7, 3.4, 3.5, 3.6
 
 
 ## Installation
@@ -47,21 +47,12 @@ pip install django-silk
 In `settings.py` add the following:
 
 ```python
-# Django >= 1.10
 MIDDLEWARE = [
     ...
     'silk.middleware.SilkyMiddleware',
     ...
 ]
 
-# Django <= 1.9
-MIDDLEWARE_CLASSES = (
-    ...
-    'silk.middleware.SilkyMiddleware',
-    ...
-)
-
-# All versions of django
 INSTALLED_APPS = (
     ...
     'silk'

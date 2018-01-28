@@ -7,7 +7,7 @@ autopep8>=1.2.1
 pytz>2014.2
 mock>=1.0.1
 Pillow>=3.2
-django>=1.8
+Django>=1.11
 freezegun>=0.3
 factory-boy>=2.8.1
 gprof2dot>=2016.10.13,<2017.09.19
