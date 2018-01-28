@@ -3,7 +3,6 @@ import logging
 import time
 import traceback
 
-import django
 from django.conf import settings
 from django.utils import timezone
 
@@ -126,8 +125,6 @@ class silk_profile(object):
     def _silk_installed(self):
         app_installed = 'silk' in settings.INSTALLED_APPS
         middlewares = getattr(settings, 'MIDDLEWARE', [])
-        if django.VERSION[0] < 2 and not middlewares:
-            middlewares = getattr(settings, 'MIDDLEWARE_CLASSES', [])
         if not middlewares:
             middlewares = []
         middleware_installed = 'silk.middleware.SilkyMiddleware' in middlewares

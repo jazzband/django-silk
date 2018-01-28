@@ -6,12 +6,7 @@ import base64
 from uuid import UUID
 
 from django.utils.encoding import force_text
-try:
-    # Django >= 1.10
-    from django.urls import resolve, Resolver404
-except ImportError:
-    # Django < 2.0
-    from django.core.urlresolvers import resolve, Resolver404
+from django.urls import resolve, Resolver404
 
 from silk import models
 from silk.collector import DataCollector

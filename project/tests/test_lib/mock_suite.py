@@ -5,7 +5,6 @@ import os
 import random
 import traceback
 
-import django
 from django.core import management
 from django.utils import timezone
 
@@ -101,11 +100,7 @@ class MockSuite(object):
                 for q in queries:
                     profile['queries'].append(q)
             else:
-                if django.VERSION >= (1, 9):
-                    profile.queries.set(queries)
-                else:
-                    profile.queries = queries
-                profile.save()
+                profile.queries.set(queries)
         return queries
 
     def mock_profile(self, request=None):

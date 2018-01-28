@@ -13,21 +13,12 @@ Add the following to your ``settings.py``:
 
 .. code-block:: python
 	
-	# Django >= 1.10
 	MIDDLEWARE = [
 	    ...
 	    'silk.middleware.SilkyMiddleware',
 	    ...
 	]
 
-	# Django <= 1.9
-	MIDDLEWARE_CLASSES = ( 
-	    ...
-	    'silk.middleware.SilkyMiddleware',
-	    ...
-	)
-
-	# All versions of Django
 	INSTALLED_APPS = (
 	    ...
 	    'silk'
