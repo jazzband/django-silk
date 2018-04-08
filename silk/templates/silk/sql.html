@@ -8,14 +8,7 @@
 {% block js %}
   <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
   {{ block.super }}
-  <script>
-      function openInNewTab(url) {
-          var win = window.open(url, '_blank');
-          win.focus();
-      }
-  </script>
 {% endblock %}
-
 
 {% block style %}
     <style>
@@ -118,7 +111,7 @@
                 </tr>
                 {% for sql_query in items %}
                     <!-- TODO: Pretty grimy... -->
-                    <tr class="data-row" onclick="openInNewTab(' \
+                    <tr class="data-row" onclick="window.location=' \
                        {% if profile and silk_request %}\
                            {% url "silk:request_and_profile_sql_detail" silk_request.id profile.id sql_query.id %}\
                        {% elif profile %}\
@@ -126,7 +119,7 @@
                        {% elif silk_request %}\
                            {% url "silk:request_sql_detail" silk_request.id sql_query.id %}\
                        {% endif %}\
-                        ');">
+                        ';">
                         <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                         <td class="right-aligned">{{ sql_query.num_joins }}</td>
