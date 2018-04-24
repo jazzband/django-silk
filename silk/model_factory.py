@@ -169,12 +169,7 @@ class RequestModelFactory(object):
         return encoded_query_params
 
     def view_name(self):
-        try:
-            resolved = resolve(self.request.path)
-        except Resolver404:
-            return None
-
-        return resolved.view_name
+        return self.request.resolver_match.url_name
 
     def construct_request_model(self):
         body, raw_body = self.body()
