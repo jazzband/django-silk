@@ -148,7 +148,10 @@ class Request(models.Model):
         requests = cls.objects.order_by('-start_time')
         if not requests:
             return
-        time_cutoff = requests[target_count].start_time
+        try:
+            time_cutoff = requests[target_count].start_time
+        except IndexError:
+            return
         cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
