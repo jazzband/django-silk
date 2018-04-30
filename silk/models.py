@@ -148,6 +148,7 @@ class Request(models.Model):
         requests = cls.objects.order_by('-start_time')
         if not requests:
             return
+        target_count = max(len(requests)-1, target_count)
         time_cutoff = requests[target_count].start_time
         cls.objects.filter(start_time__lte=time_cutoff).delete()
 
