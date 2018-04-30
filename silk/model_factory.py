@@ -170,7 +170,7 @@ class RequestModelFactory(object):
 
     def view_name(self):
         try:
-            resolved = resolve(self.request.path)
+            resolved = resolve(self.request.path_info)
         except Resolver404:
             return None
 
