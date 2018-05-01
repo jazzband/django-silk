@@ -146,7 +146,7 @@ class Request(models.Model):
             cls.objects.all().delete()
             return
         requests = cls.objects.order_by('-start_time')
-        if not requests:
+        if not requests or len(requests)-1 < target_count:
             return
         time_cutoff = requests[target_count].start_time
         cls.objects.filter(start_time__lte=time_cutoff).delete()
