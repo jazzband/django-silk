@@ -52,7 +52,8 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_PYTHON_PROFILER': False,
         'SILKY_REVISION': default_revision(),
         'SILKY_POST_PROCESS_REQUEST': lambda x: None,
-        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage'
+        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
+        'SILKY_DISTRIBUTION_TAB': False,
     }
 
     def _setup(self):

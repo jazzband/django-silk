@@ -1,9 +1,6 @@
 from django.db.models import Sum
 from silk.views.filterable_requests_view import FilterableRequestsView
-from django.shortcuts import render
-from django.template.context_processors import csrf
-from django.utils.decorators import method_decorator
-from django.views.generic import View
+from silk.models import Request, Response
 
 
 __author__ = 'mtford'

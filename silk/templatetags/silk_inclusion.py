@@ -1,4 +1,5 @@
 from django.template import Library
+from silk import config
 
 register = Library()
 
@@ -13,7 +14,7 @@ def request_menu(request, silk_request):
 
 
 def root_menu(request):
-    return {'request': request}
+    return {'request': request, 'SILKY_DISTRIBUTION_TAB': config.SilkyConfig().SILKY_DISTRIBUTION_TAB}
 
 
 def profile_menu(request, profile, silk_request=None):

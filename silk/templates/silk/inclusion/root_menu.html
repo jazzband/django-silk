@@ -6,6 +6,7 @@
         </div>
     </a>
 </div>
+{% if SILKY_DISTRIBUTION_TAB %}
 <div class="menu-item selectable-menu-item {% navactive request 'silk:distribution' %}">
     <a href="{% url "silk:distribution" %}">
         <div class="menu-item-outer">
@@ -13,6 +14,7 @@
         </div>
     </a>
 </div>
+{% endif %}
 <div class="menu-item selectable-menu-item {% navactive request 'silk:requests' %}">
     <a href="{% url "silk:requests" %}">
         <div class="menu-item-outer">

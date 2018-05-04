@@ -349,6 +349,14 @@ Silk currently generates two bits of code per request:
 
 Both are intended for use in replaying the request. The curl command can be used to replay via command-line and the python code can be used within a Django unit test or simply as a standalone script.
 
+## Distribution View
+
+By setting the configuration ``SILKY_DISTRIBUTION_TAB`` to ``True`` a distribution tab can be enabled with a visualisation for plotting the distribution of timings of requests. At present it is possible to group the requests by date or revision.
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/11.png" width="720px"/>
+
+You can click on the various groups to drill down to eventually see the actual requests that are running slowly. This visualisation can be useful for benchmarking an application over versions or time to see if performance improves or degrades.
+
 ## Configuration
 
 ### Authentication/Authorisation

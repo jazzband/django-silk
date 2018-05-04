@@ -9,30 +9,6 @@ from silk.views.filterable_requests_view import FilterableRequestsView
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.request_filters import filters_from_query_dict
 
-#######################################################################
-# Level 0:
-#######################################################################
-# Group By -> timestamp / commit / branch / branch+commit
-# Filter : none
-# Click on group - > Level 1
-#######################################################################
-
-#######################################################################
-# Level 1:
-#######################################################################
-# Group By -> view
-# Filter : timestamp / commit / branch / branch+commit
-# Click on group - > Level 2
-#######################################################################
-
-#######################################################################
-# Level 2:
-#######################################################################
-# Group by -> timestamp / commit / branch / branch+commit
-# Filter : view + timestamp / commit / branch / branch+commit
-# Click on group - > Requests filtered by view + timestamp / commit / branch / branch+commit
-#######################################################################
-
 
 class DistributionView(FilterableRequestsView):
     template = 'silk/distribution.html'
