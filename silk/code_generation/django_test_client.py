@@ -20,8 +20,7 @@ def _encode_query_params(query_params):
         query_params = urlencode(query_params)
     except TypeError:
         pass
-    query_params = '?' + query_params
-    return query_params
+    return '?' + query_params
 
 
 def gen(path,

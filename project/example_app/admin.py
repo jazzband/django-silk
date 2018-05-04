@@ -1,8 +1,5 @@
 from django.contrib import admin
-try:
-    from django.urls import reverse
-except ImportError:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from .models import Blind
 
 

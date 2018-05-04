@@ -5,10 +5,8 @@ import traceback
 import base64
 from uuid import UUID
 
-try:
-    from django.urls import resolve, Resolver404
-except:
-    from django.core.urlresolvers import resolve, Resolver404
+from django.utils.encoding import force_text
+from django.urls import resolve, Resolver404
 
 from silk import models
 from silk.collector import DataCollector
@@ -66,7 +64,7 @@ class RequestModelFactory(object):
 
     def encoded_headers(self):
         """
-        From Django docs (https://docs.djangoproject.com/en/1.6/ref/request-response/#httprequest-objects):
+        From Django docs (https://docs.djangoproject.com/en/2.0/ref/request-response/#httprequest-objects):
 
         "With the exception of CONTENT_LENGTH and CONTENT_TYPE, as given above, any HTTP headers in the request are converted to
         META keys by converting all characters to uppercase, replacing any hyphens with underscores and adding an HTTP_ prefix
@@ -172,21 +170,11 @@ class RequestModelFactory(object):
 
     def view_name(self):
         try:
-            resolved = resolve(self.request.path)
+            resolved = resolve(self.request.path_info)
         except Resolver404:
             return None
 
-        try:
-            # view_name is set in Django >= 1.8
-            return resolved.view_name
-        except AttributeError:
-            # support for Django 1.6 and 1.7 in which no view_name is set
-            view_name = resolved.url_name
-            namespace = resolved.namespace
-            if namespace:
-                view_name = namespace + ':' + view_name
-
-            return view_name
+        return resolved.view_name
 
     def construct_request_model(self):
         body, raw_body = self.body()
@@ -282,7 +270,7 @@ class ResponseModelFactory(object):
         )
 
         try:
-            silky_response.raw_body = base64.b64encode(content)
+            silky_response.raw_body = force_text(base64.b64encode(content))
         except TypeError:
-            silky_response.raw_body = base64.b64encode(content.encode('utf-8'))
+            silky_response.raw_body = force_text(base64.b64encode(content.encode('utf-8')))
         return silky_response

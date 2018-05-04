@@ -1,11 +1,6 @@
-try:
-    from django.core.context_processors import csrf
-except ImportError:
-    # Django>=1.8
-    from django.template.context_processors import csrf
-
 from django.db.models import Avg, Count, Sum, Max
 from django.shortcuts import render
+from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -39,7 +34,7 @@ class SummaryView(View):
         return requests
 
     def _time_spent_in_db_by_view(self, filters):
-        values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(db_time__gte=0).order_by('-t')[:5]
+        values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(t__gte=0).order_by('-t')[:5]
         requests = []
         for view, _ in values_list:
             r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]

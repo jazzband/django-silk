@@ -1,11 +1,6 @@
-try:
-    # Django>=1.8
-    from django.template.context_processors import csrf
-except ImportError:
-    from django.core.context_processors import csrf
-
 from django.db.models import Sum
 from django.shortcuts import render
+from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -70,7 +65,7 @@ class RequestsView(View):
     def _get_status_codes(self):
         return [x['status_code'] for x in Response.objects.values('status_code').distinct()]
 
-    def _get_methods(selfs):
+    def _get_methods(self):
         return [x['method'] for x in Request.objects.values('method').distinct()]
 
     def _get_objects(self, show=None, order_by=None, order_dir=None, path=None, filters=None):

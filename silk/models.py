@@ -20,9 +20,6 @@ from django.utils.safestring import mark_safe
 from silk.utils.profile_parser import parse_profile
 from silk.config import SilkyConfig
 
-# Django 1.8 removes commit_on_success, django 1.5 does not have atomic
-atomic = getattr(transaction, 'atomic', None) or getattr(transaction, 'commit_on_success')
-
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
@@ -138,14 +135,21 @@ class Request(models.Model):
         if check_percent < random.random() and not force:
             return
         target_count = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
         # Since garbage collection is probabilistic, the target count should
         # be lowered to account for requests before the next garbage collection
         if check_percent != 0:
             target_count -= int(1 / check_percent)
-        prune_count = max(cls.objects.count() - target_count, 0)
-        prune_rows = cls.objects.order_by('start_time') \
-            .values_list('id', flat=True)[:prune_count]
-        cls.objects.filter(id__in=list(prune_rows)).delete()
+
+        # Make sure we can delete everything if needed by settings
+        if target_count <= 0:
+            cls.objects.all().delete()
+            return
+        requests = cls.objects.order_by('-start_time')
+        if not requests or len(requests)-1 < target_count:
+            return
+        time_cutoff = requests[target_count].start_time
+        cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
@@ -201,7 +205,7 @@ class SQLQueryManager(models.Manager):
         else:
             objs = kwargs.get('objs')
 
-        with atomic():
+        with transaction.atomic():
             request_counter = Counter([x.request_id for x in objs])
             requests = Request.objects.filter(pk__in=request_counter.keys())
             # TODO: Not that there is ever more than one request (but there could be eventually)
@@ -211,8 +215,7 @@ class SQLQueryManager(models.Manager):
             for r in requests:
                 r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
                 r.save()
-            save = super(SQLQueryManager, self).bulk_create(*args, **kwargs)
-            return save
+            return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -267,7 +270,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @atomic()
+    @transaction.atomic()
     def save(self, *args, **kwargs):
 
         if self.end_time and self.start_time:
@@ -281,7 +284,7 @@ class SQLQuery(models.Model):
 
         super(SQLQuery, self).save(*args, **kwargs)
 
-    @atomic()
+    @transaction.atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
@@ -327,5 +330,4 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        time_spent = sum(x.time_taken for x in self.queries.all())
-        return time_spent
+        return sum(x.time_taken for x in self.queries.all())

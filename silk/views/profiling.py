@@ -1,7 +1,4 @@
-try:
-    from django.template.context_processors import csrf
-except ImportError:
-    from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.db.models import Count, Sum
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -38,8 +35,7 @@ class ProfilingView(View):
             function_names.remove('')
         except ValueError:
             pass
-        function_names = [''] + function_names
-        return function_names
+        return [''] + function_names
 
     def _get_function_names(self, silk_request=None):
         return self._get_distinct_values('func_name', silk_request)
