@@ -1,6 +1,6 @@
 {
   "name": "silk",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jazzband/django-silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)",
   "main": "index.js",
   "directories": {
