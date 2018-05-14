@@ -3,7 +3,6 @@ Silk
 
 *Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jazzband/django-silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
