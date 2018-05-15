@@ -49,6 +49,12 @@ def _should_intercept(request):
     return not (silky or ignored)
 
 
+# whether sql logging should be enabled at all
+_should_log_queries = not (
+    config.SILKY_IGNORE_QUERIES and config.SILKY_IGNORE_QUERIES[0] == "*"
+)
+
+
 class TestMiddleware(object):
     def process_response(self, request, response):
         return response
@@ -90,7 +96,7 @@ class SilkyMiddleware(MiddlewareMixin):
         Logger.debug('process_request')
         request.silk_is_intercepted = True
         self._apply_dynamic_mappings()
-        if not hasattr(SQLCompiler, '_execute_sql'):
+        if _should_log_queries and not hasattr(SQLCompiler, '_execute_sql'):
             SQLCompiler._execute_sql = SQLCompiler.execute_sql
             SQLCompiler.execute_sql = execute_sql
         request_model = RequestModelFactory(request).construct_request_model()
