@@ -56,7 +56,7 @@ class TestMiddleware(object):
         return
 
 
-class SilkyMiddleware(object):
+class SilkyMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
