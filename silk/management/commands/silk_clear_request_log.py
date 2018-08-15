@@ -20,9 +20,9 @@ class Command(BaseCommand):
                     cursor.execute("TRUNCATE TABLE {0}".format(table))
                     cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
                 elif 'postgres' in engine:
-                    cursor.execute("ALTER TABLE {0} DISABLE TRIGGER ALL;".format(table))
+                    cursor.execute("ALTER TABLE {0} DISABLE TRIGGER USER;".format(table))
                     cursor.execute("TRUNCATE TABLE {0} CASCADE".format(table))
-                    cursor.execute("ALTER TABLE {0} ENABLE TRIGGER ALL;".format(table))
+                    cursor.execute("ALTER TABLE {0} ENABLE TRIGGER USER;".format(table))
             return
 
         # Manually delete rows because sqlite does not support TRUNCATE and
