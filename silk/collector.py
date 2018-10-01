@@ -4,12 +4,14 @@ import pstats
 from threading import local
 
 import marshal
+from django.core.files.base import ContentFile
 from django.utils.six import StringIO, with_metaclass
 from silk import models
 from silk.config import SilkyConfig
 from silk.errors import SilkInternalInconsistency, SilkNotConfigured
 from silk.models import _time_taken
 from silk.singleton import Singleton
+
 
 TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
@@ -151,10 +153,11 @@ class DataCollector(with_metaclass(Singleton, object)):
                 file_name = self.request.prof_file.storage.get_available_name(
                     prefix + "{}.prof".format(str(self.request.id))
                 )
-                with self.request.prof_file.storage.open(file_name, 'w+b') as f:
-                    f.write(marshal.dumps(ps.stats))
+                content = ContentFile(marshal.dumps(ps.stats))
+                saved_name = self.request.prof_file.storage.save(file_name,
+                                                                 content)
 
-                self.request.prof_file = f.name
+                self.request.prof_file = saved_name
                 self.request.save()
 
         for _, query in self.queries.items():
