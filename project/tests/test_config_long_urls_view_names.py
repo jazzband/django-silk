@@ -38,7 +38,7 @@ class TestLongRequestViewName(TestCase):
         mock_request.method = 'get'
         request_model = RequestModelFactory(mock_request).construct_request_model()
         # We have to artifically assign view_name and save, as construct_request_model() will leave it empty
-        request_model.view_name = view_name
+        request_model.view_name.return_value = view_name
         request_model.save()
         self.assertEqual(request_model.view_name, view_name)
 
@@ -51,6 +51,6 @@ class TestLongRequestViewName(TestCase):
         mock_request.method = 'get'
         request_model = RequestModelFactory(mock_request).construct_request_model()
         # We have to artifically assign view_name and save, as construct_request_model() will leave it empty
-        request_model.view_name = view_name
+        request_model.view_name.return_value = view_name
         request_model.save()
         self.assertEqual(request_model.view_name, '%s...%s' % (view_name[:94], view_name[1907:]))
