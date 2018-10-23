@@ -170,10 +170,10 @@ class Request(models.Model):
 
         # We can't save if either path or view_name exceed 190 characters
         if self.path and len(self.path) > 190:
-            self.path = self._truncate(self.path)
+            self.path = self._shorten(self.path)
 
         if self.view_name and len(self.view_name) > 190:
-            self.view_name = self._truncate(self.view_name)
+            self.view_name = self._shorten(self.view_name)
 
         super(Request, self).save(*args, **kwargs)
         Request.garbage_collect(force=False)
