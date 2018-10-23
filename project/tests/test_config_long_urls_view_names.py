@@ -35,9 +35,11 @@ class TestLongRequestViewName(TestCase):
         mock_request.META = {'CONTENT_TYPE': 'text/plain'}
         mock_request.GET = {}
         mock_request.path = reverse('silk:requests')
-        mock_request.view_name = view_name
         mock_request.method = 'get'
         request_model = RequestModelFactory(mock_request).construct_request_model()
+        # We have to artifically assign view_name and save, as construct_request_model() will leave it empty
+        request_model.view_name = view_name
+        request_model.save()
         self.assertEqual(request_model.view_name, view_name)
 
     def test_long_view_name(self):
@@ -47,6 +49,8 @@ class TestLongRequestViewName(TestCase):
         mock_request.GET = {}
         mock_request.path = reverse('silk:requests')
         mock_request.method = 'get'
-        mock_request.view_name = view_name
         request_model = RequestModelFactory(mock_request).construct_request_model()
+        # We have to artifically assign view_name and save, as construct_request_model() will leave it empty
+        request_model.view_name = view_name
+        request_model.save()
         self.assertEqual(request_model.view_name, '%s...%s' % (view_name[:94], view_name[1907:]))
