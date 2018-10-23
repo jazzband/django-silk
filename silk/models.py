@@ -73,6 +73,11 @@ class Request(models.Model):
     pyprofile = TextField(blank=True, default='')
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
 
+    # Useful method to create shortened copies of strings without losing start and end context
+    # Used to ensure path and view_name don't exceed 190 characters
+    def _shorten(self, string):
+        return '%s...%s' % (string[:94], string[len(string) - 93:])
+
     @property
     def total_meta_time(self):
         return (self.meta_time or 0) + (self.meta_time_spent_queries or 0)
@@ -162,6 +167,13 @@ class Request(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
+        # We can't save if either path or view_name exceed 190 characters
+        if len(self.path) > 190:
+            self.path = self._truncate(self.path)
+
+        if len(self.view_name) > 190:
+            self.view_name = self._truncate(self.view_name)
 
         super(Request, self).save(*args, **kwargs)
         Request.garbage_collect(force=False)
