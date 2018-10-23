@@ -1,16 +1,11 @@
-try:
-    # Django>=1.8
-    from django.template.context_processors import csrf
-except ImportError:
-    from django.core.context_processors import csrf
-
 from django.db.models import Sum
 from django.shortcuts import render
+from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.models import Request
+from silk.models import Request, Response
 from silk.request_filters import BaseFilter, filters_from_request
 
 __author__ = 'mtford'
@@ -39,8 +34,8 @@ class RequestsView(View):
         },
         'db_time': {
             'label': 'Time on queries',
-            'additional_query_filter': lambda x: x.annotate(db_time=Sum('queries__time_taken')) \
-                .filter(db_time__gte=0)
+            'additional_query_filter': lambda x: x.annotate(db_time=Sum('queries__time_taken'))
+            .filter(db_time__gte=0)
         },
     }
     order_dir = {
@@ -66,6 +61,12 @@ class RequestsView(View):
 
     def _get_paths(self):
         return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
+
+    def _get_status_codes(self):
+        return [x['status_code'] for x in Response.objects.values('status_code').distinct()]
+
+    def _get_methods(self):
+        return [x['method'] for x in Request.objects.values('method').distinct()]
 
     def _get_objects(self, show=None, order_by=None, order_dir=None, path=None, filters=None):
         if not filters:
@@ -107,7 +108,9 @@ class RequestsView(View):
             'options_order_by': self.options_order_by,
             'options_order_dir': self.options_order_dir,
             'options_paths': self._get_paths(),
-            'view_names': [x[0] for x in Request.objects.values_list('view_name').distinct()],
+            'options_status_codes': self._get_status_codes(),
+            'options_methods': self._get_methods(),
+            'view_names': [x[0] for x in Request.objects.values_list('view_name').distinct() if x[0]],
             'filters': raw_filters
         }
         context.update(csrf(request))

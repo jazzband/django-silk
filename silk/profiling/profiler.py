@@ -3,7 +3,6 @@ import logging
 import time
 import traceback
 
-import django
 from django.conf import settings
 from django.utils import timezone
 
@@ -118,7 +117,6 @@ class silk_profile(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._silk_installed() and self._should_profile():
             with silk_meta_profiler():
-                start_time = None
                 exception_raised = exc_type is not None
                 self.profile['exception_raised'] = exception_raised
                 self.profile['end_time'] = timezone.now()
@@ -126,9 +124,10 @@ class silk_profile(object):
 
     def _silk_installed(self):
         app_installed = 'silk' in settings.INSTALLED_APPS
-        middleware_installed = 'silk.middleware.SilkyMiddleware' in settings.MIDDLEWARE_CLASSES
-        if django.VERSION[:2] >= (1, 10):
-            middleware_installed = middleware_installed or 'silk.middleware.SilkyMiddleware' in settings.MIDDLEWARE
+        middlewares = getattr(settings, 'MIDDLEWARE', [])
+        if not middlewares:
+            middlewares = []
+        middleware_installed = 'silk.middleware.SilkyMiddleware' in middlewares
         return app_installed and middleware_installed
 
     def _should_profile(self):
@@ -170,12 +169,11 @@ class silk_profile(object):
 
             return wrapped_target
         else:
-            Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
+            Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
             return target
 
     def distinct_queries(self):
-        queries = [x for x in self._queries_after if not x in self._queries_before]
-        return queries
+        return [x for x in self._queries_after if x not in self._queries_before]
 
 
 @silk_profile()

@@ -10,6 +10,8 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
+from silk.storage import ProfilerResultStorage
+from silk.config import SilkyConfig
 from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
 
@@ -28,6 +30,13 @@ class RequestTest(TestCase):
     def setUp(self):
 
         self.obj = RequestMinFactory.create()
+        self.max_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
+        self.max_requests = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
+    def tearDown(self):
+
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = self.max_percent
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = self.max_requests
 
     def test_uuid_is_primary_key(self):
 
@@ -114,6 +123,41 @@ class RequestTest(TestCase):
         self.obj.encoded_headers = '{"content-type": "some_data"}'
         self.assertEqual(self.obj.content_type, "some_data")
 
+    def test_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 100
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect()
+        self.assertFalse(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_probabilistic_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect()
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_force_garbage_collect(self):
+
+        self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect(force=True)
+        self.assertFalse(models.Request.objects.filter(id=self.obj.id).exists())
+
+    def test_greedy_garbage_collect(self):
+
+        for x in range(3):
+            obj = models.Request(path='/', method='get')
+            obj.save()
+        self.assertEqual(models.Request.objects.count(), 4)
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 3
+        models.Request.garbage_collect(force=True)
+        self.assertEqual(models.Request.objects.count(), 1)
+
     def test_save_if_have_no_raw_body(self):
 
         obj = models.Request(path='/some/path/', method='get')
@@ -155,6 +199,10 @@ class RequestTest(TestCase):
         obj.save()
         self.assertEqual(obj.end_time, date)
         self.assertEqual(obj.time_taken, 3000.0)
+
+    def test_prof_file_default_storage(self):
+        obj = models.Request(path='/some/path/', method='get')
+        self.assertEqual(obj.prof_file.storage.__class__, ProfilerResultStorage)
 
 
 class ResponseTest(TestCase):

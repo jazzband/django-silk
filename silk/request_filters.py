@@ -192,6 +192,20 @@ class OverallTimeFilter(BaseFilter):
         return 'Time >= %s' % self.value
 
 
+class StatusCodeFilter(BaseFilter):
+    def __init__(self, n):
+        try:
+            value = int(n)
+        except ValueError as e:
+            raise FilterValidationError(e)
+        super(StatusCodeFilter, self).__init__(value, response__status_code=n)
+
+
+class MethodFilter(BaseFilter):
+    def __init__(self, value):
+        super(MethodFilter, self).__init__(value, method=value)
+
+
 def filters_from_request(request):
     raw_filters = {}
     for key in request.POST:
@@ -199,7 +213,7 @@ def filters_from_request(request):
         if splt[0].startswith('filter'):
             ident = splt[1]
             typ = splt[2]
-            if not ident in raw_filters:
+            if ident not in raw_filters:
                 raw_filters[ident] = {}
             raw_filters[ident][typ] = request.POST[key]
     filters = {}

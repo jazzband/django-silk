@@ -8,28 +8,7 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import SQLQuery, Request, Profile
-
-
-def _code(file_path, line_num, end_line_num=None):
-    if not end_line_num:
-        end_line_num = line_num
-    actual_line = []
-    lines = ''
-    with open(file_path, 'r') as f:
-        r = range(max(0, line_num - 10), line_num + 10)
-        for i, line in enumerate(f):
-            if i in r:
-                lines += line
-            if i + 1 in range(line_num, end_line_num + 1):
-                actual_line.append(line)
-    code = lines.split('\n')
-    return actual_line, code
-
-
-def _code_context(file_path, line_num):
-    actual_line, code = _code(file_path, line_num)
-    context = {'code': code, 'file_path': file_path, 'line_num': line_num, 'actual_line': actual_line}
-    return context
+from silk.views.code import _code
 
 
 class SQLDetailView(View):
@@ -66,7 +45,7 @@ class SQLDetailView(View):
         line_num = int(request.GET.get('line_num', 0))
         tb = sql_query.traceback_ln_only
         str, files = self._urlify(tb)
-        if file_path and not file_path in files:
+        if file_path and file_path not in files:
             raise PermissionDenied
         tb = [mark_safe(x) for x in str.split('\n')]
         context = {

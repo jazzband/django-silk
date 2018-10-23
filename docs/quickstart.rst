@@ -13,11 +13,11 @@ Add the following to your ``settings.py``:
 
 .. code-block:: python
 	
-	MIDDLEWARE_CLASSES = ( 
+	MIDDLEWARE = [
 	    ...
 	    'silk.middleware.SilkyMiddleware',
 	    ...
-	)
+	]
 
 	INSTALLED_APPS = (
 	    ...
@@ -41,7 +41,7 @@ And voila! Silk will begin intercepting requests and queries which you can inspe
 Other Installation Options
 -------
 
-You can download a release from `github <https://github.com/mtford90/silk/releases>`_ and then install using pip:
+You can download a release from `github <https://github.com/jazzband/django-silk/releases>`_ and then install using pip:
 
 .. code-block:: bash
 
@@ -51,4 +51,4 @@ You can also install directly from the github repo but please note that this ver
 
 .. code-block:: bash
 
-	pip install -e git+https://github.com/mtford90/silk.git#egg=silk
+	pip install -e git+https://github.com/jazzband/django-silk.git#egg=silk

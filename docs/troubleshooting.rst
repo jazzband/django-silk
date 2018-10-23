@@ -16,11 +16,11 @@ If you see errors like:
 
 Then it's likely your database is not configured correctly for UTF encoding.
 
-See this `github issue <https://github.com/mtford90/silk/issues/21>`_ for more details and workarounds.
+See this `github issue <https://github.com/jazzband/django-silk/issues/21>`_ for more details and workarounds.
 
 Middleware
 ------
 
 The middleware is placement sensitive. If the middleware before ``silk.middleware.SilkyMiddleware`` returns from ``process_request`` then ``SilkyMiddleware`` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from ``process_request``. See the `django docs <https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request>`_ for more information on this.
 
-This `GitHub issue <https://github.com/mtford90/silk/issues/12>`_ also has information on dealing with middleware problems.
+This `GitHub issue <https://github.com/jazzband/django-silk/issues/12>`_ also has information on dealing with middleware problems.

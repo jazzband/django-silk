@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from silk.views.profile_detail import ProfilingDetailView
 from silk.views.profile_download import ProfileDownloadView
+from silk.views.profile_dot import ProfileDotView
 from silk.views.profiling import ProfilingView
 from silk.views.raw import Raw
 from silk.views.request_detail import RequestView
@@ -9,7 +10,9 @@ from silk.views.requests import RequestsView
 from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
+from silk.views.cprofile import CProfileView
 
+app_name = 'silk'
 urlpatterns = [
     url(r'^$', SummaryView.as_view(), name='summary'),
     url(r'^requests/$', RequestsView.as_view(), name='requests'),
@@ -37,6 +40,11 @@ urlpatterns = [
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/pyprofile/$',
         ProfileDownloadView.as_view(),
         name='request_profile_download'
+    ),
+    url(
+        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/json/$',
+        ProfileDotView.as_view(),
+        name='request_profile_dot'
     ),
     url(
         r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profiling/$',
@@ -73,5 +81,10 @@ urlpatterns = [
         SQLDetailView.as_view(),
         name='profile_sql_detail'
     ),
-    url(r'^profiling/$', ProfilingView.as_view(), name='profiling')
+    url(r'^profiling/$', ProfilingView.as_view(), name='profiling'),
+    url(
+        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/cprofile/$',
+        CProfileView.as_view(),
+        name='cprofile'
+    ),
 ]

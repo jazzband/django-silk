@@ -78,17 +78,13 @@ class DataCollector(with_metaclass(Singleton, object)):
             self._raise_not_configured(
                 'Attempt to access %s without initialisation.' % typ
             )
-        if not typ in objects:
+        if typ not in objects:
             objects[typ] = {}
         return objects[typ]
 
     @property
     def profiles(self):
         return self._get_objects(TYP_PROFILES)
-
-    @property
-    def silk_queries(self):
-        return self._get_objects('silk_queries')
 
     def configure(self, request=None):
         silky_config = SilkyConfig()
@@ -119,7 +115,7 @@ class DataCollector(with_metaclass(Singleton, object)):
                 self._raise_not_configured(
                     'Attempt to register object of type %s without initialisation. '
                 )
-            if not typ in objects:
+            if typ not in objects:
                 self.objects[typ] = {}
             self.objects[typ][ident] = arg
 
@@ -184,8 +180,7 @@ class DataCollector(with_metaclass(Singleton, object)):
                         )
             profile = models.Profile.objects.create(**profile)
             if profile_query_models:
-                profile.queries = profile_query_models
-                profile.save()
+                profile.queries.set(profile_query_models)
         self._record_meta_profiling()
 
     def register_silk_query(self, *args):

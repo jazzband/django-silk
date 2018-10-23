@@ -22,7 +22,7 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'project.urls'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -30,7 +30,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'silk.middleware.SilkyMiddleware'
-)
+]
 
 WSGI_APPLICATION = 'wsgi.application'
 
@@ -117,5 +117,7 @@ LOGIN_REDIRECT_URL = '/'
 SILKY_META = True
 SILKY_PYTHON_PROFILER = True
 SILKY_PYTHON_PROFILER_BINARY = True
+# Do not garbage collect for tests
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
 # SILKY_AUTHENTICATION = True
 # SILKY_AUTHORISATION = True

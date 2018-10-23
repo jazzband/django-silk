@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.models import Profile, Request
-from silk.views.sql_detail import _code
+from silk.models import Profile
+from silk.views.code import _code_context, _code_context_from_request
 
 
 class ProfilingDetailView(View):
@@ -12,24 +12,27 @@ class ProfilingDetailView(View):
     @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         profile_id = kwargs['profile_id']
-        silk_request_id = kwargs.get('request_id', None)
         context = {
             'request': request
         }
         profile = Profile.objects.get(pk=profile_id)
         file_path = profile.file_path
         line_num = profile.line_num
+
+        context['pos'] = pos = int(request.GET.get('pos', 0))
+        if pos:
+            context.update(_code_context_from_request(request, prefix='pyprofile_'))
+
         context['profile'] = profile
         context['line_num'] = file_path
         context['file_path'] = line_num
-        if silk_request_id:
-            silk_request = Request.objects.get(pk=silk_request_id)
-            context['silk_request'] = silk_request
+        context['file_column'] = 5
+
+        if profile.request:
+            context['silk_request'] = profile.request
         if file_path and line_num:
             try:
-                actual_line, code = _code(file_path, line_num, profile.end_line_num)
-                context['code'] = code
-                context['actual_line'] = actual_line
+                context.update(_code_context(file_path, line_num, profile.end_line_num))
             except IOError as e:
                 if e.errno == 2:
                     context['code_error'] = e.filename + ' does not exist.'

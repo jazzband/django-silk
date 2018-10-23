@@ -53,7 +53,7 @@ def profile_function_or_method(module, func, name=None):
     @param module: module object or module name in form 'path.to.module'
     @param func: function object or function name in form 'foo' or 'Class.method'
     """
-    if type(module) is str or type(module) is unicode:
+    if isinstance(module, six.string_types) or isinstance(module, six.text_type):
         module = _get_module(module)
     decorator = silk_profile(name, _dynamic=True)
     func_name = func
@@ -150,8 +150,7 @@ def _new_func_from_source(source, func):
     combined.update(locals)
     Logger.debug('New src_str:\n %s' % src_str)
     six.exec_(src_str, combined, context)
-    new_func = context[func.__name__]
-    return new_func
+    return context[func.__name__]
 
 
 def _inject_context_manager_func(func, start_line, end_line, name):

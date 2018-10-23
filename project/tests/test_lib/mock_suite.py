@@ -100,8 +100,7 @@ class MockSuite(object):
                 for q in queries:
                     profile['queries'].append(q)
             else:
-                profile.queries = queries
-                profile.save()
+                profile.queries.set(queries)
         return queries
 
     def mock_profile(self, request=None):

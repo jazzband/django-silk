@@ -1,15 +1,16 @@
-#Silk
+Silk
+====
 
-*Silk has now moved to the django-silk organization and is looking for contributors - if you think you can help out, please get in touch!*
+*Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/django-silk/silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![TravisCI Build](https://img.shields.io/travis/django-silk/silk/master.svg)](https://travis-ci.org/django-silk/silk)
+[![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
 
 Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/1.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
 
 ## Contents
 
@@ -17,19 +18,21 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 * [Installation](#installation)
 * [Features](#features)
 * [Configuration](#configuration)
-    * [Authentication/Authorisation](#authentication-authorisation)
-    * [Request/Response bodies](#request-response-bodies)
+    * [Authentication/Authorisation](#authenticationauthorisation)
+    * [Request/Response bodies](#requestresponse-bodies)
     * [Meta-Profiling](#meta-profiling)
     * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+    * [Limiting request/response data](#limiting-requestresponse-data)
     * [Clearing logged data](#clearing-logged-data)
-* [Development](#development)
+* [Contributing](#contributing)
+    * [Development Environment](#development-environment)
 
 ## Requirements
 
 Silk has been tested with:
 
-* Django: 1.7, 1.8, 1.9, 1.10[dev]
-* Python: 2.7, 3.3, 3.4, 3.5
+* Django: 1.11, 2.0
+* Python: 2.7, 3.4, 3.5, 3.6
 
 
 ## Installation
@@ -43,19 +46,11 @@ pip install django-silk
 In `settings.py` add the following:
 
 ```python
-# Django >= 1.10
 MIDDLEWARE = [
     ...
     'silk.middleware.SilkyMiddleware',
     ...
 ]
-
-# Django <= 1.9
-MIDDLEWARE_CLASSES = (
-    ...
-    'silk.middleware.SilkyMiddleware',
-    ...
-)
 
 INSTALLED_APPS = (
     ...
@@ -63,9 +58,9 @@ INSTALLED_APPS = (
 )
 ```
 
-**Note:** The middleware is placement sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+**Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
 
-**Note:** If you're using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you'll get an encoding error.
+**Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
 To enable access to the user interface add the following to your `urls.py`:
 
@@ -79,6 +74,8 @@ before running migrate:
 python manage.py makemigrations
 
 python manage.py migrate
+
+python manage.py collectstatic
 ```
 
 
@@ -87,17 +84,17 @@ if required. The UI can be reached at `/silk/`
 
 ### Alternative Installation
 
-Via [github tags](https://github.com/django-silk/silk/releases):
+Via [github tags](https://github.com/jazzband/django-silk/releases):
 
 ```bash
-pip install django-silk-<version>.tar.gz
+pip install https://github.com/jazzband/silk/archive/<version>.tar.gz
 ```
 
 You can install from master using the following, but please be aware that the version in master
 may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
-pip install -e git+https://github.com/django-silk/silk.git#egg=silk
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=silk
 ```
 
 ## Features
@@ -111,10 +108,10 @@ Silk primarily consists of:
 
 ### Request Inspection
 
-The Silk middleware intercepts and stores requests and responses and stores them in the configured database.
+The Silk middleware intercepts and stores requests and responses in the configured database.
 These requests can then be filtered and inspecting using Silk's UI through the request overview:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/1.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
 
 It records things like:
 
@@ -128,18 +125,18 @@ and so on.
 
 Further details on each request are also available by clicking the relevant request:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/2.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/2.png" width="720px"/>
 
 ### SQL Inspection
 
 Silk also intercepts SQL queries that are generated by each request. We can get a summary on things like
-the tables involved, number of joins and execution time:
+the tables involved, number of joins and execution time (the table can be sorted by clicking on a column header):
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/3.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/3.png" width="720px"/>
 
 Before diving into the stack trace to figure out where this request is coming from:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/5.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/5.png" width="720px"/>
 
 ### Profiling
 
@@ -149,18 +146,32 @@ Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile prof
 SILKY_PYTHON_PROFILER = True
 ```
 
-If you'd like to also generate a binary `.prof` file that works with `snakeviz` or other cProfile tools set the following:
+If you would like to also generate a binary `.prof` file set the following:
 
 ```python
 SILKY_PYTHON_PROFILER_BINARY = True
 ```
-You can specify where to store the generated binary `.prof` files to a path of your choosing. You must ensure the specified directory exists.
+
+When enabled, a graph visualisation generated using [gprof2dot](https://github.com/jrfonseca/gprof2dot) and [viz.js](https://github.com/almende/vis) is shown in the profile detail page:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/10.png" width="720px"/>
+
+
+A custom storage class can be used for the saved generated binary `.prof` files:
+ 
+```python
+SILKY_STORAGE_CLASS = 'path.to.StorageClass'
+```
+
+The default storage class is `silk.storage.ProfilerResultStorage`, and when using that you can specify a path of your choosing. You must ensure the specified directory exists.
+
 ```python
 # If this is not set, MEDIA_ROOT will be used.
 SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ```
 
-A download button will become available with a binary `.prof` file for every request.
+A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools 
+
 
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
 manager for this purpose.
@@ -168,6 +179,9 @@ manager for this purpose.
 For example:
 
 ```python
+from silk.profiling.profiler import silk_profile
+
+
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
@@ -178,17 +192,21 @@ def post(request, post_id):
 
 Whenever a blog post is viewed we get an entry within the Silk UI:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/7.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/7.png" width="720px"/>
 
 Silk profiling not only provides execution time, but also collects SQL queries executed within the block in the same fashion as with requests:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/8.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/8.png" width="720px"/>
 
 #### Decorator
 
 The silk decorator can be applied to both functions and methods
 
 ```python
+from silk.profiling.profiler import silk_profile
+
+
+# Profile a view function
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
@@ -196,6 +214,8 @@ def post(request, post_id):
         'post': p
     })
 
+
+# Profile a method in a view class
 class MyView(View):
     @silk_profile(name='View Blog Post')
     def get(self, request):
@@ -324,7 +344,7 @@ it has already been imported, no profiling would be triggered.
 
 Silk currently generates two bits of code per request:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/9.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/9.png" width="720px"/>
 
 Both are intended for use in replaying the request. The curl command can be used to replay via command-line and the python code can be used within a Django unit test or simply as a standalone script.
 
@@ -361,7 +381,7 @@ SILKY_PERMISSIONS = lambda user: user.is_superuser
 
 By default, Silk will save down the request and response bodies for each request for future viewing
 no matter how large. If Silk is used in production under heavy volume with large bodies this can have
-a huge impact on space/time performance. This behaviour can be configured with following options:
+a huge impact on space/time performance. This behaviour can be configured with the following options:
 
 ```python
 SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
@@ -370,7 +390,7 @@ SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
 
 ### Meta-Profiling
 
-Sometimes its useful to be able to see what effect Silk is having on the request/response time. To do this add
+Sometimes it is useful to be able to see what effect Silk is having on the request/response time. To do this add
 the following to your `settings.py`:
 
 ```python
@@ -380,7 +400,7 @@ SILKY_META = True
 Silk will then record how long it takes to save everything down to the database at the end of each
 request:
 
-<img src="https://raw.githubusercontent.com/django-silk/silk/master/screenshots/meta.png"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/meta.png"/>
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
 
@@ -414,6 +434,20 @@ You can also use a `lambda`.
 SILKY_INTERCEPT_FUNC = lambda request: 'record_requests' in request.session
 ```
 
+### Limiting request/response data
+
+To make sure silky garbage collects old request/response data, a config var can be set to limit the number of request/response rows it stores.
+
+```python
+SILKY_MAX_RECORDED_REQUESTS = 10**4
+```
+
+The garbage collection is only run on a percentage of requests to reduce overhead.  It can be adjusted with this config:
+
+```python
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+```
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:
@@ -422,9 +456,15 @@ A management command will wipe out all logged data:
 python manage.py silk_clear_request_log
 ```
 
-## Development
+## Contributing
 
-Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so 
+[![Jazzband](https://jazzband.co/static/img/jazzband.svg)](https://jazzband.co/)
+
+This is a [Jazzband](https://jazzband.co/) project. By contributing you agree to abide by the [Contributor Code of Conduct](https://jazzband.co/about/conduct) and follow the [guidelines](https://jazzband.co/about/guidelines).
+
+### Development Environment
+
+Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so
 you can work on the sample `project` and on the `silk` package at the same time.
 
 In order to setup local development you should first install all the dependencies for the test `project`. From the
@@ -434,19 +474,36 @@ root of the `project` directory:
 pip install -r test-requirements.txt
 ```
 
-You'll also need to install `silk`'s dependencies. From the root of the git repository:
+You will also need to install `silk`'s dependencies. From the root of the git repository:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-At this point your virtual environment should have everything it needs to run both the sample `project` and 
+At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
+
+Before running, you must set the `DB` and `DB_NAME` environment variables:
+
+```bash
+export DB=sqlite3
+export DB_NAME=db.sqlite3
+```
+
+For other combinations, check [`.travis.yml`](./.travis.yml).
 
 Now from the root of the sample `project` directory start the django server
 
 ```bash
 python manage.py runserver
+```
+
+#### Running the tests
+
+```bash
+cd project
+./tests/test_migrations.sh
+python manage.py test --noinput
 ```
 
 Happy profiling!
