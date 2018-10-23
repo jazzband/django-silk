@@ -169,10 +169,10 @@ class Request(models.Model):
             self.time_taken = interval.total_seconds() * 1000
 
         # We can't save if either path or view_name exceed 190 characters
-        if len(self.path) > 190:
+        if self.path and len(self.path) > 190:
             self.path = self._truncate(self.path)
 
-        if len(self.view_name) > 190:
+        if self.view_name and len(self.view_name) > 190:
             self.view_name = self._truncate(self.view_name)
 
         super(Request, self).save(*args, **kwargs)
