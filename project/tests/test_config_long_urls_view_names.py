@@ -38,7 +38,7 @@ class TestLongRequestViewName(TestCase):
         mock_request.view_name = view_name
         mock_request.method = 'get'
         request_model = RequestModelFactory(mock_request).construct_request_model()
-        self.assertEqual(request_model.path, view_name)
+        self.assertEqual(request_model.view_name, view_name)
 
     def test_long_view_name(self):
         view_name = '1234567890' * 200  # 2000-character view_name
@@ -49,4 +49,4 @@ class TestLongRequestViewName(TestCase):
         mock_request.method = 'get'
         mock_request.view_name = view_name
         request_model = RequestModelFactory(mock_request).construct_request_model()
-        self.assertEqual(request_model.path, '%s...%s' % (view_name[:94], view_name[1907:]))
+        self.assertEqual(request_model.view_name, '%s...%s' % (view_name[:94], view_name[1907:]))
