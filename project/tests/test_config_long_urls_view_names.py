@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.test import TestCase
 from mock import Mock
 from silk.model_factory import RequestModelFactory
@@ -23,7 +24,7 @@ class TestLongRequestUrl(TestCase):
         mock_request.method = 'get'
         mock_request.path = url
         request_model = RequestModelFactory(mock_request).construct_request_model()
-        self.assertEqual(request_model.path, '%s...%s' % ([url[:94], url[1907:]]))
+        self.assertEqual(request_model.path, '%s...%s' % (url[:94], url[1907:]))
 
 
 class TestLongRequestViewName(TestCase):
@@ -33,6 +34,7 @@ class TestLongRequestViewName(TestCase):
         mock_request = Mock()
         mock_request.META = {'CONTENT_TYPE': 'text/plain'}
         mock_request.GET = {}
+        mock_request.path = reverse('silk:requests')
         mock_request.view_name = view_name
         mock_request.method = 'get'
         request_model = RequestModelFactory(mock_request).construct_request_model()
@@ -43,7 +45,8 @@ class TestLongRequestViewName(TestCase):
         mock_request = Mock()
         mock_request.META = {'CONTENT_TYPE': 'text/plain'}
         mock_request.GET = {}
+        mock_request.path = reverse('silk:requests')
         mock_request.method = 'get'
         mock_request.view_name = view_name
         request_model = RequestModelFactory(mock_request).construct_request_model()
-        self.assertEqual(request_model.path, '%s...%s' % ([view_name[:94], view_name[1907:]]))
+        self.assertEqual(request_model.path, '%s...%s' % (view_name[:94], view_name[1907:]))
