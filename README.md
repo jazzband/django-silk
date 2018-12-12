@@ -12,6 +12,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 <img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
 
+**SECURITY NOTE:** Because Silk stores all HTTP requests into the database in plain text, it will store the request's sensitive information into the database _in plain text_ (e.g. users' passwords!). This is a massive security concern. An issue has been created for this [here](https://github.com/jazzband/django-silk/issues/305).
+
 ## Contents
 
 * [Requirements](#requirements)
