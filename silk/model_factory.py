@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import sys
 import traceback
 import base64
@@ -86,6 +87,29 @@ class RequestModelFactory(object):
 
         return json.dumps(headers, cls=DefaultEncoder)
 
+    def _mask_credentials(self, body):
+        """
+        Mask credentials of potentially sensitive info before saving to db.
+        """
+        try:
+            json_body = json.loads(body)
+        except ValueError:
+            pattern = re.compile(
+                r'(username|api|token|key|secret|password|signature)=(.*?)&',
+                re.MULTILINE,
+            )
+            results = re.findall(pattern, body)
+            for res in results:
+                body = re.sub(res[1], '********************', body)
+        else:
+            SENSITIVE_CREDENTIALS = re.compile('api|token|key|secret|password|signature', re.I)
+            CLEANSED_SUBSTITUTE = '********************'
+            for key in json_body:
+                if SENSITIVE_CREDENTIALS.search(key):
+                    json_body[key] = CLEANSED_SUBSTITUTE
+            body = json.dumps(json_body)
+        return body
+
     def _body(self, raw_body, content_type):
         """
         Encode body as JSON if possible so can be used as a dictionary in generation
@@ -100,7 +124,7 @@ class RequestModelFactory(object):
                 body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4)
             except:
                 body = raw_body
-        return body
+        return self._mask_credentials(body)
 
     def body(self):
         content_type, char_set = self.content_type()
@@ -134,6 +158,7 @@ class RequestModelFactory(object):
         max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
         body = ''
         if raw_body:
+            raw_body = self._mask_credentials(raw_body)
             if max_size > -1:
                 Logger.debug('A max request size is set so checking size')
                 size = sys.getsizeof(raw_body, default=None)
