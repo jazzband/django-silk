@@ -118,7 +118,7 @@ class RequestModelFactory(object):
         """
         body = ''
         if content_type in content_type_form:
-            body = self._mask_credentials(self.request.POST)
+            body = self.request.POST
             body = json.dumps(dict(body), sort_keys=True, indent=4)
         elif content_type in content_types_json:
             try:
@@ -129,7 +129,7 @@ class RequestModelFactory(object):
 
     def body(self):
         content_type, char_set = self.content_type()
-        raw_body = self._mask_credentials(self.request.body)
+        raw_body = self.request.body
         if char_set:
             try:
                 raw_body = raw_body.decode(char_set)
@@ -183,6 +183,8 @@ class RequestModelFactory(object):
             else:
                 Logger.debug('No maximum request body size is set, continuing.')
                 body = self._body(raw_body, content_type)
+        body = self._mask_credentials(body)
+        raw_body = self._mask_credentials(raw_body)
         return body, raw_body
 
     def query_params(self):
