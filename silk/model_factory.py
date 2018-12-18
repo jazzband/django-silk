@@ -93,19 +93,20 @@ class RequestModelFactory(object):
         """
         try:
             json_body = json.loads(body)
-        except ValueError:
-            pattern = re.compile(
-                r'(username|api|token|key|secret|password|signature)=(.*?)&',
-                re.MULTILINE,
-            )
-            results = re.findall(pattern, body)
-            for res in results:
-                body = re.sub(res[1], '********************', body)
+        except Exception as e:
+            pattern = re.compile(r'(username|api|token|key|secret|password|signature)=(.*?)&', re.M)
+            try:
+                results = re.findall(pattern, body)
+            except Exception:
+                Logger.debug('{}'.format(str(e)))
+            else:
+                for res in results:
+                    body = re.sub(res[1], '********************', body)
         else:
-            SENSITIVE_CREDENTIALS = re.compile('api|token|key|secret|password|signature', re.I)
+            pattern = re.compile(r'api|token|key|secret|password|signature', re.I)
             CLEANSED_SUBSTITUTE = '********************'
             for key in json_body:
-                if SENSITIVE_CREDENTIALS.search(key):
+                if pattern.search(key):
                     json_body[key] = CLEANSED_SUBSTITUTE
             body = json.dumps(json_body)
         return body
