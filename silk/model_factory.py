@@ -94,7 +94,7 @@ class RequestModelFactory(object):
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'(username|api|token|key|secret|password|signature)=(.*?)&', re.M)
+            pattern = re.compile(r'(username|api|token|key|secret|password|signature)=(.*?)(&|$)', re.M)
             try:
                 results = re.findall(pattern, body)
             except Exception:
@@ -103,7 +103,7 @@ class RequestModelFactory(object):
                 for res in results:
                     body = re.sub(res[1], '********************', body)
         else:
-            pattern = re.compile(r'api|token|key|secret|password|signature', re.I)
+            pattern = re.compile(r'username|api|token|key|secret|password|signature', re.I)
             CLEANSED_SUBSTITUTE = '********************'
             for key in json_body:
                 if pattern.search(key):
@@ -118,18 +118,18 @@ class RequestModelFactory(object):
         """
         body = ''
         if content_type in content_type_form:
-            body = self.request.POST
+            body = self._mask_credentials(self.request.POST)
             body = json.dumps(dict(body), sort_keys=True, indent=4)
         elif content_type in content_types_json:
             try:
                 body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4)
             except:
                 body = raw_body
-        return self._mask_credentials(body)
+        return body
 
     def body(self):
         content_type, char_set = self.content_type()
-        raw_body = self.request.body
+        raw_body = self._mask_credentials(self.request.body)
         if char_set:
             try:
                 raw_body = raw_body.decode(char_set)
@@ -159,7 +159,6 @@ class RequestModelFactory(object):
         max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
         body = ''
         if raw_body:
-            raw_body = self._mask_credentials(raw_body)
             if max_size > -1:
                 Logger.debug('A max request size is set so checking size')
                 size = sys.getsizeof(raw_body, default=None)
