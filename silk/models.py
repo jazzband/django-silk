@@ -146,9 +146,9 @@ class Request(models.Model):
             cls.objects.all().delete()
             return
         requests_count = cls.objects.all().count()
-        if requests_count-1 < target_count:
+        if requests_count <= target_count:
             return
-        records_count_to_delete = requests_count - target_count - 1
+        records_count_to_delete = requests_count - target_count
         record_ids_to_delete = cls.objects.all().order_by('id')[:records_count_to_delete].values_list('id', flat=True)
         cls.objects.filter(id__in=record_ids_to_delete).delete()
 
