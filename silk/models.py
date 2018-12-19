@@ -149,7 +149,8 @@ class Request(models.Model):
         if requests_count-1 < target_count:
             return
         records_count_to_delete = requests_count - target_count - 1
-        cls.objects.all().order_by('id')[:records_count_to_delete].delete()
+        record_ids_to_delete = cls.objects.all().order_by('id')[:records_count_to_delete].values_list('id', flat=True)
+        cls.objects.filter(id__in=record_ids_to_delete).delete()
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
