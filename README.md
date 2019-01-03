@@ -387,7 +387,7 @@ a huge impact on space/time performance. This behaviour can be configured with t
 
 ```python
 SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
-SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
+SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024 bytes, ignore
 ```
 
 ### Meta-Profiling
