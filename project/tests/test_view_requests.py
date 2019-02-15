@@ -14,7 +14,6 @@ class TestRootViewDefaults(TestCase):
         paths = RequestsView()._get_paths()
         for r in requests:
             self.assertIn(r.path, paths)
-        self.assertIn('', paths)
 
     def test_show(self):
         self.assertIn(RequestsView.default_show, RequestsView.show)
@@ -35,8 +34,8 @@ class TestContext(TestCase):
                                           'options_show': RequestsView.show,
                                           'options_order_by': RequestsView().options_order_by,
                                           'options_order_dir': RequestsView().options_order_dir,
-                                          'options_paths': RequestsView()._get_paths()
                                       }, context)
+        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -57,8 +56,8 @@ class TestContext(TestCase):
                                           'options_show': RequestsView.show,
                                           'options_order_by': RequestsView().options_order_by,
                                           'options_order_dir': RequestsView().options_order_dir,
-                                          'options_paths': RequestsView()._get_paths()
                                       }, context)
+        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
 
