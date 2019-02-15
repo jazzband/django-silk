@@ -150,10 +150,17 @@ class Request(models.Model):
         if target_count <= 0:
             cls.objects.all().delete()
             return
-        requests = cls.objects.order_by('-start_time')
-        if not requests or len(requests)-1 < target_count:
+
+        try:
+            time_cutoff = cls.objects.order_by(
+                '-start_time'
+            ).values_list(
+                'start_time',
+                flat=True
+            )[target_count]
+        except IndexError:
             return
-        time_cutoff = requests[target_count].start_time
+
         cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
