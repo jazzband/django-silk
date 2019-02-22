@@ -55,7 +55,7 @@ def _create_dot(profile, cutoff):
     """
     node_cutoff = cutoff / 100.0
     edge_cutoff = 0.1 / 100.0
-    profile.prune(node_cutoff, edge_cutoff, False)
+    profile.prune(node_cutoff, edge_cutoff, [], False)
 
     with closing(StringIO()) as fp:
         DotWriter(fp).graph(profile, COLOR_MAP)
