@@ -127,7 +127,7 @@ class silk_profile(object):
         middlewares = getattr(settings, 'MIDDLEWARE', [])
         if not middlewares:
             middlewares = []
-        middleware_installed = 'silk.middleware.SilkyMiddleware' in middlewares
+        middleware_installed = SilkyConfig().SILKY_MIDDLEWARE_CLASS in middlewares
         return app_installed and middleware_installed
 
     def _should_profile(self):
