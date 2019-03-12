@@ -64,6 +64,20 @@ INSTALLED_APPS = (
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
+If you want to use custom middleware, for example you developed the subclass of `silk.middleware.SilkyMiddleware`, so you can use this combination of settings:
+
+```python
+# Specify the path where is the custom middleware placed
+SILKY_MIDDLEWARE_CLASS = 'path.to.your.middleware.MyCustomSilkyMiddleware'
+
+# Use this variable in list of middleware
+MIDDLEWARE = [
+    ...
+    SILKY_MIDDLEWARE_CLASS,
+    ...
+]
+```
+
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
