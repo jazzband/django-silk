@@ -11,12 +11,15 @@ env:
 - DJANGO="Django>=1.11.0,<2.0"    DB=postgresql DB_NAME=travis_ci_test
 - DJANGO="Django>=2.0,<2.1.0"     DB=postgresql DB_NAME=travis_ci_test
 - DJANGO="Django>=2.1,<2.2.0"     DB=postgresql DB_NAME=travis_ci_test
+- DJANGO="Django>=2.2,<2.3.0"     DB=postgresql DB_NAME=travis_ci_test
 - DJANGO="Django>=1.11.0,<2.0"    DB=sqlite3 DB_NAME=db.sqlite3
 - DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
 - DJANGO="Django>=2.1,<2.2.0"     DB=sqlite3 DB_NAME=db.sqlite3
+- DJANGO="Django>=2.2,<2.3.0"     DB=sqlite3 DB_NAME=db.sqlite3
 - DJANGO="Django>=1.11.0,<2.0"    DB=mysql DB_NAME=mysql_db
 - DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
 - DJANGO="Django>=2.1,<2.2.0"     DB=mysql DB_NAME=mysql_db
+- DJANGO="Django>=2.2,<2.3.0"     DB=mysql DB_NAME=mysql_db
 matrix:
   exclude:
   - python: '2.7'
@@ -24,23 +27,35 @@ matrix:
   - python: '2.7'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=postgresql DB_NAME=travis_ci_test
   - python: '2.7'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=postgresql DB_NAME=travis_ci_test
+  - python: '2.7'
     env: DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
   - python: '2.7'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=sqlite3 DB_NAME=db.sqlite3
   - python: '2.7'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=sqlite3 DB_NAME=db.sqlite3
+  - python: '2.7'
     env: DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
   - python: '2.7'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=mysql DB_NAME=mysql_db
+  - python: '2.7'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=mysql DB_NAME=mysql_db
   - python: '3.4'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=postgresql DB_NAME=travis_ci_test
   - python: '3.4'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=postgresql DB_NAME=travis_ci_test
+  - python: '3.4'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=sqlite3 DB_NAME=db.sqlite3
+  - python: '3.4'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=sqlite3 DB_NAME=db.sqlite3
   - python: '3.4'
     env: DJANGO="Django>=1.11.0,<2.0"    DB=mysql DB_NAME=mysql_db
   - python: '3.4'
     env: DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
   - python: '3.4'
     env: DJANGO="Django>=2.1,<2.2.0"     DB=mysql DB_NAME=mysql_db
+  - python: '3.4'
+    env: DJANGO="Django>=2.2,<2.3.0"     DB=mysql DB_NAME=mysql_db
   fast_finish: true
 services:
   - mysql

@@ -28,6 +28,7 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
+.pytest_cache/
 .coverage
 .cache
 nosetests.xml
@@ -58,6 +59,7 @@ dist
 /django_silky/media
 *.prof
 project/media/*
+.vscode/
 
 # Vagrant
 .vagrant

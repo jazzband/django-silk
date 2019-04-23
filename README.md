@@ -1,4 +1,5 @@
-Silk
+# Silk
+
 ====
 
 *Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
@@ -20,26 +21,25 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 * [Installation](#installation)
 * [Features](#features)
 * [Configuration](#configuration)
-    * [Authentication/Authorisation](#authenticationauthorisation)
-    * [Request/Response bodies](#requestresponse-bodies)
-    * [Meta-Profiling](#meta-profiling)
-    * [Recording a fraction of requests](#recording-a-fraction-of-requests)
-    * [Limiting request/response data](#limiting-requestresponse-data)
-    * [Clearing logged data](#clearing-logged-data)
+  * [Authentication/Authorisation](#authenticationauthorisation)
+  * [Request/Response bodies](#requestresponse-bodies)
+  * [Meta-Profiling](#meta-profiling)
+  * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+  * [Limiting request/response data](#limiting-requestresponse-data)
+  * [Clearing logged data](#clearing-logged-data)
 * [Contributing](#contributing)
-    * [Development Environment](#development-environment)
+  * [Development Environment](#development-environment)
 
 ## Requirements
 
 Silk has been tested with:
 
-* Django: 1.11, 2.0, 2.1
+* Django: 1.11, 2.0, 2.1, 2.2
 * Python: 2.7, 3.4, 3.5, 3.6, 3.7
-
 
 ## Installation
 
-Via pip into a virtualenv:
+Via pip into a `virtualenv`:
 
 ```bash
 pip install django-silk
@@ -174,7 +174,7 @@ When enabled, a graph visualisation generated using [gprof2dot](https://github.c
 
 
 A custom storage class can be used for the saved generated binary `.prof` files:
- 
+
 ```python
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
@@ -186,7 +186,7 @@ The default storage class is `silk.storage.ProfilerResultStorage`, and when usin
 SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ```
 
-A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools 
+A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools
 
 
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
