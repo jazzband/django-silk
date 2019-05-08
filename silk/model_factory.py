@@ -91,6 +91,16 @@ class RequestModelFactory(object):
         """
         Mask credentials of potentially sensitive info before saving to db.
         """
+        CLEANSED_SUBSTITUTE = '********************'
+
+        def replace_pattern_values(obj):
+            pattern = re.compile(r'username|api|token|key|secret|password|signature', re.I)
+            for key in obj:
+                if pattern.search(key):
+                    obj[key] = CLEANSED_SUBSTITUTE
+
+            return obj
+
         try:
             json_body = json.loads(body)
         except Exception as e:
@@ -101,14 +111,15 @@ class RequestModelFactory(object):
                 Logger.debug('{}'.format(str(e)))
             else:
                 for res in results:
-                    body = re.sub(res[1], '********************', body)
+                    body = re.sub(res[1], CLEANSED_SUBSTITUTE, body)
         else:
-            pattern = re.compile(r'username|api|token|key|secret|password|signature', re.I)
-            CLEANSED_SUBSTITUTE = '********************'
-            for key in json_body:
-                if pattern.search(key):
-                    json_body[key] = CLEANSED_SUBSTITUTE
+            if isinstance(json_body, list):
+                for obj in json_body:
+                    obj = replace_pattern_values(obj)
+            else:
+                json_body = replace_pattern_values(json_body)
             body = json.dumps(json_body)
+
         return body
 
     def _body(self, raw_body, content_type):
