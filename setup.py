@@ -27,7 +27,7 @@ setup(
     license='MIT License',
     description='Silky smooth profiling for the Django Framework',
     long_description=README,
-    url='http://www.mtford.co.uk/projects/silk/',
+    url='https://github.com/jazzband/django-silk',
     author='Michael Ford',
     author_email='mtford@gmail.com',
     classifiers=[
