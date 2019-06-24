@@ -1,6 +1,6 @@
 {
   "name": "silk",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "https://github.com/jazzband/django-silk",
   "main": "index.js",
   "directories": {

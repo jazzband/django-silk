@@ -5,7 +5,6 @@ from django.db import transaction, DatabaseError
 from django.urls import reverse, NoReverseMatch
 from django.db.models.sql.compiler import SQLCompiler
 from django.utils import timezone
-from django.utils.deprecation import MiddlewareMixin
 
 from silk.collector import DataCollector
 
@@ -29,7 +28,7 @@ def silky_reverse(name, *args, **kwargs):
     return r
 
 
-fpath = silky_reverse('summary')
+get_fpath = lambda: silky_reverse('summary')
 config = SilkyConfig()
 
 
@@ -44,7 +43,7 @@ def _should_intercept(request):
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
-    silky = request.path.startswith(fpath)
+    silky = request.path.startswith(get_fpath())
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
@@ -57,7 +56,19 @@ class TestMiddleware(object):
         return
 
 
-class SilkyMiddleware(MiddlewareMixin):
+class SilkyMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        self.process_request(request)
+
+        response = self.get_response(request)
+
+        response = self.process_response(request, response)
+
+        return response
+
     def _apply_dynamic_mappings(self):
         dynamic_profile_configs = config.SILKY_DYNAMIC_PROFILING
         for conf in dynamic_profile_configs:

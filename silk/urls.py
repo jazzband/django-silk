@@ -10,6 +10,7 @@ from silk.views.requests import RequestsView
 from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
+from silk.views.cprofile import CProfileView
 
 app_name = 'silk'
 urlpatterns = [
@@ -80,5 +81,10 @@ urlpatterns = [
         SQLDetailView.as_view(),
         name='profile_sql_detail'
     ),
-    url(r'^profiling/$', ProfilingView.as_view(), name='profiling')
+    url(r'^profiling/$', ProfilingView.as_view(), name='profiling'),
+    url(
+        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/cprofile/$',
+        CProfileView.as_view(),
+        name='cprofile'
+    ),
 ]

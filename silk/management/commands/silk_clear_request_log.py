@@ -14,16 +14,15 @@ class Command(BaseCommand):
         table = model._meta.db_table
         if 'mysql' in engine or 'postgresql' in engine:
             # Use "TRUNCATE" on the table
-            cursor = connection.cursor()
-            if 'mysql' in engine:
-                cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
-            if 'postgres' in engine:
-                cursor.execute("ALTER TABLE %s DISABLE TRIGGER ALL;", [table])
-            cursor.execute("TRUNCATE TABLE %s", [table])
-            if 'mysql' in engine:
-                cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
-            if 'postgres' in engine:
-                cursor.execute("ALTER TABLE %s ENABLE TRIGGER ALL;", [table])
+            with connection.cursor() as cursor:
+                if 'mysql' in engine:
+                    cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
+                    cursor.execute("TRUNCATE TABLE {0}".format(table))
+                    cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
+                elif 'postgres' in engine:
+                    cursor.execute("ALTER TABLE {0} DISABLE TRIGGER USER;".format(table))
+                    cursor.execute("TRUNCATE TABLE {0} CASCADE".format(table))
+                    cursor.execute("ALTER TABLE {0} ENABLE TRIGGER USER;".format(table))
             return
 
         # Manually delete rows because sqlite does not support TRUNCATE and

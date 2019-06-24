@@ -1,4 +1,5 @@
-Silk
+# Silk
+
 ====
 
 *Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
@@ -12,32 +13,33 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 <img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
 
+**SECURITY NOTE:** Because Silk stores all HTTP requests into the database in plain text, it will store the request's sensitive information into the database _in plain text_ (e.g. users' passwords!). This is a massive security concern. An issue has been created for this [here](https://github.com/jazzband/django-silk/issues/305).
+
 ## Contents
 
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Features](#features)
 * [Configuration](#configuration)
-    * [Authentication/Authorisation](#authenticationauthorisation)
-    * [Request/Response bodies](#requestresponse-bodies)
-    * [Meta-Profiling](#meta-profiling)
-    * [Recording a fraction of requests](#recording-a-fraction-of-requests)
-    * [Limiting request/response data](#limiting-requestresponse-data)
-    * [Clearing logged data](#clearing-logged-data)
+  * [Authentication/Authorisation](#authenticationauthorisation)
+  * [Request/Response bodies](#requestresponse-bodies)
+  * [Meta-Profiling](#meta-profiling)
+  * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+  * [Limiting request/response data](#limiting-requestresponse-data)
+  * [Clearing logged data](#clearing-logged-data)
 * [Contributing](#contributing)
-    * [Development Environment](#development-environment)
+  * [Development Environment](#development-environment)
 
 ## Requirements
 
 Silk has been tested with:
 
-* Django: 1.11, 2.0
-* Python: 2.7, 3.4, 3.5, 3.6
-
+* Django: 1.11, 2.0, 2.1, 2.2
+* Python: 2.7, 3.4, 3.5, 3.6, 3.7
 
 ## Installation
 
-Via pip into a virtualenv:
+Via pip into a `virtualenv`:
 
 ```bash
 pip install django-silk
@@ -61,6 +63,20 @@ INSTALLED_APPS = (
 **Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
+
+If you want to use custom middleware, for example you developed the subclass of `silk.middleware.SilkyMiddleware`, so you can use this combination of settings:
+
+```python
+# Specify the path where is the custom middleware placed
+SILKY_MIDDLEWARE_CLASS = 'path.to.your.middleware.MyCustomSilkyMiddleware'
+
+# Use this variable in list of middleware
+MIDDLEWARE = [
+    ...
+    SILKY_MIDDLEWARE_CLASS,
+    ...
+]
+```
 
 To enable access to the user interface add the following to your `urls.py`:
 
@@ -158,7 +174,7 @@ When enabled, a graph visualisation generated using [gprof2dot](https://github.c
 
 
 A custom storage class can be used for the saved generated binary `.prof` files:
- 
+
 ```python
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
@@ -170,7 +186,7 @@ The default storage class is `silk.storage.ProfilerResultStorage`, and when usin
 SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ```
 
-A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools 
+A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools
 
 
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
@@ -385,7 +401,7 @@ a huge impact on space/time performance. This behaviour can be configured with t
 
 ```python
 SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
-SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
+SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024 bytes, ignore
 ```
 
 ### Meta-Profiling

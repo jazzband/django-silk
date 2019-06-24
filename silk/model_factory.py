@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import sys
 import traceback
 import base64
@@ -86,6 +87,41 @@ class RequestModelFactory(object):
 
         return json.dumps(headers, cls=DefaultEncoder)
 
+    def _mask_credentials(self, body):
+        """
+        Mask credentials of potentially sensitive info before saving to db.
+        """
+        CLEANSED_SUBSTITUTE = '********************'
+
+        def replace_pattern_values(obj):
+            pattern = re.compile(r'username|api|token|key|secret|password|signature', re.I)
+            for key in obj:
+                if pattern.search(key):
+                    obj[key] = CLEANSED_SUBSTITUTE
+
+            return obj
+
+        try:
+            json_body = json.loads(body)
+        except Exception as e:
+            pattern = re.compile(r'(username|api|token|key|secret|password|signature)=(.*?)(&|$)', re.M)
+            try:
+                results = re.findall(pattern, body)
+            except Exception:
+                Logger.debug('{}'.format(str(e)))
+            else:
+                for res in results:
+                    body = re.sub(res[1], CLEANSED_SUBSTITUTE, body)
+        else:
+            if isinstance(json_body, list):
+                for obj in json_body:
+                    obj = replace_pattern_values(obj)
+            else:
+                json_body = replace_pattern_values(json_body)
+            body = json.dumps(json_body)
+
+        return body
+
     def _body(self, raw_body, content_type):
         """
         Encode body as JSON if possible so can be used as a dictionary in generation
@@ -158,6 +194,8 @@ class RequestModelFactory(object):
             else:
                 Logger.debug('No maximum request body size is set, continuing.')
                 body = self._body(raw_body, content_type)
+        body = self._mask_credentials(body)
+        raw_body = self._mask_credentials(raw_body)
         return body, raw_body
 
     def query_params(self):

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='request',
             name='prof_file',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
     ]
