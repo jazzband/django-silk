@@ -98,7 +98,7 @@ class RequestModelFactory(object):
 
         def replace_pattern_values(obj):
             if isinstance(obj, dict):
-                for key in obj.keys() & sensitive_keys:
+                for key in set(obj.keys()) & sensitive_keys:
                     obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
             elif isinstance(obj, list):
                 for index, item in enumerate(obj):
