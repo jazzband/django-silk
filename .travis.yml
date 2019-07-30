@@ -70,9 +70,7 @@ install:
 - if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
 - if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
 script:
-- cd project
-- run_tests.sh
-- cd -
+- "./project/run_tests.sh"
 deploy:
   provider: pypi
   user: jazzband
