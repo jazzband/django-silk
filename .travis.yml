@@ -71,8 +71,7 @@ install:
 - if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
 script:
 - cd project
-- "./tests/test_migrations.sh"
-- python manage.py test --noinput
+- run_tests.sh
 - cd -
 deploy:
   provider: pypi
