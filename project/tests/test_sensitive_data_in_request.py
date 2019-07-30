@@ -23,6 +23,7 @@ class TestEncodingForRequests(TestCase):
         mock_request.get = mock_request.META.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
+
         self.assertIn('testunmasked', raw_body)
         self.assertNotIn('test_username', raw_body)
         self.assertNotIn('testpassword', raw_body)
@@ -43,6 +44,11 @@ class TestEncodingForRequests(TestCase):
         self.assertNotIn('test_username', body)
         self.assertNotIn('testpassword', body)
 
+        for datum in [json.loads(body), json.loads(raw_body)]:
+            self.assertEqual(datum['username'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+            self.assertEqual(datum['password'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+            self.assertEqual(datum['x'], 'testunmasked')
+
     def test_password_in_batched_json(self):
         mock_request = Mock()
         mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=UTF-8'}
@@ -62,3 +68,8 @@ class TestEncodingForRequests(TestCase):
         self.assertNotIn('test_username', body[1])
         self.assertNotIn('testpassword', body[1])
 
+        for data in [json.loads(body), json.loads(raw_body)]:
+            for datum in data:
+                self.assertEqual(datum['username'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+                self.assertEqual(datum['password'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+                self.assertEqual(datum['x'], 'testunmasked')

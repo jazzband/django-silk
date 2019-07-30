@@ -54,6 +54,8 @@ def _parse_content_type(content_type):
 
 class RequestModelFactory(object):
     """Produce Request models from Django request objects"""
+    # String to replace on masking
+    CLEANSED_SUBSTITUTE = '********************'
 
     def __init__(self, request):
         super(RequestModelFactory, self).__init__()
@@ -91,34 +93,35 @@ class RequestModelFactory(object):
         """
         Mask credentials of potentially sensitive info before saving to db.
         """
-        CLEANSED_SUBSTITUTE = '********************'
+        sensitive_keys = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+        key_string = '|'.join(sensitive_keys)
 
         def replace_pattern_values(obj):
-            pattern = re.compile(r'username|api|token|key|secret|password|signature', re.I)
-            for key in obj:
-                if pattern.search(key):
-                    obj[key] = CLEANSED_SUBSTITUTE
-
+            if isinstance(obj, dict):
+                for key in obj.keys() & sensitive_keys:
+                    obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
+            elif isinstance(obj, list):
+                for index, item in enumerate(obj):
+                    obj[index] = replace_pattern_values(item)
+            else:
+                pattern = re.compile(r'{}'.format(key_string), re.I)
+                if pattern.search(str(obj)):
+                    return RequestModelFactory.CLEANSED_SUBSTITUTE
             return obj
 
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'(username|api|token|key|secret|password|signature)=(.*?)(&|$)', re.M)
+            pattern = re.compile(r'({})=(.*?)(&|$)'.format(key_string), re.M)
             try:
                 results = re.findall(pattern, body)
             except Exception:
                 Logger.debug('{}'.format(str(e)))
             else:
                 for res in results:
-                    body = re.sub(res[1], CLEANSED_SUBSTITUTE, body)
+                    body = re.sub(res[1], RequestModelFactory.CLEANSED_SUBSTITUTE, body)
         else:
-            if isinstance(json_body, list):
-                for obj in json_body:
-                    obj = replace_pattern_values(obj)
-            else:
-                json_body = replace_pattern_values(json_body)
-            body = json.dumps(json_body)
+            body = json.dumps(replace_pattern_values(json_body))
 
         return body
 
