@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.0.3](https://github.com/jazzband/django-silk/tree/3.0.3) (2019-04-23)
+## [3.0.3](https://github.com/jazzband/django-silk/tree/3.0.3) (2019-08-12)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.2...3.0.3)
 
