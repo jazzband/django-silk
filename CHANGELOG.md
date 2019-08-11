@@ -1,5 +1,33 @@
 # Change Log
 
+## [3.0.3](https://github.com/jazzband/django-silk/tree/3.0.3) (2019-08-12)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.2...3.0.3)
+
+**Implemented enhancements:**
+
+- templates: limit select width to its container one [\#351](https://github.com/jazzband/django-silk/pull/351) ([xrmx](https://github.com/xrmx))
+- Clean up RemovedInDjango30Warning with {% load staticfiles %} [\#353](https://github.com/jazzband/django-silk/pull/353) ([devmonkey22](https://github.com/devmonkey22))
+- Simplify pattern masking and handle dicts [\#355](https://github.com/jazzband/django-silk/pull/355) ([Chris7](https://github.com/Chris7))
+
+**Fixed bugs:**
+
+- Fix masking sensitive data in batch JSON request [\#342](https://github.com/jazzband/django-silk/pull/342) ([nikolaik](https://github.com/nikolaik))
+- Fix project url on PyPi [\#343](https://github.com/jazzband/django-silk/pull/343) ([luzfcb](https://github.com/luzfcb))
+
+**Closed issues:**
+
+- Clean up RemovedInDjango30Warning warning re `load staticfiles` in Django 2.1+ [\#352](https://github.com/jazzband/django-silk/issues/352)
+
+**Merged pull requests:**
+
+- Fix masking sensitive data in batch JSON request [\#342](https://github.com/jazzband/django-silk/pull/342) ([nikolaik](https://github.com/nikolaik))
+- Fix project url on PyPi [\#343](https://github.com/jazzband/django-silk/pull/343) ([luzfcb](https://github.com/luzfcb))
+- templates: limit select width to its container one [\#351](https://github.com/jazzband/django-silk/pull/351) ([xrmx](https://github.com/xrmx))
+- Clean up RemovedInDjango30Warning with {% load staticfiles %} [\#353](https://github.com/jazzband/django-silk/pull/353) ([devmonkey22](https://github.com/devmonkey22))
+- Simplify pattern masking and handle dicts [\#355](https://github.com/jazzband/django-silk/pull/355) ([Chris7](https://github.com/Chris7))
+
+
 ## [3.0.2](https://github.com/jazzband/django-silk/tree/3.0.2) (2019-04-23)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.1...3.0.2)
