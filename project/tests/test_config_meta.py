@@ -8,6 +8,11 @@ from .util import delete_all_models
 from silk.config import SilkyConfig
 from silk.models import Request
 
+def fake_get_response():
+    def fake_response():
+        return 'hello world'
+    return fake_response
+
 
 class TestConfigMeta(TestCase):
     def _mock_response(self):
@@ -23,7 +28,7 @@ class TestConfigMeta(TestCase):
         delete_all_models(Request)
         DataCollector().configure(Request.objects.create())
         response = self._mock_response()
-        SilkyMiddleware()._process_response('', response)
+        SilkyMiddleware(fake_get_response)._process_response('', response)
         self.assertTrue(response.status_code == 200)
         objs = Request.objects.all()
         self.assertEqual(objs.count(), 1)

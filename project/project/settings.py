@@ -1,4 +1,3 @@
-import django
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -23,26 +22,15 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'project.urls'
 
-if django.VERSION >= (1, 10):
-    MIDDLEWARE = [
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'silk.middleware.SilkyMiddleware'
-    ]
-else:
-    MIDDLEWARE_CLASSES = (
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'silk.middleware.SilkyMiddleware'
-    )
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'silk.middleware.SilkyMiddleware'
+]
 
 WSGI_APPLICATION = 'wsgi.application'
 

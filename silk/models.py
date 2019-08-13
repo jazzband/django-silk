@@ -73,6 +73,11 @@ class Request(models.Model):
     pyprofile = TextField(blank=True, default='')
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
 
+    # Useful method to create shortened copies of strings without losing start and end context
+    # Used to ensure path and view_name don't exceed 190 characters
+    def _shorten(self, string):
+        return '%s...%s' % (string[:94], string[len(string) - 93:])
+
     @property
     def total_meta_time(self):
         return (self.meta_time or 0) + (self.meta_time_spent_queries or 0)
@@ -135,14 +140,28 @@ class Request(models.Model):
         if check_percent < random.random() and not force:
             return
         target_count = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS
+
         # Since garbage collection is probabilistic, the target count should
         # be lowered to account for requests before the next garbage collection
         if check_percent != 0:
             target_count -= int(1 / check_percent)
-        prune_count = max(cls.objects.count() - target_count, 0)
-        prune_rows = cls.objects.order_by('start_time') \
-            .values_list('id', flat=True)[:prune_count]
-        cls.objects.filter(id__in=list(prune_rows)).delete()
+
+        # Make sure we can delete everything if needed by settings
+        if target_count <= 0:
+            cls.objects.all().delete()
+            return
+
+        try:
+            time_cutoff = cls.objects.order_by(
+                '-start_time'
+            ).values_list(
+                'start_time',
+                flat=True
+            )[target_count]
+        except IndexError:
+            return
+
+        cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
@@ -155,6 +174,13 @@ class Request(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
+        # We can't save if either path or view_name exceed 190 characters
+        if self.path and len(self.path) > 190:
+            self.path = self._shorten(self.path)
+
+        if self.view_name and len(self.view_name) > 190:
+            self.view_name = self._shorten(self.view_name)
 
         super(Request, self).save(*args, **kwargs)
         Request.garbage_collect(force=False)

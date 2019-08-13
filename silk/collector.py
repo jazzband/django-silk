@@ -184,8 +184,7 @@ class DataCollector(with_metaclass(Singleton, object)):
                         )
             profile = models.Profile.objects.create(**profile)
             if profile_query_models:
-                profile.queries = profile_query_models
-                profile.save()
+                profile.queries.set(profile_query_models)
         self._record_meta_profiling()
 
     def _get_profile_file_path(self):

@@ -60,13 +60,38 @@ class RequestsView(View):
         return [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()]
 
     def _get_paths(self):
-        return [''] + [x['path'] for x in Request.objects.values('path').distinct()]
+        return Request.objects.values_list(
+            'path',
+            flat=True
+        ).order_by(
+            'path'
+        ).distinct()
+
+    def _get_views(self):
+        return Request.objects.values_list(
+            'view_name',
+            flat=True
+        ).exclude(
+            view_name=''
+        ).order_by(
+            'view_name'
+        ).distinct()
 
     def _get_status_codes(self):
-        return [x['status_code'] for x in Response.objects.values('status_code').distinct()]
+        return Response.objects.values_list(
+            'status_code',
+            flat=True
+        ).order_by(
+            'status_code'
+        ).distinct()
 
     def _get_methods(self):
-        return [x['method'] for x in Request.objects.values('method').distinct()]
+        return Request.objects.values_list(
+            'method',
+            flat=True
+        ).order_by(
+            'method'
+        ).distinct()
 
     def _get_objects(self, show=None, order_by=None, order_dir=None, path=None, filters=None):
         if not filters:
@@ -110,7 +135,7 @@ class RequestsView(View):
             'options_paths': self._get_paths(),
             'options_status_codes': self._get_status_codes(),
             'options_methods': self._get_methods(),
-            'view_names': [x[0] for x in Request.objects.values_list('view_name').distinct() if x[0]],
+            'view_names': self._get_views(),
             'filters': raw_filters
         }
         context.update(csrf(request))

@@ -1,0 +1,99 @@
+{% extends "silk/base/detail_base.html" %}
+{% load silk_filters %}
+{% load silk_nav %}
+{% load silk_inclusion %}
+{% load static %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>
+    <script type="text/javascript" src="{% static 'silk/lib/svg-pan-zoom.min.js' %}"></script>
+    {{ block.super }}
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'silk/css/summary.css' %}">
+    <style>
+        #query-info-div {
+            margin-top: 15px;
+        }
+
+        #query-info-div .timestamp-div {
+            font-size: 13px;
+
+        }
+
+        #pyprofile-div {
+            display: block;
+            margin: auto;
+            width: 960px;
+        }
+
+        .pyprofile {
+            text-align: left;
+        }
+
+        a {
+            color: #45ADA8;
+        }
+
+        a:visited {
+            color: #45ADA8;
+        }
+
+        a:hover {
+            color: #547980;
+        }
+
+        a:active {
+            color: #594F4F;
+        }
+
+        #graph-div {
+            padding: 25px;
+            background-color: white;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 25px;
+            width: 960px;
+            text-align: center;
+        }
+
+        #percent {
+            width: 20px;
+        }
+
+        svg {
+          display: block;
+        }
+
+    </style>
+{% endblock %}
+
+{% block menu %}
+    {% request_menu request silk_request %}
+{% endblock %}
+
+
+{% block data %}
+    <div class="wrapper">
+        <div id="query-div">           
+            {% if silk_request.pyprofile %}
+            <div id="pyprofile-div">
+                <div class="heading">
+                    <div class="inner-heading">CProfile</div>
+                </div>
+                <div class="description">
+                    The below is a dump from the cPython profiler.
+                </div>
+                {% if silk_request.prof_file %}
+                Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
+                {% endif %}
+                <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
