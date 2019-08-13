@@ -1,5 +1,5 @@
-FROM python:3.6-alpine
-MAINTAINER Jazz Band
+FROM python:3.7-alpine
+MAINTAINER Viralize
 
 # Some system dependencies
 RUN apk update -qq && apk add build-base jpeg-dev zlib-dev
