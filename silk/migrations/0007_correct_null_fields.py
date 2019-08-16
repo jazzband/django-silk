@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='request',
             name='body',
-            field=models.TextField(blank=True, default='', null=True),
+            field=models.TextField(blank=True, default=' ', null=True),
         ),
         migrations.AlterField(
             model_name='request',
@@ -24,16 +24,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='request',
             name='pyprofile',
-            field=models.TextField(blank=True, default='', null=True),
+            field=models.TextField(blank=True, default=' ', null=True),
         ),
         migrations.AlterField(
             model_name='request',
             name='query_params',
-            field=models.TextField(blank=True, default='', null=True),
+            field=models.TextField(blank=True, default=' ', null=True),
         ),
         migrations.AlterField(
             model_name='request',
             name='raw_body',
-            field=models.TextField(blank=True, default='', null=True),
+            field=models.TextField(blank=True, default=' ', null=True),
         ),
     ]
