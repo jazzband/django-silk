@@ -69,17 +69,16 @@
             {% csrf_token %}
             <div class="cleardb-form-wrapper">
                 <label>
-                <input type="checkbox" name="requests"/>
-                Requests
-            </label>
-            <label>
-                <input type="checkbox" name="profiling"/>
-                Profiling
-            </label>
+                    <input type="checkbox" name="clear_requests"/>
+                    Requests
+                </label>
+                <label>
+                    <input type="checkbox" name="clear_profiling"/>
+                    Profiling
+                </label>
             </div>
             <button class="btn">Clear</button>
         </form>
-        </div>
     </div>
 {% endblock %}
 
