@@ -25,6 +25,9 @@ class ClearDBView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request, *_, **kwargs):
+        context = {}
         if 'clear_all' in request.POST:
             self._truncate_tables([Response, SQLQuery, Profile, Request])
-        return render(request, 'silk/clear_db.html')
+            tables = ['Response', 'SQLQuery', 'Profile', 'Request']
+            context['msg'] = 'Cleared data for following silk tables: {0}'.format(', '.join(tables))
+        return render(request, 'silk/clear_db.html', context=context)
