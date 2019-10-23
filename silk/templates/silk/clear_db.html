@@ -25,12 +25,12 @@
             margin-bottom: 20px;
         }
 
-        .cleardb-form label{
+        .cleardb-form label {
             display: block;
             margin-bottom: 8px;
         }
 
-        .cleardb-form .btn{
+        .cleardb-form .btn {
             background: #333344;
             color: #fff;
             padding: 10px 20px;
@@ -43,9 +43,13 @@
             min-width: 150px;
             text-align: center;
         }
-    .test label :last-child{
-        margin-bottom: 0;
-    }
+        .cleardb-form label :last-child {
+            margin-bottom: 0;
+        }
+        .msg {
+            margin-top: 20px;
+            color: #bac54b;
+        }
     </style>
 
 {% endblock %}
@@ -64,7 +68,7 @@
 
 {% block data %}
     <div class="container">
-        <h2>Silk Profiler</h2>
+        <h2>Silk Clear DB</h2>
         <form class="cleardb-form" action="." method="post">
             {% csrf_token %}
             <div class="cleardb-form-wrapper">
@@ -83,6 +87,7 @@
             </div>
             <button class="btn">Clear</button>
         </form>
+        <div class="msg">{{ msg }}</div>
     </div>
 {% endblock %}
 
