@@ -216,6 +216,7 @@ class Response(models.Model):
 
 # TODO rewrite docstring
 class SQLQueryManager(models.Manager):
+    @transaction.atomic
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
         the model save() method and hence we must add this logic here too"""
@@ -223,18 +224,10 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
+        for obj in objs:
+            obj.prepare_save()
 
-        with transaction.atomic():
-            request_counter = Counter([x.request_id for x in objs])
-            requests = Request.objects.filter(pk__in=request_counter.keys())
-            # TODO: Not that there is ever more than one request (but there could be eventually)
-            # but perhaps there is a cleaner way of apply the increment from the counter without iterating
-            # and saving individually? e.g. bulk update but with diff. increments. Couldn't come up with this
-            # off hand.
-            for r in requests:
-                r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
-                r.save()
-            return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
+        return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -242,6 +235,7 @@ class SQLQuery(models.Model):
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
+    identifier = IntegerField(default=-1)
     request = ForeignKey(
         Request, related_name='queries', null=True,
         blank=True, db_index=True, on_delete=models.CASCADE,
@@ -289,9 +283,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @transaction.atomic()
-    def save(self, *args, **kwargs):
-
+    def prepare_save(self):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
@@ -301,6 +293,9 @@ class SQLQuery(models.Model):
                 self.request.num_sql_queries += 1
                 self.request.save(update_fields=['num_sql_queries'])
 
+    @transaction.atomic()
+    def save(self, *args, **kwargs):
+        self.prepare_save()
         super(SQLQuery, self).save(*args, **kwargs)
 
     @transaction.atomic()
