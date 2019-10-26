@@ -154,9 +154,13 @@ class DataCollector(with_metaclass(Singleton, object)):
                 self.request.prof_file = f.name
                 self.request.save()
 
-        for query in self.queries.values():
-            query_model = models.SQLQuery.objects.create(**query)
-            query['model'] = query_model
+        sql_queries = []
+        for identifier, query in self.queries.items():
+            query['identifier'] = identifier
+            sql_query = models.SQLQuery(**query)
+            sql_queries += [sql_query]
+
+        models.SQLQuery.objects.bulk_create(sql_queries)
 
         for profile in self.profiles.values():
             profile_query_models = []

@@ -242,6 +242,7 @@ class SQLQuery(models.Model):
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
+    identifier = IntegerField(default=-1)
     request = ForeignKey(
         Request, related_name='queries', null=True,
         blank=True, db_index=True, on_delete=models.CASCADE,
