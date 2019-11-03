@@ -29,7 +29,9 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
-        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware'
+        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
+        'SILKY_REQUEST_MODEL_FACTORY_CLASS': 'silk.model_factory.RequestModelFactory',
+        'SILKY_RESPONSE_MODEL_FACTORY_CLASS': 'silk.model_factory.ResponseModelFactory',
     }
 
     def _setup(self):
@@ -39,6 +41,20 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         self.attrs = copy(self.defaults)
         self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
         self.attrs.update(options)
+
+    @property
+    def request_model_factory(self):
+        from importlib import import_module
+        mod_name, cls_name = self.SILKY_REQUEST_MODEL_FACTORY_CLASS.rsplit('.', 1)
+        mod = import_module(mod_name)
+        return getattr(mod, cls_name)
+
+    @property
+    def response_model_factory(self):
+        from importlib import import_module
+        mod_name, cls_name = self.SILKY_RESPONSE_MODEL_FACTORY_CLASS.rsplit('.', 1)
+        mod = import_module(mod_name)
+        return getattr(mod, cls_name)
 
     def __init__(self):
         super(SilkyConfig, self).__init__()
