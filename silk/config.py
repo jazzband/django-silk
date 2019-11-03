@@ -1,4 +1,6 @@
+from functools import lru_cache
 from copy import copy
+from importlib import import_module
 
 from django.utils import six
 
@@ -21,7 +23,7 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_AUTHENTICATION': False,
         'SILKY_AUTHORISATION': False,
         'SILKY_PERMISSIONS': default_permissions,
-        'SILKY_MAX_RECORDED_REQUESTS': 10**4,
+        'SILKY_MAX_RECORDED_REQUESTS': 10 ** 4,
         'SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT': 10,
         'SILKY_MAX_REQUEST_BODY_SIZE': -1,
         'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
@@ -42,19 +44,20 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
         self.attrs.update(options)
 
-    @property
-    def request_model_factory(self):
-        from importlib import import_module
-        mod_name, cls_name = self.SILKY_REQUEST_MODEL_FACTORY_CLASS.rsplit('.', 1)
+    @staticmethod
+    @lru_cache()
+    def _load_class(cls_name):
+        mod_name, cls_name = cls_name.rsplit('.', 1)
         mod = import_module(mod_name)
         return getattr(mod, cls_name)
 
     @property
+    def request_model_factory(self):
+        return self._load_class(self.SILKY_REQUEST_MODEL_FACTORY_CLASS)
+
+    @property
     def response_model_factory(self):
-        from importlib import import_module
-        mod_name, cls_name = self.SILKY_RESPONSE_MODEL_FACTORY_CLASS.rsplit('.', 1)
-        mod = import_module(mod_name)
-        return getattr(mod, cls_name)
+        return self._load_class(self.SILKY_RESPONSE_MODEL_FACTORY_CLASS)
 
     def __init__(self):
         super(SilkyConfig, self).__init__()
