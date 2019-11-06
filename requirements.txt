@@ -11,3 +11,4 @@ Django>=1.11
 freezegun>=0.3
 factory-boy>=2.8.1
 gprof2dot>=2017.09.19
+backports.functools-lru-cache==1.6.1

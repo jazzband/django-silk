@@ -1,4 +1,8 @@
-from functools import lru_cache
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
+
 from copy import copy
 from importlib import import_module
 
