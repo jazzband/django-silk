@@ -508,6 +508,12 @@ export DB_NAME=db.sqlite3
 
 For other combinations, check [`.travis.yml`](./.travis.yml).
 
+Now from the root of the sample `project` apply the migrations
+
+```bash
+python manage.py migrate
+```
+
 Now from the root of the sample `project` directory start the django server
 
 ```bash
