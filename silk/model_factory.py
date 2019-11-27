@@ -76,6 +76,8 @@ class RequestModelFactory(object):
         headers = {}
         for k, v in self.request.META.items():
             if k.startswith('HTTP') or k in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
+                if k == 'HTTP_AUTHORIZATION':
+                    continue
                 splt = k.split('_')
                 if splt[0] == 'HTTP':
                     splt = splt[1:]
