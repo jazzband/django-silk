@@ -73,3 +73,15 @@ class TestEncodingForRequests(TestCase):
                 self.assertEqual(datum['username'], RequestModelFactory.CLEANSED_SUBSTITUTE)
                 self.assertEqual(datum['password'], RequestModelFactory.CLEANSED_SUBSTITUTE)
                 self.assertEqual(datum['x'], 'testunmasked')
+
+    def test_authorization_header(self):
+        mock_request = Mock()
+        mock_request.META = {'HTTP_AUTHORIZATION': 'secret'}
+        mock_request.body = ''
+        mock_request.get = mock_request.META.get
+        factory = RequestModelFactory(mock_request)
+        headers = factory.encoded_headers()
+        json_headers = json.loads(headers)
+        
+        self.assertIn('AUTHORIZATION', json_headers)
+        self.assertEqual(json_headers['AUTHORIZATION'], RequestModelFactory.CLEANSED_SUBSTITUTE)
