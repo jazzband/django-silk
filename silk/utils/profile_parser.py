@@ -1,4 +1,3 @@
-from six import text_type
 import re
 
 
@@ -9,7 +8,7 @@ def parse_profile(output):
     """
     Parse the output of cProfile to a list of tuples.
     """
-    if isinstance(output, text_type):
+    if isinstance(output, str):
         output = output.split('\n')
     for i, line in enumerate(output):
         # ignore n function calls, total time and ordered by and empty lines

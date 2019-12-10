@@ -4,8 +4,6 @@ import logging
 import sys
 import re
 
-from django.utils import six
-
 from silk.profiling.profiler import silk_profile
 
 Logger = logging.getLogger('silk.profiling.dynamic')
@@ -53,7 +51,7 @@ def profile_function_or_method(module, func, name=None):
     @param module: module object or module name in form 'path.to.module'
     @param func: function object or function name in form 'foo' or 'Class.method'
     """
-    if isinstance(module, six.string_types) or isinstance(module, six.text_type):
+    if isinstance(module, str) or isinstance(module, str):
         module = _get_module(module)
     decorator = silk_profile(name, _dynamic=True)
     func_name = func
@@ -144,12 +142,12 @@ def _new_func_from_source(source, func):
     # could be.
     #
     # relevant: http://stackoverflow.com/questions/2749655/why-are-closures-broken-within-exec
-    globals = six.get_function_globals(func)
+    globals = func.__globals__
     locals = calling_frame.f_locals
     combined = globals.copy()
     combined.update(locals)
     Logger.debug('New src_str:\n %s' % src_str)
-    six.exec_(src_str, combined, context)
+    exec(src_str, combined, context)
     return context[func.__name__]
 
 
@@ -199,8 +197,8 @@ def _inject_context_manager_func(func, start_line, end_line, name):
 
 
 def is_str_typ(o):
-    return any(map(partial(isinstance, o), six.string_types)) \
-        or isinstance(o, six.text_type)
+    return any(map(partial(isinstance, o), str)) \
+        or isinstance(o, str)
 
 
 def inject_context_manager_func(module, func, start_line, end_line, name):

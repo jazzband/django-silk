@@ -4,7 +4,7 @@ import cProfile
 import pstats
 import logging
 
-from django.utils.six import StringIO, with_metaclass
+from io import StringIO
 
 from silk import models
 from silk.config import SilkyConfig
@@ -26,7 +26,7 @@ def raise_middleware_error():
         'these methods, Silk will not have the chance to inspect the request/response objects.')
 
 
-class DataCollector(with_metaclass(Singleton, object)):
+class DataCollector(metaclass=Singleton):
     """
     Provides the ability to save all models at the end of the request. We
     cannot save during the request due to the possibility of atomic blocks

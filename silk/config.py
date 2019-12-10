@@ -1,7 +1,5 @@
 from copy import copy
 
-from django.utils import six
-
 from silk.singleton import Singleton
 
 
@@ -11,7 +9,7 @@ def default_permissions(user):
     return False
 
 
-class SilkyConfig(six.with_metaclass(Singleton, object)):
+class SilkyConfig(metaclass=Singleton):
     defaults = {
         'SILKY_DYNAMIC_PROFILING': [],
         'SILKY_IGNORE_PATHS': [],
