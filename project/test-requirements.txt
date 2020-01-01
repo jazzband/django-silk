@@ -1,5 +1,4 @@
 Pygments>=2.0,<2.1
-six==1.11.0
 simplejson==3.13.2
 python-dateutil>=2.4,<2.5
 requests==2.21.0

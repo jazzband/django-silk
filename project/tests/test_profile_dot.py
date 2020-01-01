@@ -3,11 +3,8 @@ import os
 import cProfile
 import tempfile
 from contextlib import contextmanager
-from six import PY3
-if PY3:
-    from unittest.mock import MagicMock
-else:
-    from mock import MagicMock
+from unittest.mock import MagicMock
+
 # 3rd party
 from django.test import TestCase
 from networkx.drawing.nx_pydot import read_dot
