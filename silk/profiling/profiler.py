@@ -136,7 +136,7 @@ class silk_profile(object):
             def wrapped_target(*args, **kwargs):
                 with silk_meta_profiler():
                     try:
-                        func_code = func.__code__
+                        func_code = target.__code__
                     except AttributeError:
                         raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
                     line_num = func_code.co_firstlineno
