@@ -22,10 +22,10 @@ class ProfileParserTestCase(TestCase):
             stream.seek(0)
             actual = list(parse_profile(stream))
             expected = [
-                 ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
-                 ['1', '0.000', '0.000', '0.000', '0.000', '<string>:1(<module>)'],
-                 ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method exec}'],
-                 ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method print}'],
-                 ['1', '0.000', '0.000', '0.000', '0.000', "{method 'disable' of '_lsprof.Profiler' objects}"],
+                ['ncalls', 'tottime', 'percall', 'cumtime', 'percall', 'filename:lineno(function)'],
+                ['1', '0.000', '0.000', '0.000', '0.000', '<string>:1(<module>)'],
+                ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.exec}'],
+                ['1', '0.000', '0.000', '0.000', '0.000', '{built-in method builtins.print}'],
+                ['1', '0.000', '0.000', '0.000', '0.000', "{method 'disable' of '_lsprof.Profiler' objects}"]
             ]
             self.assertListEqual(actual, expected)
