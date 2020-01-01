@@ -77,8 +77,7 @@ class ProfileDotViewTestCase(TestCase):
                 # create dot
                 with tempfile.NamedTemporaryFile(delete=False) as dotfile:
                     dot = _create_dot(self._profile(), 5)
-                    dot = dot.encode('utf-8') if PY3 else dot
-                    dotfile.write(dot)
+                    dotfile.write(dot.encode('utf-8'))
 
                 # verify generated dot is valid
                 G = read_dot(dotfile.name)
