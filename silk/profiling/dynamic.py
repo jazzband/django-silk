@@ -197,8 +197,7 @@ def _inject_context_manager_func(func, start_line, end_line, name):
 
 
 def is_str_typ(o):
-    return any(map(partial(isinstance, o), str)) \
-        or isinstance(o, str)
+    return isinstance(o, str)
 
 
 def inject_context_manager_func(module, func, start_line, end_line, name):
