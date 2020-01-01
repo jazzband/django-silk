@@ -51,7 +51,7 @@ def profile_function_or_method(module, func, name=None):
     @param module: module object or module name in form 'path.to.module'
     @param func: function object or function name in form 'foo' or 'Class.method'
     """
-    if isinstance(module, str) or isinstance(module, str):
+    if isinstance(module, str):
         module = _get_module(module)
     decorator = silk_profile(name, _dynamic=True)
     func_name = func
