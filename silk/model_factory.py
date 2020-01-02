@@ -103,14 +103,17 @@ class RequestModelFactory(object):
         key_string = '|'.join(sensitive_keys)
 
         def replace_pattern_values(obj):
+            pattern = re.compile(key_string, re.I)
             if isinstance(obj, dict):
-                for key in set(obj.keys()) & sensitive_keys:
-                    obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
+                for key in obj.keys():
+                    if pattern.search(key):
+                        obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
+                    else:
+                        obj[key] = replace_pattern_values(obj[key])
             elif isinstance(obj, list):
                 for index, item in enumerate(obj):
                     obj[index] = replace_pattern_values(item)
             else:
-                pattern = re.compile(r'{}'.format(key_string), re.I)
                 if pattern.search(str(obj)):
                     return RequestModelFactory.CLEANSED_SUBSTITUTE
             return obj
@@ -118,7 +121,7 @@ class RequestModelFactory(object):
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'({})=(.*?)(&|$)'.format(key_string), re.M)
+            pattern = re.compile(r'({})[^=]*=(.*?)(&|$)'.format(key_string), re.M | re.I)
             try:
                 results = re.findall(pattern, body)
             except Exception:
