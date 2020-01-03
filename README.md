@@ -34,7 +34,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 1.11, 2.0, 2.1, 2.2
+* Django: 2.2, 3.0
 * Python: 3.5, 3.6, 3.7
 
 ## Installation
