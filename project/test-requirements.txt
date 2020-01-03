@@ -9,7 +9,7 @@ pytz>2014.2
 mock==2.0.0
 Pillow==5.4.1
 factory-boy==2.9.2
-freezegun==0.3.11
+freezegun==0.3.1
 networkx==1.11
 pydotplus==2.0.2
 contextlib2==0.5.5
