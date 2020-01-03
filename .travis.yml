@@ -5,6 +5,7 @@ python:
 - '3.5'
 - '3.6'
 - '3.7'
+- '3.8'
 env:
 - DJANGO="Django>=2.2,<2.3.0"     DB=postgresql DB_NAME=travis_ci_test
 - DJANGO="Django>=3.0"            DB=postgresql DB_NAME=travis_ci_test
