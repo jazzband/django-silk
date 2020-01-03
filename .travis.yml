@@ -15,11 +15,11 @@ env:
 matrix:
   exclude:
   - python: '3.5'
-    env: DJANGO="Django>=3.0"     DB=postgresql DB_NAME=travis_ci_test
+    env: DJANGO="Django>=3.0"            DB=postgresql DB_NAME=travis_ci_test
   - python: '3.5'
-    env: DJANGO="Django>=3.0"     DB=sqlite3 DB_NAME=db.sqlite3
+    env: DJANGO="Django>=3.0"            DB=sqlite3 DB_NAME=db.sqlite3
   - python: '3.5'
-    env: DJANGO="Django>=3.0"     DB=mysql DB_NAME=mysql_db
+    env: DJANGO="Django>=3.0"            DB=mysql DB_NAME=mysql_db
   fast_finish: true
 services:
   - mysql
