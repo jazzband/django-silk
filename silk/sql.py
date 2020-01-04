@@ -36,9 +36,9 @@ def execute_sql(self, *args, **kwargs):
             return iter([])
         else:
             return
-    tb = ''.join(reversed(traceback.format_stack()))
     sql_query = q % params
     if _should_wrap(sql_query):
+        tb = ''.join(reversed(traceback.format_stack()))
         query_dict = {
             'query': sql_query,
             'start_time': timezone.now(),
