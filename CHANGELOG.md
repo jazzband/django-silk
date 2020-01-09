@@ -1,5 +1,40 @@
 # Change Log
 
+
+## [4.0.0](https://github.com/jazzband/django-silk/tree/4.0.0) (2020-01-09)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.4...4.0.0)
+
+**New features/Implemented enhancements:**
+
+- Ability to clean up all requests/queries [\#368](https://github.com/jazzband/django-silk/pull/368) ([nasirhjafri](https://github.com/nasirhjafri))
+- Used bulk_create to save number of queries [\#370](https://github.com/jazzband/django-silk/pull/370) ([nasirhjafri](https://github.com/nasirhjafri))
+- Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
+- Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
+- Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+
+**Fixed bugs:**
+
+- Mask authorization header [\#376](https://github.com/jazzband/django-silk/pull/376) ([StefanMich](https://github.com/StefanMich))
+
+**Closed issues:**
+
+- Ability to clean up all requests/queries [\#365](https://github.com/jazzband/django-silk/issues/365)
+- Use bulk_create to save number of queries [\#369](https://github.com/jazzband/django-silk/issues/369)
+- Headers are not sanitized [\#375](https://github.com/jazzband/django-silk/issues/375)
+- Django 3 support [\#382](https://github.com/jazzband/django-silk/issues/382)
+
+
+**Merged pull requests:**
+
+- Mask authorization header [\#376](https://github.com/jazzband/django-silk/pull/376) ([StefanMich](https://github.com/StefanMich))
+- Ability to clean up all requests/queries [\#368](https://github.com/jazzband/django-silk/pull/368) ([nasirhjafri](https://github.com/nasirhjafri))
+- Used bulk_create to save number of queries [\#370](https://github.com/jazzband/django-silk/pull/370) ([nasirhjafri](https://github.com/nasirhjafri))
+- Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
+- Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
+- Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+
+
 ## [3.0.4](https://github.com/jazzband/django-silk/tree/3.0.4) (2019-08-12)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.2...3.0.4)
