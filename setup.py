@@ -10,7 +10,7 @@ README = open('README.md', 'rb').read().decode("UTF-8")
 
 setup(
     name='django-silk',
-    version='3.0.4',
+    version='4.0.0',
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
