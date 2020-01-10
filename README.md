@@ -26,6 +26,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
   * [Meta-Profiling](#meta-profiling)
   * [Recording a fraction of requests](#recording-a-fraction-of-requests)
   * [Limiting request/response data](#limiting-requestresponse-data)
+  * [Using custom classes](#using-custom-classes)
   * [Clearing logged data](#clearing-logged-data)
 * [Contributing](#contributing)
   * [Development Environment](#development-environment)
@@ -463,6 +464,24 @@ The garbage collection is only run on a percentage of requests to reduce overhea
 ```python
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
 ```
+
+### Using custom classes
+
+Sometimes it's handy to configure custom classes to handle requests or responses.
+
+You can replace request model factory class with this setting:
+```python
+SILKY_REQUEST_MODEL_FACTORY_CLASS = 'path.to.CustomRequestModelFactory'
+```
+It's recommended to create custom classes that inherit from `silk.model_factory.RequestModelFactory`.
+
+
+You can replace response model factory class with this setting:
+```python
+SILKY_RESPONSE_MODEL_FACTORY_CLASS = 'path.to.CustomResponseModelFactory'
+```
+It's recommended to create custom classes that inherit from `silk.model_factory.ResponseModelFactory`.
+
 
 ### Clearing logged data
 

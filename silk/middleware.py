@@ -9,7 +9,6 @@ from django.utils import timezone
 from silk.collector import DataCollector
 
 from silk.config import SilkyConfig
-from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
 from silk.sql import execute_sql
@@ -104,7 +103,7 @@ class SilkyMiddleware:
         if not hasattr(SQLCompiler, '_execute_sql'):
             SQLCompiler._execute_sql = SQLCompiler.execute_sql
             SQLCompiler.execute_sql = execute_sql
-        request_model = RequestModelFactory(request).construct_request_model()
+        request_model = SilkyConfig().request_model_factory(request).construct_request_model()
         DataCollector().configure(request_model)
 
     @transaction.atomic()
@@ -115,7 +114,7 @@ class SilkyMiddleware:
             collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
-                silk_response = ResponseModelFactory(response).construct_response_model()
+                silk_response = SilkyConfig().response_model_factory(response).construct_response_model()
                 silk_response.save()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
