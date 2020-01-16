@@ -26,6 +26,7 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
+        'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
         'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware'
     }
