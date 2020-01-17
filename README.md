@@ -356,6 +356,26 @@ If we were to apply the dynamic profile to the functions source module `another.
 it has already been imported, no profiling would be triggered.
 
 
+#### Custom Logic for Profiling
+
+Sometimes you may want to dynamically control when the profiler runs. You can write your own logic for when to enable the profiler. To do this add the following to your `settings.py`:
+
+This setting is mutually exclusive with SILKY_PYTHON_PROFILER and will be used over it if present. It will work with SILKY_DYNAMIC_PROFILING.
+
+```python
+def my_custom_logic(request):
+    return 'profile_requests' in request.session
+
+SILKY_PYTHON_PROFILER_FUNC = my_custom_logic # profile only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# profile only session has recording enabled.
+SILKY_PYTHON_PROFILER_FUNC = lambda request: 'profile_requests' in request.session
+```
+
 ### Code Generation
 
 Silk currently generates two bits of code per request:
@@ -422,7 +442,7 @@ Note that in the above screenshot, this means that the request took 29ms (22ms f
 
 ### Recording a Fraction of Requests
 
-On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
+On high-load sites it may be helpful to only record a fraction of the requests that are made. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
 
@@ -432,7 +452,7 @@ SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 
 #### Custom Logic for Recording Requests
 
-On high-load sites it may also be helpful to write your own logic for when to intercept requests.To do this add the following to your `settings.py`:
+On high-load sites it may also be helpful to write your own logic for when to intercept requests. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
 
