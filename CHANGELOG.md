@@ -12,6 +12,7 @@
 - Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
 - Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
 - Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+- Add function support for enabling profiling [\#391](https://github.com/jazzband/django-silk/pull/391) ([tredzko](https://github.com/tredzko))
 
 **Fixed bugs:**
 
@@ -23,6 +24,7 @@
 - Use bulk_create to save number of queries [\#369](https://github.com/jazzband/django-silk/issues/369)
 - Headers are not sanitized [\#375](https://github.com/jazzband/django-silk/issues/375)
 - Django 3 support [\#382](https://github.com/jazzband/django-silk/issues/382)
+- Support functional cProfile enable [\#390](https://github.com/jazzband/django-silk/issues/390)
 
 
 **Merged pull requests:**
@@ -33,6 +35,7 @@
 - Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
 - Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
 - Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+- Add function support for enabling profiling [\#391](https://github.com/jazzband/django-silk/pull/391) ([tredzko](https://github.com/tredzko))
 
 
 ## [3.0.4](https://github.com/jazzband/django-silk/tree/3.0.4) (2019-08-12)
