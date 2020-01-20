@@ -1,9 +1,5 @@
 # Silk
 
-====
-
-*Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
-
 [![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
