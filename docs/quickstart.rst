@@ -39,7 +39,7 @@ Run ``syncdb`` to create Silk's database tables:
 And voila! Silk will begin intercepting requests and queries which you can inspect by visiting ``/silk/``
 
 Other Installation Options
--------
+--------------------------
 
 You can download a release from `github <https://github.com/jazzband/django-silk/releases>`_ and then install using pip:
 

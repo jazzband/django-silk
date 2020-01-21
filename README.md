@@ -30,7 +30,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 2.2, 3.0
+* Django: 1.11, 2.2, 3.0
 * Python: 3.5, 3.6, 3.7, 3.8
 
 ## Installation
@@ -503,7 +503,7 @@ In order to setup local development you should first install all the dependencie
 root of the `project` directory:
 
 ```bash
-pip install -r test-requirements.txt
+pip install -r requirements.txt
 ```
 
 You will also need to install `silk`'s dependencies. From the root of the git repository:

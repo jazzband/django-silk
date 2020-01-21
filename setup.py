@@ -1,21 +1,17 @@
-# -*- coding: utf-8 -*-
-"""Define the Django Silk setup."""
 import os
 from setuptools import setup
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-README = open('README.md', 'rb').read().decode("UTF-8")
-
 setup(
     name='django-silk',
-    version='4.0.0',
+    use_scm_version=True,
     packages=['silk'],
     include_package_data=True,
     license='MIT License',
     description='Silky smooth profiling for the Django Framework',
-    long_description=README,
+    long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/jazzband/django-silk',
     author='Michael Ford',
@@ -47,5 +43,6 @@ setup(
         'pytz',
         'gprof2dot>=2017.09.19',
     ],
-    python_requires='>=3.5'
+    python_requires='>=3.5',
+    setup_requires=['setuptools_scm'],
 )
