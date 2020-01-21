@@ -46,5 +46,6 @@ setup(
         'autopep8',
         'pytz',
         'gprof2dot>=2017.09.19',
-    ]
+    ],
+    python_requires='>=3.5'
 )
