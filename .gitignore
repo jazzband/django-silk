@@ -118,3 +118,6 @@ fabric.properties
 
 # Virtual env
 .venv*
+
+package-lock.json
+*.db
