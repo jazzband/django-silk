@@ -78,7 +78,7 @@ class TestEncodingForRequests(TestCase):
         mock_request.get = mock_request.META.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
-        self.assertDictEqual(json.loads(body, encoding='UTF-8'), d)
+        self.assertDictEqual(json.loads(body), d)
         self.assertEqual(raw_body, raw_body)
 
 
