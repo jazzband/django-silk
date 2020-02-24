@@ -14,7 +14,7 @@ from silk.views.code import _code
 class SQLDetailView(View):
     def _urlify(self, str):
         files = []
-        r = re.compile('"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
+        r = re.compile(r'"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
         m = r.search(str)
         n = 1
         while m:
