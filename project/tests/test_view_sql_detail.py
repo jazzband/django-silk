@@ -43,7 +43,7 @@ class TestViewSQLDetail(TestCase):
         self.assertTrue(response.status_code == 200)
 
     def test_allowed_file_paths_unavailable_source(self):
-        """if we request to view source that is not in the tracebackk we should get a 403"""
+        """if we request to view source that is not in the traceback we should get a 403"""
         request = MockSuite().mock_request()
         query = MockSuite().mock_sql_queries(request=request, n=1)[0]
         file_path = '/tmp/blah'
