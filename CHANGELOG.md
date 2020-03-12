@@ -7,6 +7,11 @@
 
 **New features/Implemented enhancements:**
 
+- Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
+- JS workflow cleanup [\#397](https://github.com/jazzband/django-silk/pull/397) ([nasirhjafri](https://github.com/nasirhjafri))
+- Refactor QA setup [\#393](https://github.com/jazzband/django-silk/pull/393) ([aleksihakli](https://github.com/aleksihakli))
+
+
 **Fixed bugs:**
 
 **Closed issues:**
