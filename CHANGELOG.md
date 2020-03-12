@@ -5,6 +5,7 @@
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.0...4.0.1)
 
+
 **New features/Implemented enhancements:**
 
 - Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
@@ -14,9 +15,14 @@
 
 **Fixed bugs:**
 
+- docs: Fix simple typo, tracebackk -> traceback [\#406](https://github.com/jazzband/django-silk/pull/406) ([timgates42](https://github.com/timgates42))
+- Clear DB page doesn't work with PostgreSQL and SQLite [\#396](https://github.com/jazzband/django-silk/pull/396) ([nasirhjafri](https://github.com/nasirhjafri))
+
+
 **Closed issues:**
 
 - The "Clear DB" page doesn't work with PostgreSQL [\#395](https://github.com/jazzband/django-silk/issues/395) ([Ikalou](https://github.com/Ikalou))
+
 
 **Merged pull requests:**
 
