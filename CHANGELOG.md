@@ -10,6 +10,8 @@
 **Fixed bugs:**
 
 **Closed issues:**
+- The "Clear DB" page doesn't work with PostgreSQL [\#395](https://github.com/jazzband/django-silk/issues/395) ([Ikalou](https://github.com/Ikalou))
+
 
 **Merged pull requests:**
 
