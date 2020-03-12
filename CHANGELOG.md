@@ -1,6 +1,19 @@
 # Change Log
 
 
+## [4.0.1](https://github.com/jazzband/django-silk/tree/4.0.1) (2020-03-12)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.0...4.0.1)
+
+**New features/Implemented enhancements:**
+
+**Fixed bugs:**
+
+**Closed issues:**
+
+**Merged pull requests:**
+
+
 ## [4.0.0](https://github.com/jazzband/django-silk/tree/4.0.0) (2020-01-09)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.4...4.0.0)
