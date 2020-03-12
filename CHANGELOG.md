@@ -1,6 +1,38 @@
 # Change Log
 
 
+## [4.0.1](https://github.com/jazzband/django-silk/tree/4.0.1) (2020-03-12)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.0...4.0.1)
+
+
+**New features/Implemented enhancements:**
+
+- Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
+- JS workflow cleanup [\#397](https://github.com/jazzband/django-silk/pull/397) ([nasirhjafri](https://github.com/nasirhjafri))
+- Refactor QA setup [\#393](https://github.com/jazzband/django-silk/pull/393) ([aleksihakli](https://github.com/aleksihakli))
+
+
+**Fixed bugs:**
+
+- docs: Fix simple typo, tracebackk -> traceback [\#406](https://github.com/jazzband/django-silk/pull/406) ([timgates42](https://github.com/timgates42))
+- Clear DB page doesn't work with PostgreSQL and SQLite [\#396](https://github.com/jazzband/django-silk/pull/396) ([nasirhjafri](https://github.com/nasirhjafri))
+
+
+**Closed issues:**
+
+- The "Clear DB" page doesn't work with PostgreSQL [\#395](https://github.com/jazzband/django-silk/issues/395) ([Ikalou](https://github.com/Ikalou))
+
+
+**Merged pull requests:**
+
+- docs: Fix simple typo, tracebackk -> traceback [\#406](https://github.com/jazzband/django-silk/pull/406) ([timgates42](https://github.com/timgates42))
+- Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
+- JS workflow cleanup [\#397](https://github.com/jazzband/django-silk/pull/397) ([nasirhjafri](https://github.com/nasirhjafri))
+- Clear DB page doesn't work with PostgreSQL and SQLite [\#396](https://github.com/jazzband/django-silk/pull/396) ([nasirhjafri](https://github.com/nasirhjafri))
+- Refactor QA setup [\#393](https://github.com/jazzband/django-silk/pull/393) ([aleksihakli](https://github.com/aleksihakli))
+
+
 ## [4.0.0](https://github.com/jazzband/django-silk/tree/4.0.0) (2020-01-09)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.4...4.0.0)
