@@ -121,7 +121,7 @@ class RequestModelFactory(object):
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'({})[^=]*=(.*?)(&|$)'.format(key_string), re.M | re.I)
+            pattern = re.compile(r'({})[^=]*=(.*[^\\])(&|$)'.format(key_string), re.M | re.I)
             try:
                 results = re.findall(pattern, body)
             except Exception:
