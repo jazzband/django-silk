@@ -128,7 +128,10 @@ class RequestModelFactory(object):
                 Logger.debug('{}'.format(str(e)))
             else:
                 for res in results:
-                    body = re.sub(res[1], RequestModelFactory.CLEANSED_SUBSTITUTE, body)
+                    try:
+                        body = re.sub(res[1], RequestModelFactory.CLEANSED_SUBSTITUTE, body)
+                    except Exception:
+                        Logger.debug('{}'.format(str(e)))
         else:
             body = json.dumps(replace_pattern_values(json_body))
 
