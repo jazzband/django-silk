@@ -123,15 +123,9 @@ class RequestModelFactory(object):
         except Exception as e:
             pattern = re.compile(r'({})[^=]*=(.*?)(&|$)'.format(key_string), re.M | re.I)
             try:
-                results = re.findall(pattern, body)
+                body = re.sub(pattern, '\\1={}\\3'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
             except Exception:
                 Logger.debug('{}'.format(str(e)))
-            else:
-                for res in results:
-                    try:
-                        body = re.sub(res[1], RequestModelFactory.CLEANSED_SUBSTITUTE, body)
-                    except Exception:
-                        Logger.debug('{}'.format(str(e)))
         else:
             body = json.dumps(replace_pattern_values(json_body))
 
