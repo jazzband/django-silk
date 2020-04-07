@@ -121,9 +121,9 @@ class RequestModelFactory(object):
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'({})[^=]*=(.*?)(&|$)'.format(key_string), re.M | re.I)
+            pattern = re.compile(r'(({})[^=]*)=(.*?)(&|$)'.format(key_string), re.M | re.I)
             try:
-                body = re.sub(pattern, '\\1={}\\3'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
+                body = re.sub(pattern, '\\1={}\\4'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
             except Exception:
                 Logger.debug('{}'.format(str(e)))
         else:
