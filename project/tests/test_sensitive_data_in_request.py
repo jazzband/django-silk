@@ -36,6 +36,9 @@ class MaskCredentialsInFormsTest(TestCase):
     def test_mask_credentials_handles_suffixes(self):
         self.assertNotIn("secret", self._mask("username-with-suffix=secret"))
 
+    def test_mask_credentials_handles_regex_characters(self):
+        self.assertNotIn("secret", self._mask("password=secret++"))
+
     def test_mask_credentials_handles_complex_cases(self):
         self.assertNotIn("secret", self._mask("foo=public&prefixed-uSeRname-with-suffix=secret&bar=public"))
 
