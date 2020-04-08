@@ -9,6 +9,7 @@ from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
 DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
 HTTP_CONTENT_TYPE = 'Content-Type'
+CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
 
 
 class MaskCredentialsInFormsTest(TestCase):
@@ -16,31 +17,54 @@ class MaskCredentialsInFormsTest(TestCase):
         return RequestModelFactory(None)._mask_credentials(value)
 
     def test_mask_credentials_preserves_single_insensitive_values(self):
-        self.assertIn("public", self._mask("foo=public"))
-
-    def test_mask_credentials_preserves_insensitive_values_between_sensitive_values(self):
-        self.assertIn("public", self._mask("password=1&foo=public&secret=2"))
+        body = "foo=public"
+        expected = "foo=public"
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_masks_sensitive_values(self):
-        self.assertNotIn("secret", self._mask("password=secret"))
+        body = "password=secret"
+        expected = "password={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
+
+    def test_mask_credentials_masks_multiple_sensitive_values(self):
+        body = "password=mypassword&secret=mysecret"
+        expected = "password={}&secret={}".format(CLEANSED, CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_masks_sensitive_values_between_insensitive_values(self):
-        self.assertNotIn("secret", self._mask("public1=foo&password=secret&public2=bar"))
+        body = "public1=foo&password=secret&public2=bar"
+        expected = "public1=foo&password={}&public2=bar".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
+
+    def test_mask_credentials_preserves_insensitive_values_between_sensitive_values(self):
+        body = "password=1&foo=public&secret=2"
+        expected = "password={}&foo=public&secret={}".format(CLEANSED, CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_is_case_insensitive(self):
-        self.assertNotIn("secret", self._mask("UsErNaMe=secret"))
+        body = "UsErNaMe=secret"
+        expected = "UsErNaMe={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_prefixes(self):
-        self.assertNotIn("secret", self._mask("prefixed-username=secret"))
+        body = "prefixed-username=secret"
+        expected = "prefixed-username={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_suffixes(self):
-        self.assertNotIn("secret", self._mask("username-with-suffix=secret"))
+        body = "username-with-suffix=secret"
+        expected = "username-with-suffix={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_regex_characters(self):
-        self.assertNotIn("secret", self._mask("password=secret++"))
+        body = "password=secret++"
+        expected = "password={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_complex_cases(self):
-        self.assertNotIn("secret", self._mask("foo=public&prefixed-uSeRname-with-suffix=secret&bar=public"))
+        body = "foo=public&prefixed-uSeRname-with-suffix=secret&bar=public"
+        expected = "foo=public&prefixed-uSeRname-with-suffix={}&bar=public".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
 
 
 class MaskCredentialsInJsonTest(TestCase):
