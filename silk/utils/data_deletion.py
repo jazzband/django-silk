@@ -3,7 +3,7 @@ from django.db import connection
 
 
 def delete_model(model):
-    engine = settings.DATABASES['default']['ENGINE']
+    engine = settings.DATABASES[model.objects.db]['ENGINE']
     table = model._meta.db_table
     if 'mysql' in engine or 'postgresql' in engine:
         # Use "TRUNCATE" on the table
