@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from django.db.models.sql import EmptyResultSet
+from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
 
 from silk.collector import DataCollector
