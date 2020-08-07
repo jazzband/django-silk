@@ -1,5 +1,38 @@
 # Change Log
 
+## [4.1.0](https://github.com/jazzband/django-silk/tree/4.1.0) (2020-08-07)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.1...4.1.0)
+
+
+**New features/Implemented enhancements:**
+
+- Make compatible with Django 3.1 [\#432](https://github.com/jazzband/django-silk/pull/432) ([Tirzono](https://github.com/Tirzono))
+
+
+**Fixed bugs:**
+
+- Capture entire key name during cleansing in \_mask\_credentials [\#414](https://github.com/jazzband/django-silk/pull/414) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Clear DB error when configuring silk to use a non-' default' database [\#417](https://github.com/jazzband/django-silk/pull/417) ([eshxcmhk](https://github.com/eshxcmhk))
+- Fix force\_text RemovedInDjango40Warning [\#422](https://github.com/jazzband/django-silk/pull/422) ([justinmayhew](https://github.com/justinmayhew))
+
+
+**Closed issues:**
+
+- \_mask\_credentials uses UGC in a regex substitution [\#410](https://github.com/jazzband/django-silk/issues/410) ([barm](https://github.com/barm))
+- Django Silk is not compatible with Django 3.1: EmptyResultSet is removed in Django 3.1 [\#431](https://github.com/jazzband/django-silk/issues/431) ([Tirzono](https://github.com/Tirzono))
+
+
+**Merged pull requests:**
+
+- Wrap re.sub() in try-except [\#412](https://github.com/jazzband/django-silk/pull/412) ([bambookchos](https://github.com/bambookchos))
+- Replace the call to re.findall with re.sub in \_mask\_credentials so matched values are not treated as regex patterns [\#413](https://github.com/jazzband/django-silk/pull/413) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Capture entire key name during cleansing in \_mask\_credentials [\#414](https://github.com/jazzband/django-silk/pull/414) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Clear DB error when configuring silk to use a non-' default' database [\#417](https://github.com/jazzband/django-silk/pull/417) ([eshxcmhk](https://github.com/eshxcmhk))
+- Fix force\_text RemovedInDjango40Warning [\#422](https://github.com/jazzband/django-silk/pull/422) ([justinmayhew](https://github.com/justinmayhew))
+- Make compatible with Django 3.1 [\#432](https://github.com/jazzband/django-silk/pull/432) ([Tirzono](https://github.com/Tirzono))
+- Update README.md django-silk is tested with Django 3.1 [\#433](https://github.com/jazzband/django-silk/pull/433) ([Tirzono](https://github.com/Tirzono))
+
 
 ## [4.0.1](https://github.com/jazzband/django-silk/tree/4.0.1) (2020-03-12)
 
