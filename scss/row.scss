@@ -1,0 +1,63 @@
+.row-wrapper {
+  display: table;
+  margin: 2rem;
+  width: 100%;
+  width: -moz-available; /* WebKit-based browsers will ignore this. */
+  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  width: fill-available;
+
+  .row {
+    display: table-row;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    div {
+      padding: 1rem;
+    }
+
+    .col {
+      font-size: 20px;
+      display: table-cell;
+    }
+
+    .timestamp-div {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: #be5b43;
+    }
+
+    .meta .unit {
+      font-size: 9px;
+      font-weight: lighter !important;
+    }
+
+    .method-div {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .path-div {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .num-queries-div {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
+  }
+
+  .row:hover {
+    background-color: rgb(51, 51, 68);
+    color: white;
+    cursor: pointer;
+  }
+
+}
+
