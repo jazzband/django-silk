@@ -51,6 +51,15 @@
       border-bottom-right-radius: 4px;
     }
 
+    .spacing {
+      .numeric {
+        padding: 0 0.3rem;
+      }
+      .meta {
+        padding: 0 0.3rem;
+      }
+    }
+
   }
 
   .row:hover {
