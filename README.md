@@ -509,7 +509,7 @@ pip install -r requirements.txt
 You will also need to install `silk`'s dependencies. From the root of the git repository:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
 At this point your virtual environment should have everything it needs to run both the sample `project` and
