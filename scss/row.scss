@@ -2,8 +2,8 @@
   display: table;
   margin: 2rem;
   width: 100%;
-  width: -moz-available; /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  width: -moz-available;
+  width: -webkit-fill-available;
   width: fill-available;
 
   .row {
