@@ -242,7 +242,7 @@
 
 {% block data %}
     {% if results %}
-        {% if not row_view %}
+        {% if view == "card" %}
             <div class="row-wrapper">
                 {% for silk_request in results %}
                     <a href="{% url 'silk:request_detail' request_id=silk_request.pk %}" class="row">
