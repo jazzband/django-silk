@@ -43,7 +43,11 @@ def _should_intercept(request):
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
-    silky = request.path.startswith(get_fpath())
+    try:
+        silky = request.path.startswith(get_fpath())
+    except NoReverseMatch:
+        silky = False
+
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
