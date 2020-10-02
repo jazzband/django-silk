@@ -15,7 +15,7 @@ urlpatterns = [
         r'^example_app/',
         include('example_app.urls', namespace='example_app')
         ),
-    url(
+    re_path(
         r'^admin/',
         admin.site.urls
         ),
@@ -24,7 +24,7 @@ urlpatterns = [
 
 
 urlpatterns += [
-    url(
+    re_path(
         r'^login/$',
         views.LoginView.as_view(),
         {'template_name': 'example_app/login.html'}, name='login'),
