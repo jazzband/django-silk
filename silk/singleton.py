@@ -1,7 +1,7 @@
 __author__ = 'mtford'
 
 
-class Singleton(type):
+class Singleton(type, metaclass=object):
     def __init__(cls, name, bases, d):
         super(Singleton, cls).__init__(name, bases, d)
         cls.instance = None

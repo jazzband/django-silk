@@ -1,9 +1,5 @@
-Silk
-====
+# Silk
 
-*Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jazzband/django-silk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
@@ -13,32 +9,33 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 <img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
 
+**SECURITY NOTE:** Because Silk stores all HTTP requests into the database in plain text, it will store the request's sensitive information into the database _in plain text_ (e.g. users' passwords!). This is a massive security concern. An issue has been created for this [here](https://github.com/jazzband/django-silk/issues/305).
+
 ## Contents
 
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Features](#features)
 * [Configuration](#configuration)
-    * [Authentication/Authorisation](#authenticationauthorisation)
-    * [Request/Response bodies](#requestresponse-bodies)
-    * [Meta-Profiling](#meta-profiling)
-    * [Recording a fraction of requests](#recording-a-fraction-of-requests)
-    * [Limiting request/response data](#limiting-requestresponse-data)
-    * [Clearing logged data](#clearing-logged-data)
+  * [Authentication/Authorisation](#authenticationauthorisation)
+  * [Request/Response bodies](#requestresponse-bodies)
+  * [Meta-Profiling](#meta-profiling)
+  * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+  * [Limiting request/response data](#limiting-requestresponse-data)
+  * [Clearing logged data](#clearing-logged-data)
 * [Contributing](#contributing)
-    * [Development Environment](#development-environment)
+  * [Development Environment](#development-environment)
 
 ## Requirements
 
 Silk has been tested with:
 
-* Django: 1.11, 2.0
-* Python: 2.7, 3.4, 3.5, 3.6
-
+* Django: 1.11, 2.2, 3.0, 3.1
+* Python: 3.5, 3.6, 3.7, 3.8
 
 ## Installation
 
-Via pip into a virtualenv:
+Via pip into a `virtualenv`:
 
 ```bash
 pip install django-silk
@@ -62,6 +59,20 @@ INSTALLED_APPS = (
 **Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
+
+If you want to use custom middleware, for example you developed the subclass of `silk.middleware.SilkyMiddleware`, so you can use this combination of settings:
+
+```python
+# Specify the path where is the custom middleware placed
+SILKY_MIDDLEWARE_CLASS = 'path.to.your.middleware.MyCustomSilkyMiddleware'
+
+# Use this variable in list of middleware
+MIDDLEWARE = [
+    ...
+    SILKY_MIDDLEWARE_CLASS,
+    ...
+]
+```
 
 To enable access to the user interface add the following to your `urls.py`:
 
@@ -159,7 +170,7 @@ When enabled, a graph visualisation generated using [gprof2dot](https://github.c
 
 
 A custom storage class can be used for the saved generated binary `.prof` files:
- 
+
 ```python
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
@@ -171,7 +182,7 @@ The default storage class is `silk.storage.ProfilerResultStorage`, and when usin
 SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ```
 
-A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools 
+A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools
 
 
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
@@ -341,6 +352,26 @@ If we were to apply the dynamic profile to the functions source module `another.
 it has already been imported, no profiling would be triggered.
 
 
+#### Custom Logic for Profiling
+
+Sometimes you may want to dynamically control when the profiler runs. You can write your own logic for when to enable the profiler. To do this add the following to your `settings.py`:
+
+This setting is mutually exclusive with SILKY_PYTHON_PROFILER and will be used over it if present. It will work with SILKY_DYNAMIC_PROFILING.
+
+```python
+def my_custom_logic(request):
+    return 'profile_requests' in request.session
+
+SILKY_PYTHON_PROFILER_FUNC = my_custom_logic # profile only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# profile only session has recording enabled.
+SILKY_PYTHON_PROFILER_FUNC = lambda request: 'profile_requests' in request.session
+```
+
 ### Code Generation
 
 Silk currently generates two bits of code per request:
@@ -394,7 +425,7 @@ a huge impact on space/time performance. This behaviour can be configured with t
 
 ```python
 SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
-SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
+SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024 bytes, ignore
 ```
 
 ### Meta-Profiling
@@ -415,7 +446,7 @@ Note that in the above screenshot, this means that the request took 29ms (22ms f
 
 ### Recording a Fraction of Requests
 
-On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
+On high-load sites it may be helpful to only record a fraction of the requests that are made. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
 
@@ -425,7 +456,7 @@ SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 
 #### Custom Logic for Recording Requests
 
-On high-load sites it may also be helpful to write your own logic for when to intercept requests.To do this add the following to your `settings.py`:
+On high-load sites it may also be helpful to write your own logic for when to intercept requests. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
 
@@ -480,7 +511,7 @@ In order to setup local development you should first install all the dependencie
 root of the `project` directory:
 
 ```bash
-pip install -r test-requirements.txt
+pip install -r requirements.txt
 ```
 
 You will also need to install `silk`'s dependencies. From the root of the git repository:
@@ -500,6 +531,12 @@ export DB_NAME=db.sqlite3
 ```
 
 For other combinations, check [`.travis.yml`](./.travis.yml).
+
+Now from the root of the sample `project` apply the migrations
+
+```bash
+python manage.py migrate
+```
 
 Now from the root of the sample `project` directory start the django server
 

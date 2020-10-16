@@ -4,7 +4,7 @@ import cProfile
 import pstats
 import logging
 
-from django.utils.six import StringIO, with_metaclass
+from io import StringIO
 
 from silk import models
 from silk.config import SilkyConfig
@@ -26,7 +26,7 @@ def raise_middleware_error():
         'these methods, Silk will not have the chance to inspect the request/response objects.')
 
 
-class DataCollector(with_metaclass(Singleton, object)):
+class DataCollector(metaclass=Singleton):
     """
     Provides the ability to save all models at the end of the request. We
     cannot save during the request due to the possibility of atomic blocks
@@ -86,13 +86,10 @@ class DataCollector(with_metaclass(Singleton, object)):
     def profiles(self):
         return self._get_objects(TYP_PROFILES)
 
-    def configure(self, request=None):
-        silky_config = SilkyConfig()
-
+    def configure(self, request=None, should_profile=True):
         self.request = request
         self._configure()
-
-        if silky_config.SILKY_PYTHON_PROFILER:
+        if should_profile:
             self.local.pythonprofiler = cProfile.Profile()
             self.local.pythonprofiler.enable()
 
@@ -154,10 +151,20 @@ class DataCollector(with_metaclass(Singleton, object)):
                 self.request.prof_file = f.name
                 self.request.save()
 
-        for _, query in self.queries.items():
-            query_model = models.SQLQuery.objects.create(**query)
-            query['model'] = query_model
-        for _, profile in self.profiles.items():
+        sql_queries = []
+        for identifier, query in self.queries.items():
+            query['identifier'] = identifier
+            sql_query = models.SQLQuery(**query)
+            sql_queries += [sql_query]
+
+        models.SQLQuery.objects.bulk_create(sql_queries)
+        sql_queries = models.SQLQuery.objects.filter(request=self.request)
+        for sql_query in sql_queries.all():
+            query = self.queries.get(sql_query.identifier)
+            if query:
+                query['model'] = sql_query
+
+        for profile in self.profiles.values():
             profile_query_models = []
             if TYP_QUERIES in profile:
                 profile_queries = profile[TYP_QUERIES]

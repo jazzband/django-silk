@@ -1,9 +1,5 @@
 from copy import copy
 
-from django.utils import six
-
-from dealer.auto import auto
-
 from silk.singleton import Singleton
 
 
@@ -14,26 +10,7 @@ def default_permissions(user):
     return False
 
 
-def default_revision():
-    revision = auto.revision
-    try:
-        # This is a pretty flaky way of getting revisions in a semi chronological
-        # order (of course two commits from the same second cannot be correctly
-        # ordered) for a couple of reasons:
-        #
-        #  - it only works for git
-        #  - it's using the protected _repo attribute from dealer
-        #  - the timestamp becomes visible in the revision
-        #
-        # However it is better than order commit hashes alphabetically
-        timestamp = auto._repo.git('show -s --format=%at ' + revision)
-        revision = ' # '.join([timestamp.decode(), revision])
-    except:
-        pass
-    return revision
-
-
-class SilkyConfig(six.with_metaclass(Singleton, object)):
+class SilkyConfig(metaclass=Singleton):
     defaults = {
         'SILKY_DYNAMIC_PROFILING': [],
         'SILKY_IGNORE_PATHS': [],
@@ -50,9 +27,11 @@ class SilkyConfig(six.with_metaclass(Singleton, object)):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
-        'SILKY_REVISION': default_revision(),
-        'SILKY_POST_PROCESS_REQUEST': lambda x: None,
+        'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
+        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
+        'SILKY_REVISION': '',
+        'SILKY_POST_PROCESS_REQUEST': lambda x: None,
         'SILKY_DISTRIBUTION_TAB': False,
     }
 

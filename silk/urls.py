@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from silk.views.clear_db import ClearDBView
 from silk.views.profile_detail import ProfilingDetailView
 from silk.views.profile_download import ProfileDownloadView
 from silk.views.profile_dot import ProfileDotView
@@ -10,6 +11,7 @@ from silk.views.requests import RequestsView
 from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
+from silk.views.cprofile import CProfileView
 from silk.views.distribution import DistributionView, DistributionDataView
 
 
@@ -81,6 +83,13 @@ urlpatterns = [
         r'^profile/(?P<profile_id>[0-9]+)/sql/(?P<sql_id>[0-9]+)/$',
         SQLDetailView.as_view(),
         name='profile_sql_detail'
+    ),
+    url(r'^profiling/$', ProfilingView.as_view(), name='profiling'),
+    url(r'^cleardb/$', ClearDBView.as_view(), name='cleardb'),
+    url(
+        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/cprofile/$',
+        CProfileView.as_view(),
+        name='cprofile'
     ),
     url(
         r'^profiling/$',

@@ -16,21 +16,37 @@ def mock_sql():
     mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
     return mock_sql_query, query_string
 
+def call_execute_sql(cls, request):
+    DataCollector().configure(request=request)
+    delete_all_models(SQLQuery)
+    cls.mock_sql, cls.query_string = mock_sql()
+    kwargs = {
+        'one': 1,
+        'two': 2
+    }
+    cls.args = [1, 2]
+    cls.kwargs = kwargs
+    execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
 
-class TestCall(TestCase):
+
+class TestCallNoRequest(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestCall, cls).setUpClass()
-        DataCollector().configure(request=None)
-        delete_all_models(SQLQuery)
-        cls.mock_sql, cls.query_string = mock_sql()
-        kwargs = {
-            'one': 1,
-            'two': 2
-        }
-        cls.args = [1, 2]
-        cls.kwargs = kwargs
-        execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
+        super(TestCallNoRequest, cls).setUpClass()
+        call_execute_sql(cls, None)
+
+    def test_called(self):
+        self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
+
+    def test_count(self):
+        self.assertEqual(0, len(DataCollector().queries))
+
+
+class TestCallRequest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestCallRequest, cls).setUpClass()
+        call_execute_sql(cls, Request())
 
     def test_called(self):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
@@ -38,16 +54,8 @@ class TestCall(TestCase):
     def test_count(self):
         self.assertEqual(1, len(DataCollector().queries))
 
-    def _get_query(self):
-        query = list(DataCollector().queries.values())[0]
-        return query
-
-    def test_no_request(self):
-        query = self._get_query()
-        self.assertNotIn('request', query)
-
     def test_query(self):
-        query = self._get_query()
+        query = list(DataCollector().queries.values())[0]
         self.assertEqual(query['query'], self.query_string)
 
 

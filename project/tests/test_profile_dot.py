@@ -3,11 +3,8 @@ import os
 import cProfile
 import tempfile
 from contextlib import contextmanager
-from six import PY3
-if PY3:
-    from unittest.mock import MagicMock
-else:
-    from mock import MagicMock
+from unittest.mock import MagicMock
+
 # 3rd party
 from django.test import TestCase
 from networkx.drawing.nx_pydot import read_dot
@@ -80,8 +77,7 @@ class ProfileDotViewTestCase(TestCase):
                 # create dot
                 with tempfile.NamedTemporaryFile(delete=False) as dotfile:
                     dot = _create_dot(self._profile(), 5)
-                    dot = dot.encode('utf-8') if PY3 else dot
-                    dotfile.write(dot)
+                    dotfile.write(dot.encode('utf-8'))
 
                 # verify generated dot is valid
                 G = read_dot(dotfile.name)

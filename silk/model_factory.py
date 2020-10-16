@@ -1,11 +1,11 @@
 import json
 import logging
+import re
 import sys
 import traceback
 import base64
 from uuid import UUID
 
-from django.utils.encoding import force_text
 from django.urls import resolve, Resolver404
 
 from silk import models
@@ -53,6 +53,8 @@ def _parse_content_type(content_type):
 
 class RequestModelFactory(object):
     """Produce Request models from Django request objects"""
+    # String to replace on masking
+    CLEANSED_SUBSTITUTE = '********************'
 
     def __init__(self, request):
         super(RequestModelFactory, self).__init__()
@@ -71,12 +73,18 @@ class RequestModelFactory(object):
         to the name. So, for example, a header called X-Bender would be mapped to the META key HTTP_X_BENDER."
         """
         headers = {}
+        sensitive_headers = {'AUTHORIZATION'}
+
         for k, v in self.request.META.items():
             if k.startswith('HTTP') or k in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
                 splt = k.split('_')
                 if splt[0] == 'HTTP':
                     splt = splt[1:]
                 k = '-'.join(splt)
+
+                if k in sensitive_headers:
+                    v = RequestModelFactory.CLEANSED_SUBSTITUTE
+
                 headers[k] = v
         if SilkyConfig().SILKY_HIDE_COOKIES:
             try:
@@ -85,6 +93,42 @@ class RequestModelFactory(object):
                 pass
 
         return json.dumps(headers, cls=DefaultEncoder)
+
+    def _mask_credentials(self, body):
+        """
+        Mask credentials of potentially sensitive info before saving to db.
+        """
+        sensitive_keys = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+        key_string = '|'.join(sensitive_keys)
+
+        def replace_pattern_values(obj):
+            pattern = re.compile(key_string, re.I)
+            if isinstance(obj, dict):
+                for key in obj.keys():
+                    if pattern.search(key):
+                        obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
+                    else:
+                        obj[key] = replace_pattern_values(obj[key])
+            elif isinstance(obj, list):
+                for index, item in enumerate(obj):
+                    obj[index] = replace_pattern_values(item)
+            else:
+                if pattern.search(str(obj)):
+                    return RequestModelFactory.CLEANSED_SUBSTITUTE
+            return obj
+
+        try:
+            json_body = json.loads(body)
+        except Exception as e:
+            pattern = re.compile(r'(({})[^=]*)=(.*?)(&|$)'.format(key_string), re.M | re.I)
+            try:
+                body = re.sub(pattern, '\\1={}\\4'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
+            except Exception:
+                Logger.debug('{}'.format(str(e)))
+        else:
+            body = json.dumps(replace_pattern_values(json_body))
+
+        return body
 
     def _body(self, raw_body, content_type):
         """
@@ -158,6 +202,8 @@ class RequestModelFactory(object):
             else:
                 Logger.debug('No maximum request body size is set, continuing.')
                 body = self._body(raw_body, content_type)
+        body = self._mask_credentials(body)
+        raw_body = self._mask_credentials(raw_body)
         return body, raw_body
 
     def query_params(self):
@@ -270,7 +316,8 @@ class ResponseModelFactory(object):
         )
 
         try:
-            silky_response.raw_body = force_text(base64.b64encode(content))
+            raw_body = base64.b64encode(content)
         except TypeError:
-            silky_response.raw_body = force_text(base64.b64encode(content.encode('utf-8')))
+            raw_body = base64.b64encode(content.encode('utf-8'))
+        silky_response.raw_body = raw_body.decode('ascii')
         return silky_response

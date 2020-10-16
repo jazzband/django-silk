@@ -6,8 +6,6 @@ import traceback
 from django.conf import settings
 from django.utils import timezone
 
-from django.utils import six
-
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import _time_taken
@@ -127,7 +125,7 @@ class silk_profile(object):
         middlewares = getattr(settings, 'MIDDLEWARE', [])
         if not middlewares:
             middlewares = []
-        middleware_installed = 'silk.middleware.SilkyMiddleware' in middlewares
+        middleware_installed = SilkyConfig().SILKY_MIDDLEWARE_CLASS in middlewares
         return app_installed and middleware_installed
 
     def _should_profile(self):
@@ -138,7 +136,7 @@ class silk_profile(object):
             def wrapped_target(*args, **kwargs):
                 with silk_meta_profiler():
                     try:
-                        func_code = six.get_function_code(target)
+                        func_code = target.__code__
                     except AttributeError:
                         raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
                     line_num = func_code.co_firstlineno

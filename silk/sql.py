@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from django.db.models.sql import EmptyResultSet
+from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
 
 from silk.collector import DataCollector
@@ -11,6 +11,9 @@ Logger = logging.getLogger('silk.sql')
 
 
 def _should_wrap(sql_query):
+    if not DataCollector().request:
+        return False
+
     for ignore_str in SilkyConfig().SILKY_IGNORE_QUERIES:
         if ignore_str in sql_query:
             return False

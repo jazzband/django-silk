@@ -1,0 +1,98 @@
+{% extends 'silk/base/root_base.html' %}
+{% load silk_inclusion %}
+{% load static %}
+{% block menu %}
+    {% root_menu request %}
+{% endblock %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        .wrapper {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .inner {
+            margin: auto;
+            width: 960px;
+        }
+
+        .cleardb-form .cleardb-form-wrapper{
+            margin-bottom: 20px;
+        }
+
+        .cleardb-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .cleardb-form .btn {
+            background: #333344;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 2px;
+            cursor: pointer;
+            box-shadow: none;
+            font-size: 16px;
+            line-height: 20px;
+            border: 0;
+            min-width: 150px;
+            text-align: center;
+        }
+        .cleardb-form label :last-child {
+            margin-bottom: 0;
+        }
+        .msg {
+            margin-top: 20px;
+            color: #bac54b;
+        }
+    </style>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+
+
+        $(document).ready(function () {
+            initFilters();
+            var $inputs = $('.resizing-input');
+            $inputs.focusout(function () {
+                $('#filter-form').submit();
+            });
+        });
+
+    </script>
+{% endblock %}
+{% block data %}
+    <div class="wrapper">
+        <div class="inner">
+            <h2>Silk Clear DB</h2>
+            <form class="cleardb-form" action="." method="post">
+                {% csrf_token %}
+                <div class="cleardb-form-wrapper">
+                    <label>
+                        <input type="checkbox" name="clear_requests" disabled="disabled"/>
+                        Requests
+                    </label>
+                    <label>
+                        <input type="checkbox" name="clear_profiling" disabled="disabled"/>
+                        Profiling
+                    </label>
+                    <label>
+                        <input type="checkbox" name="clear_all"/>
+                        All
+                    </label>
+                </div>
+                <button class="btn">Clear</button>
+            </form>
+            <div class="msg">{{ msg }}</div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{# Hide filter hamburger menu #}
+{% block top %}{% endblock %}
+{% block filter %}{% endblock %}

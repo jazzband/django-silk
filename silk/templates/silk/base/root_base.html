@@ -1,7 +1,7 @@
 {% extends "silk/base/base.html" %}
 {% load silk_nav %}
 {% load silk_inclusion %}
-{% load staticfiles %}
+{% load static %}
 
 {% block body_class %}
     cbp-spmenu-push
@@ -189,6 +189,7 @@
 
     select {
         border-radius: 0;
+        max-width: 100%;
     }
 
     @media screen and (-webkit-min-device-pixel-ratio: 0) {

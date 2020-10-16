@@ -1,53 +1,57 @@
+dist: xenial
 language: python
+cache: pip
 python:
-- '2.7'
-- '3.4'
-- '3.5'
-- '3.6'
-env:
-- DJANGO="Django>=1.11.0,<2.0"    DB=postgresql DB_NAME=travis_ci_test
-- DJANGO="Django>=2.0,<2.1.0"     DB=postgresql DB_NAME=travis_ci_test
-- DJANGO="Django>=1.11.0,<2.0"    DB=sqlite3 DB_NAME=db.sqlite3
-- DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
-- DJANGO="Django>=1.11.0,<2.0"    DB=mysql DB_NAME=mysql_db
-- DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
-matrix:
-  allow_failures:
-  - python: '2.7'
-    env: DJANGO="Django>=1.11.0,<2.0"
-  - python: '3.4'
-    env: DJANGO="Django>=1.11.0,<2.0"
-  - python: '3.5'
-    env: DJANGO="Django>=1.11.0,<2.0"
-  exclude:
-  - python: '2.7'
-    env: DJANGO="Django>=2.0,<2.1.0"     DB=postgresql DB_NAME=travis_ci_test
-  - python: '2.7'
-    env: DJANGO="Django>=2.0,<2.1.0"     DB=sqlite3 DB_NAME=db.sqlite3
-  - python: '2.7'
-    env: DJANGO="Django>=2.0,<2.1.0"     DB=mysql DB_NAME=mysql_db
-  fast_finish: true
+  - 3.5
+  - 3.6
+  - 3.7
+  - 3.8
+services:
+  - mysql
+  - postgresql
 install:
-- travis_retry pip install -q $DJANGO
-- travis_retry pip install -r requirements.txt
-- travis_retry pip install -r project/test-requirements.txt
-- if [[ "$DB" = "postgresql" ]]; then pip install psycopg2; fi
-- if [[ "$DB" = "postgresql" ]]; then psql -c 'create database travis_ci_test;' -U
-  postgres; fi
-- if [[ "$DB" = "mysql" ]]; then pip install mysqlclient; fi
-- if [[ "$DB" = "mysql" ]]; then mysql -e 'create database mysql_db;'; fi
-script:
-- cd project
-- "./tests/test_migrations.sh"
-- python manage.py test --noinput
-- cd -
-deploy:
-  provider: pypi
-  user: jazzband
-  server: https://jazzband.co/projects/django-silk/upload
-  password:
-    secure: VqpIq4gsetWZFDG7XV72Tg+7zx0zRLcLXlLKM6XVN5LqARx4MVgNWD/lJvf5EWqvXPqcx6DAQN5c5nd35swWjET2XnAR0HO5Bc8F1U/gaHOlvdZBuOSb0PIzl1uPl4JHtwiRJckZELB/O8M8RgJzulZd+28TL37dsH+0baFZ05c=
-  distributions: sdist bdist_wheel
-  on:
-    tags: true
-    repo: jazzband/django-silk
+  - pip install tox-travis codecov
+  - if [[ "$DB" = "mysql" ]]; then mysql -e "create database mysql_db;"; fi
+  - if [[ "$DB" = "postgresql" ]]; then psql -c "create database travis_ci_test;" -U postgres; fi
+script: tox
+after_success: codecov
+env:
+  - DJANGO=2.2 DATABASE=sqlite3
+  - DJANGO=2.2 DATABASE=mysql
+  - DJANGO=2.2 DATABASE=postgresql
+  - DJANGO=3.0 DATABASE=sqlite3
+  - DJANGO=3.0 DATABASE=mysql
+  - DJANGO=3.0 DATABASE=postgresql
+  - DJANGO=3.1 DATABASE=sqlite3
+  - DJANGO=3.1 DATABASE=mysql
+  - DJANGO=3.1 DATABASE=postgresql
+jobs:
+  exclude:
+    - python: 3.5
+      env: DJANGO=3.0 DATABASE=sqlite3
+    - python: 3.5
+      env: DJANGO=3.0 DATABASE=mysql
+    - python: 3.5
+      env: DJANGO=3.0 DATABASE=postgresql
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=sqlite3
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=mysql
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=postgresql
+  include:
+    - stage: deploy
+      env:
+      python: 3.6
+      script: skip
+      deploy:
+        provider: pypi
+        user: jazzband
+        server: https://jazzband.co/projects/django-silk/upload
+        distributions: sdist bdist_wheel
+        password:
+          secure: VqpIq4gsetWZFDG7XV72Tg+7zx0zRLcLXlLKM6XVN5LqARx4MVgNWD/lJvf5EWqvXPqcx6DAQN5c5nd35swWjET2XnAR0HO5Bc8F1U/gaHOlvdZBuOSb0PIzl1uPl4JHtwiRJckZELB/O8M8RgJzulZd+28TL37dsH+0baFZ05c=
+        skip_existing: true
+        on:
+          tags: true
+          repo: jazzband/django-silk

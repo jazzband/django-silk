@@ -74,6 +74,11 @@ class Request(models.Model):
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
     revision = TextField(blank=True, default='')
 
+    # Useful method to create shortened copies of strings without losing start and end context
+    # Used to ensure path and view_name don't exceed 190 characters
+    def _shorten(self, string):
+        return '%s...%s' % (string[:94], string[len(string) - 93:])
+
     @property
     def total_meta_time(self):
         return (self.meta_time or 0) + (self.meta_time_spent_queries or 0)
@@ -170,10 +175,17 @@ class Request(models.Model):
         if target_count <= 0:
             cls.objects.all().delete()
             return
-        requests = cls.objects.order_by('-start_time')
-        if not requests or len(requests)-1 < target_count:
+
+        try:
+            time_cutoff = cls.objects.order_by(
+                '-start_time'
+            ).values_list(
+                'start_time',
+                flat=True
+            )[target_count]
+        except IndexError:
             return
-        time_cutoff = requests[target_count].start_time
+
         cls.objects.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
@@ -187,6 +199,13 @@ class Request(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
+
+        # We can't save if either path or view_name exceed 190 characters
+        if self.path and len(self.path) > 190:
+            self.path = self._shorten(self.path)
+
+        if self.view_name and len(self.view_name) > 190:
+            self.view_name = self._shorten(self.view_name)
 
         config = SilkyConfig()
 
@@ -228,6 +247,7 @@ class Response(models.Model):
 
 # TODO rewrite docstring
 class SQLQueryManager(models.Manager):
+    @transaction.atomic
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
         the model save() method and hence we must add this logic here too"""
@@ -235,18 +255,10 @@ class SQLQueryManager(models.Manager):
             objs = args[0]
         else:
             objs = kwargs.get('objs')
+        for obj in objs:
+            obj.prepare_save()
 
-        with transaction.atomic():
-            request_counter = Counter([x.request_id for x in objs])
-            requests = Request.objects.filter(pk__in=request_counter.keys())
-            # TODO: Not that there is ever more than one request (but there could be eventually)
-            # but perhaps there is a cleaner way of apply the increment from the counter without iterating
-            # and saving individually? e.g. bulk update but with diff. increments. Couldn't come up with this
-            # off hand.
-            for r in requests:
-                r.num_sql_queries = F('num_sql_queries') + request_counter[r.pk]
-                r.save()
-            return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
+        return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -254,6 +266,7 @@ class SQLQuery(models.Model):
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
+    identifier = IntegerField(default=-1)
     request = ForeignKey(
         Request, related_name='queries', null=True,
         blank=True, db_index=True, on_delete=models.CASCADE,
@@ -301,9 +314,7 @@ class SQLQuery(models.Model):
                     pass
         return tables
 
-    @transaction.atomic()
-    def save(self, *args, **kwargs):
-
+    def prepare_save(self):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
@@ -313,6 +324,9 @@ class SQLQuery(models.Model):
                 self.request.num_sql_queries += 1
                 self.request.save(update_fields=['num_sql_queries'])
 
+    @transaction.atomic()
+    def save(self, *args, **kwargs):
+        self.prepare_save()
         super(SQLQuery, self).save(*args, **kwargs)
 
     @transaction.atomic()

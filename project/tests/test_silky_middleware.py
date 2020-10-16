@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from mock import patch, Mock
 
 from silk.config import SilkyConfig
@@ -8,10 +8,15 @@ from silk.models import Request
 
 from .util import mock_data_collector
 
+def fake_get_response():
+    def fake_response():
+        return 'hello world'
+    return fake_response
+
 
 class TestApplyDynamicMappings(TestCase):
     def test_dynamic_decorator(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'tests.data.dynamic',
@@ -27,7 +32,7 @@ class TestApplyDynamicMappings(TestCase):
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
 
     def test_dynamic_context_manager(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'tests.data.dynamic',
@@ -45,7 +50,7 @@ class TestApplyDynamicMappings(TestCase):
             self.assertTrue(mock_DataCollector.return_value.register_profile.call_count)
 
     def test_invalid_dynamic_context_manager(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'tests.data.dynamic',
@@ -57,7 +62,7 @@ class TestApplyDynamicMappings(TestCase):
         self.assertRaises(IndexError, middleware._apply_dynamic_mappings)
 
     def test_invalid_dynamic_decorator_module(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'tests.data.dfsdf',
@@ -67,7 +72,7 @@ class TestApplyDynamicMappings(TestCase):
         self.assertRaises(AttributeError, middleware._apply_dynamic_mappings)
 
     def test_invalid_dynamic_decorator_function_name(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'module': 'tests.data.dynamic',
@@ -77,7 +82,7 @@ class TestApplyDynamicMappings(TestCase):
         self.assertRaises(AttributeError, middleware._apply_dynamic_mappings)
 
     def test_invalid_dynamic_mapping(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
             {
                 'dfgdf': 'tests.data.dynamic',
@@ -87,7 +92,7 @@ class TestApplyDynamicMappings(TestCase):
         self.assertRaises(KeyError, middleware._apply_dynamic_mappings)
 
     def test_no_mappings(self):
-        middleware = SilkyMiddleware()
+        middleware = SilkyMiddleware(fake_get_response)
         SilkyConfig().SILKY_DYNAMIC_PROFILING = [
 
         ]
@@ -108,6 +113,12 @@ class TestShouldIntercept(TestCase):
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
+
+    @override_settings(ROOT_URLCONF='tests.urlconf_without_silk')
+    def test_should_intercept_without_silk_urls(self):
+        request = Request()
+        request.path = '/login'
+        _should_intercept(request)  # Just checking no crash
 
     def test_should_intercept_ignore_paths(self):
         SilkyConfig().SILKY_IGNORE_PATHS = [
