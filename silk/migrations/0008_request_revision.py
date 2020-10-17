@@ -9,7 +9,7 @@ import silk.storage
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('silk', '0006_fix_request_prof_file_blank'),
+        ('silk', '0007_sqlquery_identifier'),
     ]
 
     operations = [
