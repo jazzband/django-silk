@@ -172,9 +172,9 @@ function initChart(distributionUrl) {
     }
 
     chart.renderBoxPlot();
-    chart.renderDataPlots();
-    chart.renderNotchBoxes({showNotchBox: false});
-    chart.renderViolinPlot({showViolinPlot: false});
+    //chart.renderDataPlots();
+    //chart.renderNotchBoxes({showNotchBox: false});
+    //chart.renderViolinPlot({showViolinPlot: true});
 
     var minQuartile3 = Number.MAX_VALUE;
     var maxQuartile3 = 0;
@@ -197,15 +197,6 @@ function initChart(distributionUrl) {
     } else {
       function getColor(cName) { return scale(chart.groupObjs[cName].metrics.quartile3); }
     }
-
-    function beeswarm() {
-      chart.violinPlots.hide();
-      chart.dataPlots.show({showPlot: true, plotType: 'beeswarm', showBeanLines: false, colors: getColor});
-      chart.notchBoxes.hide();
-      chart.boxPlots.hide();
-    }
-
-    beeswarm();
 
     // trend lines (only show when group is revision or date)
     if (level !== 1) {
