@@ -1,13 +1,17 @@
 from django.db.models import Sum
-from silk.models import Request, Response
-from silk.views.filterable_requests_view import FilterableRequestsView
+from django.shortcuts import render
+from django.template.context_processors import csrf
+from django.utils.decorators import method_decorator
+from django.views.generic import View
 
+from silk.auth import login_possibly_required, permissions_possibly_required
+from silk.models import Request, Response
+from silk.request_filters import filters_from_query_dict, get_path_and_filters
 
 __author__ = 'mtford'
 
 
-class RequestsView(FilterableRequestsView):
-    template = 'silk/requests.html'
+class RequestsView(View):
     show = [5, 10, 25, 100, 250]
     default_show = 25
 
@@ -89,9 +93,14 @@ class RequestsView(FilterableRequestsView):
             'method'
         ).distinct()
 
-    def _extend_queryset(self, query_set, show=None, order_by=None, order_dir=None):
+    def _get_objects(self, show=None, order_by=None, order_dir=None, path=None, filters=None):
+        if not filters:
+            filters = []
         if not show:
             show = self.default_show
+        elif show == float('inf'):
+            show = None
+        query_set = Request.objects.all()
         if not order_by:
             order_by = self.default_order_by
         if not order_dir:
@@ -102,6 +111,11 @@ class RequestsView(FilterableRequestsView):
         if ob['additional_query_filter'] is not None:
             query_set = ob['additional_query_filter'](query_set)
         query_set = query_set.order_by('%s%s' % ('-' if order_dir == 'DESC' else '', order_by))
+        if path:
+            query_set = query_set.filter(path=path)
+        for f in filters:
+            query_set = f.contribute_to_query_set(query_set)
+            query_set = query_set.filter(f)
         return query_set[:show]
 
     def _create_context(self, request):
@@ -111,13 +125,39 @@ class RequestsView(FilterableRequestsView):
         if show:
             show = int(show)
 
-        context = super(RequestsView, self)._create_context(request)
-        context['show'] = show
-        context['order_by'] = order_by
-        context['order_dir'] = order_dir
-        context['options_show'] = self.show
-        context['options_order_by'] = self.options_order_by
-        context['options_order_dir'] = self.options_order_dir
-        context['results'] = self._extend_queryset(context['results'], show, order_by, order_dir)
+        path, raw_filters, filters = get_path_and_filters(
+            request,
+            self.session_key_request_filters,
+        )
 
+        context = {
+            'show': show,
+            'order_by': order_by,
+            'order_dir': order_dir,
+            'request': request,
+            'options_show': self.show,
+            'options_order_by': self.options_order_by,
+            'options_order_dir': self.options_order_dir,
+            'options_paths': self._get_paths(),
+            'options_status_codes': self._get_status_codes(),
+            'options_methods': self._get_methods(),
+            'view_names': self._get_views(),
+            'filters': raw_filters
+        }
+        context.update(csrf(request))
+        if path:
+            context['path'] = path
+        context['results'] = self._get_objects(show, order_by, order_dir, path, filters=filters)
         return context
+
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
+    def get(self, request):
+        return render(request, 'silk/requests.html', self._create_context(request))
+
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
+    def post(self, request):
+        filters = filters_from_query_dict(request.POST)
+        request.session[self.session_key_request_filters] = {ident: f.as_dict() for ident, f in filters.items()}
+        return render(request, 'silk/requests.html', self._create_context(request))

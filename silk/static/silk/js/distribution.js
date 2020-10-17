@@ -164,7 +164,6 @@ function initChart(distributionUrl) {
             else if (groupParams['group-by'] === 'revision') {
               outputLinkParams['revision'] = groupName;
             }
-            //console.log('/silk/requests')
             window.location = ['/silk/requests', makeURIParameters(outputLinkParams)].join('?');
           }
         })
@@ -172,35 +171,7 @@ function initChart(distributionUrl) {
     }
 
     chart.renderBoxPlot();
-    //chart.renderDataPlots();
-    //chart.renderNotchBoxes({showNotchBox: false});
-    //chart.renderViolinPlot({showViolinPlot: true});
 
-    var minQuartile3 = Number.MAX_VALUE;
-    var maxQuartile3 = 0;
-    Object.keys(chart.groupObjs).forEach(function(key, index) {
-        minQuartile3 = Math.min(minQuartile3, chart.groupObjs[key].metrics.quartile3);
-        maxQuartile3 = Math.max(maxQuartile3, chart.groupObjs[key].metrics.quartile3);
-    });
-
-    var colors = [
-      '#b4c400',
-      '#c29800',
-      '#bf5c00',
-      '#bd0000',
-      '#b80015'
-    ];
-    var scale = d3.scale.quantize().domain([minQuartile3, maxQuartile3]).range(colors);
-
-    if (minQuartile3 === maxQuartile3) {
-      function getColor(cName) { return colors[0]; }
-    } else {
-      function getColor(cName) { return scale(chart.groupObjs[cName].metrics.quartile3); }
-    }
-
-    // trend lines (only show when group is revision or date)
-    if (level !== 1) {
-      chart.dataPlots.change({showLines: ['quartile3']});
-    }
+    // TODO: Maybe a linear regression to show a simple trend line?
   });
 }
