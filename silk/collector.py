@@ -86,17 +86,9 @@ class DataCollector(metaclass=Singleton):
     def profiles(self):
         return self._get_objects(TYP_PROFILES)
 
-    def configure(self, request=None):
-        silky_config = SilkyConfig()
-
+    def configure(self, request=None, should_profile=True):
         self.request = request
         self._configure()
-
-        if silky_config.SILKY_PYTHON_PROFILER_FUNC:
-            should_profile = silky_config.SILKY_PYTHON_PROFILER_FUNC(request)
-        else:
-            should_profile = silky_config.SILKY_PYTHON_PROFILER
-
         if should_profile:
             self.local.pythonprofiler = cProfile.Profile()
             self.local.pythonprofiler.enable()

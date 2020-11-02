@@ -43,7 +43,11 @@ def _should_intercept(request):
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
-    silky = request.path.startswith(get_fpath())
+    try:
+        silky = request.path.startswith(get_fpath())
+    except NoReverseMatch:
+        silky = False
+
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
@@ -104,8 +108,15 @@ class SilkyMiddleware:
         if not hasattr(SQLCompiler, '_execute_sql'):
             SQLCompiler._execute_sql = SQLCompiler.execute_sql
             SQLCompiler.execute_sql = execute_sql
+
+        silky_config = SilkyConfig()
+
+        should_profile = silky_config.SILKY_PYTHON_PROFILER
+        if silky_config.SILKY_PYTHON_PROFILER_FUNC:
+            should_profile = silky_config.SILKY_PYTHON_PROFILER_FUNC(request)
+
         request_model = RequestModelFactory(request).construct_request_model()
-        DataCollector().configure(request_model)
+        DataCollector().configure(request_model, should_profile=should_profile)
 
     @transaction.atomic()
     def _process_response(self, request, response):

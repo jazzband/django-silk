@@ -22,6 +22,9 @@ env:
   - DJANGO=3.0 DATABASE=sqlite3
   - DJANGO=3.0 DATABASE=mysql
   - DJANGO=3.0 DATABASE=postgresql
+  - DJANGO=3.1 DATABASE=sqlite3
+  - DJANGO=3.1 DATABASE=mysql
+  - DJANGO=3.1 DATABASE=postgresql
 jobs:
   exclude:
     - python: 3.5
@@ -30,6 +33,12 @@ jobs:
       env: DJANGO=3.0 DATABASE=mysql
     - python: 3.5
       env: DJANGO=3.0 DATABASE=postgresql
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=sqlite3
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=mysql
+    - python: 3.5
+      env: DJANGO=3.1 DATABASE=postgresql
   include:
     - stage: deploy
       env:

@@ -6,7 +6,6 @@ import traceback
 import base64
 from uuid import UUID
 
-from django.utils.encoding import force_text
 from django.urls import resolve, Resolver404
 
 from silk import models
@@ -320,7 +319,8 @@ class ResponseModelFactory(object):
         )
 
         try:
-            silky_response.raw_body = force_text(base64.b64encode(content))
+            raw_body = base64.b64encode(content)
         except TypeError:
-            silky_response.raw_body = force_text(base64.b64encode(content.encode('utf-8')))
+            raw_body = base64.b64encode(content.encode('utf-8'))
+        silky_response.raw_body = raw_body.decode('ascii')
         return silky_response
