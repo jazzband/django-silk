@@ -22,7 +22,7 @@ def delete_model(model):
     # oracle doesn't provide good support for disabling foreign key checks
     while True:
         items_to_delete = list(
-            model.objects.values_list('pk', flat=True).all()[:1000])
+            model.objects.values_list('pk', flat=True).all()[:800])
         if not items_to_delete:
             break
         model.objects.filter(pk__in=items_to_delete).delete()

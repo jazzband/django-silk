@@ -92,7 +92,7 @@ class RequestModelFactory(object):
             except KeyError:
                 pass
 
-        return json.dumps(headers, cls=DefaultEncoder)
+        return json.dumps(headers, cls=DefaultEncoder, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 
     def _mask_credentials(self, body):
         """
@@ -126,7 +126,7 @@ class RequestModelFactory(object):
             except Exception:
                 Logger.debug('{}'.format(str(e)))
         else:
-            body = json.dumps(replace_pattern_values(json_body))
+            body = json.dumps(replace_pattern_values(json_body), ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 
         return body
 
@@ -138,10 +138,12 @@ class RequestModelFactory(object):
         body = ''
         if content_type in content_type_form:
             body = self.request.POST
-            body = json.dumps(dict(body), sort_keys=True, indent=4)
+            body = json.dumps(dict(body), sort_keys=True, indent=4
+                              , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
         elif content_type in content_types_json:
             try:
-                body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4)
+                body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4
+                                  , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
             except:
                 body = raw_body
         return body
@@ -211,7 +213,7 @@ class RequestModelFactory(object):
         encoded_query_params = ''
         if query_params:
             query_params_dict = dict(zip(query_params.keys(), query_params.values()))
-            encoded_query_params = json.dumps(query_params_dict)
+            encoded_query_params = json.dumps(query_params_dict, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
         return encoded_query_params
 
     def view_name(self):
@@ -284,7 +286,8 @@ class ResponseModelFactory(object):
                     # and json.dumps(...) in python3
                     content = content.decode()
                 try:
-                    body = json.dumps(json.loads(content), sort_keys=True, indent=4)
+                    body = json.dumps(json.loads(content), sort_keys=True, indent=4
+                                      , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
                 except (TypeError, ValueError):
                     Logger.warn(
                         'Response to request with pk %s has content type %s but was unable to parse it'
@@ -311,7 +314,7 @@ class ResponseModelFactory(object):
         silky_response = models.Response.objects.create(
             request_id=self.request.id,
             status_code=self.response.status_code,
-            encoded_headers=json.dumps(headers),
+            encoded_headers=json.dumps(headers, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII),
             body=b
         )
 

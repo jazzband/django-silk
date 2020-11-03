@@ -28,7 +28,8 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_PYTHON_PROFILER': False,
         'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
-        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware'
+        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
+        'SILKY_JSON_ENSURE_ASCII': True,
     }
 
     def _setup(self):
