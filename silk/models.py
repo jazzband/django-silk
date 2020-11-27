@@ -241,6 +241,7 @@ class SQLQuery(models.Model):
         blank=True, db_index=True, on_delete=models.CASCADE,
     )
     traceback = TextField()
+    analysis = TextField(null=True, blank=True)
     objects = SQLQueryManager()
 
     # TODO docstring
