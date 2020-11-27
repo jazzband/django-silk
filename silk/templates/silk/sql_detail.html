@@ -51,6 +51,24 @@
             padding-top: 5px;
         }
 
+        #query-plan-div {
+            text-align: left;
+            width: 960px;
+            margin: auto;
+        }
+
+        #plan-div code {
+            margin: auto !important;
+            display: inline-block;
+        }
+
+        #query-plan-head {
+          padding-top: 5px;
+          padding-bottom: 15px;
+            text-align: center;
+            margin: auto;
+        }
+
         .file-path {
             font-size: 13px;
         }
@@ -99,6 +117,16 @@
             </div>
 
         </div>
+        {% if analysis %}
+        <div id="query-plan-div">
+            <div class="heading">
+                <div class="inner-heading">
+                    Query Plan
+                </div>
+            </div>
+            <code id="plan">{{ analysis | spacify | linebreaksbr }}</code>
+        </div>
+        {% endif %}
         <div id="traceback">
             <div class="heading">
                 <div class="inner-heading">
