@@ -480,6 +480,14 @@ The garbage collection is only run on a percentage of requests to reduce overhea
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
 ```
 
+### Enable query analysis
+
+To enable query analysis when supported by the dbms a config var can be set in order to execute queries with the analyze features.
+
+```python
+SILKY_ANALYZE_QUERIES = True
+```
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:
