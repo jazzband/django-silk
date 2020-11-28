@@ -253,10 +253,13 @@ class SQLQuery(models.Model):
     def formatted_query(self):
         return sqlparse.format(self.query, reindent=True, keyword_case='upper')
 
-    # TODO: Surely a better way to handle this? May return false positives
     @property
     def num_joins(self):
-        return self.query.lower().count('join ')
+        parsed_query  = sqlparse.parse(self.query)
+        count = 0
+        for statement in parsed_query:
+            count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))
+        return count
 
     @property
     def tables_involved(self):
