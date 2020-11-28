@@ -347,13 +347,22 @@ class SQLQueryTest(TestCase):
         self.obj.query = query
         self.assertEqual(self.obj.num_joins, 4)
 
-    # FIXME bug, not a feature
     def test_num_joins_if_no_joins_in_query_but_this_word_searched(self):
 
         query = """SELECT Book.title FROM  Book WHERE Book.title=`Join the dark side, Luke!`;"""
 
         self.obj.query = query
-        self.assertEqual(self.obj.num_joins, 1)
+        self.assertEqual(self.obj.num_joins, 0)
+
+    def test_num_joins_if_multiple_statement_in_query(self):
+        query = """SELECT Book.title FROM  Book WHERE Book.title=`Join the dark side, Luke!`;
+                   SELECT Book.joiner FROM Book
+                    LEFT OUTER JOIN joined ON Book.joiner = joined.joiner
+                    INNER JOIN joined ON Book.joiner = joined.joiner
+                   WHERE Book.joiner='Join i am'"""
+
+        self.obj.query = query
+        self.assertEqual(self.obj.num_joins, 2)
 
     def test_tables_involved_if_no_query(self):
 
