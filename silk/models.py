@@ -87,7 +87,7 @@ class Request(models.Model):
         for n, columns in enumerate(parse_profile(self.pyprofile)):
             location = columns[-1]
             if n and '{' not in location and '<' not in location:
-                r = re.compile('(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
+                r = re.compile(r'(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
                 m = r.search(location)
                 group = m.groupdict()
                 src = group['src']
