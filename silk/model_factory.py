@@ -6,6 +6,7 @@ import traceback
 import base64
 from uuid import UUID
 
+from django.core.exceptions import RequestDataTooBig
 from django.urls import resolve, Resolver404
 
 from silk import models
@@ -150,7 +151,14 @@ class RequestModelFactory(object):
 
     def body(self):
         content_type, char_set = self.content_type()
-        raw_body = self.request.body
+        try:
+            raw_body = self.request.body
+        except RequestDataTooBig:
+            raw_body = b"Raw body exceeds DATA_UPLOAD_MAX_MEMORY_SIZE, Silk is not showing file uploads."
+            body = self.request.POST.copy()
+            for k, v in self.request.FILES.items():
+                body.appendlist(k, v)
+            return body, raw_body
         if char_set:
             try:
                 raw_body = raw_body.decode(char_set)
