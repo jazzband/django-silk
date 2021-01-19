@@ -1,33 +1,32 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.contrib.auth import views
-
-
+from django.urls import path
 
 urlpatterns = [
-    url(
-        r'^silk/',
-        include('silk.urls', namespace='silk')
-        ),
-    url(
-        r'^example_app/',
-        include('example_app.urls', namespace='example_app')
-        ),
-    re_path(
-        r'^admin/',
-        admin.site.urls
-        ),
+    path(
+        route='silk/',
+        view=include('silk.urls', namespace='silk'),
+    ),
+    path(
+        route='example_app/',
+        view=include('example_app.urls', namespace='example_app'),
+    ),
+    path(route='admin/', view=admin.site.urls),
 ]
 
 
 
 urlpatterns += [
-    re_path(
-        r'^login/$',
-        views.LoginView.as_view(),
-        {'template_name': 'example_app/login.html'}, name='login'),
+    path(
+        route='login/',
+        view=views.LoginView.as_view(
+            template_name='example_app/login.html'
+        ),
+        name='login',
+    ),
 ]
 
 

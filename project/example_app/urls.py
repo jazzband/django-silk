@@ -1,7 +1,8 @@
-from django.conf.urls import re_path
+from django.urls import path
+
 from . import views
 
 app_name = 'example_app'
 urlpatterns = [
-                re_path(r'^$', views.index, name='index')
-            ]
+    path(route='', view=views.index, name='index'),
+]
