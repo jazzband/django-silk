@@ -488,6 +488,14 @@ To enable query analysis when supported by the dbms a config var can be set in o
 SILKY_ANALYZE_QUERIES = True
 ```
 
+### Set profile filename prefix
+
+Allow to set a prefix to the profile filename
+
+```python
+SILKY_PROF_FILE_PREFIX = "prof/"
+```
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:

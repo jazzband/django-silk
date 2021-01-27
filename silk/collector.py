@@ -148,9 +148,9 @@ class DataCollector(metaclass=Singleton):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                file_path = self._get_profile_file_path()
                 content = ContentFile(marshal.dumps(ps.stats))
-                saved_path = self.request.prof_file.storage.save(file_name, content)
+                saved_path = self.request.prof_file.storage.save(file_path, content)
                 self.request.prof_file = saved_path
                 self.request.save()
 
@@ -192,6 +192,23 @@ class DataCollector(metaclass=Singleton):
             if profile_query_models:
                 profile.queries.set(profile_query_models)
         self._record_meta_profiling()
+
+    def _get_profile_file_path(self):
+        """Retrieve a valid file path for profile file
+
+        The file name will contain:
+        - prefix from SILKY_PROF_FILE_PREFIX settings
+        - the request path that we are profiling
+        - request id
+
+        """
+        request_path = self.request.path.replace('/', '_').lstrip('_')
+        proposed_path = '{prefix}{request_path}_{request_id}.prof'.format(
+            prefix=SilkyConfig().SILKY_PROF_FILE_PREFIX,
+            request_path=request_path,
+            request_id=str(self.request.id)
+        )
+        return self.request.prof_file.storage.get_available_name(proposed_path)
 
     def register_silk_query(self, *args):
         self.register_objects(TYP_SILK_QUERIES, *args)
