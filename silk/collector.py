@@ -3,6 +3,9 @@ from threading import local
 import cProfile
 import pstats
 import logging
+import marshal
+
+from django.core.files.base import ContentFile
 
 from io import StringIO
 
@@ -146,9 +149,9 @@ class DataCollector(metaclass=Singleton):
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
                 file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
-                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
-                    ps.dump_stats(f.name)
-                self.request.prof_file = f.name
+                content = ContentFile(marshal.dumps(ps.stats))
+                saved_path = self.request.prof_file.storage.save(file_name, content)
+                self.request.prof_file = saved_path
                 self.request.save()
 
         sql_queries = []
