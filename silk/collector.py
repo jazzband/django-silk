@@ -15,6 +15,7 @@ from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
+
 TYP_SILK_QUERIES = 'silk_queries'
 TYP_PROFILES = 'profiles'
 TYP_QUERIES = 'queries'
@@ -150,8 +151,11 @@ class DataCollector(metaclass=Singleton):
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
                 file_path = self._get_profile_file_path()
                 content = ContentFile(marshal.dumps(ps.stats))
-                saved_path = self.request.prof_file.storage.save(file_path, content)
-                self.request.prof_file = saved_path
+                saved_file_path = self.request.prof_file.storage.save(
+                    file_path,
+                    content
+                )
+                self.request.prof_file = saved_file_path
                 self.request.save()
 
         sql_queries = []
