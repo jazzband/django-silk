@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.test import TestCase, override_settings
-from unitest.mock import patch, Mock
+from unittest.mock import patch, Mock
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept

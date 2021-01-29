@@ -3,7 +3,7 @@
 import json
 
 from django.test import TestCase
-from unitest.mock import Mock
+from unittest.mock import Mock
 
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
