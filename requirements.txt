@@ -10,7 +10,7 @@ mock==2.0.0
 pillow==5.4.1
 factory-boy==2.9.2
 freezegun==0.3.12
-networkx==1.11
+networkx
 pydotplus==2.0.2
 contextlib2==0.5.5
 coverage==5.0.3
