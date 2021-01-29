@@ -9,5 +9,5 @@ services:
       - ../project:/usr/src/silk/project
       - ../silk:/usr/src/silk/silk
     environment:
-      DB: sqlite3
+      DB_ENGINE: sqlite3
       DB_NAME: db.sqlite3

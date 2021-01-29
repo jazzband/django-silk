@@ -4,14 +4,14 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: build (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
+    name: build (Database ${{ matrix.database-engine }}, Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 5
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.6', '3.7', '3.8', '3.9', 'pypy3']
         django-version: ['2.2', '3.0', '3.1', 'dev']
+        database-engine: ['sqlite3', 'postgresl', 'mysql']
 
     services:
       postgres:
@@ -59,7 +59,7 @@ jobs:
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key:
-          ${{ matrix.python-version }}-v1-${{ hashFiles('**/setup.py') }}-${{ hashFiles('**/tox.ini') }}
+          ${{ matrix.python-version }}-v1-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/setup.py') }}-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ matrix.python-version }}-v1-
 
@@ -73,6 +73,7 @@ jobs:
         tox -v
       env:
         DJANGO: ${{ matrix.django-version }}
+        DATABASE: ${{ matrix.database-engine }}
 
     - name: Upload coverage
       uses: codecov/codecov-action@v1

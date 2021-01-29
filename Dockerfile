@@ -1,5 +1,4 @@
-FROM python:3.6-alpine
-MAINTAINER Jazzband
+FROM python:3.8-alpine
 
 # Some system dependencies
 RUN apk update -qq && apk add build-base jpeg-dev zlib-dev
@@ -9,12 +8,8 @@ RUN mkdir -p $APP_HOME
 
 WORKDIR $APP_HOME
 
-COPY project/requirements.txt ./
-RUN pip3 install -r requirements.txt
+COPY . /app/
 
-COPY setup.py setup.cfg README.md ./
-COPY silk silk
-COPY project project
-RUN pip3 install -e .
+RUN pip install tox
 
-CMD ["project/run_tests.sh"]
+CMD ["tox"]

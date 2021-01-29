@@ -523,10 +523,10 @@ pip install -e .
 At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
 
-Before running, you must set the `DB` and `DB_NAME` environment variables:
+Before running, you must set the `DB_ENGINE` and `DB_NAME` environment variables:
 
 ```bash
-export DB=sqlite3
+export DB_ENGINE=sqlite3
 export DB_NAME=db.sqlite3
 ```
 
