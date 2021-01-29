@@ -11,7 +11,7 @@ pillow==5.4.1
 factory-boy==2.9.2
 freezegun==0.3.12
 networkx
-pydotplus==2.0.2
+pydot
 contextlib2==0.5.5
 coverage==5.0.3
 pytest-django==3.8.0
