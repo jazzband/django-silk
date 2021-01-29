@@ -1,7 +1,7 @@
 import random
 
 from django.test import TestCase
-from mock import Mock
+unitest. import Mock
 
 from .test_lib.mock_suite import MockSuite
 from silk.views.profiling import ProfilingView

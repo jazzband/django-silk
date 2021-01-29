@@ -1,4 +1,4 @@
-from mock import Mock
+from unitest.mock import Mock
 from silk.models import Request
 
 

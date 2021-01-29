@@ -2,7 +2,7 @@ import random
 import unittest
 
 from django.test import TestCase
-from mock import Mock
+from unitest.mock import Mock
 
 from .test_lib.mock_suite import MockSuite
 from silk.views.requests import RequestsView
