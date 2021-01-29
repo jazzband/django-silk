@@ -4,14 +4,13 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: build (Database ${{ matrix.database-engine }}, Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
+    name: build (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.6', '3.7', '3.8', '3.9', 'pypy3']
         django-version: ['2.2', '3.0', '3.1', 'dev']
-        database-engine: ['sqlite3', 'postgresl', 'mysql']
 
     services:
       postgres:
@@ -73,7 +72,6 @@ jobs:
         tox -v
       env:
         DJANGO: ${{ matrix.django-version }}
-        DATABASE: ${{ matrix.database-engine }}
 
     - name: Upload coverage
       uses: codecov/codecov-action@v1
