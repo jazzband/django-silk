@@ -8,7 +8,7 @@ RUN mkdir -p $APP_HOME
 
 WORKDIR $APP_HOME
 
-COPY . /app/
+COPY . $APP_HOME
 
 RUN pip install tox
 
