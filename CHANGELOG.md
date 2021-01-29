@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Move CI to GitHub Actions. [\#460](https://github.com/jazzband/django-silk/pull/432) ([jezdez](https://github.com/jezdez))
+
 ## [4.1.0](https://github.com/jazzband/django-silk/tree/4.1.0) (2020-08-07)
 
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.1...4.1.0)
