@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 
 from silk.views.clear_db import ClearDBView
 from silk.views.profile_detail import ProfilingDetailView
@@ -15,78 +15,78 @@ from silk.views.cprofile import CProfileView
 
 app_name = 'silk'
 urlpatterns = [
-    url(r'^$', SummaryView.as_view(), name='summary'),
-    url(r'^requests/$', RequestsView.as_view(), name='requests'),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/$',
-        RequestView.as_view(),
-        name='request_detail'
+    path(route='', view=SummaryView.as_view(), name='summary'),
+    path(route='requests/', view=RequestsView.as_view(), name='requests'),
+    path(
+        route='request/<uuid:request_id>/',
+        view=RequestView.as_view(),
+        name='request_detail',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/sql/$',
-        SQLView.as_view(),
-        name='request_sql'
+    path(
+        route='request/<uuid:request_id>/sql/',
+        view=SQLView.as_view(),
+        name='request_sql',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/sql/(?P<sql_id>[0-9]+)/$',
-        SQLDetailView.as_view(),
-        name='request_sql_detail'
+    path(
+        route='request/<uuid:request_id>/sql/<int:sql_id>/',
+        view=SQLDetailView.as_view(),
+        name='request_sql_detail',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/raw/$',
-        Raw.as_view(),
-        name='raw'
+    path(
+        route='request/<uuid:request_id>/raw/',
+        view=Raw.as_view(),
+        name='raw',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/pyprofile/$',
-        ProfileDownloadView.as_view(),
-        name='request_profile_download'
+    path(
+        route='request/<uuid:request_id>/pyprofile/',
+        view=ProfileDownloadView.as_view(),
+        name='request_profile_download',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/json/$',
-        ProfileDotView.as_view(),
-        name='request_profile_dot'
+    path(
+        route='request/<uuid:request_id>/json/',
+        view=ProfileDotView.as_view(),
+        name='request_profile_dot',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profiling/$',
-        ProfilingView.as_view(),
-        name='request_profiling'
+    path(
+        route='request/<uuid:request_id>/profiling/',
+        view=ProfilingView.as_view(),
+        name='request_profiling',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profile/(?P<profile_id>[0-9]+)/$',
-        ProfilingDetailView.as_view(),
-        name='request_profile_detail'
+    path(
+        route='request/<uuid:request_id>/profile/<int:profile_id>/',
+        view=ProfilingDetailView.as_view(),
+        name='request_profile_detail',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profile/(?P<profile_id>[0-9]+)/sql/$',
-        SQLView.as_view(),
-        name='request_and_profile_sql'
+    path(
+        route='request/<uuid:request_id>/profile/<int:profile_id>/sql/',
+        view=SQLView.as_view(),
+        name='request_and_profile_sql',
     ),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/profile/(?P<profile_id>[0-9]+)/sql/(?P<sql_id>[0-9]+)/$',
-        SQLDetailView.as_view(),
-        name='request_and_profile_sql_detail'
+    path(
+        route='request/<uuid:request_id>/profile/<int:profile_id>/sql/<int:sql_id>/',
+        view=SQLDetailView.as_view(),
+        name='request_and_profile_sql_detail',
     ),
-    url(
-        r'^profile/(?P<profile_id>[0-9]+)/$',
-        ProfilingDetailView.as_view(),
-        name='profile_detail'
+    path(
+        route='profile/<int:profile_id>/',
+        view=ProfilingDetailView.as_view(),
+        name='profile_detail',
     ),
-    url(
-        r'^profile/(?P<profile_id>[0-9]+)/sql/$',
-        SQLView.as_view(),
-        name='profile_sql'
+    path(
+        route='profile/<int:profile_id>/sql/',
+        view=SQLView.as_view(),
+        name='profile_sql',
     ),
-    url(
-        r'^profile/(?P<profile_id>[0-9]+)/sql/(?P<sql_id>[0-9]+)/$',
-        SQLDetailView.as_view(),
-        name='profile_sql_detail'
+    path(
+        route='profile/<int:profile_id>/sql/<int:sql_id>/',
+        view=SQLDetailView.as_view(),
+        name='profile_sql_detail',
     ),
-    url(r'^profiling/$', ProfilingView.as_view(), name='profiling'),
-    url(r'^cleardb/$', ClearDBView.as_view(), name='cleardb'),
-    url(
-        r'^request/(?P<request_id>[a-zA-Z0-9\-]+)/cprofile/$',
-        CProfileView.as_view(),
-        name='cprofile'
+    path(route='profiling/', view=ProfilingView.as_view(), name='profiling'),
+    path(route='cleardb/', view=ClearDBView.as_view(), name='cleardb'),
+    path(
+        route='request/<uuid:request_id>/cprofile/',
+        view=CProfileView.as_view(),
+        name='cprofile',
     ),
 ]
