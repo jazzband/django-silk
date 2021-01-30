@@ -1,0 +1,17 @@
+pygments
+simplejson
+python-dateutil
+requests
+sqlparse
+jinja2
+autopep8
+pytz
+pillow
+factory-boy
+freezegun
+networkx
+pydot
+contextlib2
+coverage
+pytest-django
+pytest-cov

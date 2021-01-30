@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 import silk
 from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method

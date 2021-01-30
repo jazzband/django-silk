@@ -1,6 +1,7 @@
 # Silk
 
-[![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
+[![GitHub Actions](https://github.com/jazzband/django-silk/workflows/Test/badge.svg)](https://github.com/jazzband/django-silk/actions)
+[![GitHub Actions](https://codecov.io/gh/jazzband/django-silk/branch/master/graph/badge.svg)](https://codecov.io/gh/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
@@ -30,8 +31,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 1.11, 2.2, 3.0, 3.1
-* Python: 3.5, 3.6, 3.7, 3.8
+* Django: 2.2, 3.0, 3.1
+* Python: 3.6, 3.7, 3.8, 3.9
 
 ## Installation
 
@@ -523,14 +524,14 @@ pip install -e .
 At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
 
-Before running, you must set the `DB` and `DB_NAME` environment variables:
+Before running, you must set the `DB_ENGINE` and `DB_NAME` environment variables:
 
 ```bash
-export DB=sqlite3
+export DB_ENGINE=sqlite3
 export DB_NAME=db.sqlite3
 ```
 
-For other combinations, check [`.travis.yml`](./.travis.yml).
+For other combinations, check [`tox.ini`](./tox.ini).
 
 Now from the root of the sample `project` apply the migrations
 

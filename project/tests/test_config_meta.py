@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import NonCallableMock
+from unittest.mock import NonCallableMock
 
 from silk.collector import DataCollector
 from silk.middleware import SilkyMiddleware
