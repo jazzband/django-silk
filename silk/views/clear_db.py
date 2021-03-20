@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -7,6 +8,7 @@ from silk.models import Request, Response, SQLQuery, Profile
 from silk.utils.data_deletion import delete_model
 
 
+@method_decorator(transaction.non_atomic_requests, name="dispatch")
 class ClearDBView(View):
 
     @method_decorator(login_possibly_required)
