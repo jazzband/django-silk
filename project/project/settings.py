@@ -22,6 +22,9 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'project.urls'
 
+# Django 3.2+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,3 +127,4 @@ SILKY_PYTHON_PROFILER_BINARY = True
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
 # SILKY_AUTHENTICATION = True
 # SILKY_AUTHORISATION = True
+
