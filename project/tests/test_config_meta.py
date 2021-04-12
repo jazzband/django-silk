@@ -17,10 +17,10 @@ def fake_get_response():
 class TestConfigMeta(TestCase):
     def _mock_response(self):
         response = NonCallableMock()
-        response._headers = {}
+        response.headers = {}
         response.status_code = 200
         response.queries = []
-        response.get = response._headers.get
+        response.get = response.headers.get
         response.content = ''
         return response
 

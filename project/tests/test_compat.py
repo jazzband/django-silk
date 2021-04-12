@@ -17,10 +17,10 @@ class TestByteStringCompatForResponse(TestCase):
         Test ResponseModelFactory formats json with bytes content
         """
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'application/json;'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'application/json;'}
         d = {'k': 'v'}
         mock.content = bytes(json.dumps(d), 'utf-8')
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
