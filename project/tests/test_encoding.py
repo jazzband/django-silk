@@ -3,7 +3,7 @@
 import json
 
 from django.test import TestCase
-from mock import Mock
+from unittest.mock import Mock
 
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
@@ -78,7 +78,7 @@ class TestEncodingForRequests(TestCase):
         mock_request.get = mock_request.META.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
-        self.assertDictEqual(json.loads(body, encoding='UTF-8'), d)
+        self.assertDictEqual(json.loads(body), d)
         self.assertEqual(raw_body, raw_body)
 
 
@@ -89,9 +89,9 @@ class TestEncodingForResponse(TestCase):
 
     def test_utf_plain(self):
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'text/plain; charset=UTF-8'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'text/plain; charset=UTF-8'}
         mock.content = u'语'
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertFalse(body)
@@ -99,9 +99,9 @@ class TestEncodingForResponse(TestCase):
 
     def test_plain(self):
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'text/plain'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'text/plain'}
         mock.content = 'sdfsdf'
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertFalse(body)
@@ -109,10 +109,10 @@ class TestEncodingForResponse(TestCase):
 
     def test_utf_json_not_encoded(self):
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': u'语'}
         mock.content = json.dumps(d)
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -120,10 +120,10 @@ class TestEncodingForResponse(TestCase):
 
     def test_utf_json_encoded(self):
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': u'语'}
         mock.content = json.dumps(d)
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -132,10 +132,10 @@ class TestEncodingForResponse(TestCase):
     def test_utf_json_encoded_no_charset(self):
         """default to UTF-8"""
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'application/json'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'application/json'}
         d = {'x': u'语'}
         mock.content = json.dumps(d)
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -143,10 +143,10 @@ class TestEncodingForResponse(TestCase):
 
     def test_invalid_encoding_json(self):
         mock = Mock()
-        mock._headers = {HTTP_CONTENT_TYPE: 'application/json; charset=asdas-8'}
+        mock.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=asdas-8'}
         d = {'x': u'语'}
         mock.content = json.dumps(d)
-        mock.get = mock._headers.get
+        mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()
         self.assertDictEqual(json.loads(body), d)

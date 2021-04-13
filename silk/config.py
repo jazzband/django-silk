@@ -33,6 +33,8 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_REVISION': '',
         'SILKY_POST_PROCESS_REQUEST': lambda x: None,
         'SILKY_DISTRIBUTION_TAB': False,
+        'SILKY_JSON_ENSURE_ASCII': True,
+        'SILKY_ANALYZE_QUERIES': False
     }
 
     def _setup(self):

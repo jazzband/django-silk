@@ -88,7 +88,7 @@ class Request(models.Model):
         for n, columns in enumerate(parse_profile(self.pyprofile)):
             location = columns[-1]
             if n and '{' not in location and '<' not in location:
-                r = re.compile('(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
+                r = re.compile(r'(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
                 m = r.search(location)
                 group = m.groupdict()
                 src = group['src']
@@ -272,6 +272,7 @@ class SQLQuery(models.Model):
         blank=True, db_index=True, on_delete=models.CASCADE,
     )
     traceback = TextField()
+    analysis = TextField(null=True, blank=True)
     objects = SQLQueryManager()
 
     # TODO docstring
@@ -283,10 +284,13 @@ class SQLQuery(models.Model):
     def formatted_query(self):
         return sqlparse.format(self.query, reindent=True, keyword_case='upper')
 
-    # TODO: Surely a better way to handle this? May return false positives
     @property
     def num_joins(self):
-        return self.query.lower().count('join ')
+        parsed_query  = sqlparse.parse(self.query)
+        count = 0
+        for statement in parsed_query:
+            count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))
+        return count
 
     @property
     def tables_involved(self):

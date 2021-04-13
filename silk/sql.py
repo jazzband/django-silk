@@ -2,6 +2,7 @@ import logging
 import traceback
 
 from django.core.exceptions import EmptyResultSet
+from django.db import connection
 from django.utils import timezone
 
 from silk.collector import DataCollector
@@ -18,6 +19,31 @@ def _should_wrap(sql_query):
         if ignore_str in sql_query:
             return False
     return True
+
+def _unpack_explanation(result):
+     for row in result:
+         if not isinstance(row, str):
+             yield ' '.join(str(c) for c in row)
+         else:
+             yield row
+
+def _explain_query(q, params):
+    if connection.features.supports_explaining_query_execution:
+        if SilkyConfig().SILKY_ANALYZE_QUERIES:
+            prefix = connection.ops.explain_query_prefix(
+                analyze = True
+            )
+        else:
+            prefix = connection.ops.explain_query_prefix()
+
+        # currently we cannot use explain() method
+        # for queries other than `select`
+        prefixed_query = "{} {}".format(prefix, q)
+        with connection.cursor() as cur:
+            cur.execute(prefixed_query, params)
+            result = _unpack_explanation(cur.fetchall())
+            return '\n'.join(result)
+    return None
 
 
 def execute_sql(self, *args, **kwargs):
@@ -52,6 +78,7 @@ def execute_sql(self, *args, **kwargs):
             if request:
                 query_dict['request'] = request
             if self.query.model.__module__ != 'silk.models':
+                query_dict['analysis'] = _explain_query(q, params)
                 DataCollector().register_query(query_dict)
             else:
                 DataCollector().register_silk_query(query_dict)

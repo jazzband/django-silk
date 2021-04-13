@@ -14,7 +14,7 @@ from silk.views.code import _code
 class SQLDetailView(View):
     def _urlify(self, str):
         files = []
-        r = re.compile('"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
+        r = re.compile(r'"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
         m = r.search(str)
         n = 1
         while m:
@@ -44,6 +44,7 @@ class SQLDetailView(View):
         file_path = request.GET.get('file_path', '')
         line_num = int(request.GET.get('line_num', 0))
         tb = sql_query.traceback_ln_only
+        analysis = sql_query.analysis
         str, files = self._urlify(tb)
         if file_path and file_path not in files:
             raise PermissionDenied
@@ -53,7 +54,8 @@ class SQLDetailView(View):
             'traceback': tb,
             'pos': pos,
             'line_num': line_num,
-            'file_path': file_path
+            'file_path': file_path,
+            'analysis': analysis
         }
         if request_id:
             context['silk_request'] = Request.objects.get(pk=request_id)

@@ -22,6 +22,9 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'project.urls'
 
+# Django 3.2+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -34,15 +37,18 @@ MIDDLEWARE = [
 
 WSGI_APPLICATION = 'wsgi.application'
 
-DB = os.environ['DB']
-if DB == 'postgresql':
-    DB = 'postgresql_psycopg2'
+DB_ENGINE = os.environ.get("DB_ENGINE", "postgresql")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.' + DB,
-        'NAME': os.environ['DB_NAME']
-    }
+    "default": {
+        "ENGINE": f"django.db.backends.{DB_ENGINE}",
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER", 'postgres'),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"),
+        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+        "PORT": os.environ.get("DB_PORT", 5432),
+        "ATOMIC_REQUESTS": True
+    },
 }
 
 LANGUAGE_CODE = 'en-us'
@@ -123,3 +129,4 @@ SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
 # SILKY_AUTHORISATION = True
 
 SILKY_DISTRIBUTION_TAB = True
+

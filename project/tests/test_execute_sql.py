@@ -1,9 +1,9 @@
 from django.test import TestCase
-from mock import Mock, NonCallableMock, NonCallableMagicMock, patch
+from unittest.mock import Mock, NonCallableMock, NonCallableMagicMock, patch
 
 from silk.collector import DataCollector
 from silk.models import SQLQuery, Request
-from silk.sql import execute_sql
+from silk.sql import execute_sql, connection
 from .util import delete_all_models
 
 
@@ -26,7 +26,8 @@ def call_execute_sql(cls, request):
     }
     cls.args = [1, 2]
     cls.kwargs = kwargs
-    execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
+    with patch('silk.sql.connection'):
+        execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
 
 
 class TestCallNoRequest(TestCase):
@@ -82,14 +83,25 @@ class TestCollectorInteraction(TestCase):
     def test_request(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        execute_sql(sql)
+        with patch('silk.sql.connection'):
+            execute_sql(sql)
         query = self._query()
         self.assertEqual(query['request'], DataCollector().request)
 
     def test_registration(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        execute_sql(sql)
+        with patch('silk.sql.connection'):
+            execute_sql(sql)
         query = self._query()
         self.assertIn(query, DataCollector().queries.values())
 
+    def test_explain(self):
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
+        sql, qs = mock_sql()
+        prefix = "EXPLAIN"
+        with patch('silk.sql.connection') as m:
+            mock_cursor = m.cursor.return_value.__enter__.return_value
+            m.ops.explain_query_prefix.return_value = prefix
+            execute_sql(sql)
+            mock_cursor.execute.assert_called_once_with("{} {}".format(prefix, qs), ())

@@ -27,7 +27,7 @@ let webpack = {
 
 
 gulp.task('watch', function () {
-    gulp.watch('scss/**/*.scss', gulp.series('scss'));
+    gulp.watch('scss/**/*.scss', gulp.series('sass'));
 });
 
 gulp.task('sass', function () {

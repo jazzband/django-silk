@@ -46,8 +46,17 @@ class RequestsView(View):
             'label': 'Descending'
         }
     }
+    view_style = {
+        'card': {
+            'label': 'Cards'
+        },
+        'row': {
+            'label': 'Rows'
+        }
+    }
     default_order_by = 'start_time'
     default_order_dir = 'DESC'
+    default_view_style = 'card'
 
     session_key_request_filters = 'request_filters'
 
@@ -58,6 +67,10 @@ class RequestsView(View):
     @property
     def options_order_dir(self):
         return [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()]
+
+    @property
+    def options_view_style(self):
+        return [{'value': x, 'label': self.view_style[x]['label']} for x in self.view_style.keys()]
 
     def _get_paths(self):
         return Request.objects.values_list(
@@ -122,6 +135,8 @@ class RequestsView(View):
         show = request.GET.get('show', self.default_show)
         order_by = request.GET.get('order_by', self.default_order_by)
         order_dir = request.GET.get('order_dir', self.default_order_dir)
+        view_style = request.GET.get('view_style', self.default_view_style)
+
         if show:
             show = int(show)
 
@@ -134,10 +149,12 @@ class RequestsView(View):
             'show': show,
             'order_by': order_by,
             'order_dir': order_dir,
+            'view_style': view_style,
             'request': request,
             'options_show': self.show,
             'options_order_by': self.options_order_by,
             'options_order_dir': self.options_order_dir,
+            'options_view_style': self.options_view_style,
             'options_paths': self._get_paths(),
             'options_status_codes': self._get_status_codes(),
             'options_methods': self._get_methods(),

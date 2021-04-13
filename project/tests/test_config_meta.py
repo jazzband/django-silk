@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import NonCallableMock
+from unittest.mock import NonCallableMock
 
 from silk.collector import DataCollector
 from silk.middleware import SilkyMiddleware
@@ -17,10 +17,10 @@ def fake_get_response():
 class TestConfigMeta(TestCase):
     def _mock_response(self):
         response = NonCallableMock()
-        response._headers = {}
+        response.headers = {}
         response.status_code = 200
         response.queries = []
-        response.get = response._headers.get
+        response.get = response.headers.get
         response.content = ''
         return response
 
