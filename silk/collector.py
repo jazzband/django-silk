@@ -157,9 +157,8 @@ class DataCollector(metaclass=Singleton):
             sql_query = models.SQLQuery(**query)
             sql_queries += [sql_query]
 
-        models.SQLQuery.objects.bulk_create(sql_queries)
-        sql_queries = models.SQLQuery.objects.filter(request=self.request)
-        for sql_query in sql_queries.all():
+        sql_queries = models.SQLQuery.objects.bulk_create(sql_queries)
+        for sql_query in sql_queries:
             query = self.queries.get(sql_query.identifier)
             if query:
                 query['model'] = sql_query
