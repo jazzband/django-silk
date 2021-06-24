@@ -51,7 +51,7 @@ class SummaryView(View):
                 requests.append(r)
             except IndexError:
                 pass
-        return requests
+        return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _create_context(self, request):
         raw_filters = request.session.get(self.filters_key, {})
