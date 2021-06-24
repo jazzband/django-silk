@@ -9,7 +9,7 @@ from django.core import management
 from django.utils import timezone
 
 from silk import models
-from silk.models import SQLQuery, Profile
+from silk.models import Profile, SQLQuery, SQLQueryDetails
 
 
 class MockSuite(object):
@@ -93,7 +93,12 @@ class MockSuite(object):
             if as_dict:
                 queries.append(d)
             else:
+                details_kwargs = {
+                    key: d.pop(key)
+                    for key in ['query', 'traceback']
+                }
                 query = SQLQuery.objects.create(**d)
+                SQLQueryDetails.objects.create(query_obj=query, **details_kwargs)
                 queries.append(query)
         if profile:
             if as_dict:

@@ -39,12 +39,12 @@ class SQLDetailView(View):
         sql_id = kwargs.get('sql_id', None)
         request_id = kwargs.get('request_id', None)
         profile_id = kwargs.get('profile_id', None)
-        sql_query = SQLQuery.objects.get(pk=sql_id)
+        sql_query = SQLQuery.objects.select_related('details').get(pk=sql_id)
         pos = int(request.GET.get('pos', 0))
         file_path = request.GET.get('file_path', '')
         line_num = int(request.GET.get('line_num', 0))
         tb = sql_query.traceback_ln_only
-        analysis = sql_query.analysis
+        analysis = sql_query.details.analysis
         str, files = self._urlify(tb)
         if file_path and file_path not in files:
             raise PermissionDenied

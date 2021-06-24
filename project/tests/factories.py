@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 import factory
 import factory.fuzzy
-
-from silk.models import Request, Response, SQLQuery
-
+from silk.models import Request, Response, SQLQuery, SQLQueryDetails
 
 HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'OPTIONS']
 STATUS_CODES = [200, 201, 300, 301, 302, 401, 403, 404]
 
-
-class SQLQueryFactory(factory.django.DjangoModelFactory):
-
+class SQLQueryDetailsFactory(factory.django.DjangoModelFactory):
     query = factory.Sequence(lambda num: u'SELECT foo FROM bar WHERE foo=%s' % num)
     traceback = factory.Sequence(lambda num: u'Traceback #%s' % num)
+
+    class Meta:
+        model = SQLQueryDetails
+
+class SQLQueryFactory(factory.django.DjangoModelFactory):
+    details = factory.SubFactory(SQLQueryDetailsFactory)
 
     class Meta:
         model = SQLQuery

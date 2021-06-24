@@ -152,14 +152,25 @@ class DataCollector(metaclass=Singleton):
                 self.request.save()
 
         sql_queries = []
+        sql_details = []
         for identifier, query in self.queries.items():
             query['identifier'] = identifier
+            details_kwargs = {
+                key: query.pop(key, "")
+                for key in ['query', 'traceback', 'analysis']
+            }
             sql_query = models.SQLQuery(**query)
+            sql_detail = models.SQLQueryDetails(query_obj=sql_query, **details_kwargs)
             sql_queries += [sql_query]
+            sql_details += [sql_detail]
 
         models.SQLQuery.objects.bulk_create(sql_queries)
-        sql_queries = models.SQLQuery.objects.filter(request=self.request)
-        for sql_query in sql_queries.all():
+        sql_queries = list(models.SQLQuery.objects.filter(request=self.request))
+        query_by_identifer = {item.identifier: item for item in sql_queries}
+        for sql_detail in sql_details:
+            sql_detail.query_obj = query_by_identifer[sql_detail.query_obj.identifier]
+        models.SQLQueryDetails.objects.bulk_create(sql_details)
+        for sql_query in sql_queries:
             query = self.queries.get(sql_query.identifier)
             if query:
                 query['model'] = sql_query
