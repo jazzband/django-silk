@@ -26,10 +26,10 @@ class SummaryView(View):
 
     # TODO: Find a more efficient way to do this. Currently has to go to DB num. views + 1 times and is prob quite expensive
     def _longest_query_by_view(self, filters):
-        values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:5]
+        values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).filter(max__isnull=False).order_by('-max')[:5]
         requests = []
         for view_name, _ in values_list:
-            request = models.Request.objects.filter(view_name=view_name, *filters).order_by('-time_taken')[0]
+            request = models.Request.objects.filter(view_name=view_name, *filters).filter(time_taken__isnull=False).order_by('-time_taken')[0]
             requests.append(request)
         return requests
 
