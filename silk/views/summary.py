@@ -31,7 +31,7 @@ class SummaryView(View):
         for view_name, _ in values_list:
             request = models.Request.objects.filter(view_name=view_name, *filters).filter(time_taken__isnull=False).order_by('-time_taken')[0]
             requests.append(request)
-        return requests
+        return sorted(requests, key=lambda item: item.time_taken, reverse=True)
 
     def _time_spent_in_db_by_view(self, filters):
         values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(t__gte=0).order_by('-t')[:5]
