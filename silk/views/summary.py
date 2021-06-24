@@ -39,7 +39,7 @@ class SummaryView(View):
         for view, _ in values_list:
             r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).filter(t__isnull=False).order_by('-t')[0]
             requests.append(r)
-        return requests
+        return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _num_queries_by_view(self, filters):
         queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Count('queries')).order_by('-t')[:5]
