@@ -2,6 +2,7 @@ import inspect
 import logging
 import time
 import traceback
+from functools import wraps
 
 from django.conf import settings
 from django.utils import timezone
@@ -133,39 +134,43 @@ class silk_profile(object):
 
     def __call__(self, target):
         if self._silk_installed():
-            def wrapped_target(*args, **kwargs):
-                with silk_meta_profiler():
-                    try:
-                        func_code = target.__code__
-                    except AttributeError:
-                        raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
-                    line_num = func_code.co_firstlineno
-                    file_path = func_code.co_filename
-                    func_name = target.__name__
-                    if not self.name:
-                        self.name = func_name
-                    self.profile = {
-                        'func_name': func_name,
-                        'name': self.name,
-                        'file_path': file_path,
-                        'line_num': line_num,
-                        'dynamic': self._dynamic,
-                        'start_time': timezone.now(),
-                        'request': DataCollector().request
-                    }
-                    self._start_queries()
-                try:
-                    result = target(*args, **kwargs)
-                except Exception:
-                    self.profile['exception_raised'] = True
-                    raise
-                finally:
+            def decorator(view_func):
+                @wraps(view_func)
+                def wrapped_target(*args, **kwargs):
                     with silk_meta_profiler():
-                        self.profile['end_time'] = timezone.now()
-                        self._finalise_queries()
-                return result
+                        try:
+                            func_code = target.__code__
+                        except AttributeError:
+                            raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
+                        line_num = func_code.co_firstlineno
+                        file_path = func_code.co_filename
+                        func_name = target.__name__
+                        if not self.name:
+                            self.name = func_name
+                        self.profile = {
+                            'func_name': func_name,
+                            'name': self.name,
+                            'file_path': file_path,
+                            'line_num': line_num,
+                            'dynamic': self._dynamic,
+                            'start_time': timezone.now(),
+                            'request': DataCollector().request
+                        }
+                        self._start_queries()
+                    try:
+                        result = target(*args, **kwargs)
+                    except Exception:
+                        self.profile['exception_raised'] = True
+                        raise
+                    finally:
+                        with silk_meta_profiler():
+                            self.profile['end_time'] = timezone.now()
+                            self._finalise_queries()
+                    return result
 
-            return wrapped_target
+                return wrapped_target
+                
+            return decorator(target)
         else:
             Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
             return target
