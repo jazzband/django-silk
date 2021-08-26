@@ -10,7 +10,7 @@ def _code(file_path, line_num, end_line_num=None):
     end_line_num = int(end_line_num)
     actual_line = []
     lines = ''
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         r = range(max(0, line_num - 10), line_num + 10)
         for i, line in enumerate(f):
             if i in r:
