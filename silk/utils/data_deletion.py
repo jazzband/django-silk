@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import connection
+from django.db import connections
 
 
 def delete_model(model):
@@ -7,7 +7,7 @@ def delete_model(model):
     table = model._meta.db_table
     if 'mysql' in engine or 'postgresql' in engine:
         # Use "TRUNCATE" on the table
-        with connection.cursor() as cursor:
+        with connections[model.objects.db].cursor() as cursor:
             if 'mysql' in engine:
                 cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
                 cursor.execute("TRUNCATE TABLE {0}".format(table))
