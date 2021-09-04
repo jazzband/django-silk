@@ -231,7 +231,6 @@ class SQLQueryManager(models.Manager):
 
 
 class SQLQuery(models.Model):
-    query = TextField()
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)
@@ -240,22 +239,20 @@ class SQLQuery(models.Model):
         Request, related_name='queries', null=True,
         blank=True, db_index=True, on_delete=models.CASCADE,
     )
-    traceback = TextField()
-    analysis = TextField(null=True, blank=True)
     objects = SQLQueryManager()
 
     # TODO docstring
     @property
     def traceback_ln_only(self):
-        return '\n'.join(self.traceback.split('\n')[::2])
+        return '\n'.join(self.details.traceback.split('\n')[::2])
 
     @property
     def formatted_query(self):
-        return sqlparse.format(self.query, reindent=True, keyword_case='upper')
+        return sqlparse.format(self.details.query, reindent=True, keyword_case='upper')
 
     @property
     def num_joins(self):
-        parsed_query  = sqlparse.parse(self.query)
+        parsed_query  = sqlparse.parse(self.details.query)
         count = 0
         for statement in parsed_query:
             count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))
@@ -269,7 +266,7 @@ class SQLQuery(models.Model):
         TODO: Can probably parse the SQL using sqlparse etc and pull out table
         info that way?
         """
-        components = [x.strip() for x in self.query.split()]
+        components = [x.strip() for x in self.details.query.split()]
         tables = []
 
         for idx, component in enumerate(components):
@@ -307,6 +304,13 @@ class SQLQuery(models.Model):
         self.request.num_sql_queries -= 1
         self.request.save()
         super(SQLQuery, self).delete(*args, **kwargs)
+
+
+class SQLQueryDetails(models.Model):
+    query_obj = OneToOneField(SQLQuery, blank=True, null=True, on_delete=models.CASCADE, related_name='details')
+    query = TextField()
+    traceback = TextField()
+    analysis = TextField()
 
 
 class BaseProfile(models.Model):

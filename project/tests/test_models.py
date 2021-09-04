@@ -290,7 +290,7 @@ class SQLQueryTest(TestCase):
 
     def test_traceback_ln_only(self):
 
-        self.obj.traceback = """Traceback (most recent call last):
+        self.obj.details.traceback = """Traceback (most recent call last):
           File "/home/user/some_script.py", line 10, in some_func
             pass
           File "/usr/lib/python2.7/bdb.py", line 20, in trace_dispatch
@@ -308,7 +308,7 @@ class SQLQueryTest(TestCase):
 
     def test_formatted_query_if_no_query(self):
 
-        self.obj.query = ""
+        self.obj.details.query = ""
         self.obj.formatted_query
 
     def test_formatted_query_if_has_a_query(self):
@@ -320,7 +320,7 @@ class SQLQueryTest(TestCase):
                  ON  Book.isbn = Book_author.isbn
              GROUP BY Book.title;"""
 
-        self.obj.query = query
+        self.obj.details.query = query
         self.obj.formatted_query
 
     def test_num_joins_if_no_joins_in_query(self):
@@ -330,7 +330,7 @@ class SQLQueryTest(TestCase):
              FROM  Book
              GROUP BY Book.title;"""
 
-        self.obj.query = query
+        self.obj.details.query = query
 
         self.assertEqual(self.obj.num_joins, 0)
 
@@ -344,14 +344,14 @@ class SQLQueryTest(TestCase):
                        JOIN option_address_type oat ON o.id = oat.option_id
                     WHERE a.country_id = 1 AND at.id <> oat.type_id;"""
 
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.num_joins, 4)
 
     def test_num_joins_if_no_joins_in_query_but_this_word_searched(self):
 
         query = """SELECT Book.title FROM  Book WHERE Book.title=`Join the dark side, Luke!`;"""
 
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.num_joins, 0)
 
     def test_num_joins_if_multiple_statement_in_query(self):
@@ -361,52 +361,52 @@ class SQLQueryTest(TestCase):
                     INNER JOIN joined ON Book.joiner = joined.joiner
                    WHERE Book.joiner='Join i am'"""
 
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.num_joins, 2)
 
     def test_tables_involved_if_no_query(self):
 
-        self.obj.query = ''
+        self.obj.details.query = ''
 
         self.assertEqual(self.obj.tables_involved, [])
 
     def test_tables_involved_if_query_has_only_a_from_token(self):
 
         query = """SELECT * FROM  Book;"""
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Book;'])
 
     def test_tables_involved_if_query_has_a_join_token(self):
 
         query = """SELECT p.id FROM Person p JOIN Address a ON p.Id = a.Person_ID;"""
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Person', 'Address'])
 
     def test_tables_involved_if_query_has_an_as_token(self):
 
         query = 'SELECT Book.title AS Title FROM  Book GROUP BY Book.title;'
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Title', 'Book'])
 
     # FIXME bug, not a feature
     def test_tables_involved_check_with_fake_a_from_token(self):
 
         query = """SELECT * FROM  Book WHERE Book.title=`EVIL FROM WITHIN`;"""
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Book', 'WITHIN`;'])
 
     # FIXME bug, not a feature
     def test_tables_involved_check_with_fake_a_join_token(self):
 
         query = """SELECT * FROM  Book WHERE Book.title=`Luke, join the dark side!`;"""
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Book', 'the'])
 
     # FIXME bug, not a feature
     def test_tables_involved_check_with_fake_an_as_token(self):
 
         query = """SELECT * FROM  Book WHERE Book.title=`AS SOON AS POSIABLE`;"""
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['Book', 'POSIABLE`;'])
 
     def test_tables_involved_if_query_has_subquery(self):
@@ -418,14 +418,14 @@ class SQLQueryTest(TestCase):
                          WHERE RealTableY.Col11>14
                         ) AS B INNER JOIN A
                 ON A.ForeignKeyY=B.ID;'''
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['ID', 'RealTableZ', 'RealTableY', 'B', 'A'])
 
     # FIXME bug, not a feature
     def test_tables_involved_if_query_has_django_aliase_on_column_names(self):
 
         query = 'SELECT foo AS bar FROM some_table;'
-        self.obj.query = query
+        self.obj.details.query = query
         self.assertEqual(self.obj.tables_involved, ['bar', 'some_table;'])
 
     def test_save_if_no_end_and_start_time(self):
