@@ -39,6 +39,7 @@ def _explain_query(q, params):
                     "Database does not support analyzing queries. "
                     "SILKY_ANALYZE_QUERIES option will be ignored"
                 )
+                prefix = connection.ops.explain_query_prefix()
         else:
             prefix = connection.ops.explain_query_prefix()
 
