@@ -4,6 +4,8 @@ import factory.fuzzy
 
 from silk.models import Request, Response, SQLQuery
 
+from example_app.models import Blind
+
 
 HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'OPTIONS']
 STATUS_CODES = [200, 201, 300, 301, 302, 401, 403, 404]
@@ -33,3 +35,12 @@ class ResponseFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Response
+
+
+class BlindFactory(factory.django.DjangoModelFactory):
+    name = factory.Faker('pystr', min_chars=5, max_chars=10)
+    child_safe = factory.Faker('pybool')
+    photo = factory.django.ImageField()
+
+    class Meta:
+        model = Blind
