@@ -30,9 +30,20 @@ def _unpack_explanation(result):
 def _explain_query(q, params):
     if connection.features.supports_explaining_query_execution:
         if SilkyConfig().SILKY_ANALYZE_QUERIES:
-            prefix = connection.ops.explain_query_prefix(
-                analyze = True
-            )
+            # Work around some DB engines not supporting analyze option
+            try:
+                prefix = connection.ops.explain_query_prefix(
+                    analyze=True
+                )
+            except ValueError as error:
+                if str(error) == "Unknown options: analyze":
+                    Logger.warning(
+                        "Database does not support analyzing queries. "
+                        "SILKY_ANALYZE_QUERIES option will be ignored"
+                    )
+                    prefix = connection.ops.explain_query_prefix()
+                else:
+                    raise error
         else:
             prefix = connection.ops.explain_query_prefix()
 
