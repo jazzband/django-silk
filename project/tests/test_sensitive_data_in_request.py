@@ -5,14 +5,19 @@ import json
 from django.test import TestCase
 from unittest.mock import Mock
 
+from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
 DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
 HTTP_CONTENT_TYPE = 'Content-Type'
 CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
+DEFAULT_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
 
 
 class MaskCredentialsInFormsTest(TestCase):
+    def tearDown(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = DEFAULT_SENSITIVE_KEYS
+
     def _mask(self, value):
         return RequestModelFactory(None)._mask_credentials(value)
 
@@ -66,8 +71,18 @@ class MaskCredentialsInFormsTest(TestCase):
         expected = "foo=public&prefixed-uSeRname-with-suffix={}&bar=public".format(CLEANSED)
         self.assertEqual(expected, self._mask(body))
 
+    def test_mask_credentials_masks_sensitive_values_listed_in_settings(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = {"foo"}
+        body = "foo=hidethis"
+        expected = "foo={}".format(CLEANSED)
+        self.assertEqual(expected, self._mask(body))
+
+
 
 class MaskCredentialsInJsonTest(TestCase):
+    def tearDown(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = DEFAULT_SENSITIVE_KEYS
+
     def _mask(self, value):
         return RequestModelFactory(None)._mask_credentials(json.dumps(value))
 
@@ -105,6 +120,10 @@ class MaskCredentialsInJsonTest(TestCase):
                 "prefixed-uSeRname-with-suffix": "secret",
             },
         }))
+
+    def test_mask_credentials_masks_sensitive_values_listed_in_settings(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = {"foo"}
+        self.assertNotIn("hidethis", self._mask({"foo": "hidethis"}))
 
 
 

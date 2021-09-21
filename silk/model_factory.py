@@ -109,7 +109,7 @@ class RequestModelFactory(object):
         """
         Mask credentials of potentially sensitive info before saving to db.
         """
-        sensitive_keys = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+        sensitive_keys = SilkyConfig().SILKY_SENSITIVE_KEYS
         key_string = '|'.join(sensitive_keys)
 
         def replace_pattern_values(obj):
