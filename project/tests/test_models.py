@@ -505,11 +505,10 @@ class NoPendingMigrationsTest(TestCase):
     @override_settings(DEFAULT_AUTO_FIELD='django.db.models.BigAutoField')
     def test_check_with_overridden_default_auto_field(self):
         """
-        This is to test that no migrations are pending with `BigAutoField`
-        set as `DEFAULT_AUTO_FIELD` - which is default when generating proj
-        with Django 3.2.
+        Test with `BigAutoField` set as `DEFAULT_AUTO_FIELD` - which is
+        default when generating proj with Django 3.2.
         """
-        call_command("makemigrations", "silk", "--check", "--dry-run")
+        self.test_no_pending_migrations()
 
 
 class BaseProfileTest(TestCase):
