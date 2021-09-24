@@ -495,6 +495,8 @@ class SQLQueryTest(TestCase):
 class NoPendingMigrationsTest(TestCase):
     """
     Test if proper migrations are added and the models state is consistent.
+    It should make sure that no new migrations are created for this app,
+    when end-user runs `makemigrations` command.
     """
 
     def test_no_pending_migrations(self):
