@@ -6,7 +6,7 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request, Response
-from silk.request_filters import BaseFilter, filters_from_request
+from silk.request_filters import filters_from_query_dict, get_path_and_filters
 
 __author__ = 'mtford'
 
@@ -111,6 +111,8 @@ class RequestsView(View):
             filters = []
         if not show:
             show = self.default_show
+        elif show == float('inf'):
+            show = None
         query_set = Request.objects.all()
         if not order_by:
             order_by = self.default_order_by
@@ -137,8 +139,12 @@ class RequestsView(View):
 
         if show:
             show = int(show)
-        path = request.GET.get('path', None)
-        raw_filters = request.session.get(self.session_key_request_filters, {})
+
+        path, raw_filters, filters = get_path_and_filters(
+            request,
+            self.session_key_request_filters,
+        )
+
         context = {
             'show': show,
             'order_by': order_by,
@@ -158,8 +164,7 @@ class RequestsView(View):
         context.update(csrf(request))
         if path:
             context['path'] = path
-        context['results'] = self._get_objects(show, order_by, order_dir, path,
-                                               filters=[BaseFilter.from_dict(x) for _, x in raw_filters.items()])
+        context['results'] = self._get_objects(show, order_by, order_dir, path, filters=filters)
         return context
 
     @method_decorator(login_possibly_required)
@@ -170,6 +175,6 @@ class RequestsView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
-        filters = filters_from_request(request)
+        filters = filters_from_query_dict(request.POST)
         request.session[self.session_key_request_filters] = {ident: f.as_dict() for ident, f in filters.items()}
         return render(request, 'silk/requests.html', self._create_context(request))

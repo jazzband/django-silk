@@ -1,89 +1,5 @@
-{% extends 'silk/base/root_base.html' %}
-{% load static %}
-{% load silk_inclusion %}
 
-{% block menu %}
-    {% if silk_request %}
-        {% request_menu request silk_request %}
-    {% else %}
-        {% root_menu request %}
-    {% endif %}
-{% endblock %}
-
-{% block style %}
-    {{ block.super }}
-    <style>
-        .name-div {
-            font-weight: bold;
-        }
-
-        .container {
-            padding: 0 1em;
-        }
-
-        .description {
-
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        .pyprofile {
-            overflow: scroll;
-            max-height: 650px;
-        }
-    </style>
-
-{% endblock %}
-
-{% block filter %}
-    <form id="filter-form" action="." method="get"></form>
-
-    <div class="menu-item">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Show:
-                    <select name="show" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_show %}
-                            <option value="{{ option }}"
-                                    {% if option == show %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="menu-item">
-        <div class="menu-item-outer">
-            <div class="menu-item-inner">
-                <label>Order:
-                    <select name="order_by" form="filter-form" onchange="this.form.submit();">
-                        {% for option in options_order_by %}
-                            <option value="{{ option }}"
-                                    {% if option == order_by %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-    </div>
-    {{ block.super }}
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-    <script>
-
-        $(document).ready(function () {
-            initFilters();
-            initFilterButton();
-        });
-    </script>
-{% endblock %}
-
-{% block filters %}
-    <h4>Profile</h4>
+    <h4>Request</h4>
 
     <div class="filter-section">Took longer than
 
@@ -187,69 +103,72 @@
         </div>
         .
     </div>
-    <h4>Function</h4>
+    <h4>View</h4>
     <div class="filter-section">
         <div>
-            <input form="filter-form2"
+           <input form="filter-form2"
                    class="typ"
                    type="hidden"
-                   value="NameFilter"
-                   name="filter-name-typ">
-            <label>Name:
-                <select form="filter-form2" name="filter-name-value">
-                    <option value="" {% if not filters.name.value %}selected{% endif %}></option>
-                    {% for name in options_names %}
-                        <option {% if name == filters.name.value %}selected{% endif %}>{{ name }}</option>
+                   value="ViewNameFilter"
+                   name="filter-viewname-typ">
+            <label>View:
+                <select  form="filter-form2" name="filter-viewname-value">
+                    <option value="" {% if not filters.viewname.value %}selected{% endif %}></option>
+                    {% for view_name in view_names %}
+                        <option {% if view_name == filters.viewname.value%}selected{% endif %}>{{ view_name }}</option>
                     {% endfor %}
                 </select>
             </label>
 
         </div>
         <div>
-            <input form="filter-form2"
+                 <input form="filter-form2"
                    class="typ"
                    type="hidden"
-                   value="FunctionNameFilter"
-                   name="filter-functionname-typ">
-            <label>Function:
-                <select form="filter-form2" name="filter-functionname-value">
-                    <option value="" {% if not filters.functionname.value %}selected{% endif %}></option>
-                    {% for func_name in options_func_names %}
-                        <option {% if func_name == filters.functionname.value %}selected{% endif %}>{{ func_name }}</option>
+                   value="PathFilter"
+                   name="filter-path-typ">
+            <label>Path:
+                <select form="filter-form2" name="filter-path-value">
+                    <option value="" {% if not filters.path.value %}selected{% endif %}></option>
+                    {% for path in options_paths %}
+                        <option {% if path == filters.path.value%}selected{% endif %}>{{ path }}</option>
                     {% endfor %}
                 </select>
             </label>
 
+        </div>
+
+        <div>
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="StatusCodeFilter"
+                   name="filter-status_code-typ">
+            <label>Status Code:
+                <select form="filter-form2" name="filter-status_code-value">
+                    <option value="" {% if not filters.status_code.value %}selected{% endif %}></option>
+                    {% for status_code in options_status_codes %}
+                        <option {% if status_code == filters.status_code.value %}selected{% endif %}>{{ status_code }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <input form="filter-form2"
+                   class="typ"
+                   type="hidden"
+                   value="MethodFilter"
+                   name="filter-method-typ">
+            <label>Method:
+                <select form="filter-form2" name="filter-method-value">
+                    <option value="" {% if not filters.method.value %}selected{% endif %}></option>
+                    {% for method in options_methods %}
+                        <option {% if method == filters.method.value %}selected{% endif %}>{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </label>
         </div>
 
 
     </div>
-{% endblock %}
-
-{% block data %}
-
-    {% if results %}
-        <div class="container">
-            <h2>Silk Profiler</h2>
-        </div>
-        {% for profile in results %}
-            <a href="
-            {% if silk_request %}
-                {% url "silk:request_profile_detail" request_id=silk_request.pk profile_id=profile.pk %}
-            {% else %}
-                {% url "silk:profile_detail" profile_id=profile.pk %}
-            {% endif %}
-            ">
-                {% profile_summary profile %}
-            </a>
-        {% endfor %}
-    {% else %}
-        <div class="container">
-            <h2>Silk Profiler</h2>
-
-            <div class="description">No Silk profiling was performed for this request. Use the silk_profile
-                decorator/context manager to do so.
-            </div>
-        </div>
-    {% endif %}
-{% endblock %}

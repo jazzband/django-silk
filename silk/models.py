@@ -72,6 +72,7 @@ class Request(models.Model):
     meta_time_spent_queries = FloatField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
+    revision = TextField(blank=True, default='')
 
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
@@ -116,6 +117,30 @@ class Request(models.Model):
         like this will go in soon at which point this should be changed.
         """
         return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+
+    @classmethod
+    def get_date(cls, start_time):
+        return start_time.date()
+
+    @property
+    def date(self):
+        return self.get_date(self.start_time)
+
+    @classmethod
+    def get_hour(cls, start_time):
+        return start_time.strftime('%Y-%m-%d %H')
+
+    @property
+    def hour(self):
+        return self.get_hour(self.start_time)
+
+    @classmethod
+    def get_minute(cls, start_time):
+        return start_time.strftime('%Y-%m-%d %H:%M')
+
+    @property
+    def minute(self):
+        return self.get_minute(self.start_time)
 
     @property
     def headers(self):
@@ -181,6 +206,12 @@ class Request(models.Model):
 
         if self.view_name and len(self.view_name) > 190:
             self.view_name = self._shorten(self.view_name)
+
+        config = SilkyConfig()
+
+        self.revision = config.SILKY_REVISION
+
+        config.SILKY_POST_PROCESS_REQUEST(self)
 
         super(Request, self).save(*args, **kwargs)
         Request.garbage_collect(force=False)

@@ -6,7 +6,7 @@ from django.views.generic import View
 
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.request_filters import BaseFilter, filters_from_request
+from silk.request_filters import BaseFilter, filters_from_query_dict
 
 
 class SummaryView(View):
@@ -81,6 +81,6 @@ class SummaryView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
-        filters = filters_from_request(request)
+        filters = filters_from_query_dict(request.POST)
         request.session[self.filters_key] = {ident: f.as_dict() for ident, f in filters.items()}
         return render(request, 'silk/summary.html', self._create_context(request))

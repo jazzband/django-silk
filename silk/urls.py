@@ -12,6 +12,8 @@ from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
 from silk.views.cprofile import CProfileView
+from silk.views.distribution import DistributionView, DistributionDataView
+
 
 app_name = 'silk'
 urlpatterns = [
@@ -88,5 +90,20 @@ urlpatterns = [
         route='request/<uuid:request_id>/cprofile/',
         view=CProfileView.as_view(),
         name='cprofile',
+    ),
+    url(
+        r'^profiling/$',
+        ProfilingView.as_view(),
+        name='profiling'
+    ),
+    url(
+        r'^distribution/(?P<group_by>[a-zA-Z_]+)?$',
+        DistributionView.as_view(),
+        name='distribution'
+    ),
+    url(
+        r'^distribution/data/$',
+        DistributionDataView.as_view(),
+        name='distribution_data'
     ),
 ]

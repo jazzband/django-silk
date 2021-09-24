@@ -14,12 +14,17 @@ class ClearDBView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
-        return render(request, 'silk/clear_db.html')
+        context = {
+            'request': request
+        }
+        return render(request, 'silk/clear_db.html', context=context)
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request, *_, **kwargs):
-        context = {}
+        context = {
+            'request': request
+        }
         if 'clear_all' in request.POST:
             delete_model(Profile)
             delete_model(SQLQuery)

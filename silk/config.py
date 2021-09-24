@@ -3,6 +3,7 @@ from copy import copy
 from silk.singleton import Singleton
 
 
+
 def default_permissions(user):
     if user:
         return user.is_staff
@@ -29,6 +30,9 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
         'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
+        'SILKY_REVISION': '',
+        'SILKY_POST_PROCESS_REQUEST': lambda x: None,
+        'SILKY_DISTRIBUTION_TAB': False,
         'SILKY_JSON_ENSURE_ASCII': True,
         'SILKY_ANALYZE_QUERIES': False
     }

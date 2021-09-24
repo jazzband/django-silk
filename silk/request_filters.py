@@ -206,16 +206,21 @@ class MethodFilter(BaseFilter):
         super(MethodFilter, self).__init__(value, method=value)
 
 
-def filters_from_request(request):
+class RevisionFilter(BaseFilter):
+    def __init__(self, value):
+        super(RevisionFilter, self).__init__(value, revision=value)
+
+
+def filters_from_query_dict(query_dict):
     raw_filters = {}
-    for key in request.POST:
+    for key in query_dict:
         splt = key.split('-')
         if splt[0].startswith('filter'):
             ident = splt[1]
             typ = splt[2]
             if ident not in raw_filters:
                 raw_filters[ident] = {}
-            raw_filters[ident][typ] = request.POST[key]
+            raw_filters[ident][typ] = query_dict[key]
     filters = {}
     for ident, raw_filter in raw_filters.items():
         value = raw_filter.get('value', '')
@@ -228,4 +233,29 @@ def filters_from_request(request):
                 filters[ident] = f
             except FilterValidationError:
                 logger.warn('Validation error when processing filter %s(%s)' % (typ, value))
-    return filters
+
+
+def get_path_and_filters(request, session_key_request_filters):
+    path = request.GET.get('path', None)
+    raw_filters = request.session.get(session_key_request_filters, {})
+
+    filter_classes = set(x.__name__ for x in BaseFilter.__subclasses__())
+
+    def get_filter_class_parameter(filter_class):
+        without_filter = filter_class.replace('Filter', '')
+        result = without_filter[0].lower() + without_filter[1:]
+        return result
+
+    url_filters = {
+        filter_class: dict(typ=filter_class, value=url_filter)
+        for filter_class in filter_classes
+        for filter_class_parameter in [get_filter_class_parameter(filter_class)]
+        for url_filter in [request.GET.get(filter_class_parameter, None)]
+        if url_filter is not None
+    }
+
+    def make_filters(raw_filters):
+        return [BaseFilter.from_dict(x) for _, x in raw_filters.items()]
+
+    filters = make_filters(dict(raw_filters, **url_filters))
+    return path, raw_filters, filters
