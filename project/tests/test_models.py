@@ -3,6 +3,7 @@ import datetime
 import uuid
 import pytz
 
+from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
 
@@ -489,6 +490,15 @@ class SQLQueryTest(TestCase):
         self.obj.delete()
 
         self.assertNotIn(self.obj, models.SQLQuery.objects.all())
+
+
+class NoPendingMigrationsTest(TestCase):
+    """
+    Test if proper migrations are added the models state is consistent
+    """
+
+    def test_makemigrations_check(self):
+        call_command("makemigrations", "silk", "--check", "--dry-run")
 
 
 class BaseProfileTest(TestCase):
