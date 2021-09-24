@@ -4,7 +4,7 @@ import uuid
 import pytz
 
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 
@@ -494,10 +494,19 @@ class SQLQueryTest(TestCase):
 
 class NoPendingMigrationsTest(TestCase):
     """
-    Test if proper migrations are added the models state is consistent
+    Test if proper migrations are added and the models state is consistent.
     """
 
-    def test_makemigrations_check(self):
+    def test_no_pending_migrations(self):
+        call_command("makemigrations", "silk", "--check", "--dry-run")
+
+    @override_settings(DEFAULT_AUTO_FIELD='django.db.models.BigAutoField')
+    def test_check_with_overridden_default_auto_field(self):
+        """
+        This is to test that no migrations are pending with `BigAutoField`
+        set as `DEFAULT_AUTO_FIELD` - which is default when generating proj
+        with Django 3.2.
+        """
         call_command("makemigrations", "silk", "--check", "--dry-run")
 
 
