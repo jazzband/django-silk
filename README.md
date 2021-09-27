@@ -490,13 +490,13 @@ SILKY_ANALYZE_QUERIES = True
 
 ### Masking sensitive data on request body
 
-By default, Silk is filtering values that are under the following keys
+By default, Silk is filtering values that are under that contains the following keys (they are case insensitive)
 
 ```python
 SILKY_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
 ```
 
-This means that values that contains above keys (it is case insensitive), will be masked when being logged. But sometimes, you might want to have your own sensitive keywords, then above configuration can be modified
+But sometimes, you might want to have your own sensitive keywords, then above configuration can be modified
 
 ```python
 SILKY_SENSITIVE_KEYS = {'custom-password'}
