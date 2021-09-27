@@ -231,6 +231,7 @@ class SQLQueryManager(models.Manager):
 
 
 class SQLQuery(models.Model):
+    id = models.AutoField(primary_key=True)
     query = TextField()
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
@@ -330,6 +331,7 @@ class BaseProfile(models.Model):
 
 
 class Profile(BaseProfile):
+    id = models.AutoField(primary_key=True)
     file_path = CharField(max_length=300, blank=True, default='')
     line_num = IntegerField(null=True, blank=True)
     end_line_num = IntegerField(null=True, blank=True)
