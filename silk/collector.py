@@ -34,7 +34,7 @@ class DataCollector(metaclass=Singleton):
     """
 
     def __init__(self):
-        super(DataCollector, self).__init__()
+        super().__init__()
         self.local = local()
         self._configure()
 
