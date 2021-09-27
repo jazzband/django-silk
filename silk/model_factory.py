@@ -62,13 +62,13 @@ def _parse_content_type(content_type):
     return content_type, char_set
 
 
-class RequestModelFactory(object):
+class RequestModelFactory:
     """Produce Request models from Django request objects"""
     # String to replace on masking
     CLEANSED_SUBSTITUTE = '********************'
 
     def __init__(self, request):
-        super(RequestModelFactory, self).__init__()
+        super().__init__()
         self.request = request
 
     def content_type(self):
@@ -265,11 +265,11 @@ class RequestModelFactory(object):
         return request_model
 
 
-class ResponseModelFactory(object):
+class ResponseModelFactory:
     """given a response object, craft the silk response model"""
 
     def __init__(self, response):
-        super(ResponseModelFactory, self).__init__()
+        super().__init__()
         self.response = response
         self.request = DataCollector().request
 

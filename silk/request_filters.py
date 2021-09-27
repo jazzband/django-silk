@@ -19,7 +19,7 @@ class FilterValidationError(Exception):
 class BaseFilter(Q):
     def __init__(self, value=None, *args, **kwargs):
         self.value = value
-        super(BaseFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def typ(self):
@@ -58,10 +58,10 @@ class SecondsFilter(BaseFilter):
                 raise FilterValidationError(e)
             now = timezone.now()
             frm_dt = now - timedelta(seconds=value)
-            super(SecondsFilter, self).__init__(value, start_time__gt=frm_dt)
+            super().__init__(value, start_time__gt=frm_dt)
         else:
             # Empty query
-            super(SecondsFilter, self).__init__()
+            super().__init__()
 
     def __str__(self):
         return '>%d seconds ago' % self.value
@@ -85,7 +85,7 @@ class BeforeDateFilter(BaseFilter):
 
     def __init__(self, dt):
         value = _parse(dt, self.fmt)
-        super(BeforeDateFilter, self).__init__(value, start_time__lt=value)
+        super().__init__(value, start_time__lt=value)
 
     @property
     def serialisable_value(self):
@@ -100,7 +100,7 @@ class AfterDateFilter(BaseFilter):
 
     def __init__(self, dt):
         value = _parse(dt, self.fmt)
-        super(AfterDateFilter, self).__init__(value, start_time__gt=value)
+        super().__init__(value, start_time__gt=value)
 
     @property
     def serialisable_value(self):
@@ -115,7 +115,7 @@ class ViewNameFilter(BaseFilter):
 
     def __init__(self, view_name):
         value = view_name
-        super(ViewNameFilter, self).__init__(value, view_name=view_name)
+        super().__init__(value, view_name=view_name)
 
     def __str__(self):
         return 'View == %s' % self.value
@@ -126,7 +126,7 @@ class PathFilter(BaseFilter):
 
     def __init__(self, path):
         value = path
-        super(PathFilter, self).__init__(value, path=path)
+        super().__init__(value, path=path)
 
     def __str__(self):
         return 'Path == %s' % self.value
@@ -135,7 +135,7 @@ class PathFilter(BaseFilter):
 class NameFilter(BaseFilter):
     def __init__(self, name):
         value = name
-        super(NameFilter, self).__init__(value, name=name)
+        super().__init__(value, name=name)
 
     def __str__(self):
         return 'name == %s' % self.value
@@ -144,7 +144,7 @@ class NameFilter(BaseFilter):
 class FunctionNameFilter(BaseFilter):
     def __init__(self, func_name):
         value = func_name
-        super(FunctionNameFilter, self).__init__(value, func_name=func_name)
+        super().__init__(value, func_name=func_name)
 
     def __str__(self):
         return 'func_name == %s' % self.value
@@ -156,7 +156,7 @@ class NumQueriesFilter(BaseFilter):
             value = int(n)
         except ValueError as e:
             raise FilterValidationError(e)
-        super(NumQueriesFilter, self).__init__(value, num_queries__gte=n)
+        super().__init__(value, num_queries__gte=n)
 
     def __str__(self):
         return '#queries >= %s' % self.value
@@ -171,7 +171,7 @@ class TimeSpentOnQueriesFilter(BaseFilter):
             value = int(n)
         except ValueError as e:
             raise FilterValidationError(e)
-        super(TimeSpentOnQueriesFilter, self).__init__(value, db_time__gte=n)
+        super().__init__(value, db_time__gte=n)
 
     def __str__(self):
         return 'DB Time >= %s' % self.value
@@ -186,7 +186,7 @@ class OverallTimeFilter(BaseFilter):
             value = int(n)
         except ValueError as e:
             raise FilterValidationError(e)
-        super(OverallTimeFilter, self).__init__(value, time_taken__gte=n)
+        super().__init__(value, time_taken__gte=n)
 
     def __str__(self):
         return 'Time >= %s' % self.value
@@ -198,12 +198,12 @@ class StatusCodeFilter(BaseFilter):
             value = int(n)
         except ValueError as e:
             raise FilterValidationError(e)
-        super(StatusCodeFilter, self).__init__(value, response__status_code=n)
+        super().__init__(value, response__status_code=n)
 
 
 class MethodFilter(BaseFilter):
     def __init__(self, value):
-        super(MethodFilter, self).__init__(value, method=value)
+        super().__init__(value, method=value)
 
 
 def filters_from_request(request):
