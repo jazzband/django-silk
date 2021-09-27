@@ -35,10 +35,10 @@ def time_taken(self):
 
 class CaseInsensitiveDictionary(dict):
     def __getitem__(self, key):
-        return super(CaseInsensitiveDictionary, self).__getitem__(key.lower())
+        return super().__getitem__(key.lower())
 
     def __setitem__(self, key, value):
-        super(CaseInsensitiveDictionary, self).__setitem__(key.lower(), value)
+        super().__setitem__(key.lower(), value)
 
     def update(self, other=None, **kwargs):
         for k, v in other.items():
@@ -47,7 +47,7 @@ class CaseInsensitiveDictionary(dict):
             self[k] = v
 
     def __init__(self, d):
-        super(CaseInsensitiveDictionary, self).__init__()
+        super().__init__()
         for k, v in d.items():
             self[k] = v
 
@@ -182,7 +182,7 @@ class Request(models.Model):
         if self.view_name and len(self.view_name) > 190:
             self.view_name = self._shorten(self.view_name)
 
-        super(Request, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         Request.garbage_collect(force=False)
 
 
@@ -227,7 +227,7 @@ class SQLQueryManager(models.Manager):
         for obj in objs:
             obj.prepare_save()
 
-        return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
+        return super().bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -300,13 +300,13 @@ class SQLQuery(models.Model):
     @transaction.atomic()
     def save(self, *args, **kwargs):
         self.prepare_save()
-        super(SQLQuery, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @transaction.atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
-        super(SQLQuery, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
 
 class BaseProfile(models.Model):
@@ -326,7 +326,7 @@ class BaseProfile(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
-        super(BaseProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Profile(BaseProfile):
