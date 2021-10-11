@@ -4,3 +4,5 @@ try:
     __version__ = get_distribution("django-silk").version
 except DistributionNotFound:
     pass
+
+default_app_config = "silk.apps.SilkAppConfig"
