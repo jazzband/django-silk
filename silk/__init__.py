@@ -1,8 +1,10 @@
-from pkg_resources import get_distribution, DistributionNotFound
+import django
+from pkg_resources import DistributionNotFound, get_distribution
 
 try:
     __version__ = get_distribution("django-silk").version
 except DistributionNotFound:
     pass
 
-default_app_config = "silk.apps.SilkAppConfig"
+if django.VERSION < (3, 2):
+    default_app_config = "silk.apps.SilkAppConfig"
