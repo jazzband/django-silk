@@ -1,4 +1,3 @@
-import random
 from unittest.mock import Mock
 
 from django.test import TestCase

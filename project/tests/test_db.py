@@ -17,7 +17,7 @@ class TestDbQueries(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        objects = BlindFactory.create_batch(size=5)
+        BlindFactory.create_batch(size=5)
         SilkyConfig().SILKY_META = False
 
     def test_profile_request_to_db(self):
@@ -27,7 +27,7 @@ class TestDbQueries(TestCase):
         with silk_profile(name="test_profile"):
             resp = client.get(reverse("example_app:index"))
 
-        profile = list(DataCollector().profiles.values())[0]
+        DataCollector().profiles.values()
         assert len(resp.context["blinds"]) == 5
 
 
@@ -35,7 +35,7 @@ class TestAnalyzeQueries(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        objects = BlindFactory.create_batch(size=5)
+        BlindFactory.create_batch(size=5)
         SilkyConfig().SILKY_META = False
         SilkyConfig().SILKY_ANALYZE_QUERIES = True
 
@@ -51,5 +51,5 @@ class TestAnalyzeQueries(TestCase):
         with silk_profile(name="test_profile"):
             resp = client.get(reverse("example_app:index"))
 
-        profile = list(DataCollector().profiles.values())[0]
+        DataCollector().profiles.values()
         assert len(resp.context["blinds"]) == 5

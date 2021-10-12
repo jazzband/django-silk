@@ -72,8 +72,8 @@ def silk_date_time(dt):
 
 
 @register.filter
-def sorted(l):
-    return sorted(l)
+def sorted(value):
+    return sorted(value)
 
 
 @stringfilter

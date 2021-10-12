@@ -9,7 +9,7 @@ LINE_NUM = 5
 END_LINE_NUM = 10
 
 with open(__file__) as f:
-    ACTUAL_LINES = [l + "\n" for l in f.read().split("\n")]
+    ACTUAL_LINES = [line + "\n" for line in f.read().split("\n")]
 
 
 class CodeTestCase(TestCase):
@@ -21,6 +21,7 @@ class CodeTestCase(TestCase):
         expected_code = [
             line.strip("\n") for line in ACTUAL_LINES[0 : LINE_NUM + 10]
         ] + [""]
+
         self.assertEqual(code, expected_code)
 
     def test_code(self):

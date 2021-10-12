@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from django.test import TestCase
 
 from silk.config import SilkyConfig
-from silk.model_factory import RequestModelFactory, ResponseModelFactory
+from silk.model_factory import RequestModelFactory
 
 DJANGO_META_CONTENT_TYPE = "CONTENT_TYPE"
 HTTP_CONTENT_TYPE = "Content-Type"

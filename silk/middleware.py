@@ -27,7 +27,6 @@ def silky_reverse(name, *args, **kwargs):
     return r
 
 
-get_fpath = lambda: silky_reverse("summary")
 config = SilkyConfig()
 
 
@@ -43,7 +42,7 @@ def _should_intercept(request):
             return False
 
     try:
-        silky = request.path.startswith(get_fpath())
+        silky = request.path.startswith(silky_reverse("summary"))
     except NoReverseMatch:
         silky = False
 

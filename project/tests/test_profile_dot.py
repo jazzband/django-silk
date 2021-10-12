@@ -78,7 +78,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that a dot file is correctly created from pstats data stored in a file field.
         """
-        with self._stats_file() as filename:
+        with self._stats_file() as filename: # noqa: F841
 
             try:
                 # create dot

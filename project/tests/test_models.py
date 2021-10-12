@@ -3,7 +3,6 @@ import uuid
 
 import pytz
 from django.test import TestCase
-from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
@@ -81,14 +80,6 @@ class RequestTest(TestCase):
 
         with self.assertRaises(TypeError):
             self.obj.time_spent_on_sql_queries
-
-    def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
-
-        query1 = SQLQueryFactory(time_taken=3.5)
-        query2 = SQLQueryFactory(time_taken=1.5)
-        self.obj.queries.add(query1, query2)
-
-        self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
 
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
 

@@ -2,7 +2,6 @@ import base64
 import json
 import random
 import re
-from collections import Counter
 from uuid import uuid4
 
 import sqlparse
@@ -12,7 +11,6 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
-    F,
     FileField,
     FloatField,
     ForeignKey,

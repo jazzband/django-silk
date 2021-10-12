@@ -177,7 +177,7 @@ class RequestModelFactory:
                     indent=4,
                     ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII,
                 )
-            except:
+            except Exception:
                 body = raw_body
         return body
 
