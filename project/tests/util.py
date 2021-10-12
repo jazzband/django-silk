@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+
 from silk.models import Request
 
 

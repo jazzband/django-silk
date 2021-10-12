@@ -1,15 +1,15 @@
 import calendar
-from datetime import timedelta
 import json
 import os
 import random
 import traceback
+from datetime import timedelta
 
 from django.core import management
 from django.utils import timezone
 
 from silk import models
-from silk.models import SQLQuery, Profile
+from silk.models import Profile, SQLQuery
 
 
 class MockSuite(object):

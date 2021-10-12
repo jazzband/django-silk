@@ -4,6 +4,7 @@ incompatibility
 """
 from django.shortcuts import reverse
 from django.test import Client, TestCase
+
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import Request
