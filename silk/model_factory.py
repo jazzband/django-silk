@@ -138,9 +138,7 @@ class RequestModelFactory:
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(
-                fr"(({key_string})[^=]*)=(.*?)(&|$)", re.M | re.I
-            )
+            pattern = re.compile(fr"(({key_string})[^=]*)=(.*?)(&|$)", re.M | re.I)
             try:
                 body = re.sub(
                     pattern,
