@@ -55,4 +55,3 @@ class TestAuth(TestCase):
         user.save()
         response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
-

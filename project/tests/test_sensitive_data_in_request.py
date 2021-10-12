@@ -202,6 +202,6 @@ class TestEncodingForRequests(TestCase):
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
-        
+
         self.assertIn('AUTHORIZATION', json_headers)
         self.assertEqual(json_headers['AUTHORIZATION'], RequestModelFactory.CLEANSED_SUBSTITUTE)

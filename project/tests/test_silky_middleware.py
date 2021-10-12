@@ -132,4 +132,3 @@ class TestShouldIntercept(TestCase):
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
-

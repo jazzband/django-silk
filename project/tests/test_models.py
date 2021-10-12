@@ -501,7 +501,7 @@ class NoPendingMigrationsTest(TestCase):
         default when generating proj with Django 3.2.
         """
         self.test_no_pending_migrations()
-        
+
 
 class BaseProfileTest(TestCase):
     pass
