@@ -1,13 +1,13 @@
+import base64
 import json
 import logging
 import re
 import sys
 import traceback
-import base64
 from uuid import UUID
 
 from django.core.exceptions import RequestDataTooBig
-from django.urls import resolve, Resolver404
+from django.urls import Resolver404, resolve
 
 from silk import models
 from silk.collector import DataCollector

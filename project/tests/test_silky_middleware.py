@@ -1,12 +1,14 @@
-from django.urls import reverse
+from unittest.mock import Mock, patch
+
 from django.test import TestCase, override_settings
-from unittest.mock import patch, Mock
+from django.urls import reverse
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request
 
 from .util import mock_data_collector
+
 
 def fake_get_response():
     def fake_response():

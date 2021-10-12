@@ -1,14 +1,15 @@
 """
 Django queryset filters used by the requests view
 """
-from datetime import timedelta, datetime
 import logging
+from datetime import datetime, timedelta
 
-from django.db.models import Q, Count, Sum
+from django.db.models import Count, Q, Sum
 from django.utils import timezone
-from silk.profiling.dynamic import _get_module
 
+from silk.profiling.dynamic import _get_module
 from silk.templatetags.silk_filters import _silk_date_time
+
 logger = logging.getLogger('silk.request_filters')
 
 

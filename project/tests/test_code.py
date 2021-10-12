@@ -1,7 +1,8 @@
 from collections import namedtuple
-from django.test import TestCase
-from silk.views.code import _code, _code_context, _code_context_from_request
 
+from django.test import TestCase
+
+from silk.views.code import _code, _code_context, _code_context_from_request
 
 FILE_PATH = __file__
 LINE_NUM = 5

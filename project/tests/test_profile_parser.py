@@ -3,7 +3,6 @@ import io
 import re
 
 import contextlib2 as contextlib
-
 from django.test import TestCase
 
 from silk.utils.profile_parser import parse_profile
