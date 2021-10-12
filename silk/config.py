@@ -43,7 +43,7 @@ class SilkyConfig(metaclass=Singleton):
         self.attrs.update(options)
 
     def __init__(self):
-        super(SilkyConfig, self).__init__()
+        super().__init__()
         self._setup()
 
     def __getattr__(self, item):

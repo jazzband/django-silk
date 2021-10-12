@@ -34,7 +34,7 @@ class ProfilingDetailView(View):
         if file_path and line_num:
             try:
                 context.update(_code_context(file_path, line_num, profile.end_line_num))
-            except IOError as e:
+            except OSError as e:
                 if e.errno == 2:
                     context['code_error'] = e.filename + ' does not exist.'
                 else:

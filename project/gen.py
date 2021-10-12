@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Generate fake data for the example app."""
 from example_app.models import Blind
 

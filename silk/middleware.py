@@ -51,7 +51,7 @@ def _should_intercept(request):
     return not (silky or ignored)
 
 
-class TestMiddleware(object):
+class TestMiddleware:
     def process_response(self, request, response):
         return response
 

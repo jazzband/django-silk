@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import json
 from unittest.mock import Mock
 
@@ -28,53 +26,53 @@ class MaskCredentialsInFormsTest(TestCase):
 
     def test_mask_credentials_masks_sensitive_values(self):
         body = "password=secret"
-        expected = "password={}".format(CLEANSED)
+        expected = f"password={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_masks_multiple_sensitive_values(self):
         body = "password=mypassword&secret=mysecret"
-        expected = "password={}&secret={}".format(CLEANSED, CLEANSED)
+        expected = f"password={CLEANSED}&secret={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_masks_sensitive_values_between_insensitive_values(self):
         body = "public1=foo&password=secret&public2=bar"
-        expected = "public1=foo&password={}&public2=bar".format(CLEANSED)
+        expected = f"public1=foo&password={CLEANSED}&public2=bar"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_preserves_insensitive_values_between_sensitive_values(self):
         body = "password=1&foo=public&secret=2"
-        expected = "password={}&foo=public&secret={}".format(CLEANSED, CLEANSED)
+        expected = f"password={CLEANSED}&foo=public&secret={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_is_case_insensitive(self):
         body = "UsErNaMe=secret"
-        expected = "UsErNaMe={}".format(CLEANSED)
+        expected = f"UsErNaMe={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_prefixes(self):
         body = "prefixed-username=secret"
-        expected = "prefixed-username={}".format(CLEANSED)
+        expected = f"prefixed-username={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_suffixes(self):
         body = "username-with-suffix=secret"
-        expected = "username-with-suffix={}".format(CLEANSED)
+        expected = f"username-with-suffix={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_regex_characters(self):
         body = "password=secret++"
-        expected = "password={}".format(CLEANSED)
+        expected = f"password={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_handles_complex_cases(self):
         body = "foo=public&prefixed-uSeRname-with-suffix=secret&bar=public"
-        expected = "foo=public&prefixed-uSeRname-with-suffix={}&bar=public".format(CLEANSED)
+        expected = f"foo=public&prefixed-uSeRname-with-suffix={CLEANSED}&bar=public"
         self.assertEqual(expected, self._mask(body))
 
     def test_mask_credentials_masks_sensitive_values_listed_in_settings(self):
         SilkyConfig().SILKY_SENSITIVE_KEYS = {"foo"}
         body = "foo=hidethis"
-        expected = "foo={}".format(CLEANSED)
+        expected = f"foo={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
 

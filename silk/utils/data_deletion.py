@@ -10,12 +10,12 @@ def delete_model(model):
         with connections[model.objects.db].cursor() as cursor:
             if 'mysql' in engine:
                 cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
-                cursor.execute("TRUNCATE TABLE {0}".format(table))
+                cursor.execute(f"TRUNCATE TABLE {table}")
                 cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
             elif 'postgres' in engine:
-                cursor.execute("ALTER TABLE {0} DISABLE TRIGGER USER;".format(table))
-                cursor.execute("TRUNCATE TABLE {0} CASCADE".format(table))
-                cursor.execute("ALTER TABLE {0} ENABLE TRIGGER USER;".format(table))
+                cursor.execute(f"ALTER TABLE {table} DISABLE TRIGGER USER;")
+                cursor.execute(f"TRUNCATE TABLE {table} CASCADE")
+                cursor.execute(f"ALTER TABLE {table} ENABLE TRIGGER USER;")
         return
 
     # Manually delete rows because sqlite does not support TRUNCATE and

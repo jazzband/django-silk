@@ -10,7 +10,7 @@ from .factories import RequestMinFactory
 class TestViewClearDB(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestViewClearDB, cls).setUpClass()
+        super().setUpClass()
         SilkyConfig().SILKY_AUTHENTICATION = False
         SilkyConfig().SILKY_AUTHORISATION = False
 

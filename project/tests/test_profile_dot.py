@@ -95,7 +95,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that data held in a file like object is copied to a temp file.
         """
-        dummy_data = 'dummy data'.encode('utf-8')
+        dummy_data = b'dummy data'
         stream = self._mock_file(dummy_data)
 
         with _temp_file_from_file_field(stream) as filename:

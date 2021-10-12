@@ -143,7 +143,7 @@ class DataCollector(metaclass=Singleton):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                file_name = self.request.prof_file.storage.get_available_name(f"{str(self.request.id)}.prof")
                 with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
                     ps.dump_stats(f.name)
                 self.request.prof_file = f.name

@@ -228,5 +228,5 @@ def filters_from_request(request):
                 f = filter_class(value)
                 filters[ident] = f
             except FilterValidationError:
-                logger.warn('Validation error when processing filter %s(%s)' % (typ, value))
+                logger.warn(f'Validation error when processing filter {typ}({value})')
     return filters

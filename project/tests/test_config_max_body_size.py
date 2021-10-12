@@ -18,7 +18,7 @@ class TestMaxBodySizeRequest(TestCase):
         mock_request.GET = {}
         mock_request.path = reverse('silk:requests')
         mock_request.method = 'get'
-        mock_request.body = 'a'.encode('ascii') * 1000  # 1000 bytes?
+        mock_request.body = b'a' * 1000  # 1000 bytes?
         request_model = RequestModelFactory(mock_request).construct_request_model()
         self.assertTrue(request_model.raw_body)
 
@@ -28,7 +28,7 @@ class TestMaxBodySizeRequest(TestCase):
         mock_request.META = {'CONTENT_TYPE': 'text/plain'}
         mock_request.GET = {}
         mock_request.method = 'get'
-        mock_request.body = 'a'.encode('ascii') * 1024 * 100  # 100kb
+        mock_request.body = b'a' * 1024 * 100  # 100kb
         mock_request.path = reverse('silk:requests')
         request_model = RequestModelFactory(mock_request).construct_request_model()
         self.assertFalse(request_model.raw_body)
@@ -44,7 +44,7 @@ class TestMaxBodySizeResponse(TestCase):
         headers = {'CONTENT_TYPE': 'text/plain'}
         mock_response.get = headers.get
         mock_response.headers = headers
-        mock_response.content = 'a'.encode('ascii') * 1000  # 1000 bytes?
+        mock_response.content = b'a' * 1000  # 1000 bytes?
         mock_response.status_code = 200
         response_model = ResponseModelFactory(mock_response).construct_response_model()
         self.assertTrue(response_model.raw_body)
@@ -55,7 +55,7 @@ class TestMaxBodySizeResponse(TestCase):
         headers = {'CONTENT_TYPE': 'text/plain'}
         mock_response.get = headers.get
         mock_response.headers = headers
-        mock_response.content = 'a'.encode('ascii') * 1024 * 100  # 100kb
+        mock_response.content = b'a' * 1024 * 100  # 100kb
         mock_response.status_code = 200
         response_model = ResponseModelFactory(mock_response).construct_response_model()
         self.assertFalse(response_model.raw_body)
