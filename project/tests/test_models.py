@@ -16,6 +16,7 @@ from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 # http://stackoverflow.com/questions/13397038/uuid-max-character-length
 # UUID_MAX_LENGTH = 36
 
+
 # TODO move to separate file test and collection it self
 class CaseInsensitiveDictionaryTest:
     pass
