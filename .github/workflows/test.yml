@@ -3,6 +3,17 @@ name: Test
 on: [push, pull_request]
 
 jobs:
+  black:
+    name: Check formatting with Black
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting your configuration from GitHub
+        uses: actions/checkout@v1
+      - name: Running Black Check
+        uses: lgeiger/black-action@master
+        with:
+          args: ". --check"
+
   build:
     name: build (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
     runs-on: ubuntu-latest
