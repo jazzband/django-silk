@@ -1,0 +1,60 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: 'v4.0.1'
+  hooks:
+  - id: check-merge-conflict
+- repo: https://github.com/asottile/yesqa
+  rev: v1.2.3
+  hooks:
+  - id: yesqa
+# - repo: https://github.com/pycqa/isort
+#   rev: '5.9.3'
+#   hooks:
+#   - id: isort
+#     args: ["--profile", "black"]
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: 'v4.0.1'
+  hooks:
+  - id: end-of-file-fixer
+    exclude: >-
+      ^docs/[^/]*\.svg$
+  - id: requirements-txt-fixer
+  - id: trailing-whitespace
+    types: [python]
+  - id: file-contents-sorter
+    files: |
+      CONTRIBUTORS.txt|
+      docs/spelling_wordlist.txt|
+      .gitignore|
+      .gitattributes
+  - id: check-case-conflict
+  - id: check-json
+  - id: check-xml
+  - id: check-toml
+  - id: check-xml
+  - id: check-yaml
+  - id: debug-statements
+  - id: check-added-large-files
+  - id: check-symlinks
+  - id: debug-statements
+  - id: detect-aws-credentials
+    args: ['--allow-missing-credentials']
+  - id: detect-private-key
+    exclude: ^examples|(?:tests/ssl)/
+# - repo: https://github.com/asottile/pyupgrade
+#   rev: 'v2.28.0'
+#   hooks:
+#   - id: pyupgrade
+#     args: ['--py36-plus', '--keep-mock']
+# - repo: https://github.com/PyCQA/flake8
+#   rev: '3.9.2'
+#   hooks:
+#   - id: flake8
+#     exclude: "^docs/"
+#     args: ['--ignore', 'E501,E203,W503']
+- repo: git://github.com/Lucas-C/pre-commit-hooks-markup
+  rev: v1.0.1
+  hooks:
+  - id: rst-linter
+    files: >-
+      ^[^/]+[.]rst$

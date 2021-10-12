@@ -53,4 +53,3 @@ class TestAnalyzeQueries(TestCase):
 
         profile = list(DataCollector().profiles.values())[0]
         assert len(resp.context['blinds']) == 5
-

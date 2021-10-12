@@ -164,4 +164,3 @@ class MockSuite(object):
 if __name__ == '__main__':
     management.call_command('flush', interactive=False)
     requests = [MockSuite().mock_request() for _ in range(0, 100)]
-
