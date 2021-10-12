@@ -1,9 +1,9 @@
 # coding=utf-8
 
 import json
+from unittest.mock import Mock
 
 from django.test import TestCase
-from unittest.mock import Mock
 
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory
@@ -202,6 +202,6 @@ class TestEncodingForRequests(TestCase):
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
-        
+
         self.assertIn('AUTHORIZATION', json_headers)
         self.assertEqual(json_headers['AUTHORIZATION'], RequestModelFactory.CLEANSED_SUBSTITUTE)

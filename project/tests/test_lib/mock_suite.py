@@ -7,7 +7,7 @@ from django.core import management
 from django.utils import timezone
 
 from silk import models
-from silk.models import SQLQuery, Profile
+from silk.models import Profile, SQLQuery
 
 
 class MockSuite(object):
@@ -162,4 +162,3 @@ class MockSuite(object):
 if __name__ == '__main__':
     management.call_command('flush', interactive=False)
     requests = [MockSuite().mock_request() for _ in range(0, 100)]
-

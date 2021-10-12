@@ -2,14 +2,13 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.test import TestCase, override_settings
-from unittest.mock import patch
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request
 
 from .util import mock_data_collector
+
 
 def fake_get_response():
     def fake_response():
@@ -132,4 +131,3 @@ class TestShouldIntercept(TestCase):
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
-
