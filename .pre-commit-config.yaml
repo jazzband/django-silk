@@ -41,11 +41,11 @@ repos:
     args: ['--allow-missing-credentials']
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
-# - repo: https://github.com/asottile/pyupgrade
-#   rev: 'v2.28.0'
-#   hooks:
-#   - id: pyupgrade
-#     args: ['--py36-plus', '--keep-mock']
+- repo: https://github.com/asottile/pyupgrade
+  rev: 'v2.28.0'
+  hooks:
+  - id: pyupgrade
+    args: ['--py36-plus', '--keep-mock']
 # - repo: https://github.com/PyCQA/flake8
 #   rev: '3.9.2'
 #   hooks:
