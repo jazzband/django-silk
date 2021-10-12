@@ -1,8 +1,9 @@
-from .factories import RequestMinFactory
 from django.test import TestCase
+from silk import models
 from silk.config import SilkyConfig
 from silk.middleware import silky_reverse
-from silk import models
+
+from .factories import RequestMinFactory
 
 
 class TestViewClearDB(TestCase):

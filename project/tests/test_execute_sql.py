@@ -1,9 +1,10 @@
-from django.test import TestCase
-from unittest.mock import Mock, NonCallableMock, NonCallableMagicMock, patch
+from unittest.mock import Mock, NonCallableMagicMock, NonCallableMock, patch
 
+from django.test import TestCase
 from silk.collector import DataCollector
-from silk.models import SQLQuery, Request
-from silk.sql import execute_sql, connection
+from silk.models import Request, SQLQuery
+from silk.sql import connection, execute_sql
+
 from .util import delete_all_models
 
 

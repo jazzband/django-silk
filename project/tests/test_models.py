@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 import datetime
 import uuid
-import pytz
 
+import pytz
 from django.test import TestCase
 from django.utils import timezone
-
-
 from freezegun import freeze_time
-
 from silk import models
-from silk.storage import ProfilerResultStorage
 from silk.config import SilkyConfig
-from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
+from silk.storage import ProfilerResultStorage
 
+from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
 # TODO test atomicity
 

@@ -1,7 +1,7 @@
 from django.test import TestCase
-from .test_lib.mock_suite import MockSuite
 from silk.views.summary import SummaryView
 
+from .test_lib.mock_suite import MockSuite
 
 mock_suite = MockSuite()
 

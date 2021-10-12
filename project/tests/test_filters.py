@@ -1,28 +1,28 @@
 import calendar
 import random
-from datetime import timedelta, datetime
-from math import floor
+from datetime import datetime, timedelta
 from itertools import groupby
+from math import floor
 
 import pytz
 from django.test import TestCase
 from django.utils import timezone
-
 from silk import models
 from silk.request_filters import (
-    SecondsFilter,
     AfterDateFilter,
     BeforeDateFilter,
-    ViewNameFilter,
-    PathFilter,
-    NameFilter,
     FunctionNameFilter,
-    NumQueriesFilter,
-    TimeSpentOnQueriesFilter,
-    OverallTimeFilter,
-    StatusCodeFilter,
     MethodFilter,
+    NameFilter,
+    NumQueriesFilter,
+    OverallTimeFilter,
+    PathFilter,
+    SecondsFilter,
+    StatusCodeFilter,
+    TimeSpentOnQueriesFilter,
+    ViewNameFilter,
 )
+
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
 

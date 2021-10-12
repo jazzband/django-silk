@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
-from django.urls import reverse, NoReverseMatch
 from django.test import TestCase
-
+from django.urls import NoReverseMatch, reverse
 from silk.config import SilkyConfig, default_permissions
 from silk.middleware import silky_reverse
 
