@@ -1,10 +1,11 @@
 from time import sleep
 
 from django.test import TestCase
-from silk.collector import DataCollector
 
+from silk.collector import DataCollector
 from silk.models import Request, _time_taken
 from silk.profiling.profiler import silk_profile
+
 from .test_lib.mock_suite import MockSuite
 
 
@@ -48,7 +49,7 @@ class TestProfilerRequests(TestCase):
 class TestProfilertContextManager(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilertContextManager, cls).setUpClass()
+        super().setUpClass()
         r = Request.objects.create()
         DataCollector().configure(r)
         with silk_profile(name='test_profile'):
@@ -71,7 +72,7 @@ class TestProfilertContextManager(TestCase):
 class TestProfilerDecorator(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilerDecorator, cls).setUpClass()
+        super().setUpClass()
         DataCollector().configure(Request.objects.create())
 
         @silk_profile()

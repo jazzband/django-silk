@@ -1,8 +1,13 @@
-from django.test import TestCase
 from unittest.mock import patch
 
+from django.test import TestCase
+
 import silk
-from silk.profiling.dynamic import _get_module, _get_parent_module, profile_function_or_method
+from silk.profiling.dynamic import (
+    _get_module,
+    _get_parent_module,
+    profile_function_or_method,
+)
 
 from .util import mock_data_collector
 
@@ -37,7 +42,7 @@ class TestGetParentModule(TestCase):
         self.assertEqual(parent, silk)
 
 
-class MyClass(object):
+class MyClass:
     def foo(self):
         pass
 

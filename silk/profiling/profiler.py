@@ -15,11 +15,11 @@ Logger = logging.getLogger('silk.profiling.profiler')
 
 
 # noinspection PyPep8Naming
-class silk_meta_profiler(object):
+class silk_meta_profiler:
     """Used in the profiling of Silk itself."""
 
     def __init__(self):
-        super(silk_meta_profiler, self).__init__()
+        super().__init__()
         self.start_time = None
 
     @property
@@ -61,9 +61,9 @@ class silk_meta_profiler(object):
 
 
 # noinspection PyPep8Naming
-class silk_profile(object):
+class silk_profile:
     def __init__(self, name=None, _dynamic=False):
-        super(silk_profile, self).__init__()
+        super().__init__()
         self.name = name
         self.profile = None
         self._queries_before = None
@@ -169,7 +169,7 @@ class silk_profile(object):
                     return result
 
                 return wrapped_target
-                
+
             return decorator(target)
         else:
             Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')

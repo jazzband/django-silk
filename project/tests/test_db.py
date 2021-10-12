@@ -2,8 +2,9 @@
 Test profiling of DB queries without mocking, to catch possible
 incompatibility
 """
-from django.urls import reverse
 from django.test import Client, TestCase
+from django.urls import reverse
+
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import Request

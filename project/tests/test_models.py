@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 import datetime
 import uuid
-import pytz
 
+import pytz
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-
-
 from freezegun import freeze_time
 
 from silk import models
-from silk.storage import ProfilerResultStorage
 from silk.config import SilkyConfig
-from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
+from silk.storage import ProfilerResultStorage
 
+from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
 # TODO test atomicity
 
@@ -22,7 +19,7 @@ from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
 
 # TODO move to separate file test and collection it self
-class CaseInsensitiveDictionaryTest(object):
+class CaseInsensitiveDictionaryTest:
     pass
 
 
@@ -100,7 +97,7 @@ class RequestTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 
@@ -162,7 +159,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', raw_body='some text')
         obj.save()
-        self.assertEqual(obj.raw_body, u'some text')
+        self.assertEqual(obj.raw_body, 'some text')
 
     def test_save_if_have_no_body(self):
 
@@ -175,7 +172,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', body='some text')
         obj.save()
-        self.assertEqual(obj.body, u'some text')
+        self.assertEqual(obj.body, 'some text')
 
     def test_save_if_have_no_end_time(self):
 
@@ -224,7 +221,7 @@ class ResponseTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 
@@ -501,7 +498,7 @@ class NoPendingMigrationsTest(TestCase):
         default when generating proj with Django 3.2.
         """
         self.test_no_pending_migrations()
-        
+
 
 class BaseProfileTest(TestCase):
     pass

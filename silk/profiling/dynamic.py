@@ -1,7 +1,7 @@
-from functools import partial
 import inspect
 import logging
 import sys
+from functools import partial
 
 from silk.profiling.profiler import silk_profile
 
@@ -77,7 +77,7 @@ def _get_parent_module(module):
 def _get_context_manager_source(end_line, file_path, name, start_line):
     inject_code = "with silk_profile('%s', _dynamic=True):\n" % name
     code = 'from silk.profiling.profiler import silk_profile\n'
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         ws = ''
         for i, line in enumerate(f):
             if i == start_line:

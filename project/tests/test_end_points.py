@@ -1,10 +1,11 @@
 import random
-from django.urls import reverse
-from django.db.models import Count, F
 
+from django.db.models import Count, F
 from django.test import TestCase
-from silk.config import SilkyConfig
+from django.urls import reverse
+
 from silk import models
+from silk.config import SilkyConfig
 from silk.middleware import silky_reverse
 
 from .test_lib.mock_suite import MockSuite
@@ -19,7 +20,7 @@ class TestEndPoints(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestEndPoints, cls).setUpClass()
+        super().setUpClass()
         # We're not testing auth here.
         SilkyConfig().SILKY_AUTHORISATION = False
         SilkyConfig().SILKY_AUTHENTICATION = False

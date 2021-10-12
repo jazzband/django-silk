@@ -1,12 +1,13 @@
-from collections import Counter
-import json
 import base64
+import json
 import random
 import re
+from collections import Counter
 from uuid import uuid4
 
+import sqlparse
 from django.core.files.storage import get_storage_class
-from django.db import models
+from django.db import models, transaction
 from django.db.models import (
     BooleanField,
     CharField,
@@ -20,13 +21,10 @@ from django.db.models import (
     TextField,
 )
 from django.utils import timezone
-from django.db import transaction
-from uuid import uuid4
-import sqlparse
 from django.utils.safestring import mark_safe
 
-from silk.utils.profile_parser import parse_profile
 from silk.config import SilkyConfig
+from silk.utils.profile_parser import parse_profile
 
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
@@ -84,7 +82,7 @@ class Request(models.Model):
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
     def _shorten(self, string):
-        return '%s...%s' % (string[:94], string[len(string) - 93:])
+        return f'{string[:94]}...{string[len(string) - 93:]}'
 
     @property
     def total_meta_time(self):

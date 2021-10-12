@@ -1,13 +1,13 @@
+import base64
 import json
 import logging
 import re
 import sys
 import traceback
-import base64
 from uuid import UUID
 
 from django.core.exceptions import RequestDataTooBig
-from django.urls import resolve, Resolver404
+from django.urls import Resolver404, resolve
 
 from silk import models
 from silk.collector import DataCollector
@@ -133,9 +133,9 @@ class RequestModelFactory:
         except Exception as e:
             pattern = re.compile(fr"(({key_string})[^=]*)=(.*?)(&|$)", re.M | re.I)
             try:
-                body = re.sub(pattern, '\\1={}\\4'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
+                body = re.sub(pattern, f'\\1={RequestModelFactory.CLEANSED_SUBSTITUTE}\\4', body)
             except Exception:
-                Logger.debug('{}'.format(str(e)))
+                Logger.debug(f'{str(e)}')
         else:
             body = json.dumps(replace_pattern_values(json_body), ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 

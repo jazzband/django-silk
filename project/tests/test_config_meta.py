@@ -1,12 +1,14 @@
-from django.test import TestCase
 from unittest.mock import NonCallableMock
 
+from django.test import TestCase
+
 from silk.collector import DataCollector
+from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware
+from silk.models import Request
 
 from .util import delete_all_models
-from silk.config import SilkyConfig
-from silk.models import Request
+
 
 def fake_get_response():
     def fake_response():
