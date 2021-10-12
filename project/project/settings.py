@@ -90,10 +90,11 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-STATIC_ROOT = '/tmp/static/'
+TEMP_DIR = os.path.join(BASE_DIR, "tmp")
+STATIC_ROOT = os.path.join(TEMP_DIR, "static")
 
 if not os.path.exists(STATIC_ROOT):
-    os.mkdir(STATIC_ROOT)
+    os.makedirs(STATIC_ROOT)
 
 MEDIA_ROOT = BASE_DIR + '/media/'
 MEDIA_URL = '/media/'

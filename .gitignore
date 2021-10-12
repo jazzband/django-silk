@@ -121,3 +121,4 @@ fabric.properties
 
 package-lock.json
 *.db
+project/tmp/

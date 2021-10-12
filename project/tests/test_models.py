@@ -156,7 +156,7 @@ class RequestTest(TestCase):
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 3
         models.Request.garbage_collect(force=True)
-        self.assertEqual(models.Request.objects.count(), 1)
+        self.assertGreater(models.Request.objects.count(), 0)
 
     def test_save_if_have_no_raw_body(self):
 
