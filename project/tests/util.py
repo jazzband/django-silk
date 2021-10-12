@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+
 from silk.models import Request
 
 
@@ -19,5 +20,5 @@ def delete_all_models(model_class):
     :return:
     """
     while model_class.objects.count():
-        ids = model_class.objects.values_list('pk', flat=True)[:80]
+        ids = model_class.objects.values_list("pk", flat=True)[:80]
         model_class.objects.filter(pk__in=ids).delete()

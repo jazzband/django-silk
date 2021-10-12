@@ -1,4 +1,4 @@
-from functools import wraps, WRAPPER_ASSIGNMENTS
+from functools import WRAPPER_ASSIGNMENTS, wraps
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -14,9 +14,7 @@ def login_possibly_required(function=None, **kwargs):
 
 def permissions_possibly_required(function=None):
     if SilkyConfig().SILKY_AUTHORISATION:
-        actual_decorator = user_passes_test(
-            SilkyConfig().SILKY_PERMISSIONS
-        )
+        actual_decorator = user_passes_test(SilkyConfig().SILKY_PERMISSIONS)
         if function:
             return actual_decorator(function)
         return actual_decorator

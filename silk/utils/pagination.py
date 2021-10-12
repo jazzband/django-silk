@@ -1,11 +1,11 @@
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
-__author__ = 'mtford'
+__author__ = "mtford"
 
 
 def _page(request, query_set):
     paginator = Paginator(query_set, 200)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     try:
         page = paginator.page(page_number)
     except PageNotAnInteger:

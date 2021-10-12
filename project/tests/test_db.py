@@ -4,6 +4,7 @@ incompatibility
 """
 from django.shortcuts import reverse
 from django.test import Client, TestCase
+
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import Request
@@ -21,17 +22,16 @@ class TestDbQueries(TestCase):
 
     def test_profile_request_to_db(self):
         client = Client()
-        DataCollector().configure(Request(reverse('example_app:index')))
+        DataCollector().configure(Request(reverse("example_app:index")))
 
-        with silk_profile(name='test_profile'):
-            resp = client.get(reverse('example_app:index'))
+        with silk_profile(name="test_profile"):
+            resp = client.get(reverse("example_app:index"))
 
         profile = list(DataCollector().profiles.values())[0]
-        assert len(resp.context['blinds']) == 5
+        assert len(resp.context["blinds"]) == 5
 
 
 class TestAnalyzeQueries(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -45,12 +45,11 @@ class TestAnalyzeQueries(TestCase):
         SilkyConfig().SILKLY_ANALYZE_QUERIES = False
 
     def test_analyze_queries(self):
-        DataCollector().configure(Request(reverse('example_app:index')))
+        DataCollector().configure(Request(reverse("example_app:index")))
         client = Client()
 
-        with silk_profile(name='test_profile'):
-            resp = client.get(reverse('example_app:index'))
+        with silk_profile(name="test_profile"):
+            resp = client.get(reverse("example_app:index"))
 
         profile = list(DataCollector().profiles.values())[0]
-        assert len(resp.context['blinds']) == 5
-
+        assert len(resp.context["blinds"]) == 5

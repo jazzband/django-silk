@@ -1,11 +1,11 @@
 from django.db import models
 
 # Create your models here.
-from django.db.models import TextField, BooleanField, ImageField
+from django.db.models import BooleanField, ImageField, TextField
 
 
 class Product(models.Model):
-    photo = ImageField(upload_to='products')
+    photo = ImageField(upload_to="products")
 
     class Meta:
         abstract = True
