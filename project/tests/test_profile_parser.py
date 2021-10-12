@@ -16,7 +16,7 @@ class ProfileParserTestCase(TestCase):
         """
         with contextlib.closing(io.StringIO()) as stream:
             with contextlib.redirect_stdout(stream):
-                cProfile.run('print()')
+                cProfile.run("print()")
             stream.seek(0)
             actual = list(parse_profile(stream))
 
@@ -29,17 +29,32 @@ class ProfileParserTestCase(TestCase):
             #     ["1", "0.000", "0.000", "0.000", "0.000", "{method 'disable' of '_lsprof.Profiler' objects}"],
             # ]
 
-            exc_header = ["ncalls", "tottime", "percall", "cumtime", "percall", "filename:lineno(function)"]
+            exc_header = [
+                "ncalls",
+                "tottime",
+                "percall",
+                "cumtime",
+                "percall",
+                "filename:lineno(function)",
+            ]
             self.assertEqual(actual[0], exc_header)
 
             exc_number = re.compile(r"\d(.\d+)?")
             exc_module = re.compile(r"({method.*})|({built-in.*})|(<.+>:\d+\(<.+>\))")
 
-            exc_row = [exc_number, exc_number, exc_number, exc_number, exc_number, exc_module]
+            exc_row = [
+                exc_number,
+                exc_number,
+                exc_number,
+                exc_number,
+                exc_number,
+                exc_module,
+            ]
 
             for row in actual[1:]:
                 for text, expected_regex in zip(row, exc_row):
                     self.assertRegex(
-                        text, expected_regex,
-                        msg="Expected something like {} but found {}"
+                        text,
+                        expected_regex,
+                        msg="Expected something like {} but found {}",
                     )

@@ -8,7 +8,7 @@ from django.utils import timezone
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 
-Logger = logging.getLogger('silk.sql')
+Logger = logging.getLogger("silk.sql")
 
 
 def _should_wrap(sql_query):
@@ -20,21 +20,21 @@ def _should_wrap(sql_query):
             return False
     return True
 
+
 def _unpack_explanation(result):
-     for row in result:
-         if not isinstance(row, str):
-             yield ' '.join(str(c) for c in row)
-         else:
-             yield row
+    for row in result:
+        if not isinstance(row, str):
+            yield " ".join(str(c) for c in row)
+        else:
+            yield row
+
 
 def _explain_query(q, params):
     if connection.features.supports_explaining_query_execution:
         if SilkyConfig().SILKY_ANALYZE_QUERIES:
             # Work around some DB engines not supporting analyze option
             try:
-                prefix = connection.ops.explain_query_prefix(
-                    analyze=True
-                )
+                prefix = connection.ops.explain_query_prefix(analyze=True)
             except ValueError as error:
                 if str(error) == "Unknown options: analyze":
                     Logger.warning(
@@ -53,7 +53,7 @@ def _explain_query(q, params):
         with connection.cursor() as cur:
             cur.execute(prefixed_query, params)
             result = _unpack_explanation(cur.fetchall())
-            return '\n'.join(result)
+            return "\n".join(result)
     return None
 
 
@@ -68,28 +68,24 @@ def execute_sql(self, *args, **kwargs):
         try:
             result_type = args[0]
         except IndexError:
-            result_type = kwargs.get('result_type', 'multi')
-        if result_type == 'multi':
+            result_type = kwargs.get("result_type", "multi")
+        if result_type == "multi":
             return iter([])
         else:
             return
-    tb = ''.join(reversed(traceback.format_stack()))
+    tb = "".join(reversed(traceback.format_stack()))
     sql_query = q % params
     if _should_wrap(sql_query):
-        query_dict = {
-            'query': sql_query,
-            'start_time': timezone.now(),
-            'traceback': tb
-        }
+        query_dict = {"query": sql_query, "start_time": timezone.now(), "traceback": tb}
         try:
             return self._execute_sql(*args, **kwargs)
         finally:
-            query_dict['end_time'] = timezone.now()
+            query_dict["end_time"] = timezone.now()
             request = DataCollector().request
             if request:
-                query_dict['request'] = request
-            if self.query.model.__module__ != 'silk.models':
-                query_dict['analysis'] = _explain_query(q, params)
+                query_dict["request"] = request
+            if self.query.model.__module__ != "silk.models":
+                query_dict["analysis"] = _explain_query(q, params)
                 DataCollector().register_query(query_dict)
             else:
                 DataCollector().register_silk_query(query_dict)
