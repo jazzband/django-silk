@@ -46,17 +46,15 @@ repos:
   hooks:
   - id: pyupgrade
     args: ['--py36-plus', '--keep-mock']
-- repo: https://github.com/hhatto/autopep8
+- repo: https://github.com/pre-commit/mirrors-autopep8
   rev: 'v1.5.7'
   hooks:
   - id: autopep8
-    args: ['--ignore', 'E501,E203,W503', '--in-place', '-r', '.']
 - repo: https://github.com/PyCQA/flake8
   rev: '3.9.2'
   hooks:
   - id: flake8
     exclude: '^docs/'
-    args: ['--ignore', 'E501,E203,W503']
 - repo: git://github.com/Lucas-C/pre-commit-hooks-markup
   rev: v1.0.1
   hooks:
