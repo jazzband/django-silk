@@ -33,7 +33,6 @@ class TestProfilingViewGetObjects(TestCase):
         results = ProfilingView()._get_objects(order_by='Recent')
         self.assertSorted(results, 'start_time')
 
-
     def test_show(self):
         results = ProfilingView()._get_objects(show=5)
         self.assertEqual(5, len(results))
@@ -62,12 +61,12 @@ class TestProfilingContext(TestCase):
         request.session = {}
         context = ProfilingView()._create_context(request)
         self.assertDictContainsSubset({
-                                          'show': ProfilingView.default_show,
-                                          'order_by': ProfilingView.defualt_order_by,
-                                          'options_show': ProfilingView.show,
-                                          'options_order_by': ProfilingView.order_by,
-                                          'options_func_names': ProfilingView()._get_function_names()
-                                      }, context)
+            'show': ProfilingView.default_show,
+            'order_by': ProfilingView.defualt_order_by,
+            'options_show': ProfilingView.show,
+            'options_order_by': ProfilingView.order_by,
+            'options_func_names': ProfilingView()._get_function_names()
+        }, context)
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -84,12 +83,12 @@ class TestProfilingContext(TestCase):
                        'order_by': order_by}
         context = ProfilingView()._create_context(request)
         self.assertDictContainsSubset({
-                                          'show': show,
-                                          'order_by': order_by,
-                                          'func_name': func_name,
-                                          'name': name,
-                                          'options_show': ProfilingView.show,
-                                          'options_order_by': ProfilingView.order_by,
-                                          'options_func_names': ProfilingView()._get_function_names()
-                                      }, context)
+            'show': show,
+            'order_by': order_by,
+            'func_name': func_name,
+            'name': name,
+            'options_show': ProfilingView.show,
+            'options_order_by': ProfilingView.order_by,
+            'options_func_names': ProfilingView()._get_function_names()
+        }, context)
         self.assertIn('results', context)

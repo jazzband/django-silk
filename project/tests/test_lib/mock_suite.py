@@ -116,7 +116,7 @@ class MockSuite:
                                          dynamic=dynamic,
                                          end_line_num=6 if dynamic else None,
                                          exception_raised=random.choice([True, False])
-        )
+                                         )
         self.mock_sql_queries(profile=profile, n=random.randint(0, 10))
         return profile
 

@@ -36,6 +36,7 @@ def _get_response_headers(response):
     except AttributeError:
         return response._headers
 
+
 class DefaultEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, UUID):

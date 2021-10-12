@@ -61,6 +61,7 @@ class ProfileDotViewTestCase(TestCase):
         Get a mock object that looks like a file but returns data when read is called.
         """
         i = [0]
+
         def read(n):
             if not i[0]:
                 i[0] += 1

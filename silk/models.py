@@ -262,7 +262,7 @@ class SQLQuery(models.Model):
 
     @property
     def num_joins(self):
-        parsed_query  = sqlparse.parse(self.query)
+        parsed_query = sqlparse.parse(self.query)
         count = 0
         for statement in parsed_query:
             count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))

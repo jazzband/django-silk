@@ -27,7 +27,9 @@ def silky_reverse(name, *args, **kwargs):
     return r
 
 
-get_fpath = lambda: silky_reverse('summary')
+def get_fpath(): return silky_reverse('summary')
+
+
 config = SilkyConfig()
 
 

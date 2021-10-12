@@ -18,6 +18,8 @@ from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 # UUID_MAX_LENGTH = 36
 
 # TODO move to separate file test and collection it self
+
+
 class CaseInsensitiveDictionaryTest:
     pass
 
@@ -249,12 +251,16 @@ class SQLQueryManagerTest(TestCase):
 
     def test_if_no_args_passed(self):
         pass
+
     def test_if_one_arg_passed(self):
         pass
+
     def if_a_few_args_passed(self):
         pass
+
     def if_objs_kw_arg_passed(self):
         pass
+
     def if_not_the_objs_kw_arg_passed(self):
         pass
 

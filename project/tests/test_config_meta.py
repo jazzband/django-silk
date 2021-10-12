@@ -40,9 +40,9 @@ class TestConfigMeta(TestCase):
     def test_enabled(self):
         SilkyConfig().SILKY_META = True
         r = self._execute_request()
-        self.assertTrue(r.meta_time is not None or
-                        r.meta_num_queries is not None or
-                        r.meta_time_spent_queries is not None)
+        self.assertTrue(r.meta_time is not None
+                        or r.meta_num_queries is not None
+                        or r.meta_time_spent_queries is not None)
 
     def test_disabled(self):
         SilkyConfig().SILKY_META = False

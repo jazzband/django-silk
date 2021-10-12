@@ -18,6 +18,7 @@ def mock_sql():
     mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
     return mock_sql_query, query_string
 
+
 def call_execute_sql(cls, request):
     DataCollector().configure(request=request)
     delete_all_models(SQLQuery)

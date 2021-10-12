@@ -33,6 +33,7 @@ class TestMaxBodySizeRequest(TestCase):
         request_model = RequestModelFactory(mock_request).construct_request_model()
         self.assertFalse(request_model.raw_body)
 
+
 class TestMaxBodySizeResponse(TestCase):
 
     def setUp(self):

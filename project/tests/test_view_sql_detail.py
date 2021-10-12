@@ -34,11 +34,11 @@ class TestViewSQLDetail(TestCase):
         with open(file_path) as f:
             line_num = random.randint(0, len(f.read().split('\n')))
         response = self.client.get(silky_reverse('request_sql_detail',
-                                           kwargs={'sql_id': query.id, 'request_id': request.id}),
+                                                 kwargs={'sql_id': query.id, 'request_id': request.id}),
                                    data={
                                        'line_num': line_num,
                                        'file_path': file_path
-                                   })
+        })
         self.assertTrue(response.status_code == 200)
 
     def test_allowed_file_paths_unavailable_source(self):
@@ -49,9 +49,9 @@ class TestViewSQLDetail(TestCase):
         with open(file_path, 'w') as f:
             f.write('test')
         response = self.client.get(silky_reverse('request_sql_detail',
-                                           kwargs={'sql_id': query.id, 'request_id': request.id}),
+                                                 kwargs={'sql_id': query.id, 'request_id': request.id}),
                                    data={
                                        'line_num': 0,
                                        'file_path': file_path
-                                   })
+        })
         self.assertTrue(response.status_code == 403)
