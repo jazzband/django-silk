@@ -1,10 +1,10 @@
 import random
 
+from django.conf import settings
 from django.test import TestCase
 
 from silk.config import SilkyConfig
 from silk.middleware import silky_reverse
-
 from silk.views.sql_detail import SQLDetailView
 
 from .test_lib.mock_suite import MockSuite
@@ -45,7 +45,7 @@ class TestViewSQLDetail(TestCase):
         """if we request to view source that is not in the traceback we should get a 403"""
         request = MockSuite().mock_request()
         query = MockSuite().mock_sql_queries(request=request, n=1)[0]
-        file_path = '/tmp/blah'
+        file_path = settings.TEMP_DIR + '/blah'
         with open(file_path, 'w') as f:
             f.write('test')
         response = self.client.get(silky_reverse('request_sql_detail',

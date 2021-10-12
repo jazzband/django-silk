@@ -91,7 +91,7 @@ class TestProfilerDecorator(TestCase):
         profile = list(DataCollector().profiles.values())[0]
         time_taken = _time_taken(start_time=profile['start_time'], end_time=profile['end_time'])
         self.assertGreaterEqual(time_taken, 100)
-        self.assertLess(time_taken, 110)
+        self.assertLess(time_taken, 115)
 
 
 class TestQueries(TestCase):
