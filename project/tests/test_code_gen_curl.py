@@ -15,6 +15,10 @@ against a HTTP server that echos various components in the request.
 # from .util import PORT, construct_echo_process
 
 
+# noinspection PyUnresolvedReferences
+from silk.code_generation.curl import curl_cmd
+
+
 # class TestCodeGenerationCurl(unittest.TestCase):
 #     httpd_process = construct_echo_process()
 #     methods = ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'OPTIONS', 'DELETE', 'TRACE', 'CONNECT']

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Generate fake data for the example app."""
 from example_app.models import Blind
 
@@ -8,5 +9,5 @@ def main():
     Blind.objects.create(name="Roller", child_safe=True)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

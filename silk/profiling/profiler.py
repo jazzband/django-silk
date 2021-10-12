@@ -11,15 +11,15 @@ from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import _time_taken
 
-Logger = logging.getLogger("silk.profiling.profiler")
+Logger = logging.getLogger('silk.profiling.profiler')
 
 
 # noinspection PyPep8Naming
-class silk_meta_profiler:
+class silk_meta_profiler(object):
     """Used in the profiling of Silk itself."""
 
     def __init__(self):
-        super().__init__()
+        super(silk_meta_profiler, self).__init__()
         self.start_time = None
 
     @property
@@ -35,18 +35,15 @@ class silk_meta_profiler:
             end_time = timezone.now()
             exception_raised = exc_type is not None
             if exception_raised:
-                Logger.error(
-                    "Exception when performing meta profiling, dumping trace below"
-                )
+                Logger.error('Exception when performing meta profiling, dumping trace below')
                 traceback.print_exception(exc_type, exc_val, exc_tb)
-            request = getattr(DataCollector().local, "request", None)
+            request = getattr(DataCollector().local, 'request', None)
             if request:
                 curr = request.meta_time or 0
                 request.meta_time = curr + _time_taken(self.start_time, end_time)
 
     def __call__(self, target):
         if self._should_meta_profile:
-
             def wrapped_target(*args, **kwargs):
                 request = DataCollector().request
                 if request:
@@ -64,9 +61,9 @@ class silk_meta_profiler:
 
 
 # noinspection PyPep8Naming
-class silk_profile:
+class silk_profile(object):
     def __init__(self, name=None, _dynamic=False):
-        super().__init__()
+        super(silk_profile, self).__init__()
         self.name = name
         self.profile = None
         self._queries_before = None
@@ -89,9 +86,7 @@ class silk_profile:
             with silk_meta_profiler():
                 self._start_queries()
                 if not self.name:
-                    raise ValueError(
-                        "silk_profile used as a context manager must have a name"
-                    )
+                    raise ValueError('silk_profile used as a context manager must have a name')
                 frame = inspect.currentframe()
                 frames = inspect.getouterframes(frame)
                 outer_frame = frames[1]
@@ -99,24 +94,22 @@ class silk_profile:
                 line_num = outer_frame[2]
                 request = DataCollector().request
                 self.profile = {
-                    "name": self.name,
-                    "file_path": path,
-                    "line_num": line_num,
-                    "dynamic": self._dynamic,
-                    "request": request,
-                    "start_time": timezone.now(),
+                    'name': self.name,
+                    'file_path': path,
+                    'line_num': line_num,
+                    'dynamic': self._dynamic,
+                    'request': request,
+                    'start_time': timezone.now(),
                 }
         else:
-            Logger.warn(
-                "Cannot execute silk_profile as silk is not installed correctly."
-            )
+            Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
 
     def _finalise_queries(self):
         collector = DataCollector()
         self._end_queries()
-        assert self.profile, "no profile was created"
+        assert self.profile, 'no profile was created'
         diff = set(self._queries_after).difference(set(self._queries_before))
-        self.profile["queries"] = diff
+        self.profile['queries'] = diff
         collector.register_profile(self.profile)
 
     # noinspection PyUnusedLocal
@@ -124,13 +117,13 @@ class silk_profile:
         if self._silk_installed() and self._should_profile():
             with silk_meta_profiler():
                 exception_raised = exc_type is not None
-                self.profile["exception_raised"] = exception_raised
-                self.profile["end_time"] = timezone.now()
+                self.profile['exception_raised'] = exception_raised
+                self.profile['end_time'] = timezone.now()
                 self._finalise_queries()
 
     def _silk_installed(self):
-        app_installed = "silk" in settings.INSTALLED_APPS
-        middlewares = getattr(settings, "MIDDLEWARE", [])
+        app_installed = 'silk' in settings.INSTALLED_APPS
+        middlewares = getattr(settings, 'MIDDLEWARE', [])
         if not middlewares:
             middlewares = []
         middleware_installed = SilkyConfig().SILKY_MIDDLEWARE_CLASS in middlewares
@@ -141,7 +134,6 @@ class silk_profile:
 
     def __call__(self, target):
         if self._silk_installed():
-
             def decorator(view_func):
                 @wraps(view_func)
                 def wrapped_target(*args, **kwargs):
@@ -149,43 +141,38 @@ class silk_profile:
                         try:
                             func_code = target.__code__
                         except AttributeError:
-                            raise NotImplementedError(
-                                "Profile not implemented to decorate type %s"
-                                % target.__class__.__name__
-                            )
+                            raise NotImplementedError('Profile not implemented to decorate type %s' % target.__class__.__name__)
                         line_num = func_code.co_firstlineno
                         file_path = func_code.co_filename
                         func_name = target.__name__
                         if not self.name:
                             self.name = func_name
                         self.profile = {
-                            "func_name": func_name,
-                            "name": self.name,
-                            "file_path": file_path,
-                            "line_num": line_num,
-                            "dynamic": self._dynamic,
-                            "start_time": timezone.now(),
-                            "request": DataCollector().request,
+                            'func_name': func_name,
+                            'name': self.name,
+                            'file_path': file_path,
+                            'line_num': line_num,
+                            'dynamic': self._dynamic,
+                            'start_time': timezone.now(),
+                            'request': DataCollector().request
                         }
                         self._start_queries()
                     try:
                         result = target(*args, **kwargs)
                     except Exception:
-                        self.profile["exception_raised"] = True
+                        self.profile['exception_raised'] = True
                         raise
                     finally:
                         with silk_meta_profiler():
-                            self.profile["end_time"] = timezone.now()
+                            self.profile['end_time'] = timezone.now()
                             self._finalise_queries()
                     return result
 
                 return wrapped_target
-
+                
             return decorator(target)
         else:
-            Logger.warning(
-                "Cannot execute silk_profile as silk is not installed correctly."
-            )
+            Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
             return target
 
     def distinct_queries(self):
@@ -197,5 +184,5 @@ def blah():
     time.sleep(1)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     blah()

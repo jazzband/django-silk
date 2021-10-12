@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Define the Django Silk management entry."""
 import os
 import sys

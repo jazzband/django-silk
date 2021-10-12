@@ -1,20 +1,20 @@
+from functools import partial
 import inspect
 import logging
-import re
 import sys
 
 from silk.profiling.profiler import silk_profile
 
-Logger = logging.getLogger("silk.profiling.dynamic")
+Logger = logging.getLogger('silk.profiling.dynamic')
 
 
 def _get_module(module_name):
     """
     Given a module name in form 'path.to.module' return module object for 'module'.
     """
-    if "." in module_name:
-        splt = module_name.split(".")
-        imp = ".".join(splt[:-1])
+    if '.' in module_name:
+        splt = module_name.split('.')
+        imp = '.'.join(splt[:-1])
         frm = splt[-1]
         module = __import__(imp, globals(), locals(), [frm], 0)
         module = getattr(module, frm)
@@ -33,8 +33,8 @@ def _get_func(module, func_name):
     """
     cls_name = None
     cls = None
-    if "." in func_name:
-        cls_name, func_name = func_name.split(".")
+    if '.' in func_name:
+        cls_name, func_name = func_name.split('.')
     if cls_name:
         cls = getattr(module, cls_name)
         func = getattr(cls, func_name)
@@ -57,14 +57,14 @@ def profile_function_or_method(module, func, name=None):
     cls, func = _get_func(module, func_name)
     wrapped_target = decorator(func)
     if cls:
-        setattr(cls, func_name.split(".")[-1], wrapped_target)
+        setattr(cls, func_name.split('.')[-1], wrapped_target)
     else:
         setattr(module, func_name, wrapped_target)
 
 
 def _get_parent_module(module):
     parent = sys.modules
-    splt = module.__name__.split(".")
+    splt = module.__name__.split('.')
     if len(splt) > 1:
         for module_name in splt[:-1]:
             try:
@@ -76,9 +76,9 @@ def _get_parent_module(module):
 
 def _get_context_manager_source(end_line, file_path, name, start_line):
     inject_code = "with silk_profile('%s', _dynamic=True):\n" % name
-    code = "from silk.profiling.profiler import silk_profile\n"
-    with open(file_path) as f:
-        ws = ""
+    code = 'from silk.profiling.profiler import silk_profile\n'
+    with open(file_path, 'r') as f:
+        ws = ''
         for i, line in enumerate(f):
             if i == start_line:
                 # Use the same amount of whitespace as the line currently occupying
@@ -86,11 +86,11 @@ def _get_context_manager_source(end_line, file_path, name, start_line):
                 try:
                     ws = x.groups()[0]
                 except IndexError:
-                    ws = ""
+                    ws = ''
                 code += ws + inject_code
-                code += ws + "    " + line
+                code += ws + '    ' + line
             elif start_line < i <= end_line:
-                code += ws + "    " + line
+                code += ws + '    ' + line
             else:
                 code += line
     return code
@@ -104,7 +104,7 @@ def _get_ws(txt):
     try:
         fws = m.groups()[0]
     except AttributeError:
-        fws = ""
+        fws = ''
     return fws
 
 
@@ -112,7 +112,7 @@ def _get_source_lines(func):
     source = inspect.getsourcelines(func)[0]
     fws = _get_ws(source[0])
     for i in range(0, len(source)):
-        source[i] = source[i].replace(fws, "", 1)
+        source[i] = source[i].replace(fws, '', 1)
     return source
 
 
@@ -123,7 +123,7 @@ def _new_func_from_source(source, func):
     @param func: The function whose global + local context we will use
     @param source: Python source code containing def statement
     """
-    src_str = "".join(source)
+    src_str = ''.join(source)
     frames = inspect.getouterframes(inspect.currentframe())
     calling_frame = frames[2][0]
 
@@ -145,7 +145,7 @@ def _new_func_from_source(source, func):
     locals = calling_frame.f_locals
     combined = globals.copy()
     combined.update(locals)
-    Logger.debug("New src_str:\n %s" % src_str)
+    Logger.debug('New src_str:\n %s' % src_str)
     exec(src_str, combined, context)
     return context[func.__name__]
 
@@ -186,14 +186,12 @@ def _inject_context_manager_func(func, start_line, end_line, name):
     ws = _get_ws(source[start_line])
     for i in range(start_line, end_line):
         try:
-            source[i] = "  " + source[i]
+            source[i] = '  ' + source[i]
         except IndexError:
-            raise IndexError("Function %s does not have line %d" % (func.__name__, i))
+            raise IndexError('Function %s does not have line %d' % (func.__name__, i))
 
     source.insert(start_line, ws + "from silk.profiling.profiler import silk_profile\n")
-    source.insert(
-        start_line + 1, ws + "with silk_profile('%s', _dynamic=True):\n" % name
-    )
+    source.insert(start_line + 1, ws + "with silk_profile('%s', _dynamic=True):\n" % name)
     return _new_func_from_source(source, func)
 
 

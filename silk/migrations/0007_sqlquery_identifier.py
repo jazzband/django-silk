@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("silk", "0006_fix_request_prof_file_blank"),
+        ('silk', '0006_fix_request_prof_file_blank'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="sqlquery",
-            name="identifier",
+            model_name='sqlquery',
+            name='identifier',
             field=models.IntegerField(default=-1),
         ),
     ]

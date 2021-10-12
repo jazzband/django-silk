@@ -1,28 +1,29 @@
-import cProfile
-import logging
-import pstats
-from io import StringIO
 from threading import local
+
+import cProfile
+import pstats
+import logging
+
+from io import StringIO
 
 from silk import models
 from silk.config import SilkyConfig
-from silk.errors import SilkInternalInconsistency, SilkNotConfigured
+from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
-TYP_SILK_QUERIES = "silk_queries"
-TYP_PROFILES = "profiles"
-TYP_QUERIES = "queries"
+TYP_SILK_QUERIES = 'silk_queries'
+TYP_PROFILES = 'profiles'
+TYP_QUERIES = 'queries'
 
-Logger = logging.getLogger("silk.collector")
+Logger = logging.getLogger('silk.collector')
 
 
 def raise_middleware_error():
     raise RuntimeError(
-        "Silk middleware has not been installed correctly. Ordering must ensure that Silk middleware can "
-        "execute process_request and process_response. If an earlier middleware returns from either of "
-        "these methods, Silk will not have the chance to inspect the request/response objects."
-    )
+        'Silk middleware has not been installed correctly. Ordering must ensure that Silk middleware can '
+        'execute process_request and process_response. If an earlier middleware returns from either of '
+        'these methods, Silk will not have the chance to inspect the request/response objects.')
 
 
 class DataCollector(metaclass=Singleton):
@@ -38,12 +39,12 @@ class DataCollector(metaclass=Singleton):
         self._configure()
 
     def ensure_middleware_installed(self):
-        if not hasattr(self.local, "temp_identifier"):
+        if not hasattr(self.local, 'temp_identifier'):
             raise_middleware_error()
 
     @property
     def request(self):
-        return getattr(self.local, "request", None)
+        return getattr(self.local, 'request', None)
 
     def get_identifier(self):
         self.ensure_middleware_installed()
@@ -61,7 +62,7 @@ class DataCollector(metaclass=Singleton):
 
     @property
     def objects(self):
-        return getattr(self.local, "objects", None)
+        return getattr(self.local, 'objects', None)
 
     @property
     def queries(self):
@@ -75,7 +76,7 @@ class DataCollector(metaclass=Singleton):
         objects = self.objects
         if objects is None:
             self._raise_not_configured(
-                "Attempt to access %s without initialisation." % typ
+                'Attempt to access %s without initialisation.' % typ
             )
         if typ not in objects:
             objects[typ] = {}
@@ -97,7 +98,7 @@ class DataCollector(metaclass=Singleton):
         self._configure()
 
     def _raise_not_configured(self, err):
-        raise SilkNotConfigured(err + " Is the middleware installed correctly?")
+        raise SilkNotConfigured(err + ' Is the middleware installed correctly?')
 
     def register_objects(self, typ, *args):
         self.ensure_middleware_installed()
@@ -109,7 +110,7 @@ class DataCollector(metaclass=Singleton):
                 # called for whatever reason. Perhaps if another piece of
                 # middleware is not playing ball.
                 self._raise_not_configured(
-                    "Attempt to register object of type %s without initialisation. "
+                    'Attempt to register object of type %s without initialisation. '
                 )
             if typ not in objects:
                 self.objects[typ] = {}
@@ -124,43 +125,35 @@ class DataCollector(metaclass=Singleton):
     def _record_meta_profiling(self):
         if SilkyConfig().SILKY_META:
             num_queries = len(self.silk_queries)
-            query_time = sum(
-                _time_taken(x["start_time"], x["end_time"])
-                for _, x in self.silk_queries.items()
-            )
+            query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
             self.request.meta_num_queries = num_queries
             self.request.meta_time_spent_queries = query_time
             self.request.save()
 
     def stop_python_profiler(self):
-        if getattr(self.local, "pythonprofiler", None):
+        if getattr(self.local, 'pythonprofiler', None):
             self.local.pythonprofiler.disable()
 
     def finalise(self):
-        if getattr(self.local, "pythonprofiler", None):
+        if getattr(self.local, 'pythonprofiler', None):
             s = StringIO()
-            ps = pstats.Stats(self.local.pythonprofiler, stream=s).sort_stats(
-                "cumulative"
-            )
+            ps = pstats.Stats(self.local.pythonprofiler, stream=s).sort_stats('cumulative')
             ps.print_stats()
             profile_text = s.getvalue()
             profile_text = "\n".join(
-                profile_text.split("\n")[0:256]
-            )  # don't record too much because it can overflow the field storage size
+                profile_text.split("\n")[0:256])  # don't record too much because it can overflow the field storage size
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name(
-                    f"{str(self.request.id)}.prof"
-                )
-                with open(self.request.prof_file.storage.path(file_name), "w+b") as f:
+                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
+                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
                     ps.dump_stats(f.name)
                 self.request.prof_file = f.name
                 self.request.save()
 
         sql_queries = []
         for identifier, query in self.queries.items():
-            query["identifier"] = identifier
+            query['identifier'] = identifier
             sql_query = models.SQLQuery(**query)
             sql_queries += [sql_query]
 
@@ -169,7 +162,7 @@ class DataCollector(metaclass=Singleton):
         for sql_query in sql_queries.all():
             query = self.queries.get(sql_query.identifier)
             if query:
-                query["model"] = sql_query
+                query['model'] = sql_query
 
         for profile in self.profiles.values():
             profile_query_models = []
@@ -180,17 +173,17 @@ class DataCollector(metaclass=Singleton):
                     try:
                         query = self.queries[query_temp_id]
                         try:
-                            profile_query_models.append(query["model"])
+                            profile_query_models.append(query['model'])
                         except KeyError:
                             raise SilkInternalInconsistency(
-                                "Profile references a query dictionary that has not "
-                                "been converted into a Django model. This should "
-                                "never happen, please file a bug report"
+                                'Profile references a query dictionary that has not '
+                                'been converted into a Django model. This should '
+                                'never happen, please file a bug report'
                             )
                     except KeyError:
                         raise SilkInternalInconsistency(
-                            "Profile references a query temp_id that does not exist. "
-                            "This should never happen, please file a bug report"
+                            'Profile references a query temp_id that does not exist. '
+                            'This should never happen, please file a bug report'
                         )
             profile = models.Profile.objects.create(**profile)
             if profile_query_models:
