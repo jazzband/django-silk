@@ -2,6 +2,7 @@ from unittest.mock import Mock, patch
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
+
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request

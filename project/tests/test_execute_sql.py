@@ -1,6 +1,7 @@
 from unittest.mock import Mock, NonCallableMagicMock, NonCallableMock, patch
 
 from django.test import TestCase
+
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
 from silk.sql import connection, execute_sql

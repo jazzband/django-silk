@@ -3,6 +3,7 @@ import random
 from django.db.models import Count, F
 from django.test import TestCase
 from django.urls import reverse
+
 from silk import models
 from silk.config import SilkyConfig
 from silk.middleware import silky_reverse

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile
 from silk.views.code import _code_context, _code_context_from_request

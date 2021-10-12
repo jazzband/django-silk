@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
-import silk
 from django.test import TestCase
+
+import silk
 from silk.profiling.dynamic import (
     _get_module,
     _get_parent_module,

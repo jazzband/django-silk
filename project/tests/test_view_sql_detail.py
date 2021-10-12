@@ -3,6 +3,7 @@ import random
 
 from django.test import TestCase
 from django.urls import reverse
+
 from silk.config import SilkyConfig
 from silk.middleware import silky_reverse
 from silk.views.sql_detail import SQLDetailView

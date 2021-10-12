@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from django.test import TestCase
 from django.urls import reverse
+
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory

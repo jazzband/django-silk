@@ -7,6 +7,7 @@ from math import floor
 import pytz
 from django.test import TestCase
 from django.utils import timezone
+
 from silk import models
 from silk.request_filters import (
     AfterDateFilter,

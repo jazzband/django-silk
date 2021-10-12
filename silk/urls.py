@@ -1,9 +1,10 @@
 from django.urls import path
 
 from silk.views.clear_db import ClearDBView
+from silk.views.cprofile import CProfileView
 from silk.views.profile_detail import ProfilingDetailView
-from silk.views.profile_download import ProfileDownloadView
 from silk.views.profile_dot import ProfileDotView
+from silk.views.profile_download import ProfileDownloadView
 from silk.views.profiling import ProfilingView
 from silk.views.raw import Raw
 from silk.views.request_detail import RequestView
@@ -11,7 +12,6 @@ from silk.views.requests import RequestsView
 from silk.views.sql import SQLView
 from silk.views.sql_detail import SQLDetailView
 from silk.views.summary import SummaryView
-from silk.views.cprofile import CProfileView
 
 app_name = "silk"
 urlpatterns = [

@@ -1,6 +1,7 @@
 from time import sleep
 
 from django.test import TestCase
+
 from silk.collector import DataCollector
 from silk.models import Request, _time_taken
 from silk.profiling.profiler import silk_profile

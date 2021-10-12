@@ -6,6 +6,7 @@ import pytz
 from django.test import TestCase
 from django.utils import timezone
 from freezegun import freeze_time
+
 from silk import models
 from silk.config import SilkyConfig
 from silk.storage import ProfilerResultStorage

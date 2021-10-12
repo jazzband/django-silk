@@ -3,6 +3,7 @@ import json
 from unittest.mock import Mock
 
 from django.test import TestCase
+
 from silk.model_factory import ResponseModelFactory
 
 DJANGO_META_CONTENT_TYPE = "CONTENT_TYPE"

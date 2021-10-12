@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from silk.views.summary import SummaryView
 
 from .test_lib.mock_suite import MockSuite

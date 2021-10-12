@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import Mock
 
 from django.test import TestCase
+
 from silk.views.requests import RequestsView
 
 from .test_lib.mock_suite import MockSuite
