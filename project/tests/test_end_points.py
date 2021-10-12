@@ -20,7 +20,7 @@ class TestEndPoints(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestEndPoints, cls).setUpClass()
+        super().setUpClass()
         # We're not testing auth here.
         SilkyConfig().SILKY_AUTHORISATION = False
         SilkyConfig().SILKY_AUTHENTICATION = False

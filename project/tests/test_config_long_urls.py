@@ -25,5 +25,5 @@ class TestLongRequestUrl(TestCase):
         mock_request.method = 'get'
         mock_request.path = url
         request_model = RequestModelFactory(mock_request).construct_request_model()
-        self.assertEqual(request_model.path, '%s...%s' % (url[:94], url[1907:]))
+        self.assertEqual(request_model.path, f'{url[:94]}...{url[1907:]}')
         self.assertEqual(len(request_model.path), 190)

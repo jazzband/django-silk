@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import uuid
 
@@ -19,7 +18,7 @@ from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 # UUID_MAX_LENGTH = 36
 
 # TODO move to separate file test and collection it self
-class CaseInsensitiveDictionaryTest(object):
+class CaseInsensitiveDictionaryTest:
     pass
 
 
@@ -105,7 +104,7 @@ class RequestTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 
@@ -167,7 +166,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', raw_body='some text')
         obj.save()
-        self.assertEqual(obj.raw_body, u'some text')
+        self.assertEqual(obj.raw_body, 'some text')
 
     def test_save_if_have_no_body(self):
 
@@ -180,7 +179,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', body='some text')
         obj.save()
-        self.assertEqual(obj.body, u'some text')
+        self.assertEqual(obj.body, 'some text')
 
     def test_save_if_have_no_end_time(self):
 
@@ -229,7 +228,7 @@ class ResponseTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 

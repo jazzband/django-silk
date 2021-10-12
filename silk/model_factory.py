@@ -131,11 +131,11 @@ class RequestModelFactory:
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(r'(({})[^=]*)=(.*?)(&|$)'.format(key_string), re.M | re.I)
+            pattern = re.compile(fr'(({key_string})[^=]*)=(.*?)(&|$)', re.M | re.I)
             try:
-                body = re.sub(pattern, '\\1={}\\4'.format(RequestModelFactory.CLEANSED_SUBSTITUTE), body)
+                body = re.sub(pattern, f'\\1={RequestModelFactory.CLEANSED_SUBSTITUTE}\\4', body)
             except Exception:
-                Logger.debug('{}'.format(str(e)))
+                Logger.debug(f'{str(e)}')
         else:
             body = json.dumps(replace_pattern_values(json_body), ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 

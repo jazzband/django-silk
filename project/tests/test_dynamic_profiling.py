@@ -42,7 +42,7 @@ class TestGetParentModule(TestCase):
         self.assertEqual(parent, silk)
 
 
-class MyClass(object):
+class MyClass:
     def foo(self):
         pass
 

@@ -14,5 +14,5 @@ class ProfileDownloadView(View):
     def get(self, request, request_id):
         silk_request = get_object_or_404(Request, pk=request_id, prof_file__isnull=False)
         response = FileResponse(silk_request.prof_file)
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(silk_request.prof_file.name)
+        response['Content-Disposition'] = f'attachment; filename="{silk_request.prof_file.name}"'
         return response

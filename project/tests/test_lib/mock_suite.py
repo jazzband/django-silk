@@ -12,7 +12,7 @@ from silk import models
 from silk.models import Profile, SQLQuery
 
 
-class MockSuite(object):
+class MockSuite:
     """
     Provides some fake data to play around with. Also useful for testing
     """

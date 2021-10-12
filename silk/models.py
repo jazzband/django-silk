@@ -83,7 +83,7 @@ class Request(models.Model):
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
     def _shorten(self, string):
-        return '%s...%s' % (string[:94], string[len(string) - 93:])
+        return f'{string[:94]}...{string[len(string) - 93:]}'
 
     @property
     def total_meta_time(self):

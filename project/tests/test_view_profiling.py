@@ -26,7 +26,7 @@ class TestProfilingViewDefaults(TestCase):
 class TestProfilingViewGetObjects(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilingViewGetObjects, cls).setUpClass()
+        super().setUpClass()
         cls.profiles = [MockSuite().mock_profile() for _ in range(0, 10)]
 
     def test_ordering(self):

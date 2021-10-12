@@ -35,7 +35,7 @@ def _curl_process_params(body, content_type, query_params):
     # multipart is RFC 2388 which allows file uploads.
     elif 'multipart' in content_type or 'x-www-form-urlencoded' in content_type:
         try:
-            body = ' '.join(['%s=%s' % (k, v) for k, v in body.items()])
+            body = ' '.join([f'{k}={v}' for k, v in body.items()])
         except AttributeError:
             modifier = '-d'
         else:

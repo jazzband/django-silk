@@ -10,11 +10,11 @@ class BlindAdmin(admin.ModelAdmin):
 
     def thumbnail(self, obj):
         try:
-            img_tag = u'<img src="%s" width="200px"/>' % obj.photo.url
+            img_tag = '<img src="%s" width="200px"/>' % obj.photo.url
         except ValueError:
-            return u''
+            return ''
         url = self._blind_url(obj)
-        return u'<a href="%s">%s</a>' % (url, img_tag)
+        return f'<a href="{url}">{img_tag}</a>'
 
     thumbnail.short_description = 'Photo'
     thumbnail.allow_tags = True
@@ -26,7 +26,7 @@ class BlindAdmin(admin.ModelAdmin):
     def desc(self, obj):
         desc = str(obj)
         url = self._blind_url(obj)
-        return u'<a href="%s">%s</a>' % (url, desc)
+        return f'<a href="{url}">{desc}</a>'
 
     desc.short_description = 'Blind'
     desc.allow_tags = True

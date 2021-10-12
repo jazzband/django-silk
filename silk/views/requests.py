@@ -121,7 +121,7 @@ class RequestsView(View):
         ob = self.order_by[order_by]
         if ob['additional_query_filter'] is not None:
             query_set = ob['additional_query_filter'](query_set)
-        query_set = query_set.order_by('%s%s' % ('-' if order_dir == 'DESC' else '', order_by))
+        query_set = query_set.order_by('{}{}'.format('-' if order_dir == 'DESC' else '', order_by))
         if path:
             query_set = query_set.filter(path=path)
         for f in filters:

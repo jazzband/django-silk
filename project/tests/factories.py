@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import factory
 import factory.fuzzy
 from example_app.models import Blind
@@ -11,8 +10,8 @@ STATUS_CODES = [200, 201, 300, 301, 302, 401, 403, 404]
 
 class SQLQueryFactory(factory.django.DjangoModelFactory):
 
-    query = factory.Sequence(lambda num: u'SELECT foo FROM bar WHERE foo=%s' % num)
-    traceback = factory.Sequence(lambda num: u'Traceback #%s' % num)
+    query = factory.Sequence(lambda num: 'SELECT foo FROM bar WHERE foo=%s' % num)
+    traceback = factory.Sequence(lambda num: 'Traceback #%s' % num)
 
     class Meta:
         model = SQLQuery

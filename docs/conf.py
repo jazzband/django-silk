@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # silk documentation build configuration file, created by
 # sphinx-quickstart on Sun Jun 22 13:51:12 2014.
@@ -39,8 +38,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'silk'
-copyright = u'2014, Michael Ford'
+project = 'silk'
+copyright = '2014, Michael Ford'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -192,8 +191,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'silk.tex', u'silk Documentation',
-   u'Michael Ford', 'manual'),
+  ('index', 'silk.tex', 'silk Documentation',
+   'Michael Ford', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -222,10 +221,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'silk', u'silk Documentation',
-     [u'Michael Ford'], 1),
-        ('profiling', 'Profiling', u'Profiling',
-     [u'Michael Ford'], 2),
+    ('index', 'silk', 'silk Documentation',
+     ['Michael Ford'], 1),
+        ('profiling', 'Profiling', 'Profiling',
+     ['Michael Ford'], 2),
 ]
 
 # If true, show URL addresses after external links.
@@ -238,8 +237,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'silk', u'silk Documentation',
-   u'Michael Ford', 'silk', 'One line description of project.',
+  ('index', 'silk', 'silk Documentation',
+   'Michael Ford', 'silk', 'One line description of project.',
    'Miscellaneous'),
 ]
 
