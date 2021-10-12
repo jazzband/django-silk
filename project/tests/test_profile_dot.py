@@ -1,6 +1,6 @@
 # std
-import cProfile
 import os
+import cProfile
 import tempfile
 from contextlib import contextmanager
 from unittest.mock import MagicMock
@@ -8,13 +8,8 @@ from unittest.mock import MagicMock
 # 3rd party
 from django.test import TestCase
 from networkx.drawing.nx_pydot import read_dot
-
 # silk
-from silk.views.profile_dot import (
-    _create_dot,
-    _create_profile,
-    _temp_file_from_file_field,
-)
+from silk.views.profile_dot import _create_profile, _create_dot, _temp_file_from_file_field
 
 
 class ProfileDotViewTestCase(TestCase):
@@ -95,7 +90,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that data held in a file like object is copied to a temp file.
         """
-        dummy_data = b'dummy data'
+        dummy_data = 'dummy data'.encode('utf-8')
         stream = self._mock_file(dummy_data)
 
         with _temp_file_from_file_field(stream) as filename:

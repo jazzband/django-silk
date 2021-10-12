@@ -49,7 +49,7 @@ def _explain_query(q, params):
 
         # currently we cannot use explain() method
         # for queries other than `select`
-        prefixed_query = f"{prefix} {q}"
+        prefixed_query = "{} {}".format(prefix, q)
         with connection.cursor() as cur:
             cur.execute(prefixed_query, params)
             result = _unpack_explanation(cur.fetchall())

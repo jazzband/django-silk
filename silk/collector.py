@@ -1,12 +1,14 @@
-import cProfile
-import logging
-import pstats
-from io import StringIO
 from threading import local
+
+import cProfile
+import pstats
+import logging
+
+from io import StringIO
 
 from silk import models
 from silk.config import SilkyConfig
-from silk.errors import SilkInternalInconsistency, SilkNotConfigured
+from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
@@ -143,7 +145,7 @@ class DataCollector(metaclass=Singleton):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name(f"{str(self.request.id)}.prof")
+                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
                 with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
                     ps.dump_stats(f.name)
                 self.request.prof_file = f.name

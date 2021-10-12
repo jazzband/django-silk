@@ -1,6 +1,5 @@
-from unittest.mock import Mock, NonCallableMagicMock, NonCallableMock, patch
-
 from django.test import TestCase
+from unittest.mock import Mock, NonCallableMock, NonCallableMagicMock, patch
 
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
@@ -35,7 +34,7 @@ def call_execute_sql(cls, request):
 class TestCallNoRequest(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestCallNoRequest, cls).setUpClass()
         call_execute_sql(cls, None)
 
     def test_called(self):
@@ -48,7 +47,7 @@ class TestCallNoRequest(TestCase):
 class TestCallRequest(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestCallRequest, cls).setUpClass()
         call_execute_sql(cls, Request())
 
     def test_called(self):
@@ -106,4 +105,4 @@ class TestCollectorInteraction(TestCase):
             mock_cursor = m.cursor.return_value.__enter__.return_value
             m.ops.explain_query_prefix.return_value = prefix
             execute_sql(sql)
-            mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())
+            mock_cursor.execute.assert_called_once_with("{} {}".format(prefix, qs), ())

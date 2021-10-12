@@ -1,8 +1,8 @@
 import calendar
 import random
-from datetime import datetime, timedelta
-from itertools import groupby
+from datetime import timedelta, datetime
 from math import floor
+from itertools import groupby
 
 import pytz
 from django.test import TestCase
@@ -10,20 +10,19 @@ from django.utils import timezone
 
 from silk import models
 from silk.request_filters import (
+    SecondsFilter,
     AfterDateFilter,
     BeforeDateFilter,
-    FunctionNameFilter,
-    MethodFilter,
-    NameFilter,
-    NumQueriesFilter,
-    OverallTimeFilter,
-    PathFilter,
-    SecondsFilter,
-    StatusCodeFilter,
-    TimeSpentOnQueriesFilter,
     ViewNameFilter,
+    PathFilter,
+    NameFilter,
+    FunctionNameFilter,
+    NumQueriesFilter,
+    TimeSpentOnQueriesFilter,
+    OverallTimeFilter,
+    StatusCodeFilter,
+    MethodFilter,
 )
-
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
 
@@ -33,7 +32,7 @@ mock_suite = MockSuite()
 class TestRequestFilters(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestRequestFilters, cls).setUpClass()
 
     def _time_stamp(self, dt):
         return calendar.timegm(dt.utctimetuple())
@@ -69,7 +68,7 @@ class TestRequestFilters(TestCase):
 
     def test_num_queries_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
-        counts = sorted(x.queries.count() for x in requests)
+        counts = sorted([x.queries.count() for x in requests])
         c = counts[int(floor(len(counts) / 2))]
         num_queries_filter = NumQueriesFilter(c)
         query_set = models.Request.objects.all()
@@ -130,7 +129,7 @@ class TestRequestAfterDateFilter(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestRequestAfterDateFilter, cls).setUpClass()
         cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
 
     def test_after_date_filter(self):
@@ -159,7 +158,7 @@ class TestRequestBeforeDateFilter(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestRequestBeforeDateFilter, cls).setUpClass()
         cls.requests = [mock_suite.mock_request() for _ in range(0, 10)]
 
     def test_before_date_filter(self):
@@ -202,7 +201,7 @@ class TestProfileFilters(TestCase):
 
     def test_num_queries_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
-        counts = sorted(x.queries.count() for x in profiles)
+        counts = sorted([x.queries.count() for x in profiles])
         c = counts[int(floor(len(counts) / 2))]
         num_queries_filter = NumQueriesFilter(c)
         query_set = models.Profile.objects.all()

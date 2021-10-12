@@ -1,4 +1,4 @@
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 __author__ = 'mtford'
 

@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import reverse
-
 from .models import Blind
 
 
@@ -10,11 +9,11 @@ class BlindAdmin(admin.ModelAdmin):
 
     def thumbnail(self, obj):
         try:
-            img_tag = '<img src="%s" width="200px"/>' % obj.photo.url
+            img_tag = u'<img src="%s" width="200px"/>' % obj.photo.url
         except ValueError:
-            return ''
+            return u''
         url = self._blind_url(obj)
-        return f'<a href="{url}">{img_tag}</a>'
+        return u'<a href="%s">%s</a>' % (url, img_tag)
 
     thumbnail.short_description = 'Photo'
     thumbnail.allow_tags = True
@@ -26,7 +25,7 @@ class BlindAdmin(admin.ModelAdmin):
     def desc(self, obj):
         desc = str(obj)
         url = self._blind_url(obj)
-        return f'<a href="{url}">{desc}</a>'
+        return u'<a href="%s">%s</a>' % (url, desc)
 
     desc.short_description = 'Blind'
     desc.allow_tags = True

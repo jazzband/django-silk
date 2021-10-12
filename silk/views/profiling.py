@@ -1,10 +1,10 @@
+from django.template.context_processors import csrf
 from django.db.models import Count, Sum
 from django.shortcuts import render
-from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-
 from silk.auth import login_possibly_required, permissions_possibly_required
+
 from silk.models import Profile, Request
 from silk.request_filters import BaseFilter, filters_from_request
 
@@ -22,7 +22,7 @@ class ProfilingView(View):
     session_key_profile_filters = 'session_key_profile_filters'
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(ProfilingView, self).__init__(**kwargs)
 
     def _get_distinct_values(self, field, silk_request):
         if silk_request:

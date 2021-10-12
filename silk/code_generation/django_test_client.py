@@ -1,10 +1,10 @@
+import autopep8
+
+import jinja2
 # noinspection PyUnresolvedReferences
 from urllib.parse import urlencode
-
-import autopep8
-import jinja2
-
 from silk.profiling.dynamic import is_str_typ
+
 
 template = """
 from django.test import Client

@@ -1,10 +1,10 @@
 from unittest.mock import Mock
 
 from django.test import TestCase
-
-from silk.views.profiling import ProfilingView
+from unittest.mock import Mock
 
 from .test_lib.mock_suite import MockSuite
+from silk.views.profiling import ProfilingView
 
 
 class TestProfilingViewDefaults(TestCase):
@@ -25,7 +25,7 @@ class TestProfilingViewDefaults(TestCase):
 class TestProfilingViewGetObjects(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestProfilingViewGetObjects, cls).setUpClass()
         cls.profiles = [MockSuite().mock_profile() for _ in range(0, 10)]
 
     def test_ordering(self):

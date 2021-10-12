@@ -1,5 +1,6 @@
 import re
 
+
 _pattern = re.compile(' +')
 
 

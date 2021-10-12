@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile
 from silk.views.code import _code_context, _code_context_from_request
@@ -34,7 +33,7 @@ class ProfilingDetailView(View):
         if file_path and line_num:
             try:
                 context.update(_code_context(file_path, line_num, profile.end_line_num))
-            except OSError as e:
+            except IOError as e:
                 if e.errno == 2:
                     context['code_error'] = e.filename + ' does not exist.'
                 else:

@@ -7,10 +7,10 @@ from django.core import management
 from django.utils import timezone
 
 from silk import models
-from silk.models import Profile, SQLQuery
+from silk.models import SQLQuery, Profile
 
 
-class MockSuite:
+class MockSuite(object):
     """
     Provides some fake data to play around with. Also useful for testing
     """
@@ -162,3 +162,4 @@ class MockSuite:
 if __name__ == '__main__':
     management.call_command('flush', interactive=False)
     requests = [MockSuite().mock_request() for _ in range(0, 100)]
+
