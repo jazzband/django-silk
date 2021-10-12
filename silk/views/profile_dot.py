@@ -1,22 +1,20 @@
 # std
-import json
 import os
-import shutil
+import json
 import tempfile
+import shutil
 from contextlib import closing, contextmanager
-
 # 3rd party
 from io import StringIO
-
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.http import HttpResponse
 from gprof2dot import DotWriter, PstatsParser, Theme
-
 # silk
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request
+
 
 COLOR_MAP = Theme(
     mincolor=(0.18, 0.51, 0.53),

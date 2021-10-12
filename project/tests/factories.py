@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import factory
 import factory.fuzzy
-from example_app.models import Blind
 
 from silk.models import Request, Response, SQLQuery
+
+from example_app.models import Blind
+
 
 HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'OPTIONS']
 STATUS_CODES = [200, 201, 300, 301, 302, 401, 403, 404]

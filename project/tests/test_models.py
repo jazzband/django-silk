@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 import datetime
 import uuid
-
 import pytz
+
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+
+
 from freezegun import freeze_time
 
 from silk import models
-from silk.config import SilkyConfig
 from silk.storage import ProfilerResultStorage
+from silk.config import SilkyConfig
+from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 
-from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
 # TODO test atomicity
 
@@ -499,7 +501,7 @@ class NoPendingMigrationsTest(TestCase):
         default when generating proj with Django 3.2.
         """
         self.test_no_pending_migrations()
-
+        
 
 class BaseProfileTest(TestCase):
     pass

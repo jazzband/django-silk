@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.db import models, migrations
 import uuid
-
 import django.utils.timezone
-from django.db import migrations, models
 
 
 class Migration(migrations.Migration):

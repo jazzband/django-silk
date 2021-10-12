@@ -1,12 +1,14 @@
-import cProfile
-import logging
-import pstats
-from io import StringIO
 from threading import local
+
+import cProfile
+import pstats
+import logging
+
+from io import StringIO
 
 from silk import models
 from silk.config import SilkyConfig
-from silk.errors import SilkInternalInconsistency, SilkNotConfigured
+from silk.errors import SilkNotConfigured, SilkInternalInconsistency
 from silk.models import _time_taken
 from silk.singleton import Singleton
 

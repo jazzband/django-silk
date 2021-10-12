@@ -3,7 +3,6 @@ from time import sleep
 # Create your views here.
 from django.shortcuts import render
 from example_app import models
-
 from silk.profiling.profiler import silk_profile
 
 

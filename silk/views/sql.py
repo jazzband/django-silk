@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.models import Profile, Request, SQLQuery
+from silk.models import Request, SQLQuery, Profile
 from silk.utils.pagination import _page
 
 __author__ = 'mtford'

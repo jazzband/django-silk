@@ -1,12 +1,10 @@
-from unittest.mock import Mock
-
-from django.test import TestCase
 from django.urls import reverse
-
-from silk.collector import DataCollector
-from silk.config import SilkyConfig
+from django.test import TestCase
+from unittest.mock import Mock
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.models import Request
+from silk.collector import DataCollector
+from silk.config import SilkyConfig
 
 
 class TestMaxBodySizeRequest(TestCase):

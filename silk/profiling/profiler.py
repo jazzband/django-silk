@@ -169,7 +169,7 @@ class silk_profile(object):
                     return result
 
                 return wrapped_target
-
+                
             return decorator(target)
         else:
             Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')

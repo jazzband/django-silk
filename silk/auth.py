@@ -1,4 +1,4 @@
-from functools import WRAPPER_ASSIGNMENTS, wraps
+from functools import wraps, WRAPPER_ASSIGNMENTS
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied

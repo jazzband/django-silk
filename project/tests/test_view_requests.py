@@ -1,12 +1,11 @@
 import random
 import unittest
-from unittest.mock import Mock
 
 from django.test import TestCase
-
-from silk.views.requests import RequestsView
+from unittest.mock import Mock
 
 from .test_lib.mock_suite import MockSuite
+from silk.views.requests import RequestsView
 
 
 class TestRootViewDefaults(TestCase):
@@ -122,3 +121,4 @@ class TestOrderingRequestView(TestCase):
                           sort_field='time_taken')
         self.assertSorted(objects=RequestsView()._get_objects(order_by='db_time'),
                           sort_field='db_time')
+

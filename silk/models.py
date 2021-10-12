@@ -1,13 +1,12 @@
-import base64
+from collections import Counter
 import json
+import base64
 import random
 import re
-from collections import Counter
 from uuid import uuid4
 
-import sqlparse
 from django.core.files.storage import get_storage_class
-from django.db import models, transaction
+from django.db import models
 from django.db.models import (
     BooleanField,
     CharField,
@@ -21,10 +20,13 @@ from django.db.models import (
     TextField,
 )
 from django.utils import timezone
+from django.db import transaction
+from uuid import uuid4
+import sqlparse
 from django.utils.safestring import mark_safe
 
-from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
+from silk.config import SilkyConfig
 
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 

@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from silk.collector import DataCollector
 
 

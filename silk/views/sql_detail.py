@@ -1,13 +1,13 @@
 import re
-
 from django.core.exceptions import PermissionDenied
+
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.models import Profile, Request, SQLQuery
+from silk.models import SQLQuery, Request, Profile
 from silk.views.code import _code
 
 

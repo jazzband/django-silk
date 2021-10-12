@@ -1,9 +1,9 @@
 # coding=utf-8
 
 import json
-from unittest.mock import Mock
 
 from django.test import TestCase
+from unittest.mock import Mock
 
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 

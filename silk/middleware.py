@@ -1,12 +1,13 @@
 import logging
 import random
 
-from django.db import DatabaseError, transaction
+from django.db import transaction, DatabaseError
+from django.urls import reverse, NoReverseMatch
 from django.db.models.sql.compiler import SQLCompiler
-from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 
 from silk.collector import DataCollector
+
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
