@@ -3,6 +3,10 @@ repos:
   rev: 'v4.0.1'
   hooks:
   - id: check-merge-conflict
+- repo: https://github.com/hadialqattan/pycln
+  rev: v1.0.3
+  hooks:
+  - id: pycln
 - repo: https://github.com/asottile/yesqa
   rev: v1.2.3
   hooks:
