@@ -5,7 +5,6 @@ against a HTTP server that echos various components in the request.
 
 
 # noinspection PyUnresolvedReferences
-from silk.code_generation.curl import curl_cmd
 
 # .util has disappeared so let's comment out the import for
 # now since nothing is using it and it's breaking the build

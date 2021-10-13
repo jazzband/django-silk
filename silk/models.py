@@ -11,7 +11,6 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
-    F,
     FileField,
     FloatField,
     ForeignKey,
