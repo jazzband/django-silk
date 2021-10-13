@@ -59,7 +59,8 @@ dist
 *db.sqlite*
 /django_silky/media
 *.prof
-project/media/*
+project/media/
+project/tmp/
 .vscode/
 
 # Vagrant
@@ -121,4 +122,3 @@ fabric.properties
 
 package-lock.json
 *.db
-project/tmp/
