@@ -7,7 +7,7 @@ repos:
   rev: v1.0.3
   hooks:
   - id: pycln
-  args: ['--all']
+  args: ['--all', '.']
 - repo: https://github.com/asottile/yesqa
   rev: v1.2.3
   hooks:
