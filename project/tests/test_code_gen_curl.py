@@ -3,9 +3,6 @@ Test curl command generation by executing the generated command
 against a HTTP server that echos various components in the request.
 """
 
-import json
-import subprocess
-import unittest
 
 # noinspection PyUnresolvedReferences
 from silk.code_generation.curl import curl_cmd
