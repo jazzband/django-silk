@@ -3,11 +3,11 @@ repos:
   rev: 'v4.0.1'
   hooks:
   - id: check-merge-conflict
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: 'v1.5.7'
+- repo: https://github.com/hadialqattan/pycln
+  rev: v1.0.3
   hooks:
-  - id: autopep8
-    args: ['--in-place', '--remove-all-unused-imports']
+  - id: pycln
+    args: ['--all']
 - repo: https://github.com/asottile/yesqa
   rev: v1.2.3
   hooks:
@@ -51,6 +51,10 @@ repos:
   hooks:
   - id: pyupgrade
     args: ['--py36-plus', '--keep-mock']
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: 'v1.5.7'
+  hooks:
+  - id: autopep8
 - repo: https://github.com/PyCQA/flake8
   rev: '4.0.1'
   hooks:
