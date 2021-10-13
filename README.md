@@ -561,8 +561,7 @@ python manage.py runserver
 
 ```bash
 cd project
-./tests/test_migrations.sh
-python manage.py test --noinput
+python manage.py test
 ```
 
 Happy profiling!
