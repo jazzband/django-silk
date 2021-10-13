@@ -85,14 +85,6 @@ class RequestTest(TestCase):
 
         query1 = SQLQueryFactory(time_taken=3.5)
         query2 = SQLQueryFactory(time_taken=1.5)
-        self.obj.queries.add(query1, query2)
-
-        self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
-
-    def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
-
-        query1 = SQLQueryFactory(time_taken=3.5)
-        query2 = SQLQueryFactory(time_taken=1.5)
         RequestMinFactory().queries.add(query1, query2)
 
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0)

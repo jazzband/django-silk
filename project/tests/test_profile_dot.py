@@ -52,7 +52,8 @@ class ProfileDotViewTestCase(TestCase):
             # create profile - we don't need to convert a django file field to a temp file
             # just use the filename of the temp file already created
             @contextmanager
-            def dummy(_): yield filename
+            def dummy(_): 
+                yield filename
             return _create_profile(filename, dummy)
 
     @classmethod
@@ -77,7 +78,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that a dot file is correctly created from pstats data stored in a file field.
         """
-        with self._stats_file() as filename:
+        with self._stats_file():
 
             try:
                 # create dot
