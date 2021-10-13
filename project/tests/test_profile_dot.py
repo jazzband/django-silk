@@ -52,7 +52,7 @@ class ProfileDotViewTestCase(TestCase):
             # create profile - we don't need to convert a django file field to a temp file
             # just use the filename of the temp file already created
             @contextmanager
-            def dummy(_): 
+            def dummy(_):
                 yield filename
             return _create_profile(filename, dummy)
 
