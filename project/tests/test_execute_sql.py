@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
-from silk.sql import execute_sql
+from silk.sql import connection, execute_sql
 
 from .util import delete_all_models
 
