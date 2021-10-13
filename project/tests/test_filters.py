@@ -122,6 +122,7 @@ class TestRequestFilters(TestCase):
             filtered = query_set.filter(method_filter)
             self.assertEqual(len(list(expected)), filtered.count())
 
+
 class TestRequestAfterDateFilter(TestCase):
     def assertFilter(self, dt, f):
         requests = models.Request.objects.filter(f)

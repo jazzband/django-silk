@@ -20,12 +20,14 @@ def _should_wrap(sql_query):
             return False
     return True
 
+
 def _unpack_explanation(result):
-     for row in result:
-         if not isinstance(row, str):
-             yield ' '.join(str(c) for c in row)
-         else:
-             yield row
+    for row in result:
+        if not isinstance(row, str):
+            yield ' '.join(str(c) for c in row)
+        else:
+            yield row
+
 
 def _explain_query(q, params):
     if connection.features.supports_explaining_query_execution:

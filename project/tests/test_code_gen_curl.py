@@ -3,18 +3,15 @@ Test curl command generation by executing the generated command
 against a HTTP server that echos various components in the request.
 """
 
-import json
-import subprocess
-import unittest
+# import json
+# import subprocess
+# import unittest
 
-# noinspection PyUnresolvedReferences
-from silk.code_generation.curl import curl_cmd
+# from silk.code_generation.curl import curl_cmd
 
 # .util has disappeared so let's comment out the import for
 # now since nothing is using it and it's breaking the build
 # from .util import PORT, construct_echo_process
-
-
 
 
 # class TestCodeGenerationCurl(unittest.TestCase):

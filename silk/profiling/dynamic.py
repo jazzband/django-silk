@@ -2,7 +2,6 @@ import inspect
 import logging
 import re
 import sys
-from functools import partial
 
 from silk.profiling.profiler import silk_profile
 

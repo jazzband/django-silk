@@ -73,7 +73,7 @@ class TestEndPoints(TestCase):
         request_id = request_query_data['id']
         url = reverse('silk:raw', kwargs={
             'request_id': request_id
-        })+'?typ=request&subtyp=processed'
+        }) + '?typ=request&subtyp=processed'
         response = self.client.get(url)
         code = response.status_code
         self.assertTrue(code == 200)
@@ -155,7 +155,7 @@ class TestEndPoints(TestCase):
         profile_id = profile_query_data['id']
         sql_id = random.choice(models.SQLQuery.objects.filter(profiles=profile_id)).pk
         response = self.client.get(silky_reverse('profile_sql_detail', kwargs={'profile_id': profile_id,
-                                                                              'sql_id': sql_id}))
+                                                                               'sql_id': sql_id}))
         self.assertTrue(response.status_code == 200)
 
     def test_profiling(self):

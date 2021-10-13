@@ -35,7 +35,6 @@ class TestAuth(TestCase):
         response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
 
-
     def test_custom_authorisation(self):
         SilkyConfig().SILKY_AUTHENTICATION = True
         SilkyConfig().SILKY_AUTHORISATION = True

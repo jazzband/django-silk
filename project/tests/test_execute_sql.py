@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
-from silk.sql import connection, execute_sql
+from silk.sql import execute_sql
 
 from .util import delete_all_models
 
@@ -17,6 +17,7 @@ def mock_sql():
     query_string = 'SELECT * from table_name'
     mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
     return mock_sql_query, query_string
+
 
 def call_execute_sql(cls, request):
     DataCollector().configure(request=request)

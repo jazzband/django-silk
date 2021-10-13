@@ -177,22 +177,22 @@ htmlhelp_basename = 'silkdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'silk.tex', 'silk Documentation',
-   'Michael Ford', 'manual'),
+    ('index', 'silk.tex', 'silk Documentation',
+     'Michael Ford', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -223,7 +223,7 @@ latex_documents = [
 man_pages = [
     ('index', 'silk', 'silk Documentation',
      ['Michael Ford'], 1),
-        ('profiling', 'Profiling', 'Profiling',
+    ('profiling', 'Profiling', 'Profiling',
      ['Michael Ford'], 2),
 ]
 
@@ -237,9 +237,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'silk', 'silk Documentation',
-   'Michael Ford', 'silk', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'silk', 'silk Documentation',
+     'Michael Ford', 'silk', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

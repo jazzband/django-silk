@@ -32,5 +32,4 @@ class BlindAdmin(admin.ModelAdmin):
     desc.allow_tags = True
 
 
-
 admin.site.register(Blind, BlindAdmin)

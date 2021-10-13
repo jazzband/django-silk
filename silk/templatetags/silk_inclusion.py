@@ -6,8 +6,10 @@ register = Library()
 def request_summary(silk_request):
     return {'silk_request': silk_request}
 
+
 def request_summary_row(silk_request):
     return {'silk_request': silk_request}
+
 
 def request_menu(request, silk_request):
     return {'request': request,
