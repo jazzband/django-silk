@@ -2,6 +2,7 @@ import base64
 import json
 import random
 import re
+from collections import Counter
 from uuid import uuid4
 
 import sqlparse
