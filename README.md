@@ -30,7 +30,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 2.2, 3.0, 3.1, 3.2
+* Django: 2.2, 3.1, 3.2
 * Python: 3.6, 3.7, 3.8, 3.9
 
 ## Installation
@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
 INSTALLED_APPS = (
     ...
-    'silk'
+    'silk.apps.SilkAppConfig'
 )
 ```
 
@@ -77,7 +77,7 @@ MIDDLEWARE = [
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
-urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
 ```
 
 before running migrate:
@@ -195,7 +195,7 @@ from silk.profiling.profiler import silk_profile
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
-    return render_to_response('post.html', {
+    return render(request, 'post.html', {
         'post': p
     })
 ```
@@ -220,7 +220,7 @@ from silk.profiling.profiler import silk_profile
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
-    return render_to_response('post.html', {
+    return render(request, 'post.html', {
         'post': p
     })
 
@@ -230,7 +230,7 @@ class MyView(View):
     @silk_profile(name='View Blog Post')
     def get(self, request):
         p = Post.objects.get(pk=post_id)
-        return render_to_response('post.html', {
+        return render(request, 'post.html', {
             'post': p
         })
 ```
@@ -244,7 +244,7 @@ narrowing down slowness to particular database records.
 def post(request, post_id):
     with silk_profile(name='View Blog Post #%d' % self.pk):
         p = Post.objects.get(pk=post_id)
-        return render_to_response('post.html', {
+        return render(request, 'post.html', {
             'post': p
         })
 ```
@@ -263,7 +263,7 @@ SILKY_DYNAMIC_PROFILING = [{
 which is roughly equivalent to:
 
 ```python
-class MyClass(object):
+class MyClass:
     @silk_profile()
     def bar(self):
         pass
@@ -297,7 +297,7 @@ SILKY_DYNAMIC_PROFILING = [{
 }]
 
 # ... is roughly equivalent to
-class MyClass(object):
+class MyClass:
 
     @silk_profile()
     def bar(self):
