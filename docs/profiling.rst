@@ -13,7 +13,7 @@ The decorator can be applied to both functions and methods:
 	@silk_profile(name='View Blog Post')
 	def post(request, post_id):
 	    p = Post.objects.get(pk=post_id)
-	    return render_to_response('post.html', {
+	    return render(request, 'post.html', {
 	        'post': p
 	    })
 
@@ -24,7 +24,7 @@ The decorator can be applied to both functions and methods:
 		@silk_profile(name='View Blog Post')
 		def get(self, request):
 			p = Post.objects.get(pk=post_id)
-	    	return render_to_response('post.html', {
+	    	return render(request, 'post.html', {
 	        	'post': p
 	    	})
 
@@ -38,7 +38,7 @@ Context Manager
 	def post(request, post_id):
 	    with silk_profile(name='View Blog Post #%d' % self.pk):
 	        p = Post.objects.get(pk=post_id)
-	    	return render_to_response('post.html', {
+	    	return render(request, 'post.html', {
 	        	'post': p
 	    	})
 
@@ -75,7 +75,7 @@ Dynamic profiling is configured via the ``SILKY_DYNAMIC_PROFILING`` option in yo
 	}]
 
 	# ... is roughly equivalent to
-	class MyClass(object):
+	class MyClass:
 
 	    @silk_profile()
 	    def bar(self):
