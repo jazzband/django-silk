@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
 INSTALLED_APPS = (
     ...
-    'silk.apps.SilkAppConfig'
+    'silk'
 )
 ```
 
