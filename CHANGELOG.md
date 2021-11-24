@@ -33,7 +33,7 @@
 - remove python 2 style codes from across the codebase
 - Fix broken test on Windows 10 (SQLite) (#504)
 - Remove Make Migrations (#503)
-
+- Add Python 3.10 compatibility (#527)
 
 
 ## [4.1.0](https://github.com/jazzband/django-silk/tree/4.1.0) (2020-08-07)
