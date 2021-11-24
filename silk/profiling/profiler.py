@@ -11,7 +11,7 @@ from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.models import _time_taken
 
-Logger = logging.getLogger('silk.profiling.profiler')
+logger = logging.getLogger('silk.profiling.profiler')
 
 
 # noinspection PyPep8Naming
@@ -35,7 +35,7 @@ class silk_meta_profiler:
             end_time = timezone.now()
             exception_raised = exc_type is not None
             if exception_raised:
-                Logger.error('Exception when performing meta profiling, dumping trace below')
+                logger.error('Exception when performing meta profiling, dumping trace below')
                 traceback.print_exception(exc_type, exc_val, exc_tb)
             request = getattr(DataCollector().local, 'request', None)
             if request:
@@ -102,7 +102,7 @@ class silk_profile:
                     'start_time': timezone.now(),
                 }
         else:
-            Logger.warn('Cannot execute silk_profile as silk is not installed correctly.')
+            logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
 
     def _finalise_queries(self):
         collector = DataCollector()
@@ -172,7 +172,7 @@ class silk_profile:
 
             return decorator(target)
         else:
-            Logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
+            logger.warning('Cannot execute silk_profile as silk is not installed correctly.')
             return target
 
     def distinct_queries(self):
