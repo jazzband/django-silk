@@ -37,7 +37,6 @@ setup(
     ],
     install_requires=[
         'Django>=2.2',
-        'Pygments',
         'python-dateutil',
         'requests',
         'sqlparse',
