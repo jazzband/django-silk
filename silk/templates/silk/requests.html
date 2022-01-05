@@ -2,6 +2,15 @@
 {% load silk_inclusion %}
 {% load static %}
 
+{% block style %}
+    {{ block.super }}
+    <style>
+        .container {
+            padding: 0 1em;
+        }
+    </style>
+{% endblock %}
+
 {% block menu %}
     {% root_menu request %}
 {% endblock %}
@@ -271,5 +280,12 @@
                 </a>
             {% endfor %}
         {% endif %}
+    {% else %}
+        <div class="container">
+            <h2>No matches found</h2>
+            <div class="description">
+                No requests were found with current set of filters. Please alter your filters and try again.
+            </div>
+        </div>
     {% endif %}
 {% endblock %}
