@@ -6,8 +6,8 @@ from django.test import TestCase
 
 from silk.views.requests import RequestsView
 
-from .test_lib.mock_suite import MockSuite
 from .test_lib.assertion import dict_contains
+from .test_lib.mock_suite import MockSuite
 
 
 class TestRootViewDefaults(TestCase):

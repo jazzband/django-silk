@@ -4,8 +4,8 @@ from django.test import TestCase
 
 from silk.views.profiling import ProfilingView
 
-from .test_lib.mock_suite import MockSuite
 from .test_lib.assertion import dict_contains
+from .test_lib.mock_suite import MockSuite
 
 
 class TestProfilingViewDefaults(TestCase):

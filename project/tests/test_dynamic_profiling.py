@@ -9,8 +9,8 @@ from silk.profiling.dynamic import (
     profile_function_or_method,
 )
 
-from .util import mock_data_collector
 from .test_lib.assertion import dict_contains
+from .util import mock_data_collector
 
 
 class TestGetModule(TestCase):
