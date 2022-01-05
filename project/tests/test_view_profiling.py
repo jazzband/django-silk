@@ -5,6 +5,7 @@ from django.test import TestCase
 from silk.views.profiling import ProfilingView
 
 from .test_lib.mock_suite import MockSuite
+from .test_lib.assertion import dict_contains
 
 
 class TestProfilingViewDefaults(TestCase):
@@ -59,13 +60,13 @@ class TestProfilingContext(TestCase):
         request.GET = {}
         request.session = {}
         context = ProfilingView()._create_context(request)
-        self.assertDictContainsSubset({
+        self.assertTrue(dict_contains({
             'show': ProfilingView.default_show,
             'order_by': ProfilingView.defualt_order_by,
             'options_show': ProfilingView.show,
             'options_order_by': ProfilingView.order_by,
             'options_func_names': ProfilingView()._get_function_names()
-        }, context)
+        }, context))
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -81,7 +82,7 @@ class TestProfilingContext(TestCase):
                        'name': name,
                        'order_by': order_by}
         context = ProfilingView()._create_context(request)
-        self.assertDictContainsSubset({
+        self.assertTrue(dict_contains({
             'show': show,
             'order_by': order_by,
             'func_name': func_name,
@@ -89,5 +90,5 @@ class TestProfilingContext(TestCase):
             'options_show': ProfilingView.show,
             'options_order_by': ProfilingView.order_by,
             'options_func_names': ProfilingView()._get_function_names()
-        }, context)
+        }, context))
         self.assertIn('results', context)
