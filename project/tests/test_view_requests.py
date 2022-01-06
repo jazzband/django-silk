@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from silk.views.requests import RequestsView
 
+from .test_lib.assertion import dict_contains
 from .test_lib.mock_suite import MockSuite
 
 
@@ -29,13 +30,13 @@ class TestContext(TestCase):
         request.session = {}
         request.GET = {}
         context = RequestsView()._create_context(request)
-        self.assertDictContainsSubset({
+        self.assertTrue(dict_contains({
             'show': RequestsView.default_show,
             'order_by': RequestsView.default_order_by,
             'options_show': RequestsView.show,
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
-        }, context)
+        }, context))
         self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertNotIn('path', context)
         self.assertIn('results', context)
@@ -50,14 +51,14 @@ class TestContext(TestCase):
                        'path': path,
                        'order_by': order_by}
         context = RequestsView()._create_context(request)
-        self.assertDictContainsSubset({
+        self.assertTrue(dict_contains({
             'show': show,
             'order_by': order_by,
             'path': path,
             'options_show': RequestsView.show,
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
-        }, context)
+        }, context))
         self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 

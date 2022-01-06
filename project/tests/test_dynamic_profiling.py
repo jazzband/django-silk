@@ -9,6 +9,7 @@ from silk.profiling.dynamic import (
     profile_function_or_method,
 )
 
+from .test_lib.assertion import dict_contains
 from .util import mock_data_collector
 
 
@@ -72,13 +73,13 @@ class TestProfileFunction(TestCase):
                 MyClass().foo()
                 self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
                 call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]
-                self.assertDictContainsSubset({
+                self.assertTrue(dict_contains({
                     'func_name': foo.__name__,
                     'dynamic': True,
                     'file_path': source_file_name(),
                     'name': 'test',
                     'line_num': foo.__code__.co_firstlineno
-                }, call_args)
+                }, call_args))
 
     def test_func_as_str(self):
         name = foo.__name__
@@ -89,10 +90,10 @@ class TestProfileFunction(TestCase):
             foo()
             self.assertEqual(mock_DataCollector.return_value.register_profile.call_count, 1)
             call_args = mock_DataCollector.return_value.register_profile.call_args[0][0]
-            self.assertDictContainsSubset({
+            self.assertTrue(dict_contains({
                 'func_name': name,
                 'dynamic': True,
                 'file_path': source_file_name(),
                 'name': 'test',
                 'line_num': line_num
-            }, call_args)
+            }, call_args))
