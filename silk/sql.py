@@ -2,7 +2,6 @@ import logging
 import traceback
 
 from django.core.exceptions import EmptyResultSet
-from django.db import connection
 from django.utils import timezone
 
 from silk.collector import DataCollector
@@ -29,7 +28,7 @@ def _unpack_explanation(result):
             yield row
 
 
-def _explain_query(q, params):
+def _explain_query(connection, q, params):
     if connection.features.supports_explaining_query_execution:
         if SilkyConfig().SILKY_ANALYZE_QUERIES:
             # Work around some DB engines not supporting analyze option
@@ -91,7 +90,7 @@ def execute_sql(self, *args, **kwargs):
             if request:
                 query_dict['request'] = request
             if self.query.model.__module__ != 'silk.models':
-                query_dict['analysis'] = _explain_query(q, params)
+                query_dict['analysis'] = _explain_query(self.connection, q, params)
                 DataCollector().register_query(query_dict)
             else:
                 DataCollector().register_silk_query(query_dict)

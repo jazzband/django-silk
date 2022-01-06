@@ -10,12 +10,26 @@ from .util import delete_all_models
 
 
 def mock_sql():
-    mock_sql_query = Mock(spec_set=['_execute_sql', 'query', 'as_sql'])
+    mock_sql_query = Mock(spec_set=['_execute_sql', 'query', 'as_sql', 'connection'])
     mock_sql_query._execute_sql = Mock()
     mock_sql_query.query = NonCallableMock(spec_set=['model'])
     mock_sql_query.query.model = Mock()
     query_string = 'SELECT * from table_name'
     mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
+
+    mock_sql_query.connection = NonCallableMock(
+        spec_set=['cursor', 'features', 'ops'],
+        cursor=Mock(
+            spec_set=['__call__'],
+            return_value=NonCallableMagicMock(spec_set=['__enter__', '__exit__', 'execute'])
+        ),
+        features=NonCallableMock(
+            spec_set=['supports_explaining_query_execution'],
+            supports_explaining_query_execution=True
+        ),
+        ops=NonCallableMock(spec_set=['explain_query_prefix']),
+    )
+
     return mock_sql_query, query_string
 
 
@@ -29,8 +43,7 @@ def call_execute_sql(cls, request):
     }
     cls.args = [1, 2]
     cls.kwargs = kwargs
-    with patch('silk.sql.connection'):
-        execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
+    execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
 
 
 class TestCallNoRequest(TestCase):
@@ -86,16 +99,14 @@ class TestCollectorInteraction(TestCase):
     def test_request(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        with patch('silk.sql.connection'):
-            execute_sql(sql)
+        execute_sql(sql)
         query = self._query()
         self.assertEqual(query['request'], DataCollector().request)
 
     def test_registration(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, _ = mock_sql()
-        with patch('silk.sql.connection'):
-            execute_sql(sql)
+        execute_sql(sql)
         query = self._query()
         self.assertIn(query, DataCollector().queries.values())
 
@@ -103,8 +114,7 @@ class TestCollectorInteraction(TestCase):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
         sql, qs = mock_sql()
         prefix = "EXPLAIN"
-        with patch('silk.sql.connection') as m:
-            mock_cursor = m.cursor.return_value.__enter__.return_value
-            m.ops.explain_query_prefix.return_value = prefix
-            execute_sql(sql)
-            mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())
+        mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
+        sql.connection.ops.explain_query_prefix.return_value = prefix
+        execute_sql(sql)
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())
