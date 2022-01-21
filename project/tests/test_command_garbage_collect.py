@@ -16,5 +16,7 @@ class TestViewClearDB(TestCase):
         self.assertEqual(models.Request.objects.count(), 2)
         management.call_command("silk_request_garbage_collect", max_requests=1)
         self.assertEqual(models.Request.objects.count(), 1)
-        management.call_command("silk_request_garbage_collect", max_requests=0)
+        management.call_command(
+            "silk_request_garbage_collect", max_requests=0, verbosity=2
+        )
         self.assertEqual(models.Request.objects.count(), 0)
