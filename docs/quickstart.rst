@@ -32,7 +32,7 @@ Add the following to your ``urls.py``:
 
 Run ``migrate`` to create Silk's database tables:
 
-.. code-block:: python
+.. code-block:: bash
 
     python manage.py migrate
 

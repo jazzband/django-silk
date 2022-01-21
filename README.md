@@ -478,6 +478,12 @@ The garbage collection is only run on a percentage of requests to reduce overhea
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
 ```
 
+In case you want decouple silk's garbage collection from your webserver's request processing, set SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0 and trigger it manually, e.g. in a cron job:
+
+```bash
+python manage.py silk_request_garbage_collect
+```
+
 ### Enable query analysis
 
 To enable query analysis when supported by the dbms a config var can be set in order to execute queries with the analyze features.

@@ -24,3 +24,11 @@ Middleware
 The middleware is placement sensitive. If the middleware before ``silk.middleware.SilkyMiddleware`` returns from ``process_request`` then ``SilkyMiddleware`` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from ``process_request``. See the `django docs <https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request>`_ for more information on this.
 
 This `GitHub issue <https://github.com/jazzband/django-silk/issues/12>`_ also has information on dealing with middleware problems.
+
+Garbage Collection
+------------------
+
+To `avoid <https://github.com/jazzband/django-silk/issues/265>`_ `deadlock <https://github.com/jazzband/django-silk/issues/294>`_ `issues <https://github.com/jazzband/django-silk/issues/371>`_, you might want to decouple silk's garbage collection from your webserver's request processing, set ``SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0`` and trigger it manually, e.g. in a cron job:
+
+.. code-block:: bash
+    python manage.py silk_request_garbage_collect
