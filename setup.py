@@ -36,7 +36,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires=[
-        'Django>=2.2',
+        'Django>=3.2',
         'python-dateutil',
         'requests',
         'sqlparse',
