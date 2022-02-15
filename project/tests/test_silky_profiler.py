@@ -56,7 +56,7 @@ class TestProfilertContextManager(TestCase):
             sleep(0.1)
 
     def test_one_object(self):
-        self.assertTrue(len(DataCollector().profiles), 1)
+        self.assertEqual(len(DataCollector().profiles), 1)
 
     def test_name(self):
         profile = list(DataCollector().profiles.values())[0]
@@ -82,7 +82,7 @@ class TestProfilerDecorator(TestCase):
         func()
 
     def test_one_object(self):
-        self.assertTrue(len(DataCollector().profiles), 1)
+        self.assertEqual(len(DataCollector().profiles), 1)
 
     def test_name(self):
         profile = list(DataCollector().profiles.values())[0]
