@@ -1,6 +1,30 @@
 # Change Log
 ## Unreleased
 
+## [4.3.0](https://github.com/jazzband/django-silk/tree/4.3.0) (2022-03-01)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.2.0...4.3.0)
+
+**Fixes:**
+
+- Use correct db in a multi db setup (https://github.com/jazzband/django-silk/issues/522)
+
+**Dependencies:**
+- Drop support for Python 3.6
+- Add Python 3.10 compatibility
+- Add Django 4.0 to tox.ini
+- Update django version (#544)
+- Django main (#528)
+- Remove unneeded dependency Pygments
+
+**Maintenance and Cleanup:**
+
+- Jazzband: Created local 'CODE_OF_CONDUCT.md' from remote 'CODE_OF_CONDUCT.md'
+- fix installation instructions in README
+- Replace assertDictContainsSubset (#536)
+- Fix issue avoid-misusing-assert-true found at https://codereview.doctor (#550)
+- pre-commit autoupdate
+
 ## [4.2.0](https://github.com/jazzband/django-silk/tree/4.2.0) (2021-23-10)
 :release-by: Asif Saif Uddin (@auvipy)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.1.0...4.2.0)
