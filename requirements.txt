@@ -1,17 +1,11 @@
-autopep8
 contextlib2
 coverage
 factory-boy
 freezegun
-jinja2
 networkx
 pillow
 pydot
 pygments
 pytest-cov
 pytest-django
-python-dateutil
-pytz
-requests
 simplejson
-sqlparse
