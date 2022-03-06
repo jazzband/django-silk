@@ -31,6 +31,7 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
         'SILKY_JSON_ENSURE_ASCII': True,
         'SILKY_ANALYZE_QUERIES': False,
+        'SILKY_EXPLAIN_FLAGS': None,
         'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
     }
 

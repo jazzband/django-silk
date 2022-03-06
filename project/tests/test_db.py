@@ -54,3 +54,16 @@ class TestAnalyzeQueries(TestCase):
 
         DataCollector().profiles.values()
         assert len(resp.context['blinds']) == 5
+
+
+class TestAnalyzeQueriesExplainParams(TestAnalyzeQueries):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        SilkyConfig().SILKY_EXPLAIN_FLAGS = {'verbose': True}
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        SilkyConfig().SILKY_EXPLAIN_FLAGS = None
