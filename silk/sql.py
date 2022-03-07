@@ -38,10 +38,11 @@ def _explain_query(connection, q, params):
                 )
             except ValueError as error:
                 error_str = str(error)
-                if error_str.startswith("Unknown options:") and "analyze" in error_str:
+                if error_str.startswith("Unknown options:"):
                     Logger.warning(
-                        "Database does not support analyzing queries. "
-                        "SILKY_ANALYZE_QUERIES option will be ignored"
+                        "Database does not support analyzing queries with provided params. %s."
+                        "SILKY_ANALYZE_QUERIES option will be ignored",
+                        error_str
                     )
                     prefix = connection.ops.explain_query_prefix()
                 else:
