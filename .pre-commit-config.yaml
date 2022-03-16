@@ -4,7 +4,7 @@ repos:
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v1.1.0
+  rev: v1.2.5
   hooks:
   - id: pycln
     args: ['--all']
@@ -47,10 +47,10 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v2.31.0'
+  rev: 'v2.31.1'
   hooks:
   - id: pyupgrade
-    args: ['--py36-plus', '--keep-mock']
+    args: ['--py37-plus', '--keep-mock']
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: 'v1.6.0'
   hooks:

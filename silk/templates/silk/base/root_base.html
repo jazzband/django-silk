@@ -169,6 +169,7 @@
     }
 
     .button-div {
+        display: inline-block;
         text-align: center;
         height: 50px;
 
@@ -276,8 +277,16 @@
     .filter-section {
         color: white;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 2.3;
         padding: 10px;
+    }
+
+    .filter-section select {
+        margin-bottom: 10px;
+    }
+
+    .filter-section input {
+        padding: 4px;
     }
 
     </style>
@@ -306,7 +315,10 @@
         {% endblock %}
 
         <div class="button-div">
-            <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>
+            <div class="apply-div" onclick="submitEmptyFilters()">Clear all filters</div>
+        </div>
+        <div class="button-div">
+            <div class="apply-div" onclick="submitFilters()">Apply</div>
         </div>
 
     </nav>
@@ -326,6 +338,13 @@
                 $('#cbp-spmenu-s2').toggleClass('cbp-spmenu-open');
                 initFilters();
             });
+        }
+        function submitFilters() {
+            $('#filter-form2').submit();
+        }
+        function submitEmptyFilters() {
+            $('#cbp-spmenu-s2 :input:not([type=hidden])').val('');
+            submitFilters();
         }
     </script>
 

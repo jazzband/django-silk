@@ -30,8 +30,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 2.2, 3.1, 3.2
-* Python: 3.6, 3.7, 3.8, 3.9, 3.10
+* Django: 2.2, 3.2, 4.0
+* Python: 3.7, 3.8, 3.9, 3.10
 
 ## Installation
 
@@ -491,6 +491,13 @@ To enable query analysis when supported by the dbms a config var can be set in o
 ```python
 SILKY_ANALYZE_QUERIES = True
 ```
+
+To pass additional params for profiling when supported by the dbms (e.g. VERBOSE, FORMAT JSON), you can do this in the following manner.
+
+```python
+SILKY_EXPLAIN_FLAGS = {'format':'JSON', 'costs': True}
+```
+
 
 ### Masking sensitive data on request body
 
