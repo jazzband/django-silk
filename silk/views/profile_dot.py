@@ -22,7 +22,7 @@ COLOR_MAP = Theme(
     mincolor=(0.18, 0.51, 0.53),
     maxcolor=(0.03, 0.49, 0.50),
     gamma=1.5,
-    fontname='FiraSans',
+    fontname="FiraSans",
     minfontsize=6.0,
     maxfontsize=6.0,
 )
@@ -65,12 +65,15 @@ def _create_dot(profile, cutoff):
 
 
 class ProfileDotView(View):
-
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request, request_id):
-        silk_request = get_object_or_404(Request, pk=request_id, prof_file__isnull=False)
-        cutoff = float(request.GET.get('cutoff', '') or 5)
+        silk_request = get_object_or_404(
+            Request, pk=request_id, prof_file__isnull=False
+        )
+        cutoff = float(request.GET.get("cutoff", "") or 5)
         profile = _create_profile(silk_request.prof_file)
         result = dict(dot=_create_dot(profile, cutoff))
-        return HttpResponse(json.dumps(result).encode('utf-8'), content_type='application/json')
+        return HttpResponse(
+            json.dumps(result).encode("utf-8"), content_type="application/json"
+        )

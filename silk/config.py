@@ -11,36 +11,48 @@ def default_permissions(user):
 
 class SilkyConfig(metaclass=Singleton):
     defaults = {
-        'SILKY_DYNAMIC_PROFILING': [],
-        'SILKY_IGNORE_PATHS': [],
-        'SILKY_HIDE_COOKIES': True,
-        'SILKY_IGNORE_QUERIES': [],
-        'SILKY_META': False,
-        'SILKY_AUTHENTICATION': False,
-        'SILKY_AUTHORISATION': False,
-        'SILKY_PERMISSIONS': default_permissions,
-        'SILKY_MAX_RECORDED_REQUESTS': 10**4,
-        'SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT': 10,
-        'SILKY_MAX_REQUEST_BODY_SIZE': -1,
-        'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
-        'SILKY_INTERCEPT_PERCENT': 100,
-        'SILKY_INTERCEPT_FUNC': None,
-        'SILKY_PYTHON_PROFILER': False,
-        'SILKY_PYTHON_PROFILER_FUNC': None,
-        'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
-        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
-        'SILKY_JSON_ENSURE_ASCII': True,
-        'SILKY_ANALYZE_QUERIES': False,
-        'SILKY_EXPLAIN_FLAGS': None,
-        'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+        "SILKY_DYNAMIC_PROFILING": [],
+        "SILKY_IGNORE_PATHS": [],
+        "SILKY_HIDE_COOKIES": True,
+        "SILKY_IGNORE_QUERIES": [],
+        "SILKY_META": False,
+        "SILKY_AUTHENTICATION": False,
+        "SILKY_AUTHORISATION": False,
+        "SILKY_PERMISSIONS": default_permissions,
+        "SILKY_MAX_RECORDED_REQUESTS": 10 ** 4,
+        "SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT": 10,
+        "SILKY_MAX_REQUEST_BODY_SIZE": -1,
+        "SILKY_MAX_RESPONSE_BODY_SIZE": -1,
+        "SILKY_INTERCEPT_PERCENT": 100,
+        "SILKY_INTERCEPT_FUNC": None,
+        "SILKY_PYTHON_PROFILER": False,
+        "SILKY_PYTHON_PROFILER_FUNC": None,
+        "SILKY_STORAGE_CLASS": "silk.storage.ProfilerResultStorage",
+        "SILKY_MIDDLEWARE_CLASS": "silk.middleware.SilkyMiddleware",
+        "SILKY_JSON_ENSURE_ASCII": True,
+        "SILKY_ANALYZE_QUERIES": False,
+        "SILKY_EXPLAIN_FLAGS": None,
+        "SILKY_SENSITIVE_KEYS": {
+            "username",
+            "api",
+            "token",
+            "key",
+            "secret",
+            "password",
+            "signature",
+        },
     }
 
     def _setup(self):
         from django.conf import settings
 
-        options = {option: getattr(settings, option) for option in dir(settings) if option.startswith('SILKY')}
+        options = {
+            option: getattr(settings, option)
+            for option in dir(settings)
+            if option.startswith("SILKY")
+        }
         self.attrs = copy(self.defaults)
-        self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
+        self.attrs["SILKY_PYTHON_PROFILER_RESULT_PATH"] = settings.MEDIA_ROOT
         self.attrs.update(options)
 
     def __init__(self):
