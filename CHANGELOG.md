@@ -1,6 +1,36 @@
 # Change Log
 ## Unreleased
 
+## [4.4.0](https://github.com/jazzband/django-silk/tree/4.4.0) (2022-06-20)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.3.0...4.4.0)
+
+**Features/Enhancements:**
+
+- Switch 'Apply' and 'Clear all filters' ordering
+- Make filters on Requests tab more visible
+- Add small margin for filter selects
+- Add 'Clear all filters' button
+- Add message when there are no requests to display
+- Making the error logging more accurate and explicit
+- Fixing #530 - Adding support for SILKY_EXPLAIN_FLAGS
+
+**Maintenance and Cleanup:**
+
+- Remove unused js compilation pipeline (#561)
+- Fix pre-commit-config
+
+**Dependencies:**
+
+- Update jquery to 3.6.0 and jquery-ui to 1.13.1 [#508]
+- [pre-commit.ci] pre-commit autoupdate (#560, #571)
+- Add django-upgrade to pre-commit hooks (#566)
+
+**Moved to 5.0.0**
+
+- Drop support for Django 2.2 (EOL) (#567)
+
+
 ## [4.3.0](https://github.com/jazzband/django-silk/tree/4.3.0) (2022-03-01)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.2.0...4.3.0)
@@ -10,6 +40,7 @@
 - Use correct db in a multi db setup (https://github.com/jazzband/django-silk/issues/522)
 
 **Dependencies:**
+
 - Drop support for Python 3.6
 - Add Python 3.10 compatibility
 - Add Django 4.0 to tox.ini
