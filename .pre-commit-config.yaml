@@ -55,7 +55,7 @@ repos:
   rev: '1.7.0'
   hooks:
   - id: django-upgrade
-    args: [--target-version, '3.2']
+    args: [--target-version, '2.2']
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: 'v1.6.0'
   hooks:
