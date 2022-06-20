@@ -1,6 +1,16 @@
 # Change Log
 ## Unreleased
 
+## [5.0.0](https://github.com/jazzband/django-silk/tree/5.0.0) (2022-06-20)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.4.0...5.0.0)
+
+**Features/Enhancements:**
+
+- Drop support for Django 2.2 (EOL) (#567)
+- Added silk_request_garbage_collect command for out-of-band garbage collection. (#541)
+
+
 ## [4.4.0](https://github.com/jazzband/django-silk/tree/4.4.0) (2022-06-20)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.3.0...4.4.0)
