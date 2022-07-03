@@ -1,6 +1,15 @@
 # Change Log
 ## Unreleased
 
+## [4.4.1](https://github.com/jazzband/django-silk/tree/4.4.1) (2022-07-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.4.0...4.4.1)
+
+**Fixes:**
+
+ - Add jquery UI 1.13.1 images and fix collectstatic (#576)
+
+
 ## [4.4.0](https://github.com/jazzband/django-silk/tree/4.4.0) (2022-06-20)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/4.3.0...4.4.0)
