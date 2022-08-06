@@ -43,7 +43,7 @@ Features
 
 - SQL query inspection
 
-- Profiling of arbritary code blocks via a Python context manager and decorator
+- Profiling of arbitrary code blocks via a Python context manager and decorator
 
   - Execution Time
 
