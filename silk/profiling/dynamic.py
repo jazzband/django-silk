@@ -128,7 +128,7 @@ def _new_func_from_source(source, func):
     calling_frame = frames[2][0]
 
     context = {}
-    # My initial instict was: exec src_str in func.func_globals.items(), calling_frame.f_locals
+    # My initial instinct was: exec src_str in func.func_globals.items(), calling_frame.f_locals
     # however this seems to break the function closure so caveat here is that we create a new
     # function with the locals merged into the globals.
     #
