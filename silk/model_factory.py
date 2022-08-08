@@ -330,7 +330,7 @@ class ResponseModelFactory:
                 header, val = k, v
             finally:
                 headers[header] = val
-        silky_response = models.Response.objects.create(
+        silky_response = models.Response(
             request_id=self.request.id,
             status_code=self.response.status_code,
             encoded_headers=json.dumps(headers, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII),
@@ -342,4 +342,5 @@ class ResponseModelFactory:
         except TypeError:
             raw_body = base64.b64encode(content.encode('utf-8'))
         silky_response.raw_body = raw_body.decode('ascii')
+        silky_response.save()
         return silky_response

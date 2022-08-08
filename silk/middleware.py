@@ -128,8 +128,7 @@ class SilkyMiddleware:
             collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
-                silk_response = ResponseModelFactory(response).construct_response_model()
-                silk_response.save()
+                ResponseModelFactory(response).construct_response_model()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
             else:
