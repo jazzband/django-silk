@@ -20,7 +20,8 @@ content_types_json = ['application/json',
                       'text/javascript',
                       'text/x-javascript',
                       'text/x-json']
-content_type_form = ['multipart/form-data',
+multipart_form = 'multipart/form-data'
+content_type_form = [multipart_form,
                      'application/x-www-form-urlencoded']
 content_type_html = ['text/html']
 content_type_css = ['text/css']
@@ -162,6 +163,10 @@ class RequestModelFactory:
 
     def body(self):
         content_type, char_set = self.content_type()
+        if content_type == multipart_form:
+            raw_body = b"Raw body not available for multipart_form data, Silk is not showing file uploads."
+            body = ''
+            return body, raw_body
         try:
             raw_body = self.request.body
         except RequestDataTooBig:
