@@ -1,5 +1,6 @@
 import cProfile
 import logging
+import marshal
 import pstats
 from io import StringIO
 from threading import local
@@ -144,8 +145,8 @@ class DataCollector(metaclass=Singleton):
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
                 file_name = self.request.prof_file.storage.get_available_name(f"{str(self.request.id)}.prof")
-                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
-                    ps.dump_stats(f.name)
+                with self.request.prof_file.storage.open(file_name, 'w+b') as f:
+                    marshal.dump(ps.stats, f)
                 self.request.prof_file = f.name
                 self.request.save()
 
