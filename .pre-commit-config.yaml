@@ -52,12 +52,12 @@ repos:
   - id: pyupgrade
     args: ['--py37-plus', '--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.7.0'
+  rev: '1.9.0'
   hooks:
   - id: django-upgrade
     args: [--target-version, '3.2']
 - repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: 'v1.6.0'
+  rev: 'v1.7.0'
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
