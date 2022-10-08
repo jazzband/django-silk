@@ -127,7 +127,6 @@ class DataCollector(metaclass=Singleton):
             query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
             self.request.meta_num_queries = num_queries
             self.request.meta_time_spent_queries = query_time
-            self.request.save()
 
     def stop_python_profiler(self):
         if getattr(self.local, 'pythonprofiler', None):
@@ -148,7 +147,6 @@ class DataCollector(metaclass=Singleton):
                 with self.request.prof_file.storage.open(file_name, 'w+b') as f:
                     marshal.dump(ps.stats, f)
                 self.request.prof_file = f.name
-                self.request.save()
 
         sql_queries = []
         for identifier, query in self.queries.items():
