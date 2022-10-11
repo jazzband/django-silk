@@ -1,5 +1,5 @@
-import cProfile
 import contextlib
+import cProfile
 import io
 import re
 
