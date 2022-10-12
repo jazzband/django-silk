@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from itertools import groupby
 from math import floor
 
-import pytz
 from django.test import TestCase
 from django.utils import timezone
 
@@ -148,7 +147,7 @@ class TestRequestAfterDateFilter(TestCase):
         date_filter = AfterDateFilter
         f = date_filter(dt_str)
         new_dt = datetime.strptime(dt_str, fmt)
-        new_dt = timezone.make_aware(new_dt, pytz.UTC)
+        new_dt = timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
 
 
@@ -177,7 +176,7 @@ class TestRequestBeforeDateFilter(TestCase):
         date_filter = BeforeDateFilter
         f = date_filter(dt_str)
         new_dt = datetime.strptime(dt_str, fmt)
-        new_dt = timezone.make_aware(new_dt, pytz.UTC)
+        new_dt = timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
 
 
