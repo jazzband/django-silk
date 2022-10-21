@@ -82,6 +82,7 @@ def execute_sql(self, *args, **kwargs):
     if _should_wrap(sql_query):
         query_dict = {
             'query': sql_query,
+            'query_structure': q,
             'start_time': timezone.now(),
             'traceback': tb
         }
