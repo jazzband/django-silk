@@ -75,6 +75,7 @@ class Request(models.Model):
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
+    num_duplicated_queries = IntegerField(null=True, blank=True)
     pyprofile = TextField(blank=True, default='')
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
 

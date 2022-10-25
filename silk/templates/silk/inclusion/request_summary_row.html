@@ -8,8 +8,15 @@
     </div>
     <div class="col time-taken-queries-div spacing">
         <span class="col numeric">{{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="unit">ms</span></span>
-        <span class="col appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></div>
+        <span class="col appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></span>
+    </div>
     <div class="col num-queries-div spacing">
         <span class="col numeric">{{ silk_request.num_sql_queries }}</span>
-        <span class="col appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span></span>
+        <span class="col appendage">queries{% if silk_request.meta_num_queries %}<span class="meta"> +{{ silk_request.meta_num_queries }}</span>{% endif %}</span>
     </div>
+    {% if silk_request.num_duplicated_queries %}
+    <div class="col num-duplicated-queries-div spacing">
+        <span class="col numeric">{{ silk_request.num_duplicated_queries }}</span>
+        <span class="col appendage">duplicated queries</span>
+    </div>
+    {% endif %}

@@ -2,6 +2,7 @@ import cProfile
 import logging
 import marshal
 import pstats
+from collections import defaultdict
 from io import StringIO
 from threading import local
 
@@ -149,10 +150,13 @@ class DataCollector(metaclass=Singleton):
                 self.request.prof_file = f.name
 
         sql_queries = []
+        duplicate_queries = defaultdict(lambda: -1)
         for identifier, query in self.queries.items():
             query['identifier'] = identifier
             sql_query = models.SQLQuery(**query)
             sql_queries += [sql_query]
+            duplicate_queries[sql_query.query_structure] += 1
+        self.request.num_duplicated_queries = sum(duplicate_queries.values())
 
         models.SQLQuery.objects.bulk_create(sql_queries)
         sql_queries = models.SQLQuery.objects.filter(request=self.request)
