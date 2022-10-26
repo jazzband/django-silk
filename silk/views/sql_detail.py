@@ -1,3 +1,4 @@
+import os
 import re
 
 from django.core.exceptions import PermissionDenied
@@ -24,10 +25,12 @@ class SQLDetailView(View):
             num = group['num']
             start = m.start('src')
             end = m.end('src')
-            rep = '<a name={name} href="?pos={pos}&file_path={src}&line_num={num}#{name}">{src}</a>'.format(pos=n,
-                                                                                                            src=src,
-                                                                                                            num=num,
-                                                                                                            name='c%d' % n)
+            rep = '<a name={name} href="?pos={pos}&file_path={src}&line_num={num}#{name}">{src}</a>'.format(
+                pos=n,
+                src=src,
+                num=num,
+                name='c%d' % n,
+            )
             str = str[:start] + rep + str[end:]
             m = r.search(str)
             n += 1
@@ -55,7 +58,8 @@ class SQLDetailView(View):
             'pos': pos,
             'line_num': line_num,
             'file_path': file_path,
-            'analysis': analysis
+            'analysis': analysis,
+            'virtualenv_path': os.environ.get('VIRTUAL_ENV'),
         }
         if request_id:
             context['silk_request'] = Request.objects.get(pk=request_id)

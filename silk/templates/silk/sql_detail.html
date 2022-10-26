@@ -26,6 +26,10 @@
             margin-bottom: 15px !important;
         }
 
+        #traceback .not-third-party {
+            font-weight: bold;
+        }
+
 
         a:hover {
             color: #9dd0ff;
@@ -140,7 +144,7 @@
             </div>
             {% for ln in traceback %}
                 {% if ln %}
-                    <div class="file-path">
+                    <div class="file-path {% if virtualenv_path not in ln %}not-{% endif %}third-party">
                         {{ ln }}
                     </div>
                     {% if forloop.counter == pos %}
