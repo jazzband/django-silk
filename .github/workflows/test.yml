@@ -17,15 +17,22 @@ jobs:
           # only test Django dev with PostgreSQL 12 and MariaDB 10.4
           - django-version: '3.2'
             postgres-version: '12'
+          - django-version: '3.2'
             mariadb-version: '10.4'
+          
           - django-version: '4.0'
             postgres-version: '12'
+          - django-version: '4.0'
             mariadb-version: '10.4'
+
           - django-version: '4.1'
             postgres-version: '12'
+          - django-version: '4.1'
             mariadb-version: '10.4'
+
           - django-version: 'main'
             postgres-version: '11'
+          - django-version: 'main'
             mariadb-version: '10.3'
 
     services:
