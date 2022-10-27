@@ -307,12 +307,11 @@
     <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
         <h3>Filters</h3>
 
-        <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
-
-
-        {% block filters %}
-
-        {% endblock %}
+        <form id="filter-form2" action="" method="post">
+            {% csrf_token %}
+            {% block filters %}{% endblock %}
+            <input type="submit" style="display: none">
+        </form>
 
         <div class="button-div">
             <div class="apply-div" onclick="submitEmptyFilters()">Clear all filters</div>

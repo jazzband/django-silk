@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 from django.test import TestCase
 
+from silk.middleware import silky_reverse
 from silk.views.requests import RequestsView
 
 from .test_lib.assertion import dict_contains
@@ -42,15 +43,15 @@ class TestContext(TestCase):
         self.assertIn('results', context)
 
     def test_get(self):
-        request = Mock(spec_set=['GET', 'session'])
-        request.session = {}
         show = 10
         path = '/path/to/somewhere/'
         order_by = 'path'
-        request.GET = {'show': show,
-                       'path': path,
-                       'order_by': order_by}
-        context = RequestsView()._create_context(request)
+        response = self.client.get(silky_reverse('requests'), {
+            'show': show,
+            'path': path,
+            'order_by': order_by,
+        })
+        context = response.context
         self.assertTrue(dict_contains({
             'show': show,
             'order_by': order_by,
