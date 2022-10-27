@@ -20,6 +20,8 @@ jobs:
             postgres-version: '12'
           - django-version: '4.1'
             postgres-version: '12'
+          - django-version: 'main'
+            postgres-version: '11'
 
     services:
       postgres:
