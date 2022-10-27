@@ -63,6 +63,20 @@ class TestContext(TestCase):
         self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
+    def test_post(self):
+        response = self.client.post(silky_reverse('requests'), {
+            'filter-overalltime-value': 100,
+            'filter-overalltime-typ': 'TimeSpentOnQueriesFilter',
+        })
+        context = response.context
+        self.assertTrue(dict_contains({
+            'filters': {
+                'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
+            },
+        }, context))
+        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertIn('results', context)
+
 
 class TestGetObjects(TestCase):
     def assertSorted(self, objects, sort_field):
