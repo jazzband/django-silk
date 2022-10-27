@@ -11,9 +11,14 @@ jobs:
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10']
         django-version: ['3.2', '4.0', '4.1', 'main']
-        postgres-version: ['11']
-        include:
-          - django-version: 'main'
+        postgres-version: ['11', '12']
+        exclude:
+          # only test Django dev with PostgreSQL 12
+          - django-version: '3.2'
+            postgres-version: '12'
+          - django-version: '4.0'
+            postgres-version: '12'
+          - django-version: '4.1'
             postgres-version: '12'
 
     services:
