@@ -12,9 +12,9 @@ jobs:
         python-version: ['3.7', '3.8', '3.9', '3.10']
         django-version: ['3.2', '4.0', '4.1', 'main']
         postgres-version: ['11']
-      include:
-        django-version: ['main']
-        postgres-version: ['12']
+        include:
+          django-version: ['main']
+          postgres-version: ['12']
 
     services:
       postgres:
