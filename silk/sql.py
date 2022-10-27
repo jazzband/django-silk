@@ -3,6 +3,7 @@ import traceback
 
 from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
+from django.utils.encoding import force_str
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
@@ -77,7 +78,7 @@ def execute_sql(self, *args, **kwargs):
         else:
             return
     tb = ''.join(reversed(traceback.format_stack()))
-    sql_query = q % params
+    sql_query = q % tuple(force_str(param) for param in params)
     if _should_wrap(sql_query):
         query_dict = {
             'query': sql_query,
