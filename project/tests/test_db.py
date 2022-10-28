@@ -21,14 +21,19 @@ class TestDbQueries(TestCase):
         SilkyConfig().SILKY_META = False
 
     def test_profile_request_to_db(self):
-        client = Client()
         DataCollector().configure(Request(reverse('example_app:index')))
 
         with silk_profile(name='test_profile'):
-            resp = client.get(reverse('example_app:index'))
+            resp = self.client.get(reverse('example_app:index'))
 
         DataCollector().profiles.values()
         assert len(resp.context['blinds']) == 5
+
+    def test_profile_request_to_db_with_constraints(self):
+        DataCollector().configure(Request(reverse('example_app:create')))
+
+        resp = self.client.post(reverse('example_app:create'), {'name': 'Foo'})
+        self.assertEqual(resp.status_code, 302)
 
 
 class TestAnalyzeQueries(TestCase):

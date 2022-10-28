@@ -17,3 +17,12 @@ class Blind(Product):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                condition=~models.Q(name=""),
+                name="unique_name_if_provided",
+            ),
+        ]
