@@ -11,10 +11,33 @@ jobs:
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         django-version: ['3.2', '4.0', '4.1', 'main']
+        postgres-version: ['11', '12']
+        mariadb-version: ['10.3', '10.4']
+        exclude:
+          # only test Django dev with PostgreSQL 12 and MariaDB 10.4
+          - django-version: '3.2'
+            postgres-version: '12'
+          - django-version: '3.2'
+            mariadb-version: '10.4'
+          
+          - django-version: '4.0'
+            postgres-version: '12'
+          - django-version: '4.0'
+            mariadb-version: '10.4'
+
+          - django-version: '4.1'
+            postgres-version: '12'
+          - django-version: '4.1'
+            mariadb-version: '10.4'
+
+          - django-version: 'main'
+            postgres-version: '11'
+          - django-version: 'main'
+            mariadb-version: '10.3'
 
     services:
       postgres:
-        image: postgres:11
+        image: postgres:${{ matrix.postgres-version }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -28,7 +51,7 @@ jobs:
           --health-retries 5
 
       mariadb:
-        image: mariadb:10.3
+        image: mariadb:${{ matrix.mariadb-version }}
         env:
           MYSQL_ROOT_PASSWORD: mysql
           MYSQL_DATABASE: mysql
