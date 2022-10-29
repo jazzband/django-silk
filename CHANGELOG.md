@@ -1,6 +1,22 @@
 # Change Log
 ## Unreleased
 
+## [5.0.2](https://github.com/jazzband/django-silk/tree/5.0.2) (2022-10-12)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.1...5.0.2)
+
+**Fixes:**
+
+ - Multipart forms and RawPostDataException (#592)
+ - Decrease unnecessary database hits (#587) (#588)
+
+**Features/Enhancements:**
+
+ - Remove unneeded pytz package (#603)
+ - Use contextlib in test_profile_parser (#590)
+ - Add support for storages, that don't implement full filesystem path (#596)
+
+
 ## [5.0.1](https://github.com/jazzband/django-silk/tree/5.0.1) (2022-07-03)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.0...5.0.1)
