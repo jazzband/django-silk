@@ -1,0 +1,11 @@
+<html>
+<body>
+<h1>Example App</h1>
+<p>Use this app for testing and playing around with Silk. Displays a Blind creation form.</p>
+<form method="post" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+</body>
+</html>
