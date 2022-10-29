@@ -267,6 +267,16 @@ class SQLQuery(models.Model):
         return count
 
     @property
+    def first_keywords(self):
+        parsed_query = sqlparse.parse(self.query)
+        keywords = []
+        for statement in parsed_query[0].tokens:
+            if not statement.is_keyword:
+                break
+            keywords.append(statement.value)
+        return ' '.join(keywords)
+
+    @property
     def tables_involved(self):
         """
         A really another rudimentary way to work out tables involved in a

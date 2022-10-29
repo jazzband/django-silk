@@ -105,6 +105,7 @@
             <table class="sortable">
                 <tr>
                     <th class="left-aligned">At</th>
+                    <th class="left-aligned">Action</th>
                     <th class="left-aligned">Tables</th>
                     <th class="right-aligned">Num. Joins</th>
                     <th class="right-aligned">Execution Time (ms)</th>
@@ -121,6 +122,7 @@
                        {% endif %}\
                         ';">
                         <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
+                        <td class="left-aligned">{{ sql_query.first_keywords }}</td>
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                         <td class="right-aligned">{{ sql_query.num_joins }}</td>
                         <td class="right-aligned">{{ sql_query.time_taken | floatformat:6 }}</td>
