@@ -144,7 +144,7 @@
             </div>
             {% for ln in traceback %}
                 {% if ln %}
-                    <div class="file-path {% if virtualenv_path not in ln %}not-{% endif %}third-party">
+                    <div class="file-path {% if virtualenv_path not in ln %}not-{% else %}is-{% endif %}third-party">
                         {{ ln }}
                     </div>
                     {% if forloop.counter == pos %}

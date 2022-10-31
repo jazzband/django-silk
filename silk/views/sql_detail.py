@@ -59,7 +59,7 @@ class SQLDetailView(View):
             'line_num': line_num,
             'file_path': file_path,
             'analysis': analysis,
-            'virtualenv_path': os.environ.get('VIRTUAL_ENV'),
+            'virtualenv_path': os.environ.get('VIRTUAL_ENV') or '',
         }
         if request_id:
             context['silk_request'] = Request.objects.get(pk=request_id)
