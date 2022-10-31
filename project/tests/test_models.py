@@ -8,8 +8,8 @@ from freezegun import freeze_time
 from silk import models
 from silk.config import SilkyConfig
 from silk.storage import ProfilerResultStorage
-from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
+from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
 # TODO test atomicity
 
