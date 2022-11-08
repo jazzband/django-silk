@@ -1,6 +1,6 @@
 coverage==6.5.0
 factory-boy==3.2.1
-freezegun==1.1.0
+freezegun==1.2.2
 networkx==2.6
 pillow==9.3.0
 pydot==1.4.2
