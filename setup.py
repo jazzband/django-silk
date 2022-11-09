@@ -40,7 +40,6 @@ setup(
         'python-dateutil',
         'requests',
         'sqlparse',
-        'Jinja2',
         'autopep8',
         'gprof2dot>=2017.09.19',
     ],
