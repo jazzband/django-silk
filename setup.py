@@ -37,8 +37,6 @@ setup(
     ],
     install_requires=[
         'Django>=3.2',
-        'python-dateutil',
-        'requests',
         'sqlparse',
         'Jinja2',
         'autopep8',
