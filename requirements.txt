@@ -2,9 +2,7 @@ coverage==6.5.0
 factory-boy==3.2.1
 freezegun==1.2.2
 networkx==2.6
-pillow==9.3.0
 pydot==1.4.2
 pygments==2.13.0
 pytest-cov==4.0.0
 pytest-django==4.5.2
-simplejson==3.17.6
