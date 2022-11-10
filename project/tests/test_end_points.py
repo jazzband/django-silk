@@ -36,13 +36,23 @@ class TestEndPoints(TestCase):
         response = self.client.get(silky_reverse('requests'))
         self.assertTrue(response.status_code == 200)
 
-    def test_request_detail(self):
-        request_query_data = random.choice(models.Request.objects.values('id'))
-        request_id = request_query_data['id']
+    def test_request_detail_on_get_request(self):
+        request_id = random.choice(
+            models.Request.objects.filter(method='GET').values_list('id', flat=True),
+        )
         response = self.client.get(silky_reverse('request_detail', kwargs={
             'request_id': request_id
         }))
-        self.assertTrue(response.status_code == 200)
+        self.assertEqual(response.status_code, 200)
+
+    def test_request_detail_on_post_request(self):
+        request_id = random.choice(
+            models.Request.objects.filter(method='POST').values_list('id', flat=True),
+        )
+        response = self.client.get(silky_reverse('request_detail', kwargs={
+            'request_id': request_id
+        }))
+        self.assertEqual(response.status_code, 200)
 
     def test_request_sql(self):
         request_query_data = random.choice(
