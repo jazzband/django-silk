@@ -4,6 +4,7 @@ import time
 import traceback
 from functools import wraps
 
+from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
 
@@ -122,12 +123,11 @@ class silk_profile:
                 self._finalise_queries()
 
     def _silk_installed(self):
-        app_installed = 'silk' in settings.INSTALLED_APPS
         middlewares = getattr(settings, 'MIDDLEWARE', [])
         if not middlewares:
             middlewares = []
         middleware_installed = SilkyConfig().SILKY_MIDDLEWARE_CLASS in middlewares
-        return app_installed and middleware_installed
+        return apps.is_installed('silk') and middleware_installed
 
     def _should_profile(self):
         return DataCollector().request is not None
