@@ -1,18 +1,17 @@
-import calendar
-from datetime import timedelta
 import json
 import os
 import random
 import traceback
+from datetime import timedelta
 
 from django.core import management
 from django.utils import timezone
 
 from silk import models
-from silk.models import SQLQuery, Profile
+from silk.models import Profile, SQLQuery
 
 
-class MockSuite(object):
+class MockSuite:
     """
     Provides some fake data to play around with. Also useful for testing
     """
@@ -116,7 +115,7 @@ class MockSuite(object):
                                          dynamic=dynamic,
                                          end_line_num=6 if dynamic else None,
                                          exception_raised=random.choice([True, False])
-        )
+                                         )
         self.mock_sql_queries(profile=profile, n=random.randint(0, 10))
         return profile
 
@@ -164,4 +163,3 @@ class MockSuite(object):
 if __name__ == '__main__':
     management.call_command('flush', interactive=False)
     requests = [MockSuite().mock_request() for _ in range(0, 100)]
-

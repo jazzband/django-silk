@@ -1,14 +1,13 @@
-from threading import local
-
 import cProfile
-import pstats
 import logging
-
+import marshal
+import pstats
 from io import StringIO
+from threading import local
 
 from silk import models
 from silk.config import SilkyConfig
-from silk.errors import SilkNotConfigured, SilkInternalInconsistency
+from silk.errors import SilkInternalInconsistency, SilkNotConfigured
 from silk.models import _time_taken
 from silk.singleton import Singleton
 
@@ -34,7 +33,7 @@ class DataCollector(metaclass=Singleton):
     """
 
     def __init__(self):
-        super(DataCollector, self).__init__()
+        super().__init__()
         self.local = local()
         self._configure()
 
@@ -86,13 +85,10 @@ class DataCollector(metaclass=Singleton):
     def profiles(self):
         return self._get_objects(TYP_PROFILES)
 
-    def configure(self, request=None):
-        silky_config = SilkyConfig()
-
+    def configure(self, request=None, should_profile=True):
         self.request = request
         self._configure()
-
-        if silky_config.SILKY_PYTHON_PROFILER:
+        if should_profile:
             self.local.pythonprofiler = cProfile.Profile()
             self.local.pythonprofiler.enable()
 
@@ -131,7 +127,6 @@ class DataCollector(metaclass=Singleton):
             query_time = sum(_time_taken(x['start_time'], x['end_time']) for _, x in self.silk_queries.items())
             self.request.meta_num_queries = num_queries
             self.request.meta_time_spent_queries = query_time
-            self.request.save()
 
     def stop_python_profiler(self):
         if getattr(self.local, 'pythonprofiler', None):
@@ -148,11 +143,10 @@ class DataCollector(metaclass=Singleton):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name("{}.prof".format(str(self.request.id)))
-                with open(self.request.prof_file.storage.path(file_name), 'w+b') as f:
-                    ps.dump_stats(f.name)
+                file_name = self.request.prof_file.storage.get_available_name(f"{str(self.request.id)}.prof")
+                with self.request.prof_file.storage.open(file_name, 'w+b') as f:
+                    marshal.dump(ps.stats, f)
                 self.request.prof_file = f.name
-                self.request.save()
 
         sql_queries = []
         for identifier, query in self.queries.items():

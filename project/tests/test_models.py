@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 import datetime
 import uuid
-import pytz
 
-from django.test import TestCase
+from django.core.management import call_command
+from django.test import TestCase, override_settings
 from django.utils import timezone
-
-
 from freezegun import freeze_time
 
 from silk import models
-from silk.storage import ProfilerResultStorage
 from silk.config import SilkyConfig
-from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
+from silk.storage import ProfilerResultStorage
 
+from .factories import RequestMinFactory, ResponseFactory, SQLQueryFactory
 
 # TODO test atomicity
 
@@ -21,7 +18,9 @@ from .factories import RequestMinFactory, SQLQueryFactory, ResponseFactory
 # UUID_MAX_LENGTH = 36
 
 # TODO move to separate file test and collection it self
-class CaseInsensitiveDictionaryTest(object):
+
+
+class CaseInsensitiveDictionaryTest:
     pass
 
 
@@ -46,7 +45,7 @@ class RequestTest(TestCase):
     def test_start_time_field_default(self):
 
         obj = RequestMinFactory.create()
-        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=pytz.UTC))
+        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc))
 
     def test_total_meta_time_if_have_no_meta_and_queries_time(self):
 
@@ -86,14 +85,6 @@ class RequestTest(TestCase):
 
         query1 = SQLQueryFactory(time_taken=3.5)
         query2 = SQLQueryFactory(time_taken=1.5)
-        self.obj.queries.add(query1, query2)
-
-        self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
-
-    def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
-
-        query1 = SQLQueryFactory(time_taken=3.5)
-        query2 = SQLQueryFactory(time_taken=1.5)
         RequestMinFactory().queries.add(query1, query2)
 
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
@@ -107,7 +98,7 @@ class RequestTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 
@@ -156,7 +147,7 @@ class RequestTest(TestCase):
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 3
         models.Request.garbage_collect(force=True)
-        self.assertEqual(models.Request.objects.count(), 1)
+        self.assertGreater(models.Request.objects.count(), 0)
 
     def test_save_if_have_no_raw_body(self):
 
@@ -169,7 +160,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', raw_body='some text')
         obj.save()
-        self.assertEqual(obj.raw_body, u'some text')
+        self.assertEqual(obj.raw_body, 'some text')
 
     def test_save_if_have_no_body(self):
 
@@ -182,7 +173,7 @@ class RequestTest(TestCase):
 
         obj = models.Request(path='/some/path/', method='get', body='some text')
         obj.save()
-        self.assertEqual(obj.body, u'some text')
+        self.assertEqual(obj.body, 'some text')
 
     def test_save_if_have_no_end_time(self):
 
@@ -194,7 +185,7 @@ class RequestTest(TestCase):
     @freeze_time('2016-01-01 12:00:00')
     def test_save_if_have_end_time(self):
 
-        date = datetime.datetime(2016, 1, 1, 12, 0, 3, tzinfo=pytz.UTC)
+        date = datetime.datetime(2016, 1, 1, 12, 0, 3, tzinfo=timezone.utc)
         obj = models.Request(path='/some/path/', method='get', end_time=date)
         obj.save()
         self.assertEqual(obj.end_time, date)
@@ -231,7 +222,7 @@ class ResponseTest(TestCase):
 
         self.obj.encoded_headers = '{"some-header": "some_data"}'
         self.assertIsInstance(self.obj.headers, models.CaseInsensitiveDictionary)
-        self.assertDictEqual(self.obj.headers, {u'some-header': u'some_data'})
+        self.assertDictEqual(self.obj.headers, {'some-header': 'some_data'})
 
     def test_content_type_if_no_headers(self):
 
@@ -252,12 +243,16 @@ class SQLQueryManagerTest(TestCase):
 
     def test_if_no_args_passed(self):
         pass
+
     def test_if_one_arg_passed(self):
         pass
+
     def if_a_few_args_passed(self):
         pass
+
     def if_objs_kw_arg_passed(self):
         pass
+
     def if_not_the_objs_kw_arg_passed(self):
         pass
 
@@ -267,14 +262,14 @@ class SQLQueryTest(TestCase):
     def setUp(self):
 
         self.obj = SQLQueryFactory.create()
-        self.end_time = datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=pytz.UTC)
-        self.start_time = datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=pytz.UTC)
+        self.end_time = datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=timezone.utc)
+        self.start_time = datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
     @freeze_time('2016-01-01 12:00:00')
     def test_start_time_field_default(self):
 
         obj = SQLQueryFactory.create()
-        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=pytz.UTC))
+        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc))
 
     def test_is_m2o_related_to_request(self):
 
@@ -347,13 +342,22 @@ class SQLQueryTest(TestCase):
         self.obj.query = query
         self.assertEqual(self.obj.num_joins, 4)
 
-    # FIXME bug, not a feature
     def test_num_joins_if_no_joins_in_query_but_this_word_searched(self):
 
         query = """SELECT Book.title FROM  Book WHERE Book.title=`Join the dark side, Luke!`;"""
 
         self.obj.query = query
-        self.assertEqual(self.obj.num_joins, 1)
+        self.assertEqual(self.obj.num_joins, 0)
+
+    def test_num_joins_if_multiple_statement_in_query(self):
+        query = """SELECT Book.title FROM  Book WHERE Book.title=`Join the dark side, Luke!`;
+                   SELECT Book.joiner FROM Book
+                    LEFT OUTER JOIN joined ON Book.joiner = joined.joiner
+                    INNER JOIN joined ON Book.joiner = joined.joiner
+                   WHERE Book.joiner='Join i am'"""
+
+        self.obj.query = query
+        self.assertEqual(self.obj.num_joins, 2)
 
     def test_tables_involved_if_no_query(self):
 
@@ -428,7 +432,7 @@ class SQLQueryTest(TestCase):
     @freeze_time('2016-01-01 12:00:00')
     def test_save_if_has_end_time(self):
 
-        # datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=pytz.UTC)
+        # datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=timezone.utc)
         obj = SQLQueryFactory.create(end_time=self.end_time)
 
         self.assertEqual(obj.time_taken, 5000.0)
@@ -480,6 +484,25 @@ class SQLQueryTest(TestCase):
         self.obj.delete()
 
         self.assertNotIn(self.obj, models.SQLQuery.objects.all())
+
+
+class NoPendingMigrationsTest(TestCase):
+    """
+    Test if proper migrations are added and the models state is consistent.
+    It should make sure that no new migrations are created for this app,
+    when end-user runs `makemigrations` command.
+    """
+
+    def test_no_pending_migrations(self):
+        call_command("makemigrations", "silk", "--check", "--dry-run")
+
+    @override_settings(DEFAULT_AUTO_FIELD='django.db.models.BigAutoField')
+    def test_check_with_overridden_default_auto_field(self):
+        """
+        Test with `BigAutoField` set as `DEFAULT_AUTO_FIELD` - which is
+        default when generating proj with Django 3.2.
+        """
+        self.test_no_pending_migrations()
 
 
 class BaseProfileTest(TestCase):

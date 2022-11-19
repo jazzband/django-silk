@@ -1,4 +1,242 @@
 # Change Log
+## Unreleased
+
+## [5.0.2](https://github.com/jazzband/django-silk/tree/5.0.2) (2022-10-12)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.1...5.0.2)
+
+**Fixes:**
+
+ - Multipart forms and RawPostDataException (#592)
+ - Decrease unnecessary database hits (#587) (#588)
+
+**Features/Enhancements:**
+
+ - Remove unneeded pytz package (#603)
+ - Use contextlib in test_profile_parser (#590)
+ - Add support for storages, that don't implement full filesystem path (#596)
+
+
+## [5.0.1](https://github.com/jazzband/django-silk/tree/5.0.1) (2022-07-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.0...5.0.1)
+
+**Fixes:**
+
+ - Add jquery UI 1.13.1 images and fix collectstatic (#576)
+
+
+## [5.0.0](https://github.com/jazzband/django-silk/tree/5.0.0) (2022-06-20)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.4.0...5.0.0)
+
+**Features/Enhancements:**
+
+- Drop support for Django 2.2 (EOL) (#567)
+- Added silk_request_garbage_collect command for out-of-band garbage collection. (#541)
+
+
+## [4.4.1](https://github.com/jazzband/django-silk/tree/4.4.1) (2022-07-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.4.0...4.4.1)
+
+**Fixes:**
+
+ - Add jquery UI 1.13.1 images and fix collectstatic (#576)
+
+
+## [4.4.0](https://github.com/jazzband/django-silk/tree/4.4.0) (2022-06-20)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.3.0...4.4.0)
+
+**Features/Enhancements:**
+
+- Switch 'Apply' and 'Clear all filters' ordering
+- Make filters on Requests tab more visible
+- Add small margin for filter selects
+- Add 'Clear all filters' button
+- Add message when there are no requests to display
+- Making the error logging more accurate and explicit
+- Fixing #530 - Adding support for SILKY_EXPLAIN_FLAGS
+
+**Maintenance and Cleanup:**
+
+- Remove unused js compilation pipeline (#561)
+- Fix pre-commit-config
+
+**Dependencies:**
+
+- Update jquery to 3.6.0 and jquery-ui to 1.13.1 [#508]
+- [pre-commit.ci] pre-commit autoupdate (#560, #571)
+- Add django-upgrade to pre-commit hooks (#566)
+
+**Moved to 5.0.0**
+
+- Drop support for Django 2.2 (EOL) (#567)
+
+
+## [4.3.0](https://github.com/jazzband/django-silk/tree/4.3.0) (2022-03-01)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.2.0...4.3.0)
+
+**Fixes:**
+
+- Use correct db in a multi db setup (https://github.com/jazzband/django-silk/issues/522)
+
+**Dependencies:**
+
+- Drop support for Python 3.6
+- Add Python 3.10 compatibility
+- Add Django 4.0 to tox.ini
+- Update django version (#544)
+- Django main (#528)
+- Remove unneeded dependency Pygments
+
+**Maintenance and Cleanup:**
+
+- Jazzband: Created local 'CODE_OF_CONDUCT.md' from remote 'CODE_OF_CONDUCT.md'
+- fix installation instructions in README
+- Replace assertDictContainsSubset (#536)
+- Fix issue avoid-misusing-assert-true found at https://codereview.doctor (#550)
+- pre-commit autoupdate
+
+## [4.2.0](https://github.com/jazzband/django-silk/tree/4.2.0) (2021-23-10)
+:release-by: Asif Saif Uddin (@auvipy)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.1.0...4.2.0)
+- #427 Passed wsgi request to SILKY_PYTHON_PROFILER_FUNC
+- Added Django 3.1 & 3.2 to test matrix
+- Replace url with re_path for Django 4.0
+- Move CI to GitHub Actions. [\#460](https://github.com/jazzband/django-silk/pull/432) ([jezdez](https://github.com/jezdez))
+- Do not crash when silk app is not included in urls
+- Add the SILKY_JSON_ENSURE_ASCII configuration item to support Chinese
+- Add row view for requests page (#440)
+- RequestModelFactory: fallback if request body too large, fix #162 (#451)
+- Add query execution plan to sql_detail (#452)
+- Add Python 3.9 compatibility (#404)
+- Replace re_path with path
+- Fix transaction error for mysql 
+- parse query when count joins to match only Keyword
+- fix: DB connection to ClearDB when multiple databases
+- fix: DataCollector sql_queries model not found on filter(request=self.request)
+- Generate missing row.css from sass
+- Filter null values from most time overall summary
+- Ensure sorting between longest requests
+- Filter null values from most db time summary
+- Ensure sorting between most db time requests
+- Temporary fix for testing Django 2.2
+- Fix egg metadata error
+- Fixed a bug that the profile tab could not be opened when the source code contains japanese
+- fix incorrectly made decorator
+- Ensure sorting between most db queries requests
+- Add tests that access the actual DB (#493)
+- remove python 2 style codes from across the codebase
+- Fix broken test on Windows 10 (SQLite) (#504)
+- Remove Make Migrations (#503)
+- Add Python 3.10 compatibility (#527)
+
+
+## [4.1.0](https://github.com/jazzband/django-silk/tree/4.1.0) (2020-08-07)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.1...4.1.0)
+
+
+**New features/Implemented enhancements:**
+
+- Make compatible with Django 3.1 [\#432](https://github.com/jazzband/django-silk/pull/432) ([Tirzono](https://github.com/Tirzono))
+
+
+**Fixed bugs:**
+
+- Capture entire key name during cleansing in \_mask\_credentials [\#414](https://github.com/jazzband/django-silk/pull/414) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Clear DB error when configuring silk to use a non-' default' database [\#417](https://github.com/jazzband/django-silk/pull/417) ([eshxcmhk](https://github.com/eshxcmhk))
+- Fix force\_text RemovedInDjango40Warning [\#422](https://github.com/jazzband/django-silk/pull/422) ([justinmayhew](https://github.com/justinmayhew))
+
+
+**Closed issues:**
+
+- \_mask\_credentials uses UGC in a regex substitution [\#410](https://github.com/jazzband/django-silk/issues/410) ([barm](https://github.com/barm))
+- Django Silk is not compatible with Django 3.1: EmptyResultSet is removed in Django 3.1 [\#431](https://github.com/jazzband/django-silk/issues/431) ([Tirzono](https://github.com/Tirzono))
+
+
+**Merged pull requests:**
+
+- Wrap re.sub() in try-except [\#412](https://github.com/jazzband/django-silk/pull/412) ([bambookchos](https://github.com/bambookchos))
+- Replace the call to re.findall with re.sub in \_mask\_credentials so matched values are not treated as regex patterns [\#413](https://github.com/jazzband/django-silk/pull/413) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Capture entire key name during cleansing in \_mask\_credentials [\#414](https://github.com/jazzband/django-silk/pull/414) ([ThePumpingLemma](https://github.com/ThePumpingLemma))
+- Clear DB error when configuring silk to use a non-' default' database [\#417](https://github.com/jazzband/django-silk/pull/417) ([eshxcmhk](https://github.com/eshxcmhk))
+- Fix force\_text RemovedInDjango40Warning [\#422](https://github.com/jazzband/django-silk/pull/422) ([justinmayhew](https://github.com/justinmayhew))
+- Make compatible with Django 3.1 [\#432](https://github.com/jazzband/django-silk/pull/432) ([Tirzono](https://github.com/Tirzono))
+- Update README.md django-silk is tested with Django 3.1 [\#433](https://github.com/jazzband/django-silk/pull/433) ([Tirzono](https://github.com/Tirzono))
+
+
+## [4.0.1](https://github.com/jazzband/django-silk/tree/4.0.1) (2020-03-12)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/4.0.0...4.0.1)
+
+
+**New features/Implemented enhancements:**
+
+- Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
+- JS workflow cleanup [\#397](https://github.com/jazzband/django-silk/pull/397) ([nasirhjafri](https://github.com/nasirhjafri))
+- Refactor QA setup [\#393](https://github.com/jazzband/django-silk/pull/393) ([aleksihakli](https://github.com/aleksihakli))
+
+
+**Fixed bugs:**
+
+- docs: Fix simple typo, tracebackk -> traceback [\#406](https://github.com/jazzband/django-silk/pull/406) ([timgates42](https://github.com/timgates42))
+- Clear DB page doesn't work with PostgreSQL and SQLite [\#396](https://github.com/jazzband/django-silk/pull/396) ([nasirhjafri](https://github.com/nasirhjafri))
+
+
+**Closed issues:**
+
+- The "Clear DB" page doesn't work with PostgreSQL [\#395](https://github.com/jazzband/django-silk/issues/395) ([Ikalou](https://github.com/Ikalou))
+
+
+**Merged pull requests:**
+
+- docs: Fix simple typo, tracebackk -> traceback [\#406](https://github.com/jazzband/django-silk/pull/406) ([timgates42](https://github.com/timgates42))
+- Restructured clear db HTML [\#399](https://github.com/jazzband/django-silk/pull/399) ([nasirhjafri](https://github.com/nasirhjafri))
+- JS workflow cleanup [\#397](https://github.com/jazzband/django-silk/pull/397) ([nasirhjafri](https://github.com/nasirhjafri))
+- Clear DB page doesn't work with PostgreSQL and SQLite [\#396](https://github.com/jazzband/django-silk/pull/396) ([nasirhjafri](https://github.com/nasirhjafri))
+- Refactor QA setup [\#393](https://github.com/jazzband/django-silk/pull/393) ([aleksihakli](https://github.com/aleksihakli))
+
+
+## [4.0.0](https://github.com/jazzband/django-silk/tree/4.0.0) (2020-01-09)
+
+[Full Changelog](https://github.com/jazzband/django-silk/compare/3.0.4...4.0.0)
+
+**New features/Implemented enhancements:**
+
+- Ability to clean up all requests/queries [\#368](https://github.com/jazzband/django-silk/pull/368) ([nasirhjafri](https://github.com/nasirhjafri))
+- Used bulk_create to save number of queries [\#370](https://github.com/jazzband/django-silk/pull/370) ([nasirhjafri](https://github.com/nasirhjafri))
+- Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
+- Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
+- Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+- Add function support for enabling profiling [\#391](https://github.com/jazzband/django-silk/pull/391) ([tredzko](https://github.com/tredzko))
+
+**Fixed bugs:**
+
+- Mask authorization header [\#376](https://github.com/jazzband/django-silk/pull/376) ([StefanMich](https://github.com/StefanMich))
+
+**Closed issues:**
+
+- Ability to clean up all requests/queries [\#365](https://github.com/jazzband/django-silk/issues/365)
+- Use bulk_create to save number of queries [\#369](https://github.com/jazzband/django-silk/issues/369)
+- Headers are not sanitized [\#375](https://github.com/jazzband/django-silk/issues/375)
+- Django 3 support [\#382](https://github.com/jazzband/django-silk/issues/382)
+- Support functional cProfile enable [\#390](https://github.com/jazzband/django-silk/issues/390)
+
+
+**Merged pull requests:**
+
+- Mask authorization header [\#376](https://github.com/jazzband/django-silk/pull/376) ([StefanMich](https://github.com/StefanMich))
+- Ability to clean up all requests/queries [\#368](https://github.com/jazzband/django-silk/pull/368) ([nasirhjafri](https://github.com/nasirhjafri))
+- Used bulk_create to save number of queries [\#370](https://github.com/jazzband/django-silk/pull/370) ([nasirhjafri](https://github.com/nasirhjafri))
+- Dropped Python 2 and 3.4 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([munza](https://github.com/munza))
+- Added Python 3.8 support [\#380](https://github.com/jazzband/django-silk/pull/380) ([nasirhjafri](https://github.com/nasirhjafri))
+- Removed django<2.2 support and added django 3.0 support [\#385](https://github.com/jazzband/django-silk/pull/385) ([nasirhjafri](https://github.com/nasirhjafri))
+- Add function support for enabling profiling [\#391](https://github.com/jazzband/django-silk/pull/391) ([tredzko](https://github.com/tredzko))
+
 
 ## [3.0.4](https://github.com/jazzband/django-silk/tree/3.0.4) (2019-08-12)
 

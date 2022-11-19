@@ -1,24 +1,29 @@
-from collections import Counter
-import json
 import base64
+import json
 import random
 import re
+from uuid import uuid4
 
+import sqlparse
 from django.core.files.storage import get_storage_class
-from django.db import models
+from django.db import models, transaction
 from django.db.models import (
-    DateTimeField, TextField, CharField, ForeignKey, IntegerField,
-    BooleanField, F, ManyToManyField, OneToOneField, FloatField,
-    FileField
+    BooleanField,
+    CharField,
+    DateTimeField,
+    FileField,
+    FloatField,
+    ForeignKey,
+    IntegerField,
+    ManyToManyField,
+    OneToOneField,
+    TextField,
 )
 from django.utils import timezone
-from django.db import transaction
-from uuid import uuid4
-import sqlparse
 from django.utils.safestring import mark_safe
 
-from silk.utils.profile_parser import parse_profile
 from silk.config import SilkyConfig
+from silk.utils.profile_parser import parse_profile
 
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
@@ -35,10 +40,10 @@ def time_taken(self):
 
 class CaseInsensitiveDictionary(dict):
     def __getitem__(self, key):
-        return super(CaseInsensitiveDictionary, self).__getitem__(key.lower())
+        return super().__getitem__(key.lower())
 
     def __setitem__(self, key, value):
-        super(CaseInsensitiveDictionary, self).__setitem__(key.lower(), value)
+        super().__setitem__(key.lower(), value)
 
     def update(self, other=None, **kwargs):
         for k, v in other.items():
@@ -47,7 +52,7 @@ class CaseInsensitiveDictionary(dict):
             self[k] = v
 
     def __init__(self, d):
-        super(CaseInsensitiveDictionary, self).__init__()
+        super().__init__()
         for k, v in d.items():
             self[k] = v
 
@@ -76,7 +81,7 @@ class Request(models.Model):
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
     def _shorten(self, string):
-        return '%s...%s' % (string[:94], string[len(string) - 93:])
+        return f'{string[:94]}...{string[len(string) - 93:]}'
 
     @property
     def total_meta_time(self):
@@ -87,7 +92,7 @@ class Request(models.Model):
         for n, columns in enumerate(parse_profile(self.pyprofile)):
             location = columns[-1]
             if n and '{' not in location and '<' not in location:
-                r = re.compile('(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
+                r = re.compile(r'(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
                 m = r.search(location)
                 group = m.groupdict()
                 src = group['src']
@@ -182,7 +187,7 @@ class Request(models.Model):
         if self.view_name and len(self.view_name) > 190:
             self.view_name = self._shorten(self.view_name)
 
-        super(Request, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         Request.garbage_collect(force=False)
 
 
@@ -227,7 +232,7 @@ class SQLQueryManager(models.Manager):
         for obj in objs:
             obj.prepare_save()
 
-        return super(SQLQueryManager, self).bulk_create(*args, **kwargs)
+        return super().bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -241,6 +246,7 @@ class SQLQuery(models.Model):
         blank=True, db_index=True, on_delete=models.CASCADE,
     )
     traceback = TextField()
+    analysis = TextField(null=True, blank=True)
     objects = SQLQueryManager()
 
     # TODO docstring
@@ -252,10 +258,23 @@ class SQLQuery(models.Model):
     def formatted_query(self):
         return sqlparse.format(self.query, reindent=True, keyword_case='upper')
 
-    # TODO: Surely a better way to handle this? May return false positives
     @property
     def num_joins(self):
-        return self.query.lower().count('join ')
+        parsed_query = sqlparse.parse(self.query)
+        count = 0
+        for statement in parsed_query:
+            count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))
+        return count
+
+    @property
+    def first_keywords(self):
+        parsed_query = sqlparse.parse(self.query)
+        keywords = []
+        for statement in parsed_query[0].tokens:
+            if not statement.is_keyword:
+                break
+            keywords.append(statement.value)
+        return ' '.join(keywords)
 
     @property
     def tables_involved(self):
@@ -296,13 +315,13 @@ class SQLQuery(models.Model):
     @transaction.atomic()
     def save(self, *args, **kwargs):
         self.prepare_save()
-        super(SQLQuery, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @transaction.atomic()
     def delete(self, *args, **kwargs):
         self.request.num_sql_queries -= 1
         self.request.save()
-        super(SQLQuery, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
 
 class BaseProfile(models.Model):
@@ -322,7 +341,7 @@ class BaseProfile(models.Model):
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
             self.time_taken = interval.total_seconds() * 1000
-        super(BaseProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Profile(BaseProfile):

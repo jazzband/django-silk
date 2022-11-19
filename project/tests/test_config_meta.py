@@ -1,12 +1,14 @@
+from unittest.mock import NonCallableMock
+
 from django.test import TestCase
-from mock import NonCallableMock
 
 from silk.collector import DataCollector
+from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware
+from silk.models import Request
 
 from .util import delete_all_models
-from silk.config import SilkyConfig
-from silk.models import Request
+
 
 def fake_get_response():
     def fake_response():
@@ -17,10 +19,10 @@ def fake_get_response():
 class TestConfigMeta(TestCase):
     def _mock_response(self):
         response = NonCallableMock()
-        response._headers = {}
+        response.headers = {}
         response.status_code = 200
         response.queries = []
-        response.get = response._headers.get
+        response.get = response.headers.get
         response.content = ''
         return response
 
@@ -38,9 +40,9 @@ class TestConfigMeta(TestCase):
     def test_enabled(self):
         SilkyConfig().SILKY_META = True
         r = self._execute_request()
-        self.assertTrue(r.meta_time is not None or
-                        r.meta_num_queries is not None or
-                        r.meta_time_spent_queries is not None)
+        self.assertTrue(r.meta_time is not None
+                        or r.meta_num_queries is not None
+                        or r.meta_time_spent_queries is not None)
 
     def test_disabled(self):
         SilkyConfig().SILKY_META = False

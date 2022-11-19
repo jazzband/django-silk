@@ -247,8 +247,14 @@
         <div class="container">
             <h2>Silk Profiler</h2>
 
-            <div class="description">No Silk profiling was performed for this request. Use the silk_profile
-                decorator/context manager to do so.
+            <div class="description">
+                No Silk profiling was performed for this request. Please check that:
+                <ul>
+                    <li>you use the <code>@silk_profile</code> decorator or <code>with silk_profile():</code> context manager on the correct view</li>
+                    <li>you have <code>"silk"</code> in <code>INSTALLED_APPS</code></li>
+                    <li>you have <code>"silk.middleware.SilkyMiddleware"</code> in <code>MIDDLEWARE</code></li>
+                    <li>you have <code>SILKY_PYTHON_PROFILER</code> set to <code>True</code></li>
+                </ul>
             </div>
         </div>
     {% endif %}

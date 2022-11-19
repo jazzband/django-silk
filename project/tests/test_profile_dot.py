@@ -1,6 +1,6 @@
 # std
-import os
 import cProfile
+import os
 import tempfile
 from contextlib import contextmanager
 from unittest.mock import MagicMock
@@ -8,8 +8,13 @@ from unittest.mock import MagicMock
 # 3rd party
 from django.test import TestCase
 from networkx.drawing.nx_pydot import read_dot
+
 # silk
-from silk.views.profile_dot import _create_profile, _create_dot, _temp_file_from_file_field
+from silk.views.profile_dot import (
+    _create_dot,
+    _create_profile,
+    _temp_file_from_file_field,
+)
 
 
 class ProfileDotViewTestCase(TestCase):
@@ -47,7 +52,8 @@ class ProfileDotViewTestCase(TestCase):
             # create profile - we don't need to convert a django file field to a temp file
             # just use the filename of the temp file already created
             @contextmanager
-            def dummy(_): yield filename
+            def dummy(_):
+                yield filename
             return _create_profile(filename, dummy)
 
     @classmethod
@@ -56,6 +62,7 @@ class ProfileDotViewTestCase(TestCase):
         Get a mock object that looks like a file but returns data when read is called.
         """
         i = [0]
+
         def read(n):
             if not i[0]:
                 i[0] += 1
@@ -71,7 +78,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that a dot file is correctly created from pstats data stored in a file field.
         """
-        with self._stats_file() as filename:
+        with self._stats_file():
 
             try:
                 # create dot
@@ -90,7 +97,7 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that data held in a file like object is copied to a temp file.
         """
-        dummy_data = 'dummy data'.encode('utf-8')
+        dummy_data = b'dummy data'
         stream = self._mock_file(dummy_data)
 
         with _temp_file_from_file_field(stream) as filename:

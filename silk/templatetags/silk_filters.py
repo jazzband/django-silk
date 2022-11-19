@@ -28,7 +28,7 @@ def spacify(value, autoescape=None):
 
 
 def _urlify(str):
-    r = re.compile('"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
+    r = re.compile(r'"(?P<src>.*\.py)", line (?P<num>[0-9]+).*')
     m = r.search(str)
     while m:
         group = m.groupdict()
@@ -70,8 +70,8 @@ def silk_date_time(dt):
 
 
 @register.filter
-def sorted(l):
-    return sorted(l)
+def sorted(value):
+    return sorted(value)
 
 
 @stringfilter

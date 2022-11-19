@@ -7,6 +7,10 @@ def request_summary(silk_request):
     return {'silk_request': silk_request}
 
 
+def request_summary_row(silk_request):
+    return {'silk_request': silk_request}
+
+
 def request_menu(request, silk_request):
     return {'request': request,
             'silk_request': silk_request}
@@ -36,6 +40,7 @@ def code(lines, actual_line):
 
 
 register.inclusion_tag('silk/inclusion/request_summary.html')(request_summary)
+register.inclusion_tag('silk/inclusion/request_summary_row.html')(request_summary_row)
 register.inclusion_tag('silk/inclusion/profile_summary.html')(profile_summary)
 register.inclusion_tag('silk/inclusion/code.html')(code)
 register.inclusion_tag('silk/inclusion/request_menu.html')(request_menu)

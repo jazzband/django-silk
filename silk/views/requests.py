@@ -46,8 +46,17 @@ class RequestsView(View):
             'label': 'Descending'
         }
     }
+    view_style = {
+        'card': {
+            'label': 'Cards'
+        },
+        'row': {
+            'label': 'Rows'
+        }
+    }
     default_order_by = 'start_time'
     default_order_dir = 'DESC'
+    default_view_style = 'card'
 
     session_key_request_filters = 'request_filters'
 
@@ -58,6 +67,10 @@ class RequestsView(View):
     @property
     def options_order_dir(self):
         return [{'value': x, 'label': self.order_dir[x]['label']} for x in self.order_dir.keys()]
+
+    @property
+    def options_view_style(self):
+        return [{'value': x, 'label': self.view_style[x]['label']} for x in self.view_style.keys()]
 
     def _get_paths(self):
         return Request.objects.values_list(
@@ -108,7 +121,7 @@ class RequestsView(View):
         ob = self.order_by[order_by]
         if ob['additional_query_filter'] is not None:
             query_set = ob['additional_query_filter'](query_set)
-        query_set = query_set.order_by('%s%s' % ('-' if order_dir == 'DESC' else '', order_by))
+        query_set = query_set.order_by('{}{}'.format('-' if order_dir == 'DESC' else '', order_by))
         if path:
             query_set = query_set.filter(path=path)
         for f in filters:
@@ -117,26 +130,30 @@ class RequestsView(View):
         return query_set[:show]
 
     def _create_context(self, request):
-        show = request.GET.get('show', self.default_show)
-        order_by = request.GET.get('order_by', self.default_order_by)
-        order_dir = request.GET.get('order_dir', self.default_order_dir)
+        raw_filters = request.session.get(self.session_key_request_filters, {}).copy()
+        show = raw_filters.pop('show', self.default_show)
+        order_by = raw_filters.pop('order_by', self.default_order_by)
+        order_dir = raw_filters.pop('order_dir', self.default_order_dir)
+        view_style = raw_filters.pop('view_style', self.default_view_style)
+
         if show:
             show = int(show)
         path = request.GET.get('path', None)
-        raw_filters = request.session.get(self.session_key_request_filters, {})
         context = {
             'show': show,
             'order_by': order_by,
             'order_dir': order_dir,
+            'view_style': view_style,
             'request': request,
             'options_show': self.show,
             'options_order_by': self.options_order_by,
             'options_order_dir': self.options_order_dir,
+            'options_view_style': self.options_view_style,
             'options_paths': self._get_paths(),
             'options_status_codes': self._get_status_codes(),
             'options_methods': self._get_methods(),
             'view_names': self._get_views(),
-            'filters': raw_filters
+            'filters': raw_filters,
         }
         context.update(csrf(request))
         if path:
@@ -148,11 +165,26 @@ class RequestsView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request):
+        # Retain filters and ordering if they were modified by GET params
+        if request.GET:
+            filters = {
+                # filters from previous session
+                **request.session.get(self.session_key_request_filters, {}),
+                # new filters from GET, overriding old
+                **{k: v for k, v in request.GET.items() if k in ['show', 'order_by', 'order_dir', 'view_style']},
+            }
+            request.session[self.session_key_request_filters] = filters
         return render(request, 'silk/requests.html', self._create_context(request))
 
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
+        previous_session = request.session.get(self.session_key_request_filters, {})
         filters = filters_from_request(request)
-        request.session[self.session_key_request_filters] = {ident: f.as_dict() for ident, f in filters.items()}
+        request.session[self.session_key_request_filters] = {
+            # filters from previous session but only GET values
+            **{k: v for k, v in previous_session.items() if k in ['show', 'order_by', 'order_dir', 'view_style']},
+            # new filters from POST, overriding old
+            **{ident: f.as_dict() for ident, f in filters.items()},
+        }
         return render(request, 'silk/requests.html', self._create_context(request))

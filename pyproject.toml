@@ -1,0 +1,3 @@
+[tool.autopep8]
+ignore = "E501,E203,W503"
+in-place = true

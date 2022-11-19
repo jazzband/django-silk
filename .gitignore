@@ -20,6 +20,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+.eggs
 
 # Installer logs
 pip-log.txt
@@ -58,7 +59,8 @@ dist
 *db.sqlite*
 /django_silky/media
 *.prof
-project/media/*
+project/media/
+project/tmp/
 .vscode/
 
 # Vagrant
@@ -117,3 +119,6 @@ fabric.properties
 
 # Virtual env
 .venv*
+
+package-lock.json
+*.db

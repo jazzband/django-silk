@@ -1,8 +1,8 @@
 Configuration
-======
+=============
 
-Authentication/Authorisation
-----
+Authentication and Authorisation
+--------------------------------
 
 By default anybody can access the Silk user interface by heading to `/silk/`. To enable your Django 
 auth backend place the following in `settings.py`:
@@ -25,8 +25,8 @@ You can customise this using the following in ``settings.py``:
 	SILKY_PERMISSIONS = my_custom_perms
 
 
-Request/Response bodies
-----
+Request and Response bodies
+---------------------------
 
 By default, Silk will save down the request and response bodies for each request for future viewing
 no matter how large. If Silk is used in production under heavy volume with large bodies this can have
@@ -39,7 +39,7 @@ a huge impact on space/time performance. This behaviour can be configured with f
 
 
 Meta-Profiling
------
+--------------
 
 Sometimes its useful to be able to see what effect Silk is having on the request/response time. To do this add
 the following to your `settings.py`:
@@ -54,8 +54,8 @@ Silk will then record how long it takes to save everything down to the database 
 
 Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
 
-Limiting request/response data
-----
+Limiting request and response data
+----------------------------------
 
 To make sure silky garbage collects old request/response data, a config var can be set to limit the number of request/response rows it stores.
 

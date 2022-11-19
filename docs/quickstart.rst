@@ -19,27 +19,27 @@ Add the following to your ``settings.py``:
 	    ...
 	]
 
-	INSTALLED_APPS = (
+	INSTALLED_APPS = [
 	    ...
-	    'silk'
-	)
+	    'silk.apps.SilkAppConfig'
+	]
 
 Add the following to your ``urls.py``:
 
 .. code-block:: python
 	
-	urlpatterns += patterns('', url(r'^silk', include('silk.urls', namespace='silk')))
+	urlpatterns += [path('silk', include('silk.urls', namespace='silk'))]
 
-Run ``syncdb`` to create Silk's database tables:
+Run ``migrate`` to create Silk's database tables:
 
-.. code-block:: python
+.. code-block:: bash
 
-    python manage.py syncdb
+    python manage.py migrate
 
 And voila! Silk will begin intercepting requests and queries which you can inspect by visiting ``/silk/``
 
 Other Installation Options
--------
+--------------------------
 
 You can download a release from `github <https://github.com/jazzband/django-silk/releases>`_ and then install using pip:
 

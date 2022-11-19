@@ -1,19 +1,15 @@
 # Silk
 
-====
-
-*Silk has now moved to the [Jazzband](https://jazzband.co/) organization and is looking for contributors - if you think you can help out, please get in touch!*
-
-[![TravisCI Build](https://img.shields.io/travis/jazzband/django-silk/master.svg)](https://travis-ci.org/jazzband/django-silk)
+[![GitHub Actions](https://github.com/jazzband/django-silk/workflows/Test/badge.svg)](https://github.com/jazzband/django-silk/actions)
+[![GitHub Actions](https://codecov.io/gh/jazzband/django-silk/branch/master/graph/badge.svg)](https://codecov.io/gh/jazzband/django-silk)
 [![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![Supported Django versions](https://img.shields.io/pypi/djversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
 [![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
 
 Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
 <img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
-
-**SECURITY NOTE:** Because Silk stores all HTTP requests into the database in plain text, it will store the request's sensitive information into the database _in plain text_ (e.g. users' passwords!). This is a massive security concern. An issue has been created for this [here](https://github.com/jazzband/django-silk/issues/305).
 
 ## Contents
 
@@ -34,8 +30,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 2.2, 3.0
-* Python: 3.5, 3.6, 3.7, 3.8
+* Django: 3.2, 4.0, 4.1
+* Python: 3.7, 3.8, 3.9, 3.10, 3.11
 
 ## Installation
 
@@ -81,14 +77,12 @@ MIDDLEWARE = [
 To enable access to the user interface add the following to your `urls.py`:
 
 ```python
-urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
 ```
 
 before running migrate:
 
 ```bash
-python manage.py makemigrations
-
 python manage.py migrate
 
 python manage.py collectstatic
@@ -110,7 +104,7 @@ You can install from master using the following, but please be aware that the ve
 may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
-pip install -e git+https://github.com/jazzband/django-silk.git#egg=silk
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=django-silk
 ```
 
 ## Features
@@ -201,7 +195,7 @@ from silk.profiling.profiler import silk_profile
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
-    return render_to_response('post.html', {
+    return render(request, 'post.html', {
         'post': p
     })
 ```
@@ -226,7 +220,7 @@ from silk.profiling.profiler import silk_profile
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
-    return render_to_response('post.html', {
+    return render(request, 'post.html', {
         'post': p
     })
 
@@ -236,7 +230,7 @@ class MyView(View):
     @silk_profile(name='View Blog Post')
     def get(self, request):
         p = Post.objects.get(pk=post_id)
-        return render_to_response('post.html', {
+        return render(request, 'post.html', {
             'post': p
         })
 ```
@@ -250,7 +244,7 @@ narrowing down slowness to particular database records.
 def post(request, post_id):
     with silk_profile(name='View Blog Post #%d' % self.pk):
         p = Post.objects.get(pk=post_id)
-        return render_to_response('post.html', {
+        return render(request, 'post.html', {
             'post': p
         })
 ```
@@ -269,7 +263,7 @@ SILKY_DYNAMIC_PROFILING = [{
 which is roughly equivalent to:
 
 ```python
-class MyClass(object):
+class MyClass:
     @silk_profile()
     def bar(self):
         pass
@@ -303,7 +297,7 @@ SILKY_DYNAMIC_PROFILING = [{
 }]
 
 # ... is roughly equivalent to
-class MyClass(object):
+class MyClass:
 
     @silk_profile()
     def bar(self):
@@ -355,6 +349,26 @@ SILKY_DYNAMIC_PROFILING = [{
 If we were to apply the dynamic profile to the functions source module `another.module.foo` **after**
 it has already been imported, no profiling would be triggered.
 
+
+#### Custom Logic for Profiling
+
+Sometimes you may want to dynamically control when the profiler runs. You can write your own logic for when to enable the profiler. To do this add the following to your `settings.py`:
+
+This setting is mutually exclusive with SILKY_PYTHON_PROFILER and will be used over it if present. It will work with SILKY_DYNAMIC_PROFILING.
+
+```python
+def my_custom_logic(request):
+    return 'profile_requests' in request.session
+
+SILKY_PYTHON_PROFILER_FUNC = my_custom_logic # profile only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# profile only session has recording enabled.
+SILKY_PYTHON_PROFILER_FUNC = lambda request: 'profile_requests' in request.session
+```
 
 ### Code Generation
 
@@ -422,7 +436,7 @@ Note that in the above screenshot, this means that the request took 29ms (22ms f
 
 ### Recording a Fraction of Requests
 
-On high-load sites it may be helpful to only record a fraction of the requests that are made.To do this add the following to your `settings.py`:
+On high-load sites it may be helpful to only record a fraction of the requests that are made. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
 
@@ -432,7 +446,7 @@ SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 
 #### Custom Logic for Recording Requests
 
-On high-load sites it may also be helpful to write your own logic for when to intercept requests.To do this add the following to your `settings.py`:
+On high-load sites it may also be helpful to write your own logic for when to intercept requests. To do this add the following to your `settings.py`:
 
 Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
 
@@ -464,6 +478,42 @@ The garbage collection is only run on a percentage of requests to reduce overhea
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
 ```
 
+In case you want decouple silk's garbage collection from your webserver's request processing, set SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0 and trigger it manually, e.g. in a cron job:
+
+```bash
+python manage.py silk_request_garbage_collect
+```
+
+### Enable query analysis
+
+To enable query analysis when supported by the dbms a config var can be set in order to execute queries with the analyze features.
+
+```python
+SILKY_ANALYZE_QUERIES = True
+```
+
+To pass additional params for profiling when supported by the dbms (e.g. VERBOSE, FORMAT JSON), you can do this in the following manner.
+
+```python
+SILKY_EXPLAIN_FLAGS = {'format':'JSON', 'costs': True}
+```
+
+
+### Masking sensitive data on request body
+
+By default, Silk is filtering values that contains the following keys (they are case insensitive)
+
+```python
+SILKY_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+```
+
+But sometimes, you might want to have your own sensitive keywords, then above configuration can be modified
+
+```python
+SILKY_SENSITIVE_KEYS = {'custom-password'}
+```
+
+
 ### Clearing logged data
 
 A management command will wipe out all logged data:
@@ -487,26 +537,26 @@ In order to setup local development you should first install all the dependencie
 root of the `project` directory:
 
 ```bash
-pip install -r test-requirements.txt
+pip install -r requirements.txt
 ```
 
 You will also need to install `silk`'s dependencies. From the root of the git repository:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
 At this point your virtual environment should have everything it needs to run both the sample `project` and
 `silk` successfully.
 
-Before running, you must set the `DB` and `DB_NAME` environment variables:
+Before running, you must set the `DB_ENGINE` and `DB_NAME` environment variables:
 
 ```bash
-export DB=sqlite3
+export DB_ENGINE=sqlite3
 export DB_NAME=db.sqlite3
 ```
 
-For other combinations, check [`.travis.yml`](./.travis.yml).
+For other combinations, check [`tox.ini`](./tox.ini).
 
 Now from the root of the sample `project` apply the migrations
 
@@ -524,8 +574,7 @@ python manage.py runserver
 
 ```bash
 cd project
-./tests/test_migrations.sh
-python manage.py test --noinput
+python manage.py test
 ```
 
 Happy profiling!

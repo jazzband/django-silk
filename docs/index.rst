@@ -43,7 +43,7 @@ Features
 
 - SQL query inspection
 
-- Profiling of arbritary code blocks via a Python context manager and decorator
+- Profiling of arbitrary code blocks via a Python context manager and decorator
 
   - Execution Time
 
@@ -57,5 +57,5 @@ Features
 Requirements
 ------------
 
-* Django: 2.2, 3.0
-* Python: 3.5, 3.6, 3.7, 3.8
+* Django: 3.2, 4.0, 4.1
+* Python: 3.7, 3.8, 3.9, 3.10

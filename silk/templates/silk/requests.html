@@ -2,6 +2,31 @@
 {% load silk_inclusion %}
 {% load static %}
 
+{% block style %}
+    {{ block.super }}
+    <style>
+        .container {
+            padding: 0 1em;
+        }
+
+        .resizing-input input {
+            background-color: white;
+            padding-top: 2px;
+            color: black;
+            box-shadow: inset 0 0 3px black;
+        }
+
+        .resizing-input input::placeholder {
+            color: #383838;
+            opacity: 1;
+        }
+
+        .filter-section {
+            line-height: 2.3;
+        }
+    </style>
+{% endblock %}
+
 {% block menu %}
     {% root_menu request %}
 {% endblock %}
@@ -19,6 +44,20 @@
 
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
+    <div class="menu-item ">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>View:
+                    <select name="view_style" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_view_style %}
+                            <option value="{{ option.value }}"
+                                    {% if option.value == view_style %}selected{% endif %}>{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
     <div class="menu-item ">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
@@ -242,10 +281,27 @@
 
 {% block data %}
     {% if results %}
-        {% for silk_request in results %}
-            <a href="{% url 'silk:request_detail' request_id=silk_request.pk %}">
-                {% request_summary silk_request %}
-            </a>
-        {% endfor %}
+        {% if view_style == "row" %}
+            <div class="row-wrapper">
+                {% for silk_request in results %}
+                    <a href="{% url 'silk:request_detail' request_id=silk_request.pk %}" class="row">
+                        {% request_summary_row silk_request %}
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% for silk_request in results %}
+                <a href="{% url 'silk:request_detail' request_id=silk_request.pk %}">
+                    {% request_summary silk_request %}
+                </a>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <div class="container">
+            <h2>No matches found</h2>
+            <div class="description">
+                No requests were found with current set of filters. Please alter your filters and try again.
+            </div>
+        </div>
     {% endif %}
 {% endblock %}

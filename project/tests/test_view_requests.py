@@ -1,11 +1,14 @@
 import random
 import unittest
+from unittest.mock import Mock
 
 from django.test import TestCase
-from mock import Mock
 
-from .test_lib.mock_suite import MockSuite
+from silk.middleware import silky_reverse
 from silk.views.requests import RequestsView
+
+from .test_lib.assertion import dict_contains
+from .test_lib.mock_suite import MockSuite
 
 
 class TestRootViewDefaults(TestCase):
@@ -28,35 +31,49 @@ class TestContext(TestCase):
         request.session = {}
         request.GET = {}
         context = RequestsView()._create_context(request)
-        self.assertDictContainsSubset({
-                                          'show': RequestsView.default_show,
-                                          'order_by': RequestsView.default_order_by,
-                                          'options_show': RequestsView.show,
-                                          'options_order_by': RequestsView().options_order_by,
-                                          'options_order_dir': RequestsView().options_order_dir,
-                                      }, context)
+        self.assertTrue(dict_contains({
+            'show': RequestsView.default_show,
+            'order_by': RequestsView.default_order_by,
+            'options_show': RequestsView.show,
+            'options_order_by': RequestsView().options_order_by,
+            'options_order_dir': RequestsView().options_order_dir,
+        }, context))
         self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
     def test_get(self):
-        request = Mock(spec_set=['GET', 'session'])
-        request.session = {}
         show = 10
         path = '/path/to/somewhere/'
         order_by = 'path'
-        request.GET = {'show': show,
-                       'path': path,
-                       'order_by': order_by}
-        context = RequestsView()._create_context(request)
-        self.assertDictContainsSubset({
-                                          'show': show,
-                                          'order_by': order_by,
-                                          'path': path,
-                                          'options_show': RequestsView.show,
-                                          'options_order_by': RequestsView().options_order_by,
-                                          'options_order_dir': RequestsView().options_order_dir,
-                                      }, context)
+        response = self.client.get(silky_reverse('requests'), {
+            'show': show,
+            'path': path,
+            'order_by': order_by,
+        })
+        context = response.context
+        self.assertTrue(dict_contains({
+            'show': show,
+            'order_by': order_by,
+            'path': path,
+            'options_show': RequestsView.show,
+            'options_order_by': RequestsView().options_order_by,
+            'options_order_dir': RequestsView().options_order_dir,
+        }, context))
+        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertIn('results', context)
+
+    def test_post(self):
+        response = self.client.post(silky_reverse('requests'), {
+            'filter-overalltime-value': 100,
+            'filter-overalltime-typ': 'TimeSpentOnQueriesFilter',
+        })
+        context = response.context
+        self.assertTrue(dict_contains({
+            'filters': {
+                'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
+            },
+        }, context))
         self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
@@ -72,7 +89,7 @@ class TestGetObjects(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestGetObjects, cls).setUpClass()
+        super().setUpClass()
         cls.requests = [MockSuite().mock_request() for _ in range(0, 50)]
 
     def test_defaults(self):
@@ -121,4 +138,3 @@ class TestOrderingRequestView(TestCase):
                           sort_field='time_taken')
         self.assertSorted(objects=RequestsView()._get_objects(order_by='db_time'),
                           sort_field='db_time')
-

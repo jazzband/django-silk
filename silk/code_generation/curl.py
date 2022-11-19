@@ -1,9 +1,7 @@
 import json
-
-# noinspection PyUnresolvedReferences
 from urllib.parse import urlencode
 
-import jinja2
+from django.template import Context, Template
 
 curl_template = """
 curl {% if method %}-X {{ method }}{% endif %}
@@ -16,7 +14,6 @@ curl {% if method %}-X {{ method }}{% endif %}
 
 def _curl_process_params(body, content_type, query_params):
     extra = None
-    modifier = None
     if query_params:
         try:
             query_params = urlencode(
@@ -35,7 +32,7 @@ def _curl_process_params(body, content_type, query_params):
     # multipart is RFC 2388 which allows file uploads.
     elif 'multipart' in content_type or 'x-www-form-urlencoded' in content_type:
         try:
-            body = ' '.join(['%s=%s' % (k, v) for k, v in body.items()])
+            body = ' '.join([f'{k}={v}' for k, v in body.items()])
         except AttributeError:
             modifier = '-d'
         else:
@@ -55,13 +52,18 @@ def curl_cmd(url, method=None, query_params=None, body=None, content_type=None):
     if not content_type:
         content_type = 'text/plain'
     modifier, body, query_params, content_type, extra = _curl_process_params(
-        body, content_type, query_params
+        body,
+        content_type,
+        query_params,
     )
-    t = jinja2.Template(curl_template)
-    return ' '.join(t.render(url=url,
-                             method=method,
-                             query_params=query_params,
-                             body=body,
-                             modifier=modifier,
-                             content_type=content_type,
-                             extra=extra).split('\n'))
+    t = Template(curl_template)
+    context = {
+        'url': url,
+        'method': method,
+        'query_params': query_params,
+        'body': body,
+        'modifier': modifier,
+        'content_type': content_type,
+        'extra': extra,
+    }
+    return t.render(Context(context)).replace('\n', ' ')

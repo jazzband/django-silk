@@ -1,20 +1,37 @@
+from unittest.mock import Mock, NonCallableMagicMock, NonCallableMock, patch
+
 from django.test import TestCase
-from mock import Mock, NonCallableMock, NonCallableMagicMock, patch
 
 from silk.collector import DataCollector
-from silk.models import SQLQuery, Request
+from silk.models import Request, SQLQuery
 from silk.sql import execute_sql
+
 from .util import delete_all_models
 
 
 def mock_sql():
-    mock_sql_query = Mock(spec_set=['_execute_sql', 'query', 'as_sql'])
+    mock_sql_query = Mock(spec_set=['_execute_sql', 'query', 'as_sql', 'connection'])
     mock_sql_query._execute_sql = Mock()
     mock_sql_query.query = NonCallableMock(spec_set=['model'])
     mock_sql_query.query.model = Mock()
     query_string = 'SELECT * from table_name'
     mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
+
+    mock_sql_query.connection = NonCallableMock(
+        spec_set=['cursor', 'features', 'ops'],
+        cursor=Mock(
+            spec_set=['__call__'],
+            return_value=NonCallableMagicMock(spec_set=['__enter__', '__exit__', 'execute'])
+        ),
+        features=NonCallableMock(
+            spec_set=['supports_explaining_query_execution'],
+            supports_explaining_query_execution=True
+        ),
+        ops=NonCallableMock(spec_set=['explain_query_prefix']),
+    )
+
     return mock_sql_query, query_string
+
 
 def call_execute_sql(cls, request):
     DataCollector().configure(request=request)
@@ -32,7 +49,7 @@ def call_execute_sql(cls, request):
 class TestCallNoRequest(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestCallNoRequest, cls).setUpClass()
+        super().setUpClass()
         call_execute_sql(cls, None)
 
     def test_called(self):
@@ -45,7 +62,7 @@ class TestCallNoRequest(TestCase):
 class TestCallRequest(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestCallRequest, cls).setUpClass()
+        super().setUpClass()
         call_execute_sql(cls, Request())
 
     def test_called(self):
@@ -93,3 +110,11 @@ class TestCollectorInteraction(TestCase):
         query = self._query()
         self.assertIn(query, DataCollector().queries.values())
 
+    def test_explain(self):
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
+        sql, qs = mock_sql()
+        prefix = "EXPLAIN"
+        mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
+        sql.connection.ops.explain_query_prefix.return_value = prefix
+        execute_sql(sql)
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())

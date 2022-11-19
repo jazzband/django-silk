@@ -1,12 +1,14 @@
+from unittest.mock import patch
+
+from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.test import TestCase
-from mock import patch, Mock
 
 from silk.config import SilkyConfig
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request
 
 from .util import mock_data_collector
+
 
 def fake_get_response():
     def fake_response():
@@ -114,6 +116,12 @@ class TestShouldIntercept(TestCase):
 
         self.assertFalse(should_intercept)
 
+    @override_settings(ROOT_URLCONF='tests.urlconf_without_silk')
+    def test_should_intercept_without_silk_urls(self):
+        request = Request()
+        request.path = '/login'
+        _should_intercept(request)  # Just checking no crash
+
     def test_should_intercept_ignore_paths(self):
         SilkyConfig().SILKY_IGNORE_PATHS = [
             '/ignorethis'
@@ -123,4 +131,3 @@ class TestShouldIntercept(TestCase):
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
-

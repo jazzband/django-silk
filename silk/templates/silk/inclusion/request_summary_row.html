@@ -1,0 +1,15 @@
+{% load silk_filters %}
+    <div class="col timestamp-div">{{ silk_request.start_time | silk_date_time }}</div>
+    <div class="col method-div">{% if silk_request.response.status_code %}{{ silk_request.response.status_code }} {% endif %}{{ silk_request.method }}</div>
+    <div class="col path-div">{{ silk_request.path }}</div>
+    <div class="col time-taken-div spacing">
+        <span class="numeric">{{ silk_request.time_taken|floatformat:"0" }}<span class="unit">ms</span></span>
+        <span class="appendage">overall<span class="meta">{% if silk_request.total_meta_time %} +{{ silk_request.total_meta_time | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></span>
+    </div>
+    <div class="col time-taken-queries-div spacing">
+        <span class="col numeric">{{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="unit">ms</span></span>
+        <span class="col appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></div>
+    <div class="col num-queries-div spacing">
+        <span class="col numeric">{{ silk_request.num_sql_queries }}</span>
+        <span class="col appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span></span>
+    </div>

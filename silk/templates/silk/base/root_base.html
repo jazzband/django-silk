@@ -9,6 +9,7 @@
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'silk/css/cell.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/row.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/numeric.css' %}"/>
     <link rel="stylesheet" href="{% static "silk/lib/jquery.datetimepicker.css" %}"/>
     <link rel="icon" type="image/png" href="{% static 'silk/favicon-32x32.png' %}" sizes="32x32">
@@ -19,7 +20,6 @@
         background-color: rgb(51, 51, 68);
         color: white;
         cursor: pointer;
-
     }
 
     .cell {
@@ -169,6 +169,7 @@
     }
 
     .button-div {
+        display: inline-block;
         text-align: center;
         height: 50px;
 
@@ -276,8 +277,16 @@
     .filter-section {
         color: white;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 2.3;
         padding: 10px;
+    }
+
+    .filter-section select {
+        margin-bottom: 10px;
+    }
+
+    .filter-section input {
+        padding: 4px;
     }
 
     </style>
@@ -298,15 +307,17 @@
     <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
         <h3>Filters</h3>
 
-        <form id="filter-form2" action="." method="post">{% csrf_token %}</form>
-
-
-        {% block filters %}
-
-        {% endblock %}
+        <form id="filter-form2" action="" method="post">
+            {% csrf_token %}
+            {% block filters %}{% endblock %}
+            <input type="submit" style="display: none">
+        </form>
 
         <div class="button-div">
-            <div class="apply-div" onclick="$('#filter-form2').submit();">Apply</div>
+            <div class="apply-div" onclick="submitEmptyFilters()">Clear all filters</div>
+        </div>
+        <div class="button-div">
+            <div class="apply-div" onclick="submitFilters()">Apply</div>
         </div>
 
     </nav>
@@ -327,7 +338,13 @@
                 initFilters();
             });
         }
+        function submitFilters() {
+            $('#filter-form2').submit();
+        }
+        function submitEmptyFilters() {
+            $('#cbp-spmenu-s2 :input:not([type=hidden])').val('');
+            submitFilters();
+        }
     </script>
 
 {% endblock %}
-

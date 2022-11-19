@@ -1,4 +1,4 @@
-from django.db.models import Avg, Count, Sum, Max
+from django.db.models import Avg, Count, Max, Sum
 from django.shortcuts import render
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
@@ -26,20 +26,20 @@ class SummaryView(View):
 
     # TODO: Find a more efficient way to do this. Currently has to go to DB num. views + 1 times and is prob quite expensive
     def _longest_query_by_view(self, filters):
-        values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).order_by('-max')[:5]
+        values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).filter(max__isnull=False).order_by('-max')[:5]
         requests = []
         for view_name, _ in values_list:
-            request = models.Request.objects.filter(view_name=view_name, *filters).order_by('-time_taken')[0]
+            request = models.Request.objects.filter(view_name=view_name, *filters).filter(time_taken__isnull=False).order_by('-time_taken')[0]
             requests.append(request)
-        return requests
+        return sorted(requests, key=lambda item: item.time_taken, reverse=True)
 
     def _time_spent_in_db_by_view(self, filters):
         values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(t__gte=0).order_by('-t')[:5]
         requests = []
         for view, _ in values_list:
-            r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).order_by('-t')[0]
+            r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).filter(t__isnull=False).order_by('-t')[0]
             requests.append(r)
-        return requests
+        return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _num_queries_by_view(self, filters):
         queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Count('queries')).order_by('-t')[:5]
@@ -51,7 +51,7 @@ class SummaryView(View):
                 requests.append(r)
             except IndexError:
                 pass
-        return requests
+        return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _create_context(self, request):
         raw_filters = request.session.get(self.filters_key, {})

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from django.urls import reverse, NoReverseMatch
 from django.test import TestCase
+from django.urls import NoReverseMatch, reverse
 
 from silk.config import SilkyConfig, default_permissions
 from silk.middleware import silky_reverse
@@ -35,7 +35,6 @@ class TestAuth(TestCase):
         response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
 
-
     def test_custom_authorisation(self):
         SilkyConfig().SILKY_AUTHENTICATION = True
         SilkyConfig().SILKY_AUTHORISATION = True
@@ -55,4 +54,3 @@ class TestAuth(TestCase):
         user.save()
         response = self.client.get(silky_reverse('requests'))
         self.assertEqual(response.status_code, 200)
-

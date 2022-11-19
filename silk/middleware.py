@@ -1,13 +1,12 @@
 import logging
 import random
 
-from django.db import transaction, DatabaseError
-from django.urls import reverse, NoReverseMatch
+from django.db import DatabaseError, transaction
 from django.db.models.sql.compiler import SQLCompiler
+from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 
 from silk.collector import DataCollector
-
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
@@ -28,7 +27,10 @@ def silky_reverse(name, *args, **kwargs):
     return r
 
 
-get_fpath = lambda: silky_reverse('summary')
+def get_fpath():
+    return silky_reverse('summary')
+
+
 config = SilkyConfig()
 
 
@@ -43,12 +45,16 @@ def _should_intercept(request):
         if random.random() > config.SILKY_INTERCEPT_PERCENT / 100.0:
             return False
 
-    silky = request.path.startswith(get_fpath())
+    try:
+        silky = request.path.startswith(get_fpath())
+    except NoReverseMatch:
+        silky = False
+
     ignored = request.path in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
 
-class TestMiddleware(object):
+class TestMiddleware:
     def process_response(self, request, response):
         return response
 
@@ -104,8 +110,15 @@ class SilkyMiddleware:
         if not hasattr(SQLCompiler, '_execute_sql'):
             SQLCompiler._execute_sql = SQLCompiler.execute_sql
             SQLCompiler.execute_sql = execute_sql
+
+        silky_config = SilkyConfig()
+
+        should_profile = silky_config.SILKY_PYTHON_PROFILER
+        if silky_config.SILKY_PYTHON_PROFILER_FUNC:
+            should_profile = silky_config.SILKY_PYTHON_PROFILER_FUNC(request)
+
         request_model = RequestModelFactory(request).construct_request_model()
-        DataCollector().configure(request_model)
+        DataCollector().configure(request_model, should_profile=should_profile)
 
     @transaction.atomic()
     def _process_response(self, request, response):
@@ -115,8 +128,7 @@ class SilkyMiddleware:
             collector.stop_python_profiler()
             silk_request = collector.request
             if silk_request:
-                silk_response = ResponseModelFactory(response).construct_response_model()
-                silk_response.save()
+                ResponseModelFactory(response).construct_response_model()
                 silk_request.end_time = timezone.now()
                 collector.finalise()
             else:

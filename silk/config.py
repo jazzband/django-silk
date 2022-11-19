@@ -26,8 +26,13 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
         'SILKY_PYTHON_PROFILER': False,
+        'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',
-        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware'
+        'SILKY_MIDDLEWARE_CLASS': 'silk.middleware.SilkyMiddleware',
+        'SILKY_JSON_ENSURE_ASCII': True,
+        'SILKY_ANALYZE_QUERIES': False,
+        'SILKY_EXPLAIN_FLAGS': None,
+        'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
     }
 
     def _setup(self):
@@ -39,7 +44,7 @@ class SilkyConfig(metaclass=Singleton):
         self.attrs.update(options)
 
     def __init__(self):
-        super(SilkyConfig, self).__init__()
+        super().__init__()
         self._setup()
 
     def __getattr__(self, item):

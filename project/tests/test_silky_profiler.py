@@ -1,10 +1,11 @@
 from time import sleep
 
 from django.test import TestCase
-from silk.collector import DataCollector
 
+from silk.collector import DataCollector
 from silk.models import Request, _time_taken
 from silk.profiling.profiler import silk_profile
+
 from .test_lib.mock_suite import MockSuite
 
 
@@ -48,14 +49,14 @@ class TestProfilerRequests(TestCase):
 class TestProfilertContextManager(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilertContextManager, cls).setUpClass()
+        super().setUpClass()
         r = Request.objects.create()
         DataCollector().configure(r)
         with silk_profile(name='test_profile'):
             sleep(0.1)
 
     def test_one_object(self):
-        self.assertTrue(len(DataCollector().profiles), 1)
+        self.assertEqual(len(DataCollector().profiles), 1)
 
     def test_name(self):
         profile = list(DataCollector().profiles.values())[0]
@@ -71,7 +72,7 @@ class TestProfilertContextManager(TestCase):
 class TestProfilerDecorator(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilerDecorator, cls).setUpClass()
+        super().setUpClass()
         DataCollector().configure(Request.objects.create())
 
         @silk_profile()
@@ -81,7 +82,7 @@ class TestProfilerDecorator(TestCase):
         func()
 
     def test_one_object(self):
-        self.assertTrue(len(DataCollector().profiles), 1)
+        self.assertEqual(len(DataCollector().profiles), 1)
 
     def test_name(self):
         profile = list(DataCollector().profiles.values())[0]
@@ -91,7 +92,7 @@ class TestProfilerDecorator(TestCase):
         profile = list(DataCollector().profiles.values())[0]
         time_taken = _time_taken(start_time=profile['start_time'], end_time=profile['end_time'])
         self.assertGreaterEqual(time_taken, 100)
-        self.assertLess(time_taken, 110)
+        self.assertLess(time_taken, 115)
 
 
 class TestQueries(TestCase):

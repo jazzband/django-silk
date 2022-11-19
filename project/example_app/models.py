@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from django.db.models import TextField, BooleanField, ImageField
+from django.db.models import BooleanField, ImageField, TextField
 
 
 class Product(models.Model):
@@ -17,3 +17,12 @@ class Blind(Product):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                condition=~models.Q(name=""),
+                name="unique_name_if_provided",
+            ),
+        ]

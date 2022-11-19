@@ -1,10 +1,11 @@
-import random
+from unittest.mock import Mock
 
 from django.test import TestCase
-from mock import Mock
 
-from .test_lib.mock_suite import MockSuite
 from silk.views.profiling import ProfilingView
+
+from .test_lib.assertion import dict_contains
+from .test_lib.mock_suite import MockSuite
 
 
 class TestProfilingViewDefaults(TestCase):
@@ -25,13 +26,12 @@ class TestProfilingViewDefaults(TestCase):
 class TestProfilingViewGetObjects(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProfilingViewGetObjects, cls).setUpClass()
+        super().setUpClass()
         cls.profiles = [MockSuite().mock_profile() for _ in range(0, 10)]
 
     def test_ordering(self):
         results = ProfilingView()._get_objects(order_by='Recent')
         self.assertSorted(results, 'start_time')
-
 
     def test_show(self):
         results = ProfilingView()._get_objects(show=5)
@@ -60,13 +60,13 @@ class TestProfilingContext(TestCase):
         request.GET = {}
         request.session = {}
         context = ProfilingView()._create_context(request)
-        self.assertDictContainsSubset({
-                                          'show': ProfilingView.default_show,
-                                          'order_by': ProfilingView.defualt_order_by,
-                                          'options_show': ProfilingView.show,
-                                          'options_order_by': ProfilingView.order_by,
-                                          'options_func_names': ProfilingView()._get_function_names()
-                                      }, context)
+        self.assertTrue(dict_contains({
+            'show': ProfilingView.default_show,
+            'order_by': ProfilingView.defualt_order_by,
+            'options_show': ProfilingView.show,
+            'options_order_by': ProfilingView.order_by,
+            'options_func_names': ProfilingView()._get_function_names()
+        }, context))
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -82,13 +82,13 @@ class TestProfilingContext(TestCase):
                        'name': name,
                        'order_by': order_by}
         context = ProfilingView()._create_context(request)
-        self.assertDictContainsSubset({
-                                          'show': show,
-                                          'order_by': order_by,
-                                          'func_name': func_name,
-                                          'name': name,
-                                          'options_show': ProfilingView.show,
-                                          'options_order_by': ProfilingView.order_by,
-                                          'options_func_names': ProfilingView()._get_function_names()
-                                      }, context)
+        self.assertTrue(dict_contains({
+            'show': show,
+            'order_by': order_by,
+            'func_name': func_name,
+            'name': name,
+            'options_show': ProfilingView.show,
+            'options_order_by': ProfilingView.order_by,
+            'options_func_names': ProfilingView()._get_function_names()
+        }, context))
         self.assertIn('results', context)
