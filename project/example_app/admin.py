@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 
-from .models import Blind
+from .models import Blind, Category
 
 
 class BlindAdmin(admin.ModelAdmin):
@@ -33,3 +33,4 @@ class BlindAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Blind, BlindAdmin)
+admin.site.register(Category, admin.ModelAdmin)

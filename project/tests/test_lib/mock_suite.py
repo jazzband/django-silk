@@ -82,8 +82,10 @@ class MockSuite:
         queries = []
         for _ in range(0, n):
             tb = ''.join(reversed(traceback.format_stack()))
+            random_query = self._random_query()
             d = {
-                'query': self._random_query(),
+                'query': random_query,
+                'query_structure': random_query,
                 'start_time': start_time,
                 'end_time': end_time,
                 'request': request,

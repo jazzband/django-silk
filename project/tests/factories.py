@@ -1,6 +1,5 @@
-import factory
 import factory.fuzzy
-from example_app.models import Blind
+from example_app.models import Blind, Category
 
 from silk.models import Request, Response, SQLQuery
 
@@ -34,10 +33,18 @@ class ResponseFactory(factory.django.DjangoModelFactory):
         model = Response
 
 
+class CategoryFactory(factory.django.DjangoModelFactory):
+    name = factory.Faker('pystr', min_chars=5, max_chars=10)
+
+    class Meta:
+        model = Category
+
+
 class BlindFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('pystr', min_chars=5, max_chars=10)
     child_safe = factory.Faker('pybool')
     photo = factory.django.ImageField()
+    category = factory.SubFactory(CategoryFactory)
 
     class Meta:
         model = Blind

@@ -30,8 +30,9 @@ class SQLView(View):
                 duplicate_queries[q.query_structure] += 1
             structures = list(duplicate_queries.keys())
             for q in query_set:
-                q.num_duplicates = duplicate_queries[q.query_structure]
-                q.duplicate_id = structures.index(q.query_structure)
+                if q.query_structure:
+                    q.num_duplicates = duplicate_queries[q.query_structure]
+                    q.duplicate_id = structures.index(q.query_structure)
             page = _page(request, query_set)
             context['silk_request'] = silk_request
         if profile_id:
