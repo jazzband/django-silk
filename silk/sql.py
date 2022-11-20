@@ -1,8 +1,9 @@
+import contextlib
 import logging
 import traceback
 
 from django.apps import apps
-from django.db import connection
+from django.db import NotSupportedError, connection
 from django.utils import timezone
 from django.utils.encoding import force_str
 
@@ -83,16 +84,18 @@ class SilkQueryWrapper:
             return False
 
         # Must not try to explain 'EXPLAIN' queries or transaction stuff
-        if any(
-            sql_query.startswith(keyword)
-            for keyword in [
-                'SAVEPOINT',
-                'RELEASE SAVEPOINT',
-                'ROLLBACK TO SAVEPOINT',
-                'PRAGMA',
-                connection.ops.explain_query_prefix(),
-            ]
-        ):
+        unexplainable_keywords = [
+            'SAVEPOINT',
+            'RELEASE SAVEPOINT',
+            'ROLLBACK TO SAVEPOINT',
+            'SET SESSION TRANSACTION',
+            'SET CONSTRAINTS',
+            'PRAGMA',
+        ]
+        with contextlib.suppress(ValueError, NotSupportedError):
+            unexplainable_keywords.append(connection.ops.explain_query_prefix())
+            unexplainable_keywords.append(connection.ops.explain_query_prefix(analyze=True))
+        if any(sql_query.startswith(keyword) for keyword in unexplainable_keywords):
             return False
 
         for ignore_str in SilkyConfig().SILKY_IGNORE_QUERIES:
