@@ -1,24 +1,14 @@
 import logging
 import traceback
 
-from django.core.exceptions import EmptyResultSet
+from django.apps import apps
+from django.db import connection
 from django.utils import timezone
 from django.utils.encoding import force_str
 
-from silk.collector import DataCollector
 from silk.config import SilkyConfig
 
 Logger = logging.getLogger('silk.sql')
-
-
-def _should_wrap(sql_query):
-    if not DataCollector().request:
-        return False
-
-    for ignore_str in SilkyConfig().SILKY_IGNORE_QUERIES:
-        if ignore_str in sql_query:
-            return False
-    return True
 
 
 def _unpack_explanation(result):
@@ -34,16 +24,14 @@ def _explain_query(connection, q, params):
         if SilkyConfig().SILKY_ANALYZE_QUERIES:
             # Work around some DB engines not supporting analyze option
             try:
-                prefix = connection.ops.explain_query_prefix(
-                    analyze=True, **(SilkyConfig().SILKY_EXPLAIN_FLAGS or {})
-                )
+                prefix = connection.ops.explain_query_prefix(analyze=True, **(SilkyConfig().SILKY_EXPLAIN_FLAGS or {}))
             except ValueError as error:
                 error_str = str(error)
                 if error_str.startswith("Unknown options:"):
                     Logger.warning(
-                        "Database does not support analyzing queries with provided params. %s."
+                        "Database does not support analyzing queries with provided params. %s. "
                         "SILKY_ANALYZE_QUERIES option will be ignored",
-                        error_str
+                        error_str,
                     )
                     prefix = connection.ops.explain_query_prefix()
                 else:
@@ -61,40 +49,53 @@ def _explain_query(connection, q, params):
     return None
 
 
-def execute_sql(self, *args, **kwargs):
-    """wrapper around real execute_sql in order to extract information"""
+class SilkQueryWrapper:
+    def __init__(self):
+        # Local import to prevent messing app.ready()
+        from silk.collector import DataCollector
 
-    try:
-        q, params = self.as_sql()
-        if not q:
-            raise EmptyResultSet
-    except EmptyResultSet:
+        self.data_collector = DataCollector()
+        self.silk_model_table_names = [model._meta.db_table for model in apps.get_app_config('silk').get_models()]
+
+    def __call__(self, execute, sql, params, many, context):
+        sql_query = sql % tuple(force_str(param) for param in params) if params else sql
+        query_dict = None
+        if self._should_wrap(sql_query):
+            tb = ''.join(reversed(traceback.format_stack()))
+            query_dict = {'query': sql_query, 'start_time': timezone.now(), 'traceback': tb}
         try:
-            result_type = args[0]
-        except IndexError:
-            result_type = kwargs.get('result_type', 'multi')
-        if result_type == 'multi':
-            return iter([])
-        else:
-            return
-    sql_query = q % tuple(force_str(param) for param in params)
-    if _should_wrap(sql_query):
-        tb = ''.join(reversed(traceback.format_stack()))
-        query_dict = {
-            'query': sql_query,
-            'start_time': timezone.now(),
-            'traceback': tb
-        }
-        try:
-            return self._execute_sql(*args, **kwargs)
+            return execute(sql, params, many, context)
         finally:
-            query_dict['end_time'] = timezone.now()
-            request = DataCollector().request
-            if request:
-                query_dict['request'] = request
-            if getattr(self.query.model, '__module__', '') != 'silk.models':
-                query_dict['analysis'] = _explain_query(self.connection, q, params)
-                DataCollector().register_query(query_dict)
-            else:
-                DataCollector().register_silk_query(query_dict)
-    return self._execute_sql(*args, **kwargs)
+            if query_dict:
+                query_dict['end_time'] = timezone.now()
+                request = self.data_collector.request
+                if request:
+                    query_dict['request'] = request
+                if not any(table_name in sql_query for table_name in self.silk_model_table_names):
+                    query_dict['analysis'] = _explain_query(connection, sql, params)
+                    self.data_collector.register_query(query_dict)
+                else:
+                    self.data_collector.register_silk_query(query_dict)
+
+    def _should_wrap(self, sql_query):
+        # Must have a request ongoing
+        if not self.data_collector.request:
+            return False
+
+        # Must not try to explain 'EXPLAIN' queries or transaction stuff
+        if any(
+            sql_query.startswith(keyword)
+            for keyword in [
+                'SAVEPOINT',
+                'RELEASE SAVEPOINT',
+                'ROLLBACK TO SAVEPOINT',
+                'PRAGMA',
+                connection.ops.explain_query_prefix(),
+            ]
+        ):
+            return False
+
+        for ignore_str in SilkyConfig().SILKY_IGNORE_QUERIES:
+            if ignore_str in sql_query:
+                return False
+        return True
