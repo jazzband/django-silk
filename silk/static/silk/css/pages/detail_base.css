@@ -1,0 +1,32 @@
+#traceback {
+  overflow: visible;
+}
+
+#time-div {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#query-div {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#query {
+  text-align: left;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.line {
+  width: 100%;
+  display: inline-block;
+}
+
+.the-line {
+  background-color: #c3c3c3;
+}
+
+pre {
+  margin: 0;
+}

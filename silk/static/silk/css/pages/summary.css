@@ -1,0 +1,51 @@
+.wrapper {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.inner {
+  margin: auto;
+  width: 960px;
+}
+
+.summary-cell {
+  display: inline-block;
+  text-align: center;
+  padding: 10px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.summary-cell .desc {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.no-data {
+  font-size: 12px;
+  font-style: oblique;
+  margin-left: 10px;
+}
+
+h2 {
+  margin-bottom: 0;
+}
+
+#filters {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+#filters input,
+#filters span {
+  color: black !important;
+  font-weight: bold;
+}
+
+#filter-image {
+  width: 20px;
+}
+
+#filter-cell {
+  padding-left: 5px;
+}

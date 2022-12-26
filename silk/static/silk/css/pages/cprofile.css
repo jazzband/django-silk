@@ -1,0 +1,52 @@
+#query-info-div {
+  margin-top: 15px;
+}
+
+#query-info-div .timestamp-div {
+  font-size: 13px;
+}
+
+#pyprofile-div {
+  display: block;
+  margin: auto;
+  width: 960px;
+}
+
+.pyprofile {
+  text-align: left;
+}
+
+a {
+  color: #45ADA8;
+}
+
+a:visited {
+  color: #45ADA8;
+}
+
+a:hover {
+  color: #547980;
+}
+
+a:active {
+  color: #594F4F;
+}
+
+#graph-div {
+  padding: 25px;
+  background-color: white;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 25px;
+  width: 960px;
+  text-align: center;
+}
+
+#percent {
+  width: 20px;
+}
+
+svg {
+  display: block;
+}

@@ -1,0 +1,19 @@
+.container {
+  padding: 0 1em;
+}
+
+.resizing-input input {
+  background-color: white;
+  padding-top: 2px;
+  color: black;
+  box-shadow: inset 0 0 3px black;
+}
+
+.resizing-input input::placeholder {
+  color: #383838;
+  opacity: 1;
+}
+
+.filter-section {
+  line-height: 2.3;
+}

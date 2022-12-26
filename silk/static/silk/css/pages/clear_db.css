@@ -1,0 +1,41 @@
+.wrapper {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.inner {
+  margin: auto;
+  width: 960px;
+}
+
+.cleardb-form .cleardb-form-wrapper {
+  margin-bottom: 20px;
+}
+
+.cleardb-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.cleardb-form .btn {
+  background: #333344;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: none;
+  font-size: 16px;
+  line-height: 20px;
+  border: 0;
+  min-width: 150px;
+  text-align: center;
+}
+
+.cleardb-form label :last-child {
+  margin-bottom: 0;
+}
+
+.msg {
+  margin-top: 20px;
+  color: #bac54b;
+}
