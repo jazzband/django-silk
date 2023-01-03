@@ -2,6 +2,7 @@ from django.test import TestCase
 from tests.util import DictStorage
 
 from silk.collector import DataCollector
+from silk.config import SilkyConfig
 
 from .factories import RequestMinFactory
 
@@ -45,3 +46,23 @@ class TestCollector(TestCase):
                 content = f.read()
                 self.assertTrue(content)
                 self.assertGreater(len(content), 0)
+
+    def test_profile_file_name(self):
+        request = RequestMinFactory()
+        DataCollector().configure(request)
+        expected_file_name_prefix = request.path.replace('/', '_').lstrip('_')
+        print(expected_file_name_prefix)
+
+        with self.subTest("With disabled extended file name"):
+            SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = False
+            DataCollector().finalise()
+            file = DataCollector().request.prof_file
+            result_file_name = file.name.rsplit('/')[-1]
+            self.assertFalse(result_file_name.startswith(f"{expected_file_name_prefix}_"))
+
+        with self.subTest("With enabled extended file name"):
+            SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
+            DataCollector().finalise()
+            file = DataCollector().request.prof_file
+            result_file_name = file.name.rsplit('/')[-1]
+            self.assertTrue(result_file_name.startswith(f"{expected_file_name_prefix}_"))

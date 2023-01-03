@@ -143,7 +143,8 @@ class DataCollector(metaclass=Singleton):
             self.request.pyprofile = profile_text
 
             if SilkyConfig().SILKY_PYTHON_PROFILER_BINARY:
-                file_name = self.request.prof_file.storage.get_available_name(f"{str(self.request.id)}.prof")
+                proposed_file_name = self._get_proposed_file_name()
+                file_name = self.request.prof_file.storage.get_available_name(proposed_file_name)
                 with self.request.prof_file.storage.open(file_name, 'w+b') as f:
                     marshal.dump(ps.stats, f)
                 self.request.prof_file = f.name
@@ -189,3 +190,11 @@ class DataCollector(metaclass=Singleton):
 
     def register_silk_query(self, *args):
         self.register_objects(TYP_SILK_QUERIES, *args)
+
+    def _get_proposed_file_name(self):
+        """Retrieve the profile file name to be proposed to the storage"""
+
+        if SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME:
+            request_path = self.request.path.replace('/', '_').lstrip('_')
+            return f"{request_path}_{str(self.request.id)}.prof"
+        return f"{str(self.request.id)}.prof"
