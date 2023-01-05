@@ -492,6 +492,8 @@ To enable query analysis when supported by the dbms a config var can be set in o
 SILKY_ANALYZE_QUERIES = True
 ```
 
+**Warning:** This setting may cause the database to execute the same query twice, depending on the backend. For instance, `EXPLAIN ANALYZE` in Postgres will [actually execute the query](https://www.postgresql.org/docs/current/sql-explain.html), which may result in unexpected data updates. Set this to True with caution.
+
 To pass additional params for profiling when supported by the dbms (e.g. VERBOSE, FORMAT JSON), you can do this in the following manner.
 
 ```python

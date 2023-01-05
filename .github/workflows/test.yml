@@ -14,6 +14,20 @@ jobs:
         postgres-version: ['11', '12']
         mariadb-version: ['10.3', '10.4']
         exclude:
+          # Django >=4.0 drops support for python 3.7 (https://docs.djangoproject.com/en/4.1/faq/install/)
+          - python-version: '3.7'
+            django-version: '4.0'
+          - python-version: '3.7'
+            django-version: '4.1'
+          - python-version: '3.7'
+            django-version: 'main'
+
+          # Django <=4.0 doesn't support python 3.11 (https://docs.djangoproject.com/en/4.1/faq/install/)
+          - python-version: '3.11'
+            django-version: '3.2'
+          - python-version: '3.11'
+            django-version: '4.0'
+
           # only test Django dev with PostgreSQL 12 and MariaDB 10.4
           - django-version: '3.2'
             postgres-version: '12'
