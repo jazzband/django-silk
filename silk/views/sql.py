@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -20,10 +22,17 @@ class SQLView(View):
             'request': request,
         }
         if request_id:
+            duplicate_queries = defaultdict(lambda: -1)
             silk_request = Request.objects.get(id=request_id)
             query_set = SQLQuery.objects.filter(request=silk_request).order_by('-start_time')
             for q in query_set:
                 q.start_time_relative = q.start_time - silk_request.start_time
+                duplicate_queries[q.query_structure] += 1
+            structures = list(duplicate_queries.keys())
+            for q in query_set:
+                if q.query_structure:
+                    q.num_duplicates = duplicate_queries[q.query_structure]
+                    q.duplicate_id = structures.index(q.query_structure)
             page = _page(request, query_set)
             context['silk_request'] = silk_request
         if profile_id:

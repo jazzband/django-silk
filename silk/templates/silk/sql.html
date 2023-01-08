@@ -41,7 +41,7 @@
             height: 20px;
         }
 
-        tr.data-row:hover {
+        tr.data-row:hover, tr.data-row.highlight {
             background-color: rgb(51, 51, 68);
             color: white;
             cursor: pointer;
@@ -109,10 +109,14 @@
                     <th class="left-aligned">Tables</th>
                     <th class="right-aligned">Num. Joins</th>
                     <th class="right-aligned">Execution Time (ms)</th>
+                    <th class="right-aligned">Num. Duplicates</th>
                 </tr>
                 {% for sql_query in items %}
                     <!-- TODO: Pretty grimy... -->
-                    <tr class="data-row" onclick="window.location=' \
+                    <tr
+                        class="data-row"
+                        data-duplicate-id="{{ sql_query.duplicate_id }}"
+                        onclick="window.location=' \
                        {% if profile and silk_request %}\
                            {% url "silk:request_and_profile_sql_detail" silk_request.id profile.id sql_query.id %}\
                        {% elif profile %}\
@@ -126,6 +130,7 @@
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
                         <td class="right-aligned">{{ sql_query.num_joins }}</td>
                         <td class="right-aligned">{{ sql_query.time_taken | floatformat:6 }}</td>
+                        <td class="right-aligned">{{ sql_query.num_duplicates }}</td>
                     </tr>
                 {% endfor %}
 
@@ -153,8 +158,20 @@
         </div>
     </div>
 
-
-
+<script>
+    const rows = document.querySelectorAll('tr.data-row').forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+            document.querySelectorAll('tr[data-duplicate-id="' + row.dataset.duplicateId + '"]').forEach(function (e) {
+                e.classList.add('highlight');
+            });
+        });
+        row.addEventListener('mouseleave', function () {
+            document.querySelectorAll('tr[data-duplicate-id="' + row.dataset.duplicateId + '"]').forEach(function (e) {
+                e.classList.remove('highlight');
+            });
+        });
+    });
+</script>
 
 
 {% endblock %}

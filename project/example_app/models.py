@@ -1,19 +1,28 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
-from django.db.models import BooleanField, ImageField, TextField
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = _("Categories")
 
 
 class Product(models.Model):
-    photo = ImageField(upload_to='products')
+    photo = models.ImageField(upload_to='products')
 
     class Meta:
         abstract = True
 
 
 class Blind(Product):
-    name = TextField()
-    child_safe = BooleanField(default=False)
+    name = models.TextField()
+    child_safe = models.BooleanField(default=False)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name

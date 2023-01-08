@@ -14,12 +14,14 @@
         <th>Photo</th>
         <th>Name</th>
         <th>Child safe?</th>
+        <th>Category</th>
     </tr>
     {% for blind in blinds %}
         <tr>
             <td>{% if blind.photo %}<img class="blind" src="{{ blind.photo.url }}">{% endif %}</td>
             <td>{{ blind.name }}</td>
             <td>{% if blind.child_safe %}Yes{% else %}No{% endif %}</td>
+            <td>{{ blind.category }}</td>
         </tr>
     {% endfor %}
 </table>

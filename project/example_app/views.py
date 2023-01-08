@@ -21,5 +21,5 @@ def index(request):
 
 class ExampleCreateView(CreateView):
     model = models.Blind
-    fields = ['name']
+    fields = ['name', 'category']
     success_url = reverse_lazy('example_app:index')
