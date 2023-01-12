@@ -6,7 +6,6 @@ from django.test import TestCase
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory
 
-DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
 HTTP_CONTENT_TYPE = 'Content-Type'
 CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
 DEFAULT_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
@@ -130,9 +129,9 @@ class TestEncodingForRequests(TestCase):
 
     def test_password_in_body(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'text/plain'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'text/plain'}
         mock_request.body = 'username=test_username&unmasked=testunmasked&password=testpassword'
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
 
@@ -144,11 +143,11 @@ class TestEncodingForRequests(TestCase):
 
     def test_password_in_json(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword',
              'prefixed-secret': 'testsecret'}
         mock_request.body = json.dumps(d)
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertIn('testunmasked', raw_body)
@@ -167,13 +166,13 @@ class TestEncodingForRequests(TestCase):
 
     def test_password_in_batched_json(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = [
             {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword'},
             {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword'}
         ]
         mock_request.body = json.dumps(d)
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertIn('testunmasked', raw_body)
@@ -192,9 +191,9 @@ class TestEncodingForRequests(TestCase):
 
     def test_authorization_header(self):
         mock_request = Mock()
-        mock_request.META = {'HTTP_AUTHORIZATION': 'secret'}
+        mock_request.headers = {'HTTP_AUTHORIZATION': 'secret'}
         mock_request.body = ''
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)

@@ -5,7 +5,6 @@ from django.test import TestCase
 
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
-DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
 HTTP_CONTENT_TYPE = 'Content-Type'
 
 
@@ -16,9 +15,9 @@ class TestEncodingForRequests(TestCase):
 
     def test_utf_plain(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'text/plain; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'text/plain; charset=UTF-8'}
         mock_request.body = '语'
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertFalse(body)
@@ -26,9 +25,9 @@ class TestEncodingForRequests(TestCase):
 
     def test_plain(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'text/plain'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'text/plain'}
         mock_request.body = 'sdfsdf'
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertFalse(body)
@@ -36,10 +35,10 @@ class TestEncodingForRequests(TestCase):
 
     def test_utf_json_not_encoded(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': '语'}
         mock_request.body = json.dumps(d)
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -47,10 +46,10 @@ class TestEncodingForRequests(TestCase):
 
     def test_utf_json_encoded(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
         d = {'x': '语'}
         mock_request.body = json.dumps(d).encode('UTF-8')
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -59,10 +58,10 @@ class TestEncodingForRequests(TestCase):
     def test_utf_json_encoded_no_charset(self):
         """default to UTF-8"""
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json'}
         d = {'x': '语'}
         mock_request.body = json.dumps(d).encode('UTF-8')
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertDictEqual(json.loads(body), d)
@@ -70,10 +69,10 @@ class TestEncodingForRequests(TestCase):
 
     def test_invalid_encoding_json(self):
         mock_request = Mock()
-        mock_request.META = {DJANGO_META_CONTENT_TYPE: 'application/json; charset=asdas-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=asdas-8'}
         d = {'x': '语'}
         mock_request.body = json.dumps(d).encode('UTF-8')
-        mock_request.get = mock_request.META.get
+        mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
         self.assertDictEqual(json.loads(body), d)

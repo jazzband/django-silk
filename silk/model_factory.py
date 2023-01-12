@@ -70,31 +70,21 @@ class RequestModelFactory:
         self.request = request
 
     def content_type(self):
-        content_type = self.request.META.get('CONTENT_TYPE', '')
+        content_type = self.request.headers.get('content-type', '')
         return _parse_content_type(content_type)
 
     def encoded_headers(self):
         """
         From Django docs (https://docs.djangoproject.com/en/2.0/ref/request-response/#httprequest-objects):
-
-        "With the exception of CONTENT_LENGTH and CONTENT_TYPE, as given above, any HTTP headers in the request are converted to
-        META keys by converting all characters to uppercase, replacing any hyphens with underscores and adding an HTTP_ prefix
-        to the name. So, for example, a header called X-Bender would be mapped to the META key HTTP_X_BENDER."
         """
         headers = {}
-        sensitive_headers = {'AUTHORIZATION'}
+        sensitive_headers = {'authorization'}
 
-        for k, v in self.request.META.items():
-            if k.startswith('HTTP') or k in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
-                splt = k.split('_')
-                if splt[0] == 'HTTP':
-                    splt = splt[1:]
-                k = '-'.join(splt)
+        for k, v in self.request.headers.items():
+            if k in sensitive_headers:
+                v = RequestModelFactory.CLEANSED_SUBSTITUTE
 
-                if k in sensitive_headers:
-                    v = RequestModelFactory.CLEANSED_SUBSTITUTE
-
-                headers[k] = v
+            headers[k] = v
         if SilkyConfig().SILKY_HIDE_COOKIES:
             try:
                 del headers['COOKIE']
