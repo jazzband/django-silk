@@ -45,6 +45,7 @@ class TestMaxBodySizeResponse(TestCase):
         mock_response.headers = {'content-type': 'text/plain'}
         mock_response.content = b'a' * 1000  # 1000 bytes?
         mock_response.status_code = 200
+        mock_response.get = mock_response.headers.get
         response_model = ResponseModelFactory(mock_response).construct_response_model()
         self.assertTrue(response_model.raw_body)
 
@@ -54,5 +55,6 @@ class TestMaxBodySizeResponse(TestCase):
         mock_response.headers = {'content-type': 'text/plain'}
         mock_response.content = b'a' * 1024 * 100  # 100kb
         mock_response.status_code = 200
+        mock_response.get = mock_response.headers.get
         response_model = ResponseModelFactory(mock_response).construct_response_model()
         self.assertFalse(response_model.raw_body)
