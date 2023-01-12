@@ -191,12 +191,12 @@ class TestEncodingForRequests(TestCase):
 
     def test_authorization_header(self):
         mock_request = Mock()
-        mock_request.headers = {'HTTP_AUTHORIZATION': 'secret'}
+        mock_request.headers = {'authorization': 'secret'}
         mock_request.body = ''
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
 
-        self.assertIn('AUTHORIZATION', json_headers)
-        self.assertEqual(json_headers['AUTHORIZATION'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertIn('authorization', json_headers)
+        self.assertEqual(json_headers['authorization'], RequestModelFactory.CLEANSED_SUBSTITUTE)
