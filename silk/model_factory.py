@@ -46,10 +46,6 @@ class DefaultEncoder(json.JSONEncoder):
 
 def _parse_content_type(content_type):
     """best efforts on pulling out the content type and encoding from Content-Type header"""
-    try:
-        content_type = content_type.strip()
-    except AttributeError:
-        pass
     char_set = None
     if content_type.strip():
         splt = content_type.split(';')
