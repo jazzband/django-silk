@@ -45,7 +45,7 @@ class DefaultEncoder(json.JSONEncoder):
 
 
 def _parse_content_type(content_type):
-    """best efforts on pulling out the content type and encoding from Content-Type header"""
+    """best efforts on pulling out the content type and encoding from content-type header"""
     char_set = None
     if content_type.strip():
         splt = content_type.split(';')
@@ -267,7 +267,7 @@ class ResponseModelFactory:
 
     def body(self):
         body = ''
-        content_type, char_set = _parse_content_type(self.response.get('Content-Type', ''))
+        content_type, char_set = _parse_content_type(self.response.get('content-type', ''))
         content = getattr(self.response, 'content', '')
         if content:
             max_body_size = SilkyConfig().SILKY_MAX_RESPONSE_BODY_SIZE

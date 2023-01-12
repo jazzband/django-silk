@@ -5,7 +5,7 @@ from django.template import Context, Template
 
 curl_template = """
 curl {% if method %}-X {{ method }}{% endif %}
-{% if content_type %}-H 'Content-Type: {{ content_type }}'{% endif %}
+{% if content_type %}-H 'content-type: {{ content_type }}'{% endif %}
 {% if modifier %}{{ modifier }} {% endif %}{% if body %}'{{ body }}'{% endif %}
 {{ url }}{% if query_params %}{{ query_params }}{% endif %}
 {% if extra %}{{ extra }}{% endif %}
