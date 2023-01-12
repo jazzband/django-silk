@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 
-HTTP_CONTENT_TYPE = 'Content-Type'
+HTTP_CONTENT_TYPE = 'content-type'
 
 
 class TestEncodingForRequests(TestCase):

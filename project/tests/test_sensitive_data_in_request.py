@@ -6,7 +6,7 @@ from django.test import TestCase
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory
 
-HTTP_CONTENT_TYPE = 'Content-Type'
+HTTP_CONTENT_TYPE = 'content-type'
 CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
 DEFAULT_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
 

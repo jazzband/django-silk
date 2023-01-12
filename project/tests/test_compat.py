@@ -6,7 +6,7 @@ from django.test import TestCase
 from silk.model_factory import ResponseModelFactory
 
 DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
-HTTP_CONTENT_TYPE = 'Content-Type'
+HTTP_CONTENT_TYPE = 'content-type'
 
 
 class TestByteStringCompatForResponse(TestCase):
