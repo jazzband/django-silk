@@ -1,8 +1,8 @@
-from django.urls import include, re_path
+from django.urls import include, path
 
 urlpatterns = [
-    re_path(
-        r'^example_app/',
+    path(
+        'example_app/',
         include('example_app.urls', namespace='example_app')
     ),
 ]
