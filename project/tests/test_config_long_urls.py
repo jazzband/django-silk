@@ -10,7 +10,7 @@ class TestLongRequestUrl(TestCase):
     def test_no_long_url(self):
         url = '1234567890' * 19  # 190-character URL
         mock_request = Mock()
-        mock_request.META = {'CONTENT_TYPE': 'text/plain'}
+        mock_request.headers = {'content-type': 'text/plain'}
         mock_request.GET = {}
         mock_request.path = url
         mock_request.method = 'get'
@@ -20,7 +20,7 @@ class TestLongRequestUrl(TestCase):
     def test_long_url(self):
         url = '1234567890' * 200  # 2000-character URL
         mock_request = Mock()
-        mock_request.META = {'CONTENT_TYPE': 'text/plain'}
+        mock_request.headers = {'content-type': 'text/plain'}
         mock_request.GET = {}
         mock_request.method = 'get'
         mock_request.path = url

@@ -10,7 +10,7 @@ class TestMultipartForms(TestCase):
 
     def test_no_max_request(self):
         mock_request = Mock()
-        mock_request.META = {'CONTENT_TYPE': multipart_form}
+        mock_request.headers = {'content-type': multipart_form}
         mock_request.GET = {}
         mock_request.path = reverse('silk:requests')
         mock_request.method = 'post'
