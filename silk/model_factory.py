@@ -27,17 +27,6 @@ content_type_html = ['text/html']
 content_type_css = ['text/css']
 
 
-def _get_response_headers(response):
-    """
-    Django 3.2 (more specifically, commit bcc2befd0e9c1885e45b46d0b0bcdc11def8b249) broke the usage of _headers, which
-    were turned into a public interface, so we need this compatibility wrapper.
-    """
-    try:
-        return response.headers
-    except AttributeError:
-        return response._headers
-
-
 class DefaultEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, UUID):
@@ -322,9 +311,8 @@ class ResponseModelFactory:
             % self.request.pk
         )
         b, content = self.body()
-        raw_headers = _get_response_headers(self.response)
         headers = {}
-        for k, v in raw_headers.items():
+        for k, v in self.response.headers.items():
             try:
                 header, val = v
             except ValueError:
