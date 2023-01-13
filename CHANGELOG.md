@@ -1,6 +1,26 @@
 # Change Log
 ## Unreleased
 
+## [5.0.3](https://github.com/jazzband/django-silk/tree/5.0.3) (2023-01-12)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.2..5.0.3)
+
+**Fixes:**
+
+ - #46 Retain ordering, view style and limit (#614)
+ - #157 prevent encoding errors in params (#617)
+ - #594 Silk fails on constraint check queries (#618) (Fixes compatibility with Django 4.1)
+
+**Features/Enhancements:**
+
+ - #132 Add action on sql query list (#611)
+ - traceback only when needed (#387)
+
+**Dependencies:**
+
+ - #625 Drop dependency to jinja2
+
+
 ## [5.0.2](https://github.com/jazzband/django-silk/tree/5.0.2) (2022-10-12)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.1...5.0.2)
