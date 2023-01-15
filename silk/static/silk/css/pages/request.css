@@ -1,0 +1,64 @@
+pre {
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  /*noinspection CssInvalidElement*/
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+.cell {
+  background-color: transparent;
+  margin-top: 15px;
+}
+
+div.wrapper {
+  width: 100%;
+}
+
+div.wrapper div#request-summary {
+  margin: auto;
+  text-align: center;
+  width: 100%;
+}
+
+div.wrapper div#request-info {
+  width: 960px;
+  margin: auto auto 20px;
+}
+
+a {
+  color: #45ADA8;
+}
+
+a:visited {
+  color: #45ADA8;
+}
+
+a:hover {
+  color: #547980;
+}
+
+a:active {
+  color: #594F4F;
+}
+
+.headers {
+  font-size: 12px;
+  font-family: Fantasque;
+  background-color: white;
+  width: 100%;
+}
+
+.headers tr:hover {
+  background-color: #f4f4f4;
+}
+
+.headers td {
+  padding-bottom: 5px;
+  padding-left: 5px;
+}
+
+.headers .key {
+  font-weight: bold;
+}

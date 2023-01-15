@@ -1,0 +1,16 @@
+.name-div {
+  font-weight: bold;
+}
+
+.container {
+  padding: 0 1em;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+.pyprofile {
+  overflow: scroll;
+  max-height: 650px;
+}

@@ -12,29 +12,7 @@
 
 {% block style %}
     {{ block.super }}
-    <style>
-        .name-div {
-            font-weight: bold;
-        }
-
-        .container {
-            padding: 0 1em;
-        }
-
-        .description {
-
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        .pyprofile {
-            overflow: scroll;
-            max-height: 650px;
-        }
-    </style>
-
+    <link rel="stylesheet" href="{% static 'silk/css/pages/profiling.css' %}"/>
 {% endblock %}
 
 {% block filter %}
@@ -73,13 +51,7 @@
 
 {% block js %}
     {{ block.super }}
-    <script>
-
-        $(document).ready(function () {
-            initFilters();
-            initFilterButton();
-        });
-    </script>
+    <script src="{% static 'silk/js/pages/profiling.js' %}"></script>
 {% endblock %}
 
 {% block filters %}

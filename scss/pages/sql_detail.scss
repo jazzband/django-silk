@@ -1,0 +1,59 @@
+#traceback {
+  width: 960px;
+  margin: auto;
+}
+
+#traceback pre {
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+}
+
+#traceback .not-third-party {
+  font-weight: bold;
+}
+
+a:hover {
+  color: #9dd0ff;
+}
+
+a:active {
+  color: #594F4F;
+}
+
+code {
+  background-color: transparent !important;
+}
+
+#query-div pre {
+  background-color: transparent !important;
+}
+
+#query-div {
+  padding-top: 15px;
+}
+
+#query-info-div div {
+  padding-top: 5px;
+}
+
+#query-plan-div {
+  text-align: left;
+  width: 960px;
+  margin: auto;
+}
+
+#plan-div code {
+  margin: auto !important;
+  display: inline-block;
+}
+
+#query-plan-head {
+  padding-top: 5px;
+  padding-bottom: 15px;
+  text-align: center;
+  margin: auto;
+}
+
+.file-path {
+  font-size: 13px;
+}

@@ -1,85 +1,17 @@
 {% extends "silk/base/detail_base.html" %}
+{% load static %}
 {% load silk_filters %}
 {% load silk_nav %}
 {% load silk_inclusion %}
 
 {% block js %}
     {{ block.super }}
-    <script>
-        $(document).ready(function () {
-            configureSpanFontColors($('#num-joins-div').find('.numeric'), 3, 5);
-            configureSpanFontColors($('#time-taken-div').find('.numeric'), 200, 500);
-        });
-    </script>
+    <script src="{% static 'silk/js/pages/sql_detail.js' %}"></script>
 {% endblock %}
 
 {% block style %}
     {{ block.super }}
-    <style>
-        #traceback {
-            width: 960px;
-            margin: auto;
-        }
-
-        #traceback pre {
-            margin-top: 15px !important;
-            margin-bottom: 15px !important;
-        }
-
-        #traceback .not-third-party {
-            font-weight: bold;
-        }
-
-
-        a:hover {
-            color: #9dd0ff;
-        }
-
-        a:active {
-            color: #594F4F;
-        }
-
-        code {
-            background-color: transparent !important;
-        }
-
-        #query-div pre {
-            background-color: transparent !important;
-        }
-
-        #query-div {
-            padding-top: 15px;
-        }
-
-        #query-info-div div {
-            padding-top: 5px;
-        }
-
-        #query-plan-div {
-            text-align: left;
-            width: 960px;
-            margin: auto;
-        }
-
-        #plan-div code {
-            margin: auto !important;
-            display: inline-block;
-        }
-
-        #query-plan-head {
-          padding-top: 5px;
-          padding-bottom: 15px;
-            text-align: center;
-            margin: auto;
-        }
-
-        .file-path {
-            font-size: 13px;
-        }
-
-
-
-    </style>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/sql_detail.css' %}"/>
 {% endblock %}
 
 {% block menu %}

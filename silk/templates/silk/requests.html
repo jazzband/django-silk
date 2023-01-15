@@ -4,27 +4,7 @@
 
 {% block style %}
     {{ block.super }}
-    <style>
-        .container {
-            padding: 0 1em;
-        }
-
-        .resizing-input input {
-            background-color: white;
-            padding-top: 2px;
-            color: black;
-            box-shadow: inset 0 0 3px black;
-        }
-
-        .resizing-input input::placeholder {
-            color: #383838;
-            opacity: 1;
-        }
-
-        .filter-section {
-            line-height: 2.3;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/requests.css' %}"/>
 {% endblock %}
 
 {% block menu %}
@@ -33,13 +13,7 @@
 
 {% block js %}
     {{ block.super }}
-    <script>
-
-        $(document).ready(function () {
-            initFilters();
-            initFilterButton();
-        });
-    </script>
+    <script src="{% static 'silk/js/pages/requests.js' %}"></script>
 {% endblock %}
 
 {% block filter %}

@@ -1,0 +1,118 @@
+body {
+  font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f3f3f3;
+  margin: 0;
+  font-weight: lighter;
+}
+
+pre {
+  font-family: Fantasque;
+  background-color: white !important;
+  padding: 0.5em !important;
+  margin: 0 !important;
+  font-size: 14px;
+  text-align: left;
+}
+
+code {
+  font-family: Fantasque;
+  background-color: white !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 14px;
+}
+
+html {
+  margin: 0;
+}
+
+#header {
+  height: 50px;
+  background-color: rgb(51, 51, 68);
+  width: 100%;
+  position: relative;
+  padding: 0;
+}
+
+#header div {
+  display: inline-block;
+}
+
+.menu {
+  height: 50px;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  height: 50px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 0;
+  margin-right: -4px;
+  color: white;
+}
+
+.menu-item a {
+  color: white !important;
+}
+
+#filter .menu-item {
+  margin-right: 0px;
+}
+
+.selectable-menu-item {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.selectable-menu-item:hover {
+  background-color: #f3f3f3;
+  cursor: pointer;
+  color: black !important;
+}
+
+.selectable-menu-item:hover a {
+  color: black !important;
+}
+
+.menu-item-selected {
+  background-color: #f3f3f3;
+  color: black !important;
+}
+
+.menu-item-selected a {
+  color: black !important;
+}
+
+.menu-item-outer {
+  display: table !important;
+  height: 100%;
+  width: 100%;
+}
+
+.menu-item-inner {
+  display: table-cell !important;
+  vertical-align: middle;
+  width: 100%;
+}
+
+a:visited {
+  color: black;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+#filter {
+  height: 50px;
+  position: absolute;
+  right: 0;
+}
+
+.description {
+  font-style: italic;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
