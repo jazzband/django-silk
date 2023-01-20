@@ -2,6 +2,8 @@ import cProfile
 import logging
 import marshal
 import pstats
+import re
+import unicodedata
 from io import StringIO
 from threading import local
 
@@ -191,10 +193,28 @@ class DataCollector(metaclass=Singleton):
     def register_silk_query(self, *args):
         self.register_objects(TYP_SILK_QUERIES, *args)
 
-    def _get_proposed_file_name(self):
+    def _get_proposed_file_name(self) -> str:
         """Retrieve the profile file name to be proposed to the storage"""
 
         if SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME:
-            request_path = self.request.path.replace('/', '_').lstrip('_')
-            return f"{request_path}_{str(self.request.id)}.prof"
+            slugified_path = slugify_path(self.request.path)
+            return f"{slugified_path}_{str(self.request.id)}.prof"
         return f"{str(self.request.id)}.prof"
+
+
+def slugify_path(request_path: str) -> str:
+    """
+    Convert any characters not included in [a-zA-Z0-9_]) with a single underscore.
+    Convert to lowercase. Also strip any leading and trailing char that are not in the
+    accepted list
+
+    Inspired from django slugify
+    """
+    request_path = str(request_path)
+    request_path = (
+        unicodedata.normalize("NFKD", request_path)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
+    request_path = request_path.lower()[:50]
+    return re.sub(r'\W+', '_', request_path).strip('_')
