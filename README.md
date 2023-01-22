@@ -182,6 +182,11 @@ SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 
 A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools
 
+To retrieve which endpoint generates a specific profile file it is possible to add a stub of the request path in the file name with the following:
+
+```python
+SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
+```
 
 Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
 manager for this purpose.
