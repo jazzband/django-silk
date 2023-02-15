@@ -4,7 +4,8 @@ __author__ = 'mtford'
 
 
 def _page(request, query_set):
-    paginator = Paginator(query_set, 200)
+    per_page = request.GET.get('per_page', 200)
+    paginator = Paginator(query_set, per_page)
     page_number = request.GET.get('page')
     try:
         page = paginator.page(page_number)
