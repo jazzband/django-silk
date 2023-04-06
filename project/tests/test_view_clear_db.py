@@ -20,7 +20,8 @@ class TestViewClearDB(TestCase):
         response = self.client.post(silky_reverse("cleardb"), {"clear_all": "on"})
         self.assertTrue(response.status_code == 200)
         self.assertEqual(models.Request.objects.count(), 0)
-        
+
+
 class TestViewClearDBAndDeleteProfiles(TestCase):
     @classmethod
     def setUpClass(cls):
