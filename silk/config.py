@@ -33,7 +33,8 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_JSON_ENSURE_ASCII': True,
         'SILKY_ANALYZE_QUERIES': False,
         'SILKY_EXPLAIN_FLAGS': None,
-        'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+        'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'},
+        'SILKY_DELETE_PROFILES': False
     }
 
     def _setup(self):
