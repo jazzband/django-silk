@@ -1,13 +1,15 @@
-import os, shutil
+import os
+import shutil
+
 from django.db import transaction
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
+from silk.config import SilkyConfig
 from silk.models import Profile, Request, Response, SQLQuery
 from silk.utils.data_deletion import delete_model
-from silk.config import SilkyConfig
 
 
 @method_decorator(transaction.non_atomic_requests, name="dispatch")
