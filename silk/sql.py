@@ -61,6 +61,7 @@ def _explain_query(connection, q, params):
         result = _unpack_explanation(cur.fetchall())
         return '\n'.join(result)
 
+
 def execute_sql(self, *args, **kwargs):
     """wrapper around real execute_sql in order to extract information"""
 
