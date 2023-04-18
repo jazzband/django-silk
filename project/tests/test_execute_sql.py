@@ -59,6 +59,23 @@ class TestCallNoRequest(TestCase):
         self.assertEqual(0, len(DataCollector().queries))
 
 
+class TestCallInvalidExplainFlags(TestCase):
+    def setUp(self):
+        super().setUp()
+        with self.settings(SILKY_EXPLAIN_FLAGS={"invalid": "setting"}):
+            call_execute_sql(type(self), Request())
+
+    def test_called(self):
+        self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
+
+    def test_count(self):
+        self.assertEqual(1, len(DataCollector().queries))
+
+    def test_query(self):
+        query = list(DataCollector().queries.values())[0]
+        self.assertEqual(query['query'], self.query_string)
+
+
 class TestCallRequest(TestCase):
     @classmethod
     def setUpClass(cls):

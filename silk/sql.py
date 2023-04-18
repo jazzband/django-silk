@@ -30,36 +30,36 @@ def _unpack_explanation(result):
 
 
 def _explain_query(connection, q, params):
-    if connection.features.supports_explaining_query_execution:
-        if SilkyConfig().SILKY_ANALYZE_QUERIES:
+    if not connection.features.supports_explaining_query_execution:
+        return None
+
+    explain_query_prefix_kwargs = dict(
+        (SilkyConfig().SILKY_EXPLAIN_FLAGS or {}),
+        analyze=SilkyConfig().SILKY_ANALYZE_QUERIES,
+    )
+
+    try:
+        prefix = connection.ops.explain_query_prefix(**explain_query_prefix_kwargs)
+    except ValueError as error:
+        error_str = str(error)
+        if error_str.startswith("Unknown options:"):
             # Work around some DB engines not supporting analyze option
-            try:
-                prefix = connection.ops.explain_query_prefix(
-                    analyze=True, **(SilkyConfig().SILKY_EXPLAIN_FLAGS or {})
-                )
-            except ValueError as error:
-                error_str = str(error)
-                if error_str.startswith("Unknown options:"):
-                    Logger.warning(
-                        "Database does not support analyzing queries with provided params. %s."
-                        "SILKY_ANALYZE_QUERIES option will be ignored",
-                        error_str
-                    )
-                    prefix = connection.ops.explain_query_prefix()
-                else:
-                    raise error
-        else:
+            Logger.warning(
+                "Database does not support analyzing queries with provided params: %s. "
+                "SILKY_ANALYZE_QUERIES and SILKY_EXPLAIN_FLAGS options will be ignored",
+                error_str,
+            )
             prefix = connection.ops.explain_query_prefix()
+        else:
+            raise error
 
-        # currently we cannot use explain() method
-        # for queries other than `select`
-        prefixed_query = f"{prefix} {q}"
-        with connection.cursor() as cur:
-            cur.execute(prefixed_query, params)
-            result = _unpack_explanation(cur.fetchall())
-            return '\n'.join(result)
-    return None
-
+    # currently we cannot use explain() method
+    # for queries other than `select`
+    prefixed_query = f"{prefix} {q}"
+    with connection.cursor() as cur:
+        cur.execute(prefixed_query, params)
+        result = _unpack_explanation(cur.fetchall())
+        return '\n'.join(result)
 
 def execute_sql(self, *args, **kwargs):
     """wrapper around real execute_sql in order to extract information"""
