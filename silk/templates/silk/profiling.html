@@ -2,6 +2,8 @@
 {% load static %}
 {% load silk_inclusion %}
 
+{% block pagetitle %}Silky - Profiling{% endblock %}
+
 {% block menu %}
     {% if silk_request %}
         {% request_menu request silk_request %}

@@ -5,6 +5,8 @@
 {% load static %}
 {% load silk_inclusion %}
 
+{% block pagetitle %}Silky - SQL{% endblock %}
+
 {% block js %}
   <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
   {{ block.super }}
