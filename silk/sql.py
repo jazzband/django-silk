@@ -54,7 +54,7 @@ def _explain_query(connection, q, params):
 
         # currently we cannot use explain() method
         # for queries other than `select`
-        if re.match("^{} .*".format(prefix), q):
+        if re.match(f"^{prefix} .*", q):
             # to avoid "EXPLAIN EXPLAIN", do not add prefix
             prefixed_query = q
         else:
