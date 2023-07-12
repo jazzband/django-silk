@@ -4,7 +4,7 @@
 {% load silk_inclusion %}
 {% load static %}
 
-{% block pagetitle %}Silky - CProfile{% endblock %}
+{% block pagetitle %}Silky - CProfile - {{ silk_request.path }}{% endblock %}
 
 {% block js %}
     <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>

@@ -4,7 +4,7 @@
 {% load silk_nav %}
 {% load silk_inclusion %}
 
-{% block pagetitle %}Silky - SQL Detail{% endblock %}
+{% block pagetitle %}Silky - SQL Detail - {{ silk_request.path }}{% endblock %}
 
 {% block js %}
     {{ block.super }}

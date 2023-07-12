@@ -2,7 +2,7 @@
 {% load static %}
 {% load silk_inclusion %}
 
-{% block pagetitle %}Silky - Profiling{% endblock %}
+{% block pagetitle %}Silky - Profiling - {{ silk_request.path }}{% endblock %}
 
 {% block menu %}
     {% if silk_request %}

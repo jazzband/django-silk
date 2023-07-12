@@ -2,7 +2,7 @@
 {% load silk_filters %}
 {% load silk_inclusion %}
 {% load static %}
-{% block pagetitle %}Silky - Request{% endblock %}
+{% block pagetitle %}Silky - Request - {{ silk_request.path }}{% endblock %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'silk/css/components/cell.css' %}"/>
