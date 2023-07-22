@@ -4,12 +4,12 @@ repos:
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.3
+  rev: v2.1.5
   hooks:
   - id: pycln
     args: ['--all']
 - repo: https://github.com/asottile/yesqa
-  rev: v1.4.0
+  rev: v1.5.0
   hooks:
   - id: yesqa
 - repo: https://github.com/pycqa/isort
@@ -47,12 +47,12 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.4.0'
+  rev: 'v3.9.0'
   hooks:
   - id: pyupgrade
     args: ['--py37-plus', '--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.13.0'
+  rev: '1.14.0'
   hooks:
   - id: django-upgrade
     args: [--target-version, '3.2']
