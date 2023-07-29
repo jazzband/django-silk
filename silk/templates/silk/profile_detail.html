@@ -4,6 +4,8 @@
 {% load silk_inclusion %}
 {% load static %}
 
+{% block pagetitle %}Silky - Profile Detail - {{ silk_request.path }}{% endblock %}
+
 {% block js %}
     <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>
     <script type="text/javascript" src="{% static 'silk/lib/svg-pan-zoom.min.js' %}"></script>
