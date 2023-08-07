@@ -127,4 +127,4 @@ SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
 # SILKY_AUTHENTICATION = True
 # SILKY_AUTHORISATION = True
 SILKY_DB_TABLE = {'REQUEST': 'test_silk_request', 'RESPONSE': 'silk_response',
-                           'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}
+                  'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}

@@ -35,7 +35,7 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_EXPLAIN_FLAGS': None,
         'SILKY_SENSITIVE_KEYS': {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'},
         'SILKY_DATABASE_TABLES': {'REQUEST': 'silk_request', 'RESPONSE': 'silk_response',
-                           'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}
+                                  'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}
     }
 
     def _setup(self):
