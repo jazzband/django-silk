@@ -26,6 +26,7 @@ from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
 
 silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
+silk_db_tables = SilkyConfig().SILKY_DATABASE_TABLES
 
 
 # Seperated out so can use in tests w/o models
@@ -190,6 +191,9 @@ class Request(models.Model):
         super().save(*args, **kwargs)
         Request.garbage_collect(force=False)
 
+    class Meta:
+        db_table = silk_db_tables['REQUEST']
+
 
 class Response(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
@@ -217,6 +221,9 @@ class Response(models.Model):
     @property
     def raw_body_decoded(self):
         return base64.b64decode(self.raw_body)
+
+    class Meta:
+        db_table = silk_db_tables['RESPONSE']
 
 
 # TODO rewrite docstring
@@ -323,6 +330,9 @@ class SQLQuery(models.Model):
         self.request.save()
         super().delete(*args, **kwargs)
 
+    class Meta:
+        db_table = silk_db_tables['SQLQUERY']
+
 
 class BaseProfile(models.Model):
     name = CharField(max_length=300, blank=True, default='')
@@ -364,3 +374,6 @@ class Profile(BaseProfile):
     @property
     def time_spent_on_sql_queries(self):
         return sum(x.time_taken for x in self.queries.all())
+
+    class Meta:
+        db_table = silk_db_tables['PROFILE']
