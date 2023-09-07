@@ -50,7 +50,7 @@ repos:
   rev: 'v3.10.1'
   hooks:
   - id: pyupgrade
-    args: ['--py37-plus', '--keep-mock']
+    args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
   rev: '1.14.0'
   hooks:
