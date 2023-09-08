@@ -72,7 +72,7 @@ class RequestModelFactory:
         if SilkyConfig().SILKY_HIDE_COOKIES:
             sensitive_headers.add('cookie')
 
-        sensitive_headers = map(str.lower, sensitive_headers)
+        sensitive_headers = set(map(str.lower, sensitive_headers))
 
         headers = {}
         for k, v in self.request.headers.items():
