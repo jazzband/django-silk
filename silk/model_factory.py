@@ -66,19 +66,21 @@ class RequestModelFactory:
         """
         From Django docs (https://docs.djangoproject.com/en/2.0/ref/request-response/#httprequest-objects):
         """
-        headers = {}
-        sensitive_headers = {'authorization'}
+        sensitive_headers = set(SilkyConfig().SILKY_SENSITIVE_KEYS)
 
+        sensitive_headers.add('authorization')
+        if SilkyConfig().SILKY_HIDE_COOKIES:
+            sensitive_headers.add('cookie')
+
+        sensitive_headers = map(str.lower, sensitive_headers)
+
+        headers = {}
         for k, v in self.request.headers.items():
+            k = k.lower()
             if k in sensitive_headers:
                 v = RequestModelFactory.CLEANSED_SUBSTITUTE
 
             headers[k] = v
-        if SilkyConfig().SILKY_HIDE_COOKIES:
-            try:
-                del headers['COOKIE']
-            except KeyError:
-                pass
 
         return json.dumps(headers, cls=DefaultEncoder, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 
