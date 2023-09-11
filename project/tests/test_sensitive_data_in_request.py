@@ -9,6 +9,7 @@ from silk.model_factory import RequestModelFactory
 HTTP_CONTENT_TYPE = 'content-type'
 CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
 DEFAULT_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+DEFAULT_HIDE_COOKIES = True
 
 
 class MaskCredentialsInFormsTest(TestCase):
@@ -127,6 +128,10 @@ class TestEncodingForRequests(TestCase):
     Check that the RequestModelFactory masks sensitive data
     """
 
+    def tearDown(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = DEFAULT_SENSITIVE_KEYS
+        SilkyConfig().SILKY_HIDE_COOKIES = DEFAULT_HIDE_COOKIES
+
     def test_password_in_body(self):
         mock_request = Mock()
         mock_request.headers = {HTTP_CONTENT_TYPE: 'text/plain'}
@@ -200,3 +205,46 @@ class TestEncodingForRequests(TestCase):
 
         self.assertIn('authorization', json_headers)
         self.assertEqual(json_headers['authorization'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+
+    def test_hide_cookies(self):
+        SilkyConfig().SILKY_HIDE_COOKIES = True
+        mock_request = Mock()
+        mock_request.headers = {'Cookie': 'secret'}
+        mock_request.body = ''
+        mock_request.get = mock_request.headers.get
+        factory = RequestModelFactory(mock_request)
+        headers = factory.encoded_headers()
+        json_headers = json.loads(headers)
+
+        self.assertIn('cookie', json_headers)
+        self.assertEqual(json_headers['cookie'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+
+    def test_no_hide_cookies(self):
+        SilkyConfig().SILKY_HIDE_COOKIES = False
+        mock_request = Mock()
+        mock_request.headers = {'Cookie': 'Cookies!!!'}
+        mock_request.body = ''
+        mock_request.get = mock_request.headers.get
+        factory = RequestModelFactory(mock_request)
+        headers = factory.encoded_headers()
+        json_headers = json.loads(headers)
+
+        self.assertIn('cookie', json_headers)
+        self.assertEqual(json_headers['cookie'], 'Cookies!!!')
+
+    def test_hide_sensitive_headers(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = ["foo", "bar"]
+        mock_request = Mock()
+        mock_request.headers = {'FOO': 'secret', 'BAR': 'secret', 'BAZ': 'not-secret'}
+        mock_request.body = ''
+        mock_request.get = mock_request.headers.get
+        factory = RequestModelFactory(mock_request)
+        headers = factory.encoded_headers()
+        json_headers = json.loads(headers)
+
+        self.assertIn('foo', json_headers)
+        self.assertIn('bar', json_headers)
+        self.assertIn('baz', json_headers)
+        self.assertEqual(json_headers['foo'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertEqual(json_headers['bar'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertEqual(json_headers['baz'], 'not-secret')
