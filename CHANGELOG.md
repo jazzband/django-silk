@@ -1,6 +1,27 @@
 # Change Log
 ## Unreleased
 
+## [5.0.4](https://github.com/jazzband/django-silk/tree/5.0.4) (2023-09-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.3..5.0.4)
+
+**Features/Enhancements:**
+
+ - Handle case-insensitive sensitive headers (#674) @shtimn
+ - Add a "pagetitle" block to Silky templates (#661) @vsajip
+ - Allow to generate more informative profile file name (#638) @k4rl85
+
+**Maintenance and Cleanup:**
+
+ - Remove unsupported versions of Django and Python (#668) @albertyw
+ - Outsource all inline scripts and styles (#635) @sgelis
+ - Remove support for looking up headers on django &lt;3.2 (#643) @albertyw
+
+**Dependencies:**
+
+ - Update python dependencies (#677) @albertyw
+
+
 ## [5.0.3](https://github.com/jazzband/django-silk/tree/5.0.3) (2023-01-12)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.2..5.0.3)
