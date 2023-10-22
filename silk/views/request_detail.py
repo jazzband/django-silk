@@ -3,6 +3,7 @@ import json
 from django.shortcuts import HttpResponseRedirect, redirect, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.urls import reverse_lazy, reverse
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.code_generation.curl import curl_cmd
@@ -48,5 +49,5 @@ class RequestView(View):
         try:
             silk_request.delete()
         except Request.DoesNotExist:
-            return HttpResponseRedirect(request.headers.get('Referer', '/silk'))
-        return redirect('/silk')
+            return HttpResponseRedirect(request.headers.get('Referer', reverse("silk:summary")))
+        return redirect(reverse("silk:summary"))
