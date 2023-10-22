@@ -1,9 +1,9 @@
 import json
 
 from django.shortcuts import HttpResponseRedirect, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from django.urls import reverse_lazy, reverse
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.code_generation.curl import curl_cmd
