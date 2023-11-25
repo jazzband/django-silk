@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         django-version: ['3.2', '4.1', 'main']
         postgres-version: ['11', '12']
         mariadb-version: ['10.3', '10.4']
@@ -17,6 +17,12 @@ jobs:
           # Django <=4.0 doesn't support python 3.11 (https://docs.djangoproject.com/en/4.1/faq/install/)
           - python-version: '3.11'
             django-version: '3.2'
+          - python-version: '3.12'
+            django-version: '3.2'
+
+          # Django <=4.1 doesn't support python 3.12 (https://docs.djangoproject.com/en/4.1/faq/install/)
+          - python-version: '3.12'
+            django-version: '4.1'
 
           # only test Django dev with PostgreSQL 12 and MariaDB 10.4
           - django-version: '3.2'
