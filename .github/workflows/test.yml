@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        django-version: ['3.2', '4.1', '4.2', 'main']
+        django-version: ['3.2', '4.1', '4.2', '5.0', 'main']
         postgres-version: ['11', '12']
         mariadb-version: ['10.3', '10.4']
         exclude:
@@ -26,6 +26,12 @@ jobs:
           - python-version: '3.12'  # TODO remove this once Django 4.2.8 is released
             django-version: '4.2'
 
+          # Django 5.0 doesn't support python <=3.9k (https://docs.djangoproject.com/en/5.0/faq/install/)
+          - python-version: '3.8'
+            django-version: '5.0'
+          - python-version: '3.9'
+            django-version: '5.0'
+
           # only test Django dev with PostgreSQL 12 and MariaDB 10.4
           - django-version: '3.2'
             postgres-version: '12'
@@ -40,6 +46,11 @@ jobs:
           - django-version: '4.2'
             postgres-version: '11'
           - django-version: '4.2'
+            mariadb-version: '10.3'
+
+          - django-version: '5.0'
+            postgres-version: '11'
+          - django-version: '5.0'
             mariadb-version: '10.3'
 
           - django-version: 'main'
