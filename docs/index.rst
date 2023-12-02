@@ -57,5 +57,5 @@ Features
 Requirements
 ------------
 
-* Django: 3.2, 4.1
+* Django: 3.2, 4.1, 4.2
 * Python: 3.8, 3.9, 3.10
