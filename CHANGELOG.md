@@ -1,6 +1,46 @@
 # Change Log
 ## Unreleased
 
+## [5.1.0](https://github.com/jazzband/django-silk/tree/5.1.0) (2023-12-30)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.4..5.1.0)
+
+**Upgrading:**
+
+This release includes [Fix deprecation warning for get_storage_class #669](https://github.com/jazzband/django-silk/pull/669)
+which deprecates `SILKY_STORAGE_CLASS`.  Users should instead use the Django
+`STORAGES` configuration.  See [README](https://github.com/albertyw/django-silk/blob/master/README.md#profiling)
+and [Django documentation](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES)
+for more information.
+
+Also, for python 3.12, the `cProfile` stdlib library cannot be enabled multiple times concurrently.
+Silk will therefore skip profiling if another profile is already enabled.
+
+
+**Features/Enhancements:**
+
+ - Allow option to delete profiles (#652) @viralj
+
+**Fixes:**
+
+ - Gracefully error out when there are concurrent profilers (#692) @albertyw
+ - Always disable cProfile as part of cleanup (#699) @albertyw
+ - Fix when Session, Authentication or Message middlewares are not present (#667) @mgaligniana
+
+**Maintenance and Cleanup:**
+
+ - Fix deprecation warning for get_storage_class (#669) @albertyw
+ - Support Django 4.2 (#685) @albertyw
+ - Support python 3.12 (#683) @albertyw
+ - Support Django 5 (#686) @albertyw
+ - Remove deprecated datetime.timezone.utc (#687) @albertyw
+ - Derive version from importlib (#697) @robinchow
+
+**Dependencies:**
+
+ - Update python dependencies (#693) @albertyw
+
+
 ## [5.0.4](https://github.com/jazzband/django-silk/tree/5.0.4) (2023-09-17)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.3..5.0.4)
@@ -155,7 +195,7 @@
 - Add query execution plan to sql_detail (#452)
 - Add Python 3.9 compatibility (#404)
 - Replace re_path with path
-- Fix transaction error for mysql 
+- Fix transaction error for mysql
 - parse query when count joins to match only Keyword
 - fix: DB connection to ClearDB when multiple databases
 - fix: DataCollector sql_queries model not found on filter(request=self.request)
