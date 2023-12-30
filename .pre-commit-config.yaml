@@ -1,10 +1,10 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.4.0'
+  rev: 'v4.5.0'
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.2.0
+  rev: v2.4.0
   hooks:
   - id: pycln
     args: ['--all']
@@ -13,12 +13,12 @@ repos:
   hooks:
   - id: yesqa
 - repo: https://github.com/pycqa/isort
-  rev: '5.12.0'
+  rev: '5.13.2'
   hooks:
   - id: isort
     args: ['--profile', 'black']
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.4.0'
+  rev: 'v4.5.0'
   hooks:
   - id: end-of-file-fixer
     exclude: >-
@@ -47,17 +47,17 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.10.1'
+  rev: 'v3.15.0'
   hooks:
   - id: pyupgrade
-    args: ['--py37-plus', '--keep-mock']
+    args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.14.0'
+  rev: '1.15.0'
   hooks:
   - id: django-upgrade
     args: [--target-version, '3.2']
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: 'v2.0.2'
+- repo: https://github.com/hhatto/autopep8
+  rev: 'v2.0.4'
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8

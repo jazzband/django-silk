@@ -1,8 +1,8 @@
-coverage==6.5.0
-factory-boy==3.2.1
+coverage==7.3.1
+factory-boy==3.3.0
 freezegun==1.2.2
 networkx==2.6
 pydot==1.4.2
-pygments==2.15.0
-pytest-cov==4.0.0
+pygments==2.16.1
+pytest-cov==4.1.0
 pytest-django==4.5.2
