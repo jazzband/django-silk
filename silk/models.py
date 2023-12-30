@@ -5,7 +5,7 @@ import re
 from uuid import uuid4
 
 import sqlparse
-from django.core.files.storage import get_storage_class
+from django.conf import settings
 from django.db import models, transaction
 from django.db.models import (
     BooleanField,
@@ -25,7 +25,20 @@ from django.utils.safestring import mark_safe
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
 
-silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
+try:
+    # New in Django 4.2
+    from django.core.files.storage import storages
+    from django.core.files.storage.handler import InvalidStorageError
+    try:
+        silk_storage = storages['SILKY_STORAGE']
+    except InvalidStorageError:
+        from django.utils.module_loading import import_string
+        storage_class = SilkyConfig().SILKY_STORAGE_CLASS or settings.DEFAULT_FILE_STORAGE
+        silk_storage = import_string(storage_class)()
+except ImportError:
+    # Deprecated since Django 4.2, Removed in Django 5.1
+    from django.core.files.storage import get_storage_class
+    silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
 # Seperated out so can use in tests w/o models
