@@ -11,7 +11,7 @@ jobs:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         django-version: ['3.2', '4.2', '5.0', 'main']
-        postgres-version: ['11', '12']
+        postgres-version: ['12']
         mariadb-version: ['10.3', '10.4']
         exclude:
           # Django <=4.0 doesn't support python 3.11 (https://docs.djangoproject.com/en/4.1/faq/install/)
@@ -37,17 +37,11 @@ jobs:
             mariadb-version: '10.4'
 
           - django-version: '4.2'
-            postgres-version: '11'
-          - django-version: '4.2'
             mariadb-version: '10.3'
 
           - django-version: '5.0'
-            postgres-version: '11'
-          - django-version: '5.0'
             mariadb-version: '10.3'
 
-          - django-version: 'main'
-            postgres-version: '11'
           - django-version: 'main'
             mariadb-version: '10.3'
 
