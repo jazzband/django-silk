@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        django-version: ['3.2', '4.1', '4.2', '5.0', 'main']
+        django-version: ['3.2', '4.2', '5.0', 'main']
         postgres-version: ['11', '12']
         mariadb-version: ['10.3', '10.4']
         exclude:
@@ -21,8 +21,6 @@ jobs:
             django-version: '3.2'
 
           # Django <=4.2.7 doesn't support python 3.12 (https://docs.djangoproject.com/en/4.1/faq/install/)
-          - python-version: '3.12'
-            django-version: '4.1'
           - python-version: '3.12'  # TODO remove this once Django 4.2.8 is released
             django-version: '4.2'
 
@@ -36,11 +34,6 @@ jobs:
           - django-version: '3.2'
             postgres-version: '12'
           - django-version: '3.2'
-            mariadb-version: '10.4'
-
-          - django-version: '4.1'
-            postgres-version: '12'
-          - django-version: '4.1'
             mariadb-version: '10.4'
 
           - django-version: '4.2'
