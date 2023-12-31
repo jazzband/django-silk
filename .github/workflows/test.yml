@@ -12,7 +12,7 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         django-version: ['3.2', '4.2', '5.0', 'main']
         postgres-version: ['12', '16']
-        mariadb-version: ['10.4']
+        mariadb-version: ['10.6', '10.11', '11.2']
         exclude:
           # Django <=4.0 doesn't support python 3.11 (https://docs.djangoproject.com/en/4.1/faq/install/)
           - python-version: '3.11'
