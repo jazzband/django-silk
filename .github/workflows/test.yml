@@ -20,11 +20,7 @@ jobs:
           - python-version: '3.12'
             django-version: '3.2'
 
-          # Django <=4.2.7 doesn't support python 3.12 (https://docs.djangoproject.com/en/4.1/faq/install/)
-          - python-version: '3.12'  # TODO remove this once Django 4.2.8 is released
-            django-version: '4.2'
-
-          # Django 5.0 doesn't support python <=3.9k (https://docs.djangoproject.com/en/5.0/faq/install/)
+          # Django 5.0 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.0/faq/install/)
           - python-version: '3.8'
             django-version: '5.0'
           - python-version: '3.9'
