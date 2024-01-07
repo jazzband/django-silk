@@ -13,25 +13,25 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 ## Contents
 
-* [Requirements](#requirements)
-* [Installation](#installation)
-* [Features](#features)
-* [Configuration](#configuration)
-  * [Authentication/Authorisation](#authenticationauthorisation)
-  * [Request/Response bodies](#requestresponse-bodies)
-  * [Meta-Profiling](#meta-profiling)
-  * [Recording a fraction of requests](#recording-a-fraction-of-requests)
-  * [Limiting request/response data](#limiting-requestresponse-data)
-  * [Clearing logged data](#clearing-logged-data)
-* [Contributing](#contributing)
-  * [Development Environment](#development-environment)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Features](#features)
+- [Configuration](#configuration)
+  - [Authentication/Authorisation](#authenticationauthorisation)
+  - [Request/Response bodies](#requestresponse-bodies)
+  - [Meta-Profiling](#meta-profiling)
+  - [Recording a fraction of requests](#recording-a-fraction-of-requests)
+  - [Limiting request/response data](#limiting-requestresponse-data)
+  - [Clearing logged data](#clearing-logged-data)
+- [Contributing](#contributing)
+  - [Development Environment](#development-environment)
 
 ## Requirements
 
 Silk has been tested with:
 
-* Django: 3.2, 4.1, 4.2
-* Python: 3.8, 3.9, 3.10, 3.11, 3.12
+- Django: 3.2, 4.1, 4.2
+- Python: 3.8, 3.9, 3.10, 3.11, 3.12
 
 ## Installation
 
@@ -88,7 +88,6 @@ python manage.py migrate
 python manage.py collectstatic
 ```
 
-
 Silk will automatically begin interception of requests and you can proceed to add profiling
 if required. The UI can be reached at `/silk/`
 
@@ -111,10 +110,10 @@ pip install -e git+https://github.com/jazzband/django-silk.git#egg=django-silk
 
 Silk primarily consists of:
 
-* Middleware for intercepting Requests/Responses
-* A wrapper around SQL execution for profiling of database queries
-* A context manager/decorator for profiling blocks of code and functions either manually or dynamically.
-* A user interface for inspection and visualisation of the above.
+- Middleware for intercepting Requests/Responses
+- A wrapper around SQL execution for profiling of database queries
+- A context manager/decorator for profiling blocks of code and functions either manually or dynamically.
+- A user interface for inspection and visualisation of the above.
 
 ### Request Inspection
 
@@ -125,11 +124,11 @@ These requests can then be filtered and inspecting using Silk's UI through the r
 
 It records things like:
 
-* Time taken
-* Num. queries
-* Time spent on queries
-* Request/Response headers
-* Request/Response bodies
+- Time taken
+- Num. queries
+- Time spent on queries
+- Request/Response headers
+- Request/Response bodies
 
 and so on.
 
@@ -165,7 +164,6 @@ SILKY_PYTHON_PROFILER_BINARY = True
 When enabled, a graph visualisation generated using [gprof2dot](https://github.com/jrfonseca/gprof2dot) and [viz.js](https://github.com/almende/vis) is shown in the profile detail page:
 
 <img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/10.png" width="720px"/>
-
 
 A custom storage class can be used for the saved generated binary `.prof` files:
 
@@ -364,7 +362,6 @@ SILKY_DYNAMIC_PROFILING = [{
 If we were to apply the dynamic profile to the functions source module `another.module.foo` **after**
 it has already been imported, no profiling would be triggered.
 
-
 #### Custom Logic for Profiling
 
 Sometimes you may want to dynamically control when the profiler runs. You can write your own logic for when to enable the profiler. To do this add the following to your `settings.py`:
@@ -429,8 +426,8 @@ no matter how large. If Silk is used in production under heavy volume with large
 a huge impact on space/time performance. This behaviour can be configured with the following options:
 
 ```python
-SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
-SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024 bytes, ignore
+SILKY_MAX_REQUEST_BYTE_SIZE = -1  # Silk takes anything <0 as no limit
+SILKY_MAX_RESPONSE_BYTE_SIZE = 1024  # If response body>1024 bytes, ignore
 ```
 
 ### Meta-Profiling
@@ -487,7 +484,7 @@ To make sure silky garbage collects old request/response data, a config var can 
 SILKY_MAX_RECORDED_REQUESTS = 10**4
 ```
 
-The garbage collection is only run on a percentage of requests to reduce overhead.  It can be adjusted with this config:
+The garbage collection is only run on a percentage of requests to reduce overhead. It can be adjusted with this config:
 
 ```python
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
@@ -515,7 +512,6 @@ To pass additional params for profiling when supported by the dbms (e.g. VERBOSE
 SILKY_EXPLAIN_FLAGS = {'format':'JSON', 'costs': True}
 ```
 
-
 ### Masking sensitive data on request body
 
 By default, Silk is filtering values that contains the following keys (they are case insensitive)
@@ -529,7 +525,6 @@ But sometimes, you might want to have your own sensitive keywords, then above co
 ```python
 SILKY_SENSITIVE_KEYS = {'custom-password'}
 ```
-
 
 ### Clearing logged data
 
