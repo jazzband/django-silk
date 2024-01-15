@@ -2,7 +2,6 @@ import logging
 import random
 
 from django.db import DatabaseError, transaction
-from django.db.models.sql.compiler import SQLCompiler
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 
@@ -11,7 +10,6 @@ from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
-from silk.sql import execute_sql
 
 Logger = logging.getLogger('silk.middleware')
 
@@ -85,15 +83,11 @@ class SilkyMiddleware:
             name = conf.get('name')
             if module and function:
                 if start_line and end_line:  # Dynamic context manager
-                    dynamic.inject_context_manager_func(module=module,
-                                                        func=function,
-                                                        start_line=start_line,
-                                                        end_line=end_line,
-                                                        name=name)
+                    dynamic.inject_context_manager_func(
+                        module=module, func=function, start_line=start_line, end_line=end_line, name=name
+                    )
                 else:  # Dynamic decorator
-                    dynamic.profile_function_or_method(module=module,
-                                                       func=function,
-                                                       name=name)
+                    dynamic.profile_function_or_method(module=module, func=function, name=name)
             else:
                 raise KeyError('Invalid dynamic mapping %s' % conf)
 
@@ -107,9 +101,6 @@ class SilkyMiddleware:
         Logger.debug('process_request')
         request.silk_is_intercepted = True
         self._apply_dynamic_mappings()
-        if not hasattr(SQLCompiler, '_execute_sql'):
-            SQLCompiler._execute_sql = SQLCompiler.execute_sql
-            SQLCompiler.execute_sql = execute_sql
 
         silky_config = SilkyConfig()
 
