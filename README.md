@@ -150,7 +150,7 @@ Before diving into the stack trace to figure out where this request is coming fr
 
 ### Profiling
 
-Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.
+Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in `cProfile` profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.  Note that as of Python 3.12, `cProfile` cannot run concurrently so [django-silk under Python 3.12 and later will not profile if another profile is running](https://github.com/jazzband/django-silk/pull/692) (even its own profiler in another thread).
 
 ```python
 SILKY_PYTHON_PROFILER = True
