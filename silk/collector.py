@@ -59,6 +59,7 @@ class DataCollector(metaclass=Singleton):
     def _configure(self):
         self.local.objects = {}
         self.local.temp_identifier = 0
+        self.stop_python_profiler()
         self.local.pythonprofiler = None
 
     @property

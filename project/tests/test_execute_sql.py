@@ -52,6 +52,9 @@ class TestCallNoRequest(TestCase):
         super().setUpClass()
         call_execute_sql(cls, None)
 
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_called(self):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
 
@@ -65,6 +68,9 @@ class TestCallRequest(TestCase):
         super().setUpClass()
         call_execute_sql(cls, Request())
 
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_called(self):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
 
@@ -77,6 +83,9 @@ class TestCallRequest(TestCase):
 
 
 class TestCallSilky(TestCase):
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_no_effect(self):
         DataCollector().configure()
         sql, _ = mock_sql()
@@ -89,6 +98,9 @@ class TestCallSilky(TestCase):
 
 
 class TestCollectorInteraction(TestCase):
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def _query(self):
         try:
             query = list(DataCollector().queries.values())[0]
