@@ -53,7 +53,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: mysql
           MYSQL_DATABASE: mysql
         options: >-
-          --health-cmd "mysqladmin ping"
+          --health-cmd "mariadb-admin ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
