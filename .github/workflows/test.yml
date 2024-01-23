@@ -10,9 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        django-version: ['3.2', '4.1', '4.2', '5.0', 'main']
-        postgres-version: ['11', '12']
-        mariadb-version: ['10.3', '10.4']
+        django-version: ['3.2', '4.2', '5.0', 'main']
+        postgres-version: ['12', '16']
+        mariadb-version: ['10.6', '10.11', '11.2']
         exclude:
           # Django <=4.0 doesn't support python 3.11 (https://docs.djangoproject.com/en/4.1/faq/install/)
           - python-version: '3.11'
@@ -20,13 +20,7 @@ jobs:
           - python-version: '3.12'
             django-version: '3.2'
 
-          # Django <=4.2.7 doesn't support python 3.12 (https://docs.djangoproject.com/en/4.1/faq/install/)
-          - python-version: '3.12'
-            django-version: '4.1'
-          - python-version: '3.12'  # TODO remove this once Django 4.2.8 is released
-            django-version: '4.2'
-
-          # Django 5.0 doesn't support python <=3.9k (https://docs.djangoproject.com/en/5.0/faq/install/)
+          # Django 5.0 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.0/faq/install/)
           - python-version: '3.8'
             django-version: '5.0'
           - python-version: '3.9'
@@ -37,26 +31,6 @@ jobs:
             postgres-version: '12'
           - django-version: '3.2'
             mariadb-version: '10.4'
-
-          - django-version: '4.1'
-            postgres-version: '12'
-          - django-version: '4.1'
-            mariadb-version: '10.4'
-
-          - django-version: '4.2'
-            postgres-version: '11'
-          - django-version: '4.2'
-            mariadb-version: '10.3'
-
-          - django-version: '5.0'
-            postgres-version: '11'
-          - django-version: '5.0'
-            mariadb-version: '10.3'
-
-          - django-version: 'main'
-            postgres-version: '11'
-          - django-version: 'main'
-            mariadb-version: '10.3'
 
     services:
       postgres:
@@ -79,7 +53,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: mysql
           MYSQL_DATABASE: mysql
         options: >-
-          --health-cmd "mysqladmin ping"
+          --health-cmd "mariadb-admin ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
