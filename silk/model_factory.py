@@ -229,9 +229,10 @@ class RequestModelFactory:
         content_type = self.request.content_type
         
         if content_type.startswith('muştipart/form-data'):
-            form_data = self.request.POST.dict()
-            files = {f: self.request.FILES[f].name for f in self.request.FILES}
-            body = {'form_data': form_data, 'files': files}
+            body = {
+                'form_data': self.request.POST.dict(),
+                'files': {f: self.request.FILES[f].name for f in self.request.FILES}
+            }
             raw_body = None # Raw body is not available for multipart/form-data
         else:
             body, raw_body = self.body()
