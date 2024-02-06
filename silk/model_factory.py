@@ -233,7 +233,7 @@ class RequestModelFactory:
                 'form_data': self.request.POST.dict(),
                 'files': {f: self.request.FILES[f].name for f in self.request.FILES}
             }
-            raw_body = None # Raw body is not available for multipart/form-data
+            raw_body = None  # Raw body is not available for multipart/form-data
         else:
             body, raw_body = self.body()
 
