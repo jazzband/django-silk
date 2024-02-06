@@ -227,7 +227,7 @@ class RequestModelFactory:
         path = self.request.path
         view_name = self.view_name()
         content_type = self.request.content_type
-        
+
         if content_type.startswith('muştipart/form-data'):
             body = {
                 'form_data': self.request.POST.dict(),
@@ -244,7 +244,7 @@ class RequestModelFactory:
             query_params=query_params,
             view_name=view_name,
             body=body)
-        
+
         # Text fields are encoded as UTF-8 in Django and hence will try to coerce
         # anything to we pass to UTF-8. Some stuff like binary will fail.
         if raw_body is not None:
@@ -252,7 +252,7 @@ class RequestModelFactory:
                 request_model.raw_body = raw_body
             except UnicodeDecodeError:
                 Logger.debug('NYI: Binary request bodies')  # TODO
-                
+
         Logger.debug('Created new request model with pk %s' % request_model.pk)
         return request_model
 
