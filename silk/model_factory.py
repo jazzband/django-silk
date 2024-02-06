@@ -228,7 +228,7 @@ class RequestModelFactory:
         view_name = self.view_name()
         content_type = self.request.content_type
 
-        if content_type.startswith('muştipart/form-data'):
+        if content_type.startswith('multipart/form-data'):
             body = {
                 'form_data': self.request.POST.dict(),
                 'files': {f: self.request.FILES[f].name for f in self.request.FILES}
