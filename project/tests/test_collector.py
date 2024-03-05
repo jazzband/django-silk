@@ -1,4 +1,5 @@
 import cProfile
+import os.path
 import sys
 
 from django.test import TestCase
@@ -95,5 +96,5 @@ class TestCollector(TestCase):
         DataCollector().configure(request)
         DataCollector().finalise()
         file_path = DataCollector().request.prof_file.name
-        filename = file_path.rsplit('/')[-1]
+        filename = os.path.basename(file_path)
         return filename.replace(f"{request.id}.prof", "")
