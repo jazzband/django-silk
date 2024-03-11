@@ -4,6 +4,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from silk.config import SilkyConfig
+from silk.errors import SilkNotConfigured
 from silk.middleware import SilkyMiddleware, _should_intercept
 from silk.models import Request
 
@@ -99,6 +100,21 @@ class TestApplyDynamicMappings(TestCase):
 
         ]
         middleware._apply_dynamic_mappings()  # Just checking no crash
+
+    def test_raise_if_authentication_is_enable_but_no_middlewares(self):
+        SilkyConfig().SILKY_AUTHENTICATION = True
+        with self.modify_settings(MIDDLEWARE={
+            'remove': [
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+                'django.contrib.messages.middleware.MessageMiddleware',
+            ],
+        }):
+            with self.assertRaisesMessage(
+                SilkNotConfigured,
+                "SILKY_AUTHENTICATION can not be enabled without Session, Authentication or Message Django's middlewares"
+            ):
+                SilkyMiddleware(fake_get_response)
 
 
 class TestShouldIntercept(TestCase):

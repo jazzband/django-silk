@@ -230,3 +230,18 @@ def filters_from_request(request):
             except FilterValidationError:
                 logger.warning(f'Validation error when processing filter {typ}({value})')
     return filters
+
+
+class FiltersManager:
+    def __init__(self, filters_key):
+        self.key = filters_key
+
+    def save(self, request, filters):
+        if hasattr(request, 'session'):
+            request.session[self.key] = filters
+        request.silk_filters = filters
+
+    def get(self, request):
+        if hasattr(request, 'session'):
+            return request.session.get(self.key, {})
+        return request.silk_filters

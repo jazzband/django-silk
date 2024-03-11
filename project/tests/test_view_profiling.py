@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from django.test import TestCase
 
+from silk.middleware import silky_reverse
 from silk.views.profiling import ProfilingView
 
 from .test_lib.assertion import dict_contains
@@ -92,3 +93,48 @@ class TestProfilingContext(TestCase):
             'options_func_names': ProfilingView()._get_function_names()
         }, context))
         self.assertIn('results', context)
+
+    def test_view_without_session_and_auth_middlewares(self):
+        """
+        Filters are not present because there is no `session` to store them.
+        """
+        with self.modify_settings(MIDDLEWARE={
+            'remove': [
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+                'django.contrib.messages.middleware.MessageMiddleware',
+            ],
+        }):
+            # test filters on GET
+            show = 10
+            func_name = 'func_name'
+            name = 'name'
+            order_by = 'Time'
+            response = self.client.get(silky_reverse('profiling'), {
+                'show': show,
+                'func_name': func_name,
+                'name': name,
+                'order_by': order_by
+            })
+            context = response.context
+            self.assertTrue(dict_contains({
+                'show': show,
+                'order_by': order_by,
+                'func_name': func_name,
+                'name': name,
+                'options_show': ProfilingView.show,
+                'options_order_by': ProfilingView.order_by,
+                'options_func_names': ProfilingView()._get_function_names()
+            }, context))
+
+            # test filters on POST
+            response = self.client.post(silky_reverse('profiling'), {
+                'filter-overalltime-value': 100,
+                'filter-overalltime-typ': 'TimeSpentOnQueriesFilter',
+            })
+            context = response.context
+            self.assertTrue(dict_contains({
+                'filters': {
+                    'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
+                },
+            }, context))
