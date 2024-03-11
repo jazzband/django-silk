@@ -5,7 +5,7 @@ from django.template import Context, Template
 
 from silk.profiling.dynamic import is_str_typ
 
-template = """
+template = """\
 from django.test import Client
 c = Client()
 response = c.{{ lower_case_method }}(path='{{ path }}'{% if data or content_type %},{% else %}){% endif %}{% if data %}
@@ -43,6 +43,6 @@ def gen(path, method=None, query_params=None, data=None, content_type=None):
         context['data'] = data
         context['query_params'] = query_params
     return autopep8.fix_code(
-        t.render(Context(context)),
+        t.render(Context(context, autoescape=False)),
         options=autopep8.parse_args(['--aggressive', '']),
     )
