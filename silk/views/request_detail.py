@@ -1,6 +1,7 @@
 import json
 
-from django.shortcuts import render
+from django.shortcuts import HttpResponseRedirect, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -40,3 +41,13 @@ class RequestView(View):
             'request': request
         }
         return render(request, 'silk/request.html', context)
+
+    @method_decorator(login_possibly_required)
+    @method_decorator(permissions_possibly_required)
+    def post(self, request, request_id):
+        silk_request = Request.objects.get(pk=request_id)
+        try:
+            silk_request.delete()
+        except Request.DoesNotExist:
+            return HttpResponseRedirect(request.headers.get('Referer', reverse("silk:summary")))
+        return redirect(reverse("silk:summary"))
