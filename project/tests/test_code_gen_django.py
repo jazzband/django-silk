@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from silk.code_generation.django_test_client import gen
 
+
 class TestCodeGenDjango(TestCase):
     def test_post(self):
         result = gen(

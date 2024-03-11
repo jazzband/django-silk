@@ -1,8 +1,8 @@
 import shlex
-import textwrap
 from unittest import TestCase
 
 from silk.code_generation.curl import curl_cmd
+
 
 class TestCodeGenCurl(TestCase):
     def test_post_json(self):
