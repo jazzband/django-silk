@@ -13,15 +13,15 @@ class SummaryView(View):
     filters_key = 'summary_filters'
 
     def _avg_num_queries(self, filters):
-        queries__aggregate = models.Request.objects.filter(*filters).annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
+        queries__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
         return queries__aggregate['num']
 
     def _avg_time_spent_on_queries(self, filters):
-        taken__aggregate = models.Request.objects.filter(*filters).annotate(time_spent=Sum('queries__time_taken')).aggregate(num=Avg('time_spent'))
+        taken__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(time_spent=Sum('queries__time_taken')).aggregate(num=Avg('time_spent'))
         return taken__aggregate['num']
 
     def _avg_overall_time(self, filters):
-        taken__aggregate = models.Request.objects.filter(*filters).annotate(time_spent=Sum('time_taken')).aggregate(num=Avg('time_spent'))
+        taken__aggregate = models.Request.objects.filter(*filters).values('view_name').annotate(time_spent=Sum('time_taken')).aggregate(num=Avg('time_spent'))
         return taken__aggregate['num']
 
     # TODO: Find a more efficient way to do this. Currently has to go to DB num. views + 1 times and is prob quite expensive
@@ -29,28 +29,32 @@ class SummaryView(View):
         values_list = models.Request.objects.filter(*filters).values_list("view_name").annotate(max=Max('time_taken')).filter(max__isnull=False).order_by('-max')[:5]
         requests = []
         for view_name, _ in values_list:
-            request = models.Request.objects.filter(view_name=view_name, *filters).filter(time_taken__isnull=False).order_by('-time_taken')[0]
-            requests.append(request)
-        return sorted(requests, key=lambda item: item.time_taken, reverse=True)
+            request = models.Request.objects.filter(view_name=view_name, time_taken__isnull=False, *filters).order_by('-time_taken').first()
+            if request:
+                requests.append(request)
+        return requests
 
     def _time_spent_in_db_by_view(self, filters):
         values_list = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Sum('queries__time_taken')).filter(t__gte=0).order_by('-t')[:5]
         requests = []
         for view, _ in values_list:
-            r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Sum('queries__time_taken')).filter(t__isnull=False).order_by('-t')[0]
-            requests.append(r)
-        return sorted(requests, key=lambda item: item.t, reverse=True)
+            request = models.Request.objects.filter(view_name=view, time_taken__isnull=False, *filters)
+            r = request.first()
+            if request:
+                r.t = request.values('view_name').annotate(t=Sum('queries__time_taken')).filter(t__isnull=False).order_by('-t')[0]['t']
+                requests.append(r)
+        return requests
 
     def _num_queries_by_view(self, filters):
         queryset = models.Request.objects.filter(*filters).values_list('view_name').annotate(t=Count('queries')).order_by('-t')[:5]
         views = [r[0] for r in queryset[:6]]
         requests = []
         for view in views:
-            try:
-                r = models.Request.objects.filter(view_name=view, *filters).annotate(t=Count('queries')).order_by('-t')[0]
+            request = models.Request.objects.filter(view_name=view, time_taken__isnull=False, *filters)
+            r = request.first()
+            if r:
+                r.t = request.values('view_name').annotate(t=Count('queries')).order_by('-t')[0]['t']
                 requests.append(r)
-            except IndexError:
-                pass
         return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _create_context(self, request):
