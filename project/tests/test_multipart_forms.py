@@ -32,7 +32,7 @@ class TestMultipartForms(TestCase):
         mock_request.body.assert_not_called()
 
     def test_multipart_form_request_creation_raises_no_exception(self):
-        """ 
+        """
         Test that a request with multipart form data is created correctly without raising excetions
         """
         request_model = RequestModelFactory(self.mock_request).construct_request_model()
