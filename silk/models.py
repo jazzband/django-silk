@@ -8,8 +8,10 @@ import sqlparse
 from django.conf import settings
 from django.db import models, transaction
 from django.db.models import (
+    Avg,
     BooleanField,
     CharField,
+    Count,
     DateTimeField,
     FileField,
     FloatField,
@@ -20,13 +22,13 @@ from django.db.models import (
     TextField,
 )
 from django.shortcuts import render
-from django.db.models import Avg, Count
-from .models import Request
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
+
+from .models import Request
 
 try:
     # New in Django 4.2
