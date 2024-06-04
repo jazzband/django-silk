@@ -166,7 +166,12 @@ class Request(models.Model):
 
         # Make sure we can delete everything if needed by settings
         if target_count <= 0:
-            cls.objects.all().delete()
+            # delete every request older than now
+            time_cutoff = timezone.now()
+            # recursively delete every 10000 rows to prevent running out of memory
+            while cls.objects.filter(start_time__lte=time_cutoff).count() > 0:
+                pks = cls.objects.filter(start_time__lte=time_cutoff)[:10000].values_list('pk', flat=True)
+                cls.objects.filter(pk__in=pks).delete()
             return
 
         try:
