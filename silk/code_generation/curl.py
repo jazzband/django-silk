@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 from django.template import Context, Template
 
-curl_template = """
+curl_template = """\
 curl {% if method %}-X {{ method }}{% endif %}
 {% if content_type %}-H 'content-type: {{ content_type }}'{% endif %}
 {% if modifier %}{{ modifier }} {% endif %}{% if body %}'{{ body }}'{% endif %}
@@ -66,4 +66,4 @@ def curl_cmd(url, method=None, query_params=None, body=None, content_type=None):
         'content_type': content_type,
         'extra': extra,
     }
-    return t.render(Context(context)).replace('\n', ' ')
+    return t.render(Context(context, autoescape=False)).replace('\n', ' ')
