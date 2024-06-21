@@ -303,7 +303,12 @@ class SQLQuery(models.Model):
         for idx, component in enumerate(components):
             # TODO: If django uses aliases on column names they will be falsely
             # identified as tables...
-            if component.lower() == 'from' or component.lower() == 'join' or component.lower() == 'as':
+            if (
+                component.lower() == "from"
+                or component.lower() == "join"
+                or component.lower() == "as"
+                or component.lower() == "update"
+            ):
                 try:
                     _next = components[idx + 1]
                     if not _next.startswith('('):  # Subquery
