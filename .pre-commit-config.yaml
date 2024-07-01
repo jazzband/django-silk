@@ -47,21 +47,21 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.15.2'
+  rev: 'v3.16.0'
   hooks:
   - id: pyupgrade
     args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.18.0'
+  rev: '1.19.0'
   hooks:
   - id: django-upgrade
     args: [--target-version, '3.2']
 - repo: https://github.com/hhatto/autopep8
-  rev: 'v2.2.0'
+  rev: 'v2.3.1'
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
-  rev: '7.0.0'
+  rev: '7.1.0'
   hooks:
   - id: flake8
     exclude: '^docs/'
