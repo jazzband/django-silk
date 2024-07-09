@@ -69,16 +69,15 @@ class RequestTest(TestCase):
 
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
 
-    # FIXME probably a bug
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_with_no_time_taken(self):
 
         query = SQLQueryFactory()
         self.obj.queries.add(query)
 
         self.assertEqual(query.time_taken, None)
-
-        with self.assertRaises(TypeError):
-            self.obj.time_spent_on_sql_queries
+    
+        # No exception should be raised, and the result should be 0.0
+        self.assertEqual(self.obj.time_spent_on_sql_queries, 0.0)
 
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
 

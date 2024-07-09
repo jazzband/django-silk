@@ -11,16 +11,21 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
+    ExpressionWrapper,
+    F,
     FileField,
     FloatField,
     ForeignKey,
     IntegerField,
     ManyToManyField,
     OneToOneField,
-    TextField,
+    Sum,
+    TextField
 )
+
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+
 
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
@@ -124,16 +129,20 @@ class Request(models.Model):
 
     @property
     def time_spent_on_sql_queries(self):
+        """"
+        Calculate the total time spent on SQL queries using Django aggregates.
         """
-        TODO: Perhaps there is a nicer way to do this with Django aggregates?
-        My initial thought was to perform:
-        SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
-        However this feature isnt available yet, however there has been talk
-        for use of F objects within aggregates for four years
-        here: https://code.djangoproject.com/ticket/14030. It looks
-        like this will go in soon at which point this should be changed.
-        """
-        return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+
+        total_time = SQLQuery.objects.filter(request=self).aggregate(
+            total_time=Sum(
+                ExpressionWrapper(
+                    F('end_time') - F('start_time'),
+                    output_field=FloatField()
+                )
+            )
+        )['total_time']
+        return total_time or 0.0
+        
 
     @property
     def headers(self):
