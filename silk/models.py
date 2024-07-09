@@ -10,10 +10,7 @@ from django.db import models, transaction
 from django.db.models import (
     BooleanField,
     CharField,
-    DateField,
     DateTimeField,
-    ExpressionWrapper,
-    F,
     FileField,
     FloatField,
     ForeignKey,
@@ -135,7 +132,6 @@ class Request(models.Model):
             total_time=Sum('time_taken', output_field=FloatField())
         )
         return result['total_time'] or 0.0
-
 
     @property
     def headers(self):
