@@ -21,7 +21,7 @@ from django.db.models import (
     ManyToManyField,
     OneToOneField,
     Sum,
-    TextField,
+    TextField
 )
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -129,7 +129,7 @@ class Request(models.Model):
     @property
     def time_spent_on_sql_queries(self):
         """"
-        Calculate the total time spent in milli seconds on SQL queries using Django aggregates.
+        Calculate the total time spent  in milli seconds on SQL queries using Django aggregates.
         """
         total_time_seconds = SQLQuery.objects.filter(request=self).aggregate(
             total_time=Sum(
@@ -139,8 +139,8 @@ class Request(models.Model):
                 )
             )
         )['total_time']
-        print ('_')
-        return total_time_seconds.total_seconds() * 1000 if total_time_seconds is not None else 0.0
+        return total_time_seconds.total_seconds() * 1000  if total_time_seconds is not None else 0.0
+        
 
     @property
     def headers(self):
