@@ -131,15 +131,11 @@ class Request(models.Model):
         """"
         Calculate the total time spent  in milli seconds on SQL queries using Django aggregates.
         """
-        total_time_seconds = SQLQuery.objects.filter(request=self).aggregate(
-            total_time=Sum(
-                ExpressionWrapper(
-                    (F('end_time') - F('start_time')),
-                    output_field=DateField()
-                )
-            )
-        )['total_time']
-        return total_time_seconds.total_seconds() * 1000 if total_time_seconds is not None else 0.0
+        result = SQLQuery.objects.filter(request=self).aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
+
 
     @property
     def headers(self):
