@@ -126,7 +126,7 @@ class Request(models.Model):
     @property
     def time_spent_on_sql_queries(self):
         """"
-        Calculate the total time spent  in milli seconds on SQL queries using Django aggregates.
+        Calculate the total time spent in milli seconds on SQL queries using Django aggregates.
         """
         result = SQLQuery.objects.filter(request=self).aggregate(
             total_time=Sum('time_taken', output_field=FloatField())
@@ -374,4 +374,10 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        return sum(x.time_taken for x in self.queries.all())
+        """
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
+        """
+        result = self.queries.aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
