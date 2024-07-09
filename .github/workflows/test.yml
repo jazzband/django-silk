@@ -89,7 +89,7 @@ jobs:
 
     - name: Tox tests
       run: |
-        tox -v
+        tox -vvv
       env:
         DJANGO: ${{ matrix.django-version }}
 
