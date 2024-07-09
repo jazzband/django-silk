@@ -75,7 +75,7 @@ class RequestTest(TestCase):
         self.obj.queries.add(query)
 
         self.assertEqual(query.time_taken, None)
-    
+
         # No exception should be raised, and the result should be 0.0
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0.0)
 

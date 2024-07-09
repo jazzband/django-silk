@@ -20,12 +20,10 @@ from django.db.models import (
     ManyToManyField,
     OneToOneField,
     Sum,
-    TextField
+    TextField,
 )
-
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-
 
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
@@ -142,7 +140,6 @@ class Request(models.Model):
             )
         )['total_time']
         return total_time or 0.0
-        
 
     @property
     def headers(self):
