@@ -6,11 +6,12 @@ from django.views.generic import View
 
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.request_filters import BaseFilter, filters_from_request
+from silk.request_filters import BaseFilter, FiltersManager, filters_from_request
 
 
 class SummaryView(View):
     filters_key = 'summary_filters'
+    filters_manager = FiltersManager(filters_key)
 
     def _avg_num_queries(self, filters):
         queries__aggregate = models.Request.objects.filter(*filters).annotate(num_queries=Count('queries')).aggregate(num=Avg('num_queries'))
@@ -54,7 +55,7 @@ class SummaryView(View):
         return sorted(requests, key=lambda item: item.t, reverse=True)
 
     def _create_context(self, request):
-        raw_filters = request.session.get(self.filters_key, {})
+        raw_filters = self.filters_manager.get(request)
         filters = [BaseFilter.from_dict(filter_d) for _, filter_d in raw_filters.items()]
         avg_overall_time = self._avg_num_queries(filters)
         c = {
@@ -81,6 +82,6 @@ class SummaryView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
-        filters = filters_from_request(request)
-        request.session[self.filters_key] = {ident: f.as_dict() for ident, f in filters.items()}
+        filters = {ident: f.as_dict() for ident, f in filters_from_request(request).items()}
+        self.filters_manager.save(request, filters)
         return render(request, 'silk/summary.html', self._create_context(request))

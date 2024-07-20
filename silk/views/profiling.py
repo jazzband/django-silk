@@ -6,7 +6,7 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile, Request
-from silk.request_filters import BaseFilter, filters_from_request
+from silk.request_filters import BaseFilter, FiltersManager, filters_from_request
 
 
 class ProfilingView(View):
@@ -20,6 +20,7 @@ class ProfilingView(View):
                 'Time on queries']
     defualt_order_by = 'Recent'
     session_key_profile_filters = 'session_key_profile_filters'
+    filters_manager = FiltersManager(session_key_profile_filters)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -90,7 +91,7 @@ class ProfilingView(View):
             show = int(show)
         func_name = request.GET.get('func_name', None)
         name = request.GET.get('name', None)
-        filters = request.session.get(self.session_key_profile_filters, {})
+        filters = self.filters_manager.get(request)
         context = {
             'show': show,
             'order_by': order_by,
@@ -127,5 +128,6 @@ class ProfilingView(View):
     @method_decorator(permissions_possibly_required)
     def post(self, request):
         filters = filters_from_request(request)
-        request.session[self.session_key_profile_filters] = {ident: f.as_dict() for ident, f in filters.items()}
+        filters_as_dict = {ident: f.as_dict() for ident, f in filters.items()}
+        self.filters_manager.save(request, filters_as_dict)
         return render(request, 'silk/profiling.html', self._create_context(request))
