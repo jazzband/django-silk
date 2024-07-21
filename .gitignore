@@ -63,9 +63,6 @@ project/media/
 project/tmp/
 .vscode/
 
-# Vagrant
-.vagrant
-
 # Hardlinks
 /django_silky/silk
 
