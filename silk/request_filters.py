@@ -4,9 +4,10 @@ Django queryset filters used by the requests view
 import logging
 from datetime import datetime, timedelta
 
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, OuterRef, Q, Subquery, Sum
 from django.utils import timezone
 
+from silk.models import SQLQuery
 from silk.profiling.dynamic import _get_module
 from silk.templatetags.silk_filters import _silk_date_time
 
@@ -163,7 +164,15 @@ class NumQueriesFilter(BaseFilter):
         return '#queries >= %s' % self.value
 
     def contribute_to_query_set(self, query_set):
-        return query_set.annotate(num_queries=Count('queries'))
+        return query_set.annotate(
+            # This is overly complex due to Oracle not accepting group by on TextField
+            num_queries=Subquery(
+                SQLQuery.objects.filter(request_id=OuterRef('id'))
+                .values('request_id')
+                .annotate(count=Count('id'))
+                .values('count')[:1]
+            ),
+        )
 
 
 class TimeSpentOnQueriesFilter(BaseFilter):
@@ -178,7 +187,15 @@ class TimeSpentOnQueriesFilter(BaseFilter):
         return 'DB Time >= %s' % self.value
 
     def contribute_to_query_set(self, query_set):
-        return query_set.annotate(db_time=Sum('queries__time_taken'))
+        return query_set.annotate(
+            # This is overly complex due to Oracle not accepting group by on TextField
+            db_time=Subquery(
+                SQLQuery.objects.filter(request_id=OuterRef('id'))
+                .values('request_id')
+                .annotate(sum_time_taken=Sum('time_taken'))
+                .values('sum_time_taken')[:1]
+            ),
+        )
 
 
 class OverallTimeFilter(BaseFilter):
