@@ -1,4 +1,4 @@
-coverage==7.4.0
+coverage==7.6.1
 factory-boy==3.3.0
 freezegun==1.4.0
 networkx==2.6
