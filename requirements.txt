@@ -5,4 +5,4 @@ networkx==2.6
 pydot==1.4.2
 pygments==2.18.0
 pytest-cov==5.0.0
-pytest-django==4.7.0
+pytest-django==4.8.0
