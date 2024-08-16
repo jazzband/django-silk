@@ -17,6 +17,7 @@ from django.db.models import (
     IntegerField,
     ManyToManyField,
     OneToOneField,
+    Sum,
     TextField,
 )
 from django.utils import timezone
@@ -124,16 +125,13 @@ class Request(models.Model):
 
     @property
     def time_spent_on_sql_queries(self):
+        """"
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
         """
-        TODO: Perhaps there is a nicer way to do this with Django aggregates?
-        My initial thought was to perform:
-        SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
-        However this feature isnt available yet, however there has been talk
-        for use of F objects within aggregates for four years
-        here: https://code.djangoproject.com/ticket/14030. It looks
-        like this will go in soon at which point this should be changed.
-        """
-        return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+        result = SQLQuery.objects.filter(request=self).aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
 
     @property
     def headers(self):
@@ -381,4 +379,10 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        return sum(x.time_taken for x in self.queries.all())
+        """
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
+        """
+        result = self.queries.aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
