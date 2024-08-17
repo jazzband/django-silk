@@ -26,6 +26,19 @@ class TestRootViewDefaults(TestCase):
 
 
 class TestContext(TestCase):
+    def assertQuerySetEqual(self, *args, **kwargs):
+        """
+        A shim for QuerySetEqual to enable support for multiple versions of Django
+        TODO: delete this after support for Django 3.2 is dropped
+        Reference: https://docs.djangoproject.com/en/5.0/topics/testing/tools/#django.test.TransactionTestCase.assertQuerySetEqual
+        """
+        if hasattr(super(), 'assertQuerySetEqual'):
+            # Django > 3.2
+            super().assertQuerySetEqual(*args, **kwargs)
+        else:
+            # Django < 5.1
+            super().assertQuerysetEqual(*args, **kwargs)
+
     def test_default(self):
         request = Mock(spec_set=['GET', 'session'])
         request.session = {}
@@ -38,7 +51,7 @@ class TestContext(TestCase):
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -60,7 +73,7 @@ class TestContext(TestCase):
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
     def test_post(self):
@@ -74,7 +87,7 @@ class TestContext(TestCase):
                 'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
             },
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
     def test_view_without_session_and_auth_middlewares(self):
