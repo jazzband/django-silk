@@ -32,6 +32,12 @@ jobs:
           - python-version: '3.9'
             django-version: '5.1'
 
+          # Django 5.1 doesn't support PostgreSQL 12 (https://docs.djangoproject.com/en/5.1/releases/5.1/#dropped-support-for-postgresql-12)
+          - django-version: '5.1'
+            postgres-version: '12'
+          - django-version: 'main'
+            postgres-version: '12'
+
           # Django main doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.1/faq/install/)
           - python-version: '3.8'
             django-version: 'main'
