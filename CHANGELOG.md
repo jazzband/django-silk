@@ -1,6 +1,30 @@
 # Change Log
 ## Unreleased
 
+## [5.2.0](https://github.com/jazzband/django-silk/tree/5.2.0) (2024-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compre/5.1.0..5.2.0)
+
+**Features/Enhancements:**
+
+ - Support Django 5.1 (#734, #732) @albertyw
+
+**Fixes:**
+
+ - Fix when Session, Authentication or Message middleware are not present (#667) @mgaligniana
+ - Update 'tables_involved' property to include tables from UPDATE operation (#717) @emregeldegul
+ - Fix double-escaping of the curl and Python example code (#709) @SpecLad
+ - Correct units in profiling and requests pages (#725) @ka28kumar
+
+**Maintenance and Cleanup:**
+
+ - Update python dependencies (#733) @albertyw
+ - Refactor SQL query time calculation to use Django aggregation (#720) @beltagymohamed
+ - Fix test failures on Windows (#707) @SpecLad
+ - Update workflow actions (#700) @albertyw
+ - Update test matrix to latest version of django, postgres, and mariadb #701) @albertyw
+
+
 ## [5.1.0](https://github.com/jazzband/django-silk/tree/5.1.0) (2023-12-30)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.4..5.1.0)
