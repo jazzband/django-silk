@@ -22,7 +22,6 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'project.urls'
 
-# Django 3.2+
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
