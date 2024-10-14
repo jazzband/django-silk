@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.6.0'
+  rev: 'v5.0.0'
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
@@ -18,7 +18,7 @@ repos:
   - id: isort
     args: ['--profile', 'black']
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.6.0'
+  rev: 'v5.0.0'
   hooks:
   - id: end-of-file-fixer
     exclude: >-
@@ -47,12 +47,12 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.17.0'
+  rev: 'v3.18.0'
   hooks:
   - id: pyupgrade
     args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.21.0'
+  rev: '1.22.1'
   hooks:
   - id: django-upgrade
     args: [--target-version, '4.2']
