@@ -3,7 +3,7 @@
 
 ## [5.2.0](https://github.com/jazzband/django-silk/tree/5.2.0) (2024-08-17)
 :release-by: Albert Wang (@albertyw)
-[Full Changelog](https://github.com/jazzband/django-silk/compre/5.1.0..5.2.0)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.1.0..5.2.0)
 
 **Features/Enhancements:**
 
