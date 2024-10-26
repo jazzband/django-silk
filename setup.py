@@ -27,7 +27,6 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
@@ -42,6 +41,6 @@ setup(
         'autopep8',
         'gprof2dot>=2017.09.19',
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     setup_requires=['setuptools_scm'],
 )
