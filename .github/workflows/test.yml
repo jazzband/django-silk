@@ -11,8 +11,8 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
         django-version: ['4.2', '5.0', '5.1', 'main']
-        postgres-version: ['12', '16']
-        mariadb-version: ['10.6', '10.11', '11.2']
+        postgres-version: ['13', '17']
+        mariadb-version: ['10.6', '10.11', '11.4']
         exclude:
           # Django 5.0 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.0/faq/install/)
           - python-version: '3.9'
@@ -21,12 +21,6 @@ jobs:
           # Django 5.1 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.1/faq/install/)
           - python-version: '3.9'
             django-version: '5.1'
-
-          # Django 5.1 doesn't support PostgreSQL 12 (https://docs.djangoproject.com/en/5.1/releases/5.1/#dropped-support-for-postgresql-12)
-          - django-version: '5.1'
-            postgres-version: '12'
-          - django-version: 'main'
-            postgres-version: '12'
 
           # Django main doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.1/faq/install/)
           - python-version: '3.9'
