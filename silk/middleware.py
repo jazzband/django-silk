@@ -167,13 +167,18 @@ class SilkyMiddleware:
         Logger.debug('Process response done.')
 
     def process_response(self, request, response):
+        max_attempts = 2
+        attempts = 1
         if getattr(request, 'silk_is_intercepted', False):
-            while True:
+            while attempts <= max_attempts:
+                if attempts > 1:
+                    Logger.debug('Retrying _process_response; attempt %s' % attempts)
                 try:
                     self._process_response(request, response)
-                except (AttributeError, DatabaseError):
-                    Logger.debug('Retrying _process_response')
-                    self._process_response(request, response)
-                finally:
                     break
+                except (AttributeError, DatabaseError):
+                    if attempts >= max_attempts:
+                        Logger.warn('Exhausted _process_response attempts; not processing request')
+                        break
+                attempts += 1
         return response
