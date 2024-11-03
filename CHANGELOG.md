@@ -1,6 +1,27 @@
 # Change Log
 ## Unreleased
 
+## [5.3.0](https://github.com/jazzband/django-silk/tree/5.3.0) (2024-10-25)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.2.0..5.3.0)
+
+**Note: this release removes support for Django 3.2 and Python 3.8**
+
+**Features/Enhancements:**
+
+ - Support python 3.13 (#747)
+
+**Fixes:**
+
+ - Upgrade jQuery-UI to 1.13.2 to fix XSS vulnerabity (#742)
+
+**Maintenance and Cleanup:**
+
+ - Remove Django 3.2 support (#736)
+ - Drop support for python 3.8 (#749)
+ - Update python dependencies (#748)
+
+
 ## [5.2.0](https://github.com/jazzband/django-silk/tree/5.2.0) (2024-08-17)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.1.0..5.2.0)
