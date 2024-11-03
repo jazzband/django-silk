@@ -13,7 +13,7 @@
 
 **Fixes:**
 
- - Upgrade jQuery-UI to 1.13.2 to fix XSS vulnerabity (#742)
+ - Upgrade jQuery-UI to 1.13.2 to fix XSS vulnerability (#742)
 
 **Maintenance and Cleanup:**
 
