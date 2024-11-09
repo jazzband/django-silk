@@ -1,6 +1,16 @@
 # Change Log
 ## Unreleased
 
+## [5.3.1](https://github.com/jazzband/django-silk/tree/5.3.1) (2024-11-08)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.0..5.3.1)
+
+**Fixes:**
+
+ - Fix missing jQuery UI images (#754) @Tatsh
+ - Fix swallowing exceptions when processing response in silk middleware (#753) @albertyw
+
+
 ## [5.3.0](https://github.com/jazzband/django-silk/tree/5.3.0) (2024-10-25)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.2.0..5.3.0)
