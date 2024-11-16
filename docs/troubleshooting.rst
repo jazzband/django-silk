@@ -21,9 +21,9 @@ See this `github issue <https://github.com/jazzband/django-silk/issues/21>`_ for
 Middleware
 ----------
 
-The middleware is placement sensitive. If the middleware before ``silk.middleware.SilkyMiddleware`` returns from ``process_request`` then ``SilkyMiddleware`` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from ``process_request``. See the `django docs <https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request>`_ for more information on this.
+The order of middleware is sensitive. If any middleware placed before ``silk.middleware.SilkyMiddleware`` returns a response without invoking its ``get_response``, the ``SilkyMiddleware`` won’t run. To avoid this, ensure that middleware preceding ``SilkyMiddleware`` does not bypass or return a response without calling its ``get_response``. For further details, check out the `Django documentation <https://docs.djangoproject.com/en/5.1/topics/http/middleware/#middleware-order-and-layering>`.
 
-This `GitHub issue <https://github.com/jazzband/django-silk/issues/12>`_ also has information on dealing with middleware problems.
+This `GitHub issue <https://github.com/jazzband/django-silk/issues/12>`_ also has information on dealing with middleware problems.`
 
 Garbage Collection
 ------------------
