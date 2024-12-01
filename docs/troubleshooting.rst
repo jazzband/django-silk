@@ -23,8 +23,6 @@ Middleware
 
 The order of middleware is sensitive. If any middleware placed before ``silk.middleware.SilkyMiddleware`` returns a response without invoking its ``get_response``, the ``SilkyMiddleware`` won’t run. To avoid this, ensure that middleware preceding ``SilkyMiddleware`` does not bypass or return a response without calling its ``get_response``. For further details, check out the `Django documentation <https://docs.djangoproject.com/en/5.1/topics/http/middleware/#middleware-order-and-layering>`.
 
-This `GitHub issue <https://github.com/jazzband/django-silk/issues/12>`_ also has information on dealing with middleware problems.`
-
 Garbage Collection
 ------------------
 
