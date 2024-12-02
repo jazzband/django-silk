@@ -5,5 +5,5 @@ networkx==3.2.1
 pillow==11.0.0
 pydot==1.4.2
 pygments==2.18.0
-pytest-cov==5.0.0
+pytest-cov==6.0.0
 pytest-django==4.9.0
