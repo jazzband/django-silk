@@ -56,7 +56,7 @@ INSTALLED_APPS = (
 )
 ```
 
-**Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+**Note:** The order of middleware is sensitive. If any middleware placed before `silk.middleware.SilkyMiddleware` returns a response without invoking its `get_response`, the `SilkyMiddleware` won’t run. To avoid this, ensure that middleware preceding `SilkyMiddleware` does not bypass or return a response without calling its `get_response`. For further details, check out the [Django documentation](https://docs.djangoproject.com/en/dev/topics/http/middleware/#middleware-order-and-layering).
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
