@@ -5,8 +5,8 @@ from django.test import TestCase
 
 from silk.model_factory import ResponseModelFactory
 
-DJANGO_META_CONTENT_TYPE = 'CONTENT_TYPE'
-HTTP_CONTENT_TYPE = 'content-type'
+DJANGO_META_CONTENT_TYPE = "CONTENT_TYPE"
+HTTP_CONTENT_TYPE = "content-type"
 
 
 class TestByteStringCompatForResponse(TestCase):
@@ -16,9 +16,9 @@ class TestByteStringCompatForResponse(TestCase):
         Test ResponseModelFactory formats json with bytes content
         """
         mock = Mock()
-        mock.headers = {HTTP_CONTENT_TYPE: 'application/json;'}
-        d = {'k': 'v'}
-        mock.content = bytes(json.dumps(d), 'utf-8')
+        mock.headers = {HTTP_CONTENT_TYPE: "application/json;"}
+        d = {"k": "v"}
+        mock.content = bytes(json.dumps(d), "utf-8")
         mock.get = mock.headers.get
         factory = ResponseModelFactory(mock)
         body, content = factory.body()

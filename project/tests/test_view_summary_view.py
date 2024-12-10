@@ -18,22 +18,36 @@ class TestSummaryView(TestCase):
         """
         Filters are not present because there is no `session` to store them.
         """
-        with self.modify_settings(MIDDLEWARE={
-            'remove': [
-                'django.contrib.sessions.middleware.SessionMiddleware',
-                'django.contrib.auth.middleware.AuthenticationMiddleware',
-                'django.contrib.messages.middleware.MessageMiddleware',
-            ],
-        }):
+        with self.modify_settings(
+            MIDDLEWARE={
+                "remove": [
+                    "django.contrib.sessions.middleware.SessionMiddleware",
+                    "django.contrib.auth.middleware.AuthenticationMiddleware",
+                    "django.contrib.messages.middleware.MessageMiddleware",
+                ],
+            }
+        ):
             # test filters on POST
             seconds = 3600
-            response = self.client.post(silky_reverse('summary'), {
-                'filter-seconds-value': seconds,
-                'filter-seconds-typ': 'SecondsFilter',
-            })
+            response = self.client.post(
+                silky_reverse("summary"),
+                {
+                    "filter-seconds-value": seconds,
+                    "filter-seconds-typ": "SecondsFilter",
+                },
+            )
             context = response.context
-            self.assertTrue(dict_contains({
-                'filters': {
-                    'seconds': {'typ': 'SecondsFilter', 'value': seconds, 'str': f'>{seconds} seconds ago'}
-                }
-            }, context))
+            self.assertTrue(
+                dict_contains(
+                    {
+                        "filters": {
+                            "seconds": {
+                                "typ": "SecondsFilter",
+                                "value": seconds,
+                                "str": f">{seconds} seconds ago",
+                            }
+                        }
+                    },
+                    context,
+                )
+            )

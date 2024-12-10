@@ -15,9 +15,16 @@ class TestCodeGenCurl(TestCase):
 
         result_words = shlex.split(result)
 
-        self.assertEqual(result_words, [
-            'curl', '-X', 'POST',
-            '-H', 'content-type: application/json',
-            '-d', '{"gamma": "delta"}',
-            'https://example.org/alpha/beta'
-        ])
+        self.assertEqual(
+            result_words,
+            [
+                "curl",
+                "-X",
+                "POST",
+                "-H",
+                "content-type: application/json",
+                "-d",
+                '{"gamma": "delta"}',
+                "https://example.org/alpha/beta",
+            ],
+        )

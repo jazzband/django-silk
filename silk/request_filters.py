@@ -1,6 +1,7 @@
 """
 Django queryset filters used by the requests view
 """
+
 import logging
 from datetime import datetime, timedelta
 
@@ -10,7 +11,7 @@ from django.utils import timezone
 from silk.profiling.dynamic import _get_module
 from silk.templatetags.silk_filters import _silk_date_time
 
-logger = logging.getLogger('silk.request_filters')
+logger = logging.getLogger("silk.request_filters")
 
 
 class FilterValidationError(Exception):
@@ -31,13 +32,13 @@ class BaseFilter(Q):
         return self.value
 
     def as_dict(self):
-        return {'typ': self.typ, 'value': self.serialisable_value, 'str': str(self)}
+        return {"typ": self.typ, "value": self.serialisable_value, "str": str(self)}
 
     @staticmethod
     def from_dict(d):
-        typ = d['typ']
+        typ = d["typ"]
         filter_class = globals()[typ]
-        val = d.get('value', None)
+        val = d.get("value", None)
         return filter_class(val)
 
     def contribute_to_query_set(self, query_set):
@@ -65,7 +66,7 @@ class SecondsFilter(BaseFilter):
             super().__init__()
 
     def __str__(self):
-        return '>%d seconds ago' % self.value
+        return ">%d seconds ago" % self.value
 
 
 def _parse(dt, fmt):
@@ -75,14 +76,14 @@ def _parse(dt, fmt):
         dt = datetime.strptime(dt, fmt)
     except TypeError:
         if not isinstance(dt, datetime):
-            raise FilterValidationError('Must be a datetime object')
+            raise FilterValidationError("Must be a datetime object")
     except ValueError as e:
         raise FilterValidationError(e)
     return dt
 
 
 class BeforeDateFilter(BaseFilter):
-    fmt = '%Y/%m/%d %H:%M'
+    fmt = "%Y/%m/%d %H:%M"
 
     def __init__(self, dt):
         value = _parse(dt, self.fmt)
@@ -93,11 +94,11 @@ class BeforeDateFilter(BaseFilter):
         return self.value.strftime(self.fmt)
 
     def __str__(self):
-        return '<%s' % _silk_date_time(self.value)
+        return "<%s" % _silk_date_time(self.value)
 
 
 class AfterDateFilter(BaseFilter):
-    fmt = '%Y/%m/%d %H:%M'
+    fmt = "%Y/%m/%d %H:%M"
 
     def __init__(self, dt):
         value = _parse(dt, self.fmt)
@@ -108,7 +109,7 @@ class AfterDateFilter(BaseFilter):
         return self.value.strftime(self.fmt)
 
     def __str__(self):
-        return '>%s' % _silk_date_time(self.value)
+        return ">%s" % _silk_date_time(self.value)
 
 
 class ViewNameFilter(BaseFilter):
@@ -119,7 +120,7 @@ class ViewNameFilter(BaseFilter):
         super().__init__(value, view_name=view_name)
 
     def __str__(self):
-        return 'View == %s' % self.value
+        return "View == %s" % self.value
 
 
 class PathFilter(BaseFilter):
@@ -130,7 +131,7 @@ class PathFilter(BaseFilter):
         super().__init__(value, path=path)
 
     def __str__(self):
-        return 'Path == %s' % self.value
+        return "Path == %s" % self.value
 
 
 class NameFilter(BaseFilter):
@@ -139,7 +140,7 @@ class NameFilter(BaseFilter):
         super().__init__(value, name=name)
 
     def __str__(self):
-        return 'name == %s' % self.value
+        return "name == %s" % self.value
 
 
 class FunctionNameFilter(BaseFilter):
@@ -148,7 +149,7 @@ class FunctionNameFilter(BaseFilter):
         super().__init__(value, func_name=func_name)
 
     def __str__(self):
-        return 'func_name == %s' % self.value
+        return "func_name == %s" % self.value
 
 
 class NumQueriesFilter(BaseFilter):
@@ -160,10 +161,10 @@ class NumQueriesFilter(BaseFilter):
         super().__init__(value, num_queries__gte=n)
 
     def __str__(self):
-        return '#queries >= %s' % self.value
+        return "#queries >= %s" % self.value
 
     def contribute_to_query_set(self, query_set):
-        return query_set.annotate(num_queries=Count('queries'))
+        return query_set.annotate(num_queries=Count("queries"))
 
 
 class TimeSpentOnQueriesFilter(BaseFilter):
@@ -175,10 +176,10 @@ class TimeSpentOnQueriesFilter(BaseFilter):
         super().__init__(value, db_time__gte=n)
 
     def __str__(self):
-        return 'DB Time >= %s' % self.value
+        return "DB Time >= %s" % self.value
 
     def contribute_to_query_set(self, query_set):
-        return query_set.annotate(db_time=Sum('queries__time_taken'))
+        return query_set.annotate(db_time=Sum("queries__time_taken"))
 
 
 class OverallTimeFilter(BaseFilter):
@@ -190,7 +191,7 @@ class OverallTimeFilter(BaseFilter):
         super().__init__(value, time_taken__gte=n)
 
     def __str__(self):
-        return 'Time >= %s' % self.value
+        return "Time >= %s" % self.value
 
 
 class StatusCodeFilter(BaseFilter):
@@ -210,8 +211,8 @@ class MethodFilter(BaseFilter):
 def filters_from_request(request):
     raw_filters = {}
     for key in request.POST:
-        splt = key.split('-')
-        if splt[0].startswith('filter'):
+        splt = key.split("-")
+        if splt[0].startswith("filter"):
             ident = splt[1]
             typ = splt[2]
             if ident not in raw_filters:
@@ -219,16 +220,18 @@ def filters_from_request(request):
             raw_filters[ident][typ] = request.POST[key]
     filters = {}
     for ident, raw_filter in raw_filters.items():
-        value = raw_filter.get('value', '')
+        value = raw_filter.get("value", "")
         if value.strip():
-            typ = raw_filter['typ']
-            module = _get_module('silk.request_filters')
+            typ = raw_filter["typ"]
+            module = _get_module("silk.request_filters")
             filter_class = getattr(module, typ)
             try:
                 f = filter_class(value)
                 filters[ident] = f
             except FilterValidationError:
-                logger.warning(f'Validation error when processing filter {typ}({value})')
+                logger.warning(
+                    f"Validation error when processing filter {typ}({value})"
+                )
     return filters
 
 
@@ -237,11 +240,11 @@ class FiltersManager:
         self.key = filters_key
 
     def save(self, request, filters):
-        if hasattr(request, 'session'):
+        if hasattr(request, "session"):
             request.session[self.key] = filters
         request.silk_filters = filters
 
     def get(self, request):
-        if hasattr(request, 'session'):
+        if hasattr(request, "session"):
             return request.session.get(self.key, {})
         return request.silk_filters

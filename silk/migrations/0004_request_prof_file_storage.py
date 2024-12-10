@@ -8,13 +8,15 @@ import silk.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('silk', '0003_request_prof_file'),
+        ("silk", "0003_request_prof_file"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='request',
-            name='prof_file',
-            field=models.FileField(null=True, storage=silk.models.silk_storage, upload_to=''),
+            model_name="request",
+            name="prof_file",
+            field=models.FileField(
+                null=True, storage=silk.models.silk_storage, upload_to=""
+            ),
         ),
     ]

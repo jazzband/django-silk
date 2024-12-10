@@ -25,18 +25,26 @@ class RequestView(View):
         except (ValueError, TypeError):
             pass
         context = {
-            'silk_request': silk_request,
-            'curl': curl_cmd(url=request.build_absolute_uri(silk_request.path),
-                             method=silk_request.method,
-                             query_params=query_params,
-                             body=body,
-                             content_type=silk_request.content_type),
-            'query_params': json.dumps(query_params, sort_keys=True, indent=4) if query_params else None,
-            'client': gen(path=silk_request.path,
-                          method=silk_request.method,
-                          query_params=query_params,
-                          data=body,
-                          content_type=silk_request.content_type),
-            'request': request
+            "silk_request": silk_request,
+            "curl": curl_cmd(
+                url=request.build_absolute_uri(silk_request.path),
+                method=silk_request.method,
+                query_params=query_params,
+                body=body,
+                content_type=silk_request.content_type,
+            ),
+            "query_params": (
+                json.dumps(query_params, sort_keys=True, indent=4)
+                if query_params
+                else None
+            ),
+            "client": gen(
+                path=silk_request.path,
+                method=silk_request.method,
+                query_params=query_params,
+                data=body,
+                content_type=silk_request.content_type,
+            ),
+            "request": request,
         }
-        return render(request, 'silk/request.html', context)
+        return render(request, "silk/request.html", context)

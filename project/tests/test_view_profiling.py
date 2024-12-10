@@ -15,7 +15,7 @@ class TestProfilingViewDefaults(TestCase):
         func_names = ProfilingView()._get_function_names()
         for p in profiles:
             self.assertIn(p.func_name, func_names)
-        self.assertIn('', func_names)
+        self.assertIn("", func_names)
 
     def test_show(self):
         self.assertIn(ProfilingView.default_show, ProfilingView.show)
@@ -31,15 +31,15 @@ class TestProfilingViewGetObjects(TestCase):
         cls.profiles = [MockSuite().mock_profile() for _ in range(0, 10)]
 
     def test_ordering(self):
-        results = ProfilingView()._get_objects(order_by='Recent')
-        self.assertSorted(results, 'start_time')
+        results = ProfilingView()._get_objects(order_by="Recent")
+        self.assertSorted(results, "start_time")
 
     def test_show(self):
         results = ProfilingView()._get_objects(show=5)
         self.assertEqual(5, len(results))
 
     def test_func_name(self):
-        func_name = 'a_func_name'
+        func_name = "a_func_name"
         self.profiles[1].func_name = func_name
         self.profiles[1].save()
         results = ProfilingView()._get_objects(func_name=func_name)
@@ -50,91 +50,127 @@ class TestProfilingViewGetObjects(TestCase):
         for idx, r in enumerate(objects):
             try:
                 nxt = objects[idx + 1]
-                self.assertGreaterEqual(getattr(r, sort_field), getattr(nxt, sort_field))
+                self.assertGreaterEqual(
+                    getattr(r, sort_field), getattr(nxt, sort_field)
+                )
             except IndexError:
                 pass
 
 
 class TestProfilingContext(TestCase):
     def test_default(self):
-        request = Mock(spec_set=['GET', 'session'])
+        request = Mock(spec_set=["GET", "session"])
         request.GET = {}
         request.session = {}
         context = ProfilingView()._create_context(request)
-        self.assertTrue(dict_contains({
-            'show': ProfilingView.default_show,
-            'order_by': ProfilingView.defualt_order_by,
-            'options_show': ProfilingView.show,
-            'options_order_by': ProfilingView.order_by,
-            'options_func_names': ProfilingView()._get_function_names()
-        }, context))
-        self.assertNotIn('path', context)
-        self.assertIn('results', context)
+        self.assertTrue(
+            dict_contains(
+                {
+                    "show": ProfilingView.default_show,
+                    "order_by": ProfilingView.defualt_order_by,
+                    "options_show": ProfilingView.show,
+                    "options_order_by": ProfilingView.order_by,
+                    "options_func_names": ProfilingView()._get_function_names(),
+                },
+                context,
+            )
+        )
+        self.assertNotIn("path", context)
+        self.assertIn("results", context)
 
     def test_get(self):
-        request = Mock(spec_set=['GET', 'session'])
+        request = Mock(spec_set=["GET", "session"])
         request.session = {}
         show = 10
-        func_name = 'func_name'
-        name = 'name'
-        order_by = 'Time'
-        request.GET = {'show': show,
-                       'func_name': func_name,
-                       'name': name,
-                       'order_by': order_by}
+        func_name = "func_name"
+        name = "name"
+        order_by = "Time"
+        request.GET = {
+            "show": show,
+            "func_name": func_name,
+            "name": name,
+            "order_by": order_by,
+        }
         context = ProfilingView()._create_context(request)
-        self.assertTrue(dict_contains({
-            'show': show,
-            'order_by': order_by,
-            'func_name': func_name,
-            'name': name,
-            'options_show': ProfilingView.show,
-            'options_order_by': ProfilingView.order_by,
-            'options_func_names': ProfilingView()._get_function_names()
-        }, context))
-        self.assertIn('results', context)
+        self.assertTrue(
+            dict_contains(
+                {
+                    "show": show,
+                    "order_by": order_by,
+                    "func_name": func_name,
+                    "name": name,
+                    "options_show": ProfilingView.show,
+                    "options_order_by": ProfilingView.order_by,
+                    "options_func_names": ProfilingView()._get_function_names(),
+                },
+                context,
+            )
+        )
+        self.assertIn("results", context)
 
     def test_view_without_session_and_auth_middlewares(self):
         """
         Filters are not present because there is no `session` to store them.
         """
-        with self.modify_settings(MIDDLEWARE={
-            'remove': [
-                'django.contrib.sessions.middleware.SessionMiddleware',
-                'django.contrib.auth.middleware.AuthenticationMiddleware',
-                'django.contrib.messages.middleware.MessageMiddleware',
-            ],
-        }):
+        with self.modify_settings(
+            MIDDLEWARE={
+                "remove": [
+                    "django.contrib.sessions.middleware.SessionMiddleware",
+                    "django.contrib.auth.middleware.AuthenticationMiddleware",
+                    "django.contrib.messages.middleware.MessageMiddleware",
+                ],
+            }
+        ):
             # test filters on GET
             show = 10
-            func_name = 'func_name'
-            name = 'name'
-            order_by = 'Time'
-            response = self.client.get(silky_reverse('profiling'), {
-                'show': show,
-                'func_name': func_name,
-                'name': name,
-                'order_by': order_by
-            })
+            func_name = "func_name"
+            name = "name"
+            order_by = "Time"
+            response = self.client.get(
+                silky_reverse("profiling"),
+                {
+                    "show": show,
+                    "func_name": func_name,
+                    "name": name,
+                    "order_by": order_by,
+                },
+            )
             context = response.context
-            self.assertTrue(dict_contains({
-                'show': show,
-                'order_by': order_by,
-                'func_name': func_name,
-                'name': name,
-                'options_show': ProfilingView.show,
-                'options_order_by': ProfilingView.order_by,
-                'options_func_names': ProfilingView()._get_function_names()
-            }, context))
+            self.assertTrue(
+                dict_contains(
+                    {
+                        "show": show,
+                        "order_by": order_by,
+                        "func_name": func_name,
+                        "name": name,
+                        "options_show": ProfilingView.show,
+                        "options_order_by": ProfilingView.order_by,
+                        "options_func_names": ProfilingView()._get_function_names(),
+                    },
+                    context,
+                )
+            )
 
             # test filters on POST
-            response = self.client.post(silky_reverse('profiling'), {
-                'filter-overalltime-value': 100,
-                'filter-overalltime-typ': 'TimeSpentOnQueriesFilter',
-            })
-            context = response.context
-            self.assertTrue(dict_contains({
-                'filters': {
-                    'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
+            response = self.client.post(
+                silky_reverse("profiling"),
+                {
+                    "filter-overalltime-value": 100,
+                    "filter-overalltime-typ": "TimeSpentOnQueriesFilter",
                 },
-            }, context))
+            )
+            context = response.context
+            self.assertTrue(
+                dict_contains(
+                    {
+                        "filters": {
+                            "overalltime": {
+                                "typ": "TimeSpentOnQueriesFilter",
+                                "value": 100,
+                                "str": "DB Time >= 100",
+                            }
+                        },
+                    },
+                    context,
+                )
+            )
