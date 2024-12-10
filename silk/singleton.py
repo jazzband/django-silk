@@ -1,4 +1,4 @@
-__author__ = 'mtford'
+__author__ = "mtford"
 
 
 class Singleton(type, metaclass=object):

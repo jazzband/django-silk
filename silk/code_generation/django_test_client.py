@@ -19,7 +19,7 @@ def _encode_query_params(query_params):
         query_params = urlencode(query_params)
     except TypeError:
         pass
-    return '?' + query_params
+    return "?" + query_params
 
 
 def gen(path, method=None, query_params=None, data=None, content_type=None):
@@ -28,21 +28,21 @@ def gen(path, method=None, query_params=None, data=None, content_type=None):
     method = method.lower()
     t = Template(template)
     context = {
-        'path': path,
-        'lower_case_method': method,
-        'content_type': content_type,
+        "path": path,
+        "lower_case_method": method,
+        "content_type": content_type,
     }
-    if method == 'get':
-        context['data'] = query_params
+    if method == "get":
+        context["data"] = query_params
     else:
         if query_params:
             query_params = _encode_query_params(query_params)
             path += query_params
         if is_str_typ(data):
             data = "'%s'" % data
-        context['data'] = data
-        context['query_params'] = query_params
+        context["data"] = data
+        context["query_params"] = query_params
     return autopep8.fix_code(
         t.render(Context(context, autoescape=False)),
-        options=autopep8.parse_args(['--aggressive', '']),
+        options=autopep8.parse_args(["--aggressive", ""]),
     )

@@ -8,13 +8,18 @@ import silk.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('silk', '0004_request_prof_file_storage'),
+        ("silk", "0004_request_prof_file_storage"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='request',
-            name='prof_file',
-            field=models.FileField(max_length=300, null=True, storage=silk.models.silk_storage, upload_to=''),
+            model_name="request",
+            name="prof_file",
+            field=models.FileField(
+                max_length=300,
+                null=True,
+                storage=silk.models.silk_storage,
+                upload_to="",
+            ),
         ),
     ]

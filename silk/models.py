@@ -29,9 +29,10 @@ from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
 
 try:
-    silk_storage = storages['SILKY_STORAGE']
+    silk_storage = storages["SILKY_STORAGE"]
 except InvalidStorageError:
     from django.utils.module_loading import import_string
+
     storage_class = SilkyConfig().SILKY_STORAGE_CLASS or settings.DEFAULT_FILE_STORAGE
     silk_storage = import_string(storage_class)()
 
@@ -68,28 +69,27 @@ class CaseInsensitiveDictionary(dict):
 class Request(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
     path = CharField(max_length=190, db_index=True)
-    query_params = TextField(blank=True, default='')
-    raw_body = TextField(blank=True, default='')
-    body = TextField(blank=True, default='')
+    query_params = TextField(blank=True, default="")
+    raw_body = TextField(blank=True, default="")
+    body = TextField(blank=True, default="")
     method = CharField(max_length=10)
     start_time = DateTimeField(default=timezone.now, db_index=True)
     view_name = CharField(
-        max_length=190, db_index=True, blank=True,
-        default='', null=True
+        max_length=190, db_index=True, blank=True, default="", null=True
     )
     end_time = DateTimeField(null=True, blank=True)
     time_taken = FloatField(blank=True, null=True)  # milliseconds
-    encoded_headers = TextField(blank=True, default='')  # stores json
+    encoded_headers = TextField(blank=True, default="")  # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
     meta_time_spent_queries = FloatField(null=True, blank=True)
-    pyprofile = TextField(blank=True, default='')
+    pyprofile = TextField(blank=True, default="")
     prof_file = FileField(max_length=300, blank=True, storage=silk_storage)
 
     # Useful method to create shortened copies of strings without losing start and end context
     # Used to ensure path and view_name don't exceed 190 characters
     def _shorten(self, string):
-        return f'{string[:94]}...{string[len(string) - 93:]}'
+        return f"{string[:94]}...{string[len(string) - 93:]}"
 
     @property
     def total_meta_time(self):
@@ -99,13 +99,13 @@ class Request(models.Model):
     def profile_table(self):
         for n, columns in enumerate(parse_profile(self.pyprofile)):
             location = columns[-1]
-            if n and '{' not in location and '<' not in location:
-                r = re.compile(r'(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
+            if n and "{" not in location and "<" not in location:
+                r = re.compile(r"(?P<src>.*\.py)\:(?P<num>[0-9]+).*")
                 m = r.search(location)
                 group = m.groupdict()
-                src = group['src']
-                num = group['num']
-                name = 'c%d' % n
+                src = group["src"]
+                num = group["num"]
+                name = "c%d" % n
                 fmt = '<a name={name} href="?pos={n}&file_path={src}&line_num={num}#{name}">{location}</a>'
                 rep = fmt.format(**dict(group, **locals()))
                 yield columns[:-1] + [mark_safe(rep)]
@@ -119,13 +119,13 @@ class Request(models.Model):
 
     @property
     def time_spent_on_sql_queries(self):
-        """"
+        """ "
         Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
         """
         result = SQLQuery.objects.filter(request=self).aggregate(
-            total_time=Sum('time_taken', output_field=FloatField())
+            total_time=Sum("time_taken", output_field=FloatField())
         )
-        return result['total_time'] or 0.0
+        return result["total_time"] or 0.0
 
     @property
     def headers(self):
@@ -138,13 +138,13 @@ class Request(models.Model):
 
     @property
     def content_type(self):
-        return self.headers.get('content-type', None)
+        return self.headers.get("content-type", None)
 
     @classmethod
     def garbage_collect(cls, force=False):
-        """ Remove Request/Responses when we are at the SILKY_MAX_RECORDED_REQUESTS limit
+        """Remove Request/Responses when we are at the SILKY_MAX_RECORDED_REQUESTS limit
         Note that multiple in-flight requests may call this at once causing a
-        double collection """
+        double collection"""
         check_percent = SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT
         check_percent /= 100.0
         if check_percent < random.random() and not force:
@@ -162,11 +162,8 @@ class Request(models.Model):
             return
 
         try:
-            time_cutoff = cls.objects.order_by(
-                '-start_time'
-            ).values_list(
-                'start_time',
-                flat=True
+            time_cutoff = cls.objects.order_by("-start_time").values_list(
+                "start_time", flat=True
             )[target_count]
         except IndexError:
             return
@@ -176,10 +173,10 @@ class Request(models.Model):
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
         if self.raw_body is None:
-            self.raw_body = ''
+            self.raw_body = ""
 
         if self.body is None:
-            self.body = ''
+            self.body = ""
 
         if self.end_time and self.start_time:
             interval = self.end_time - self.start_time
@@ -199,17 +196,19 @@ class Request(models.Model):
 class Response(models.Model):
     id = CharField(max_length=36, default=uuid4, primary_key=True)
     request = OneToOneField(
-        Request, related_name='response', db_index=True,
+        Request,
+        related_name="response",
+        db_index=True,
         on_delete=models.CASCADE,
     )
     status_code = IntegerField()
-    raw_body = TextField(blank=True, default='')
-    body = TextField(blank=True, default='')
-    encoded_headers = TextField(blank=True, default='')
+    raw_body = TextField(blank=True, default="")
+    body = TextField(blank=True, default="")
+    encoded_headers = TextField(blank=True, default="")
 
     @property
     def content_type(self):
-        return self.headers.get('content-type', None)
+        return self.headers.get("content-type", None)
 
     @property
     def headers(self):
@@ -233,7 +232,7 @@ class SQLQueryManager(models.Manager):
         if len(args):
             objs = args[0]
         else:
-            objs = kwargs.get('objs')
+            objs = kwargs.get("objs")
         for obj in objs:
             obj.prepare_save()
 
@@ -247,8 +246,12 @@ class SQLQuery(models.Model):
     time_taken = FloatField(blank=True, null=True)  # milliseconds
     identifier = IntegerField(default=-1)
     request = ForeignKey(
-        Request, related_name='queries', null=True,
-        blank=True, db_index=True, on_delete=models.CASCADE,
+        Request,
+        related_name="queries",
+        null=True,
+        blank=True,
+        db_index=True,
+        on_delete=models.CASCADE,
     )
     traceback = TextField()
     analysis = TextField(null=True, blank=True)
@@ -257,18 +260,25 @@ class SQLQuery(models.Model):
     # TODO docstring
     @property
     def traceback_ln_only(self):
-        return '\n'.join(self.traceback.split('\n')[::2])
+        return "\n".join(self.traceback.split("\n")[::2])
 
     @property
     def formatted_query(self):
-        return sqlparse.format(self.query, reindent=True, keyword_case='upper')
+        return sqlparse.format(self.query, reindent=True, keyword_case="upper")
 
     @property
     def num_joins(self):
         parsed_query = sqlparse.parse(self.query)
         count = 0
         for statement in parsed_query:
-            count += sum(map(lambda t: t.match(sqlparse.tokens.Keyword, r'\.*join\.*', regex=True), statement.flatten()))
+            count += sum(
+                map(
+                    lambda t: t.match(
+                        sqlparse.tokens.Keyword, r"\.*join\.*", regex=True
+                    ),
+                    statement.flatten(),
+                )
+            )
         return count
 
     @property
@@ -279,7 +289,7 @@ class SQLQuery(models.Model):
             if not statement.is_keyword:
                 break
             keywords.append(statement.value)
-        return ' '.join(keywords)
+        return " ".join(keywords)
 
     @property
     def tables_involved(self):
@@ -303,8 +313,8 @@ class SQLQuery(models.Model):
             ):
                 try:
                     _next = components[idx + 1]
-                    if not _next.startswith('('):  # Subquery
-                        stripped = _next.strip().strip(',')
+                    if not _next.startswith("("):  # Subquery
+                        stripped = _next.strip().strip(",")
 
                         if stripped:
                             tables.append(stripped)
@@ -320,7 +330,7 @@ class SQLQuery(models.Model):
         if not self.pk:
             if self.request:
                 self.request.num_sql_queries += 1
-                self.request.save(update_fields=['num_sql_queries'])
+                self.request.save(update_fields=["num_sql_queries"])
 
     @transaction.atomic()
     def save(self, *args, **kwargs):
@@ -335,11 +345,14 @@ class SQLQuery(models.Model):
 
 
 class BaseProfile(models.Model):
-    name = CharField(max_length=300, blank=True, default='')
+    name = CharField(max_length=300, blank=True, default="")
     start_time = DateTimeField(default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
     request = ForeignKey(
-        Request, null=True, blank=True, db_index=True,
+        Request,
+        null=True,
+        blank=True,
+        db_index=True,
         on_delete=models.CASCADE,
     )
     time_taken = FloatField(blank=True, null=True)  # milliseconds
@@ -355,12 +368,12 @@ class BaseProfile(models.Model):
 
 
 class Profile(BaseProfile):
-    file_path = CharField(max_length=300, blank=True, default='')
+    file_path = CharField(max_length=300, blank=True, default="")
     line_num = IntegerField(null=True, blank=True)
     end_line_num = IntegerField(null=True, blank=True)
-    func_name = CharField(max_length=300, blank=True, default='')
+    func_name = CharField(max_length=300, blank=True, default="")
     exception_raised = BooleanField(default=False)
-    queries = ManyToManyField(SQLQuery, related_name='profiles', db_index=True)
+    queries = ManyToManyField(SQLQuery, related_name="profiles", db_index=True)
     dynamic = BooleanField(default=False)
 
     @property
@@ -377,6 +390,6 @@ class Profile(BaseProfile):
         Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
         """
         result = self.queries.aggregate(
-            total_time=Sum('time_taken', output_field=FloatField())
+            total_time=Sum("time_taken", output_field=FloatField())
         )
-        return result['total_time'] or 0.0
+        return result["total_time"] or 0.0

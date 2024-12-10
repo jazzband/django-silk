@@ -14,9 +14,7 @@ def login_possibly_required(function=None, **kwargs):
 
 def permissions_possibly_required(function=None):
     if SilkyConfig().SILKY_AUTHORISATION:
-        actual_decorator = user_passes_test(
-            SilkyConfig().SILKY_PERMISSIONS
-        )
+        actual_decorator = user_passes_test(SilkyConfig().SILKY_PERMISSIONS)
         if function:
             return actual_decorator(function)
         return actual_decorator

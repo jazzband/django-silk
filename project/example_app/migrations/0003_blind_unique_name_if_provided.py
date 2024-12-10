@@ -6,12 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('example_app', '0002_alter_blind_photo'),
+        ("example_app", "0002_alter_blind_photo"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='blind',
-            constraint=models.UniqueConstraint(condition=models.Q(('name', ''), _negated=True), fields=('name',), name='unique_name_if_provided'),
+            model_name="blind",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("name", ""), _negated=True),
+                fields=("name",),
+                name="unique_name_if_provided",
+            ),
         ),
     ]

@@ -13,10 +13,15 @@ class TestCodeGenDjango(TestCase):
             content_type="application/x-www-form-urlencoded",
         )
 
-        self.assertEqual(result, textwrap.dedent("""\
+        self.assertEqual(
+            result,
+            textwrap.dedent(
+                """\
             from django.test import Client
             c = Client()
             response = c.post(path='/alpha/beta',
                               data={'gamma': 'delta', 'epsilon': 'zeta'},
                               content_type='application/x-www-form-urlencoded')
-        """))
+        """
+            ),
+        )

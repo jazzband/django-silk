@@ -48,7 +48,9 @@ class TestRequestFilters(TestCase):
         for r in requests:
             dt = r.start_time
             seconds = self._time_stamp(django_timezone.now()) - self._time_stamp(dt)
-            self.assertTrue(seconds < 6)  # 6 to give a bit of leeway in case takes too long
+            self.assertTrue(
+                seconds < 6
+            )  # 6 to give a bit of leeway in case takes too long
 
     def test_view_name_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
@@ -79,7 +81,9 @@ class TestRequestFilters(TestCase):
 
     def test_time_spent_queries_filter(self):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
-        time_taken = sorted(sum(q.time_taken for q in x.queries.all()) for x in requests)
+        time_taken = sorted(
+            sum(q.time_taken for q in x.queries.all()) for x in requests
+        )
         c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = TimeSpentOnQueriesFilter(c)
         query_set = models.Request.objects.all()
@@ -213,7 +217,9 @@ class TestProfileFilters(TestCase):
 
     def test_time_spent_queries_filter(self):
         profiles = mock_suite.mock_profiles(n=10)
-        time_taken = sorted(sum(q.time_taken for q in x.queries.all()) for x in profiles)
+        time_taken = sorted(
+            sum(q.time_taken for q in x.queries.all()) for x in profiles
+        )
         c = time_taken[int(floor(len(time_taken) / 2))]
         time_taken_filter = TimeSpentOnQueriesFilter(c)
         query_set = models.Profile.objects.all()

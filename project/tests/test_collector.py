@@ -65,26 +65,26 @@ class TestCollector(TestCase):
 
     def test_profile_file_name_with_disabled_extended_file_name(self):
         SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = False
-        request_path = 'normal/uri/'
+        request_path = "normal/uri/"
         resulting_prefix = self._get_prof_file_name(request_path)
-        self.assertEqual(resulting_prefix, '')
+        self.assertEqual(resulting_prefix, "")
 
     def test_profile_file_name_with_enabled_extended_file_name(self):
 
         SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
-        request_path = 'normal/uri/'
+        request_path = "normal/uri/"
         resulting_prefix = self._get_prof_file_name(request_path)
-        self.assertEqual(resulting_prefix, 'normal_uri_')
+        self.assertEqual(resulting_prefix, "normal_uri_")
 
     def test_profile_file_name_with_path_traversal_and_special_char(self):
         SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
-        request_path = 'spÉciàl/.././大/uri/@É/'
+        request_path = "spÉciàl/.././大/uri/@É/"
         resulting_prefix = self._get_prof_file_name(request_path)
-        self.assertEqual(resulting_prefix, 'special_uri_e_')
+        self.assertEqual(resulting_prefix, "special_uri_e_")
 
     def test_profile_file_name_with_long_path(self):
         SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
-        request_path = 'long/path/' + 'a' * 100
+        request_path = "long/path/" + "a" * 100
         resulting_prefix = self._get_prof_file_name(request_path)
         # the path is limited to 50 char plus the last `_`
         self.assertEqual(len(resulting_prefix), 51)

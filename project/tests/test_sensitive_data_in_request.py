@@ -6,9 +6,17 @@ from django.test import TestCase
 from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory
 
-HTTP_CONTENT_TYPE = 'content-type'
+HTTP_CONTENT_TYPE = "content-type"
 CLEANSED = RequestModelFactory.CLEANSED_SUBSTITUTE
-DEFAULT_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+DEFAULT_SENSITIVE_KEYS = {
+    "username",
+    "api",
+    "token",
+    "key",
+    "secret",
+    "password",
+    "signature",
+}
 DEFAULT_HIDE_COOKIES = True
 
 
@@ -39,7 +47,9 @@ class MaskCredentialsInFormsTest(TestCase):
         expected = f"public1=foo&password={CLEANSED}&public2=bar"
         self.assertEqual(expected, self._mask(body))
 
-    def test_mask_credentials_preserves_insensitive_values_between_sensitive_values(self):
+    def test_mask_credentials_preserves_insensitive_values_between_sensitive_values(
+        self,
+    ):
         body = "password=1&foo=public&secret=2"
         expected = f"password={CLEANSED}&foo=public&secret={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
@@ -86,7 +96,9 @@ class MaskCredentialsInJsonTest(TestCase):
     def test_mask_credentials_preserves_single_insensitive_values(self):
         self.assertIn("public", self._mask({"foo": "public"}))
 
-    def test_mask_credentials_preserves_insensitive_values_in_presence_of_sensitive(self):
+    def test_mask_credentials_preserves_insensitive_values_in_presence_of_sensitive(
+        self,
+    ):
         self.assertIn("public", self._mask({"password": "secret", "foo": "public"}))
 
     def test_mask_credentials_masks_sensitive_values(self):
@@ -105,18 +117,23 @@ class MaskCredentialsInJsonTest(TestCase):
         self.assertNotIn("secret", self._mask({"username-with-suffix": "secret"}))
 
     def test_mask_credentials_handles_complex_cases(self):
-        self.assertNotIn("secret", self._mask({
-            "foo": "public",
-            "prefixed-uSeRname-with-suffix": "secret"
-        }))
+        self.assertNotIn(
+            "secret",
+            self._mask({"foo": "public", "prefixed-uSeRname-with-suffix": "secret"}),
+        )
 
     def test_mask_credentials_in_nested_data_structures(self):
-        self.assertNotIn("secret", self._mask({
-            "foo": "public",
-            "nested": {
-                "prefixed-uSeRname-with-suffix": "secret",
-            },
-        }))
+        self.assertNotIn(
+            "secret",
+            self._mask(
+                {
+                    "foo": "public",
+                    "nested": {
+                        "prefixed-uSeRname-with-suffix": "secret",
+                    },
+                }
+            ),
+        )
 
     def test_mask_credentials_masks_sensitive_values_listed_in_settings(self):
         SilkyConfig().SILKY_SENSITIVE_KEYS = {"foo"}
@@ -134,117 +151,141 @@ class TestEncodingForRequests(TestCase):
 
     def test_password_in_body(self):
         mock_request = Mock()
-        mock_request.headers = {HTTP_CONTENT_TYPE: 'text/plain'}
-        mock_request.body = 'username=test_username&unmasked=testunmasked&password=testpassword'
+        mock_request.headers = {HTTP_CONTENT_TYPE: "text/plain"}
+        mock_request.body = (
+            "username=test_username&unmasked=testunmasked&password=testpassword"
+        )
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
 
-        self.assertIn('testunmasked', raw_body)
-        self.assertNotIn('test_username', raw_body)
-        self.assertNotIn('testpassword', raw_body)
-        self.assertNotIn('test_username', body)
-        self.assertNotIn('testpassword', body)
+        self.assertIn("testunmasked", raw_body)
+        self.assertNotIn("test_username", raw_body)
+        self.assertNotIn("testpassword", raw_body)
+        self.assertNotIn("test_username", body)
+        self.assertNotIn("testpassword", body)
 
     def test_password_in_json(self):
         mock_request = Mock()
-        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
-        d = {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword',
-             'prefixed-secret': 'testsecret'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: "application/json; charset=UTF-8"}
+        d = {
+            "x": "testunmasked",
+            "username": "test_username",
+            "password": "testpassword",
+            "prefixed-secret": "testsecret",
+        }
         mock_request.body = json.dumps(d)
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
-        self.assertIn('testunmasked', raw_body)
-        self.assertNotIn('test_username', raw_body)
-        self.assertNotIn('testpassword', raw_body)
-        self.assertNotIn('testsecret', raw_body)
-        self.assertNotIn('test_username', body)
-        self.assertNotIn('testpassword', body)
-        self.assertNotIn('testsecret', body)
+        self.assertIn("testunmasked", raw_body)
+        self.assertNotIn("test_username", raw_body)
+        self.assertNotIn("testpassword", raw_body)
+        self.assertNotIn("testsecret", raw_body)
+        self.assertNotIn("test_username", body)
+        self.assertNotIn("testpassword", body)
+        self.assertNotIn("testsecret", body)
 
         for datum in [json.loads(body), json.loads(raw_body)]:
-            self.assertEqual(datum['username'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-            self.assertEqual(datum['password'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-            self.assertEqual(datum['prefixed-secret'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-            self.assertEqual(datum['x'], 'testunmasked')
+            self.assertEqual(datum["username"], RequestModelFactory.CLEANSED_SUBSTITUTE)
+            self.assertEqual(datum["password"], RequestModelFactory.CLEANSED_SUBSTITUTE)
+            self.assertEqual(
+                datum["prefixed-secret"], RequestModelFactory.CLEANSED_SUBSTITUTE
+            )
+            self.assertEqual(datum["x"], "testunmasked")
 
     def test_password_in_batched_json(self):
         mock_request = Mock()
-        mock_request.headers = {HTTP_CONTENT_TYPE: 'application/json; charset=UTF-8'}
+        mock_request.headers = {HTTP_CONTENT_TYPE: "application/json; charset=UTF-8"}
         d = [
-            {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword'},
-            {'x': 'testunmasked', 'username': 'test_username', 'password': 'testpassword'}
+            {
+                "x": "testunmasked",
+                "username": "test_username",
+                "password": "testpassword",
+            },
+            {
+                "x": "testunmasked",
+                "username": "test_username",
+                "password": "testpassword",
+            },
         ]
         mock_request.body = json.dumps(d)
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         body, raw_body = factory.body()
-        self.assertIn('testunmasked', raw_body)
-        self.assertNotIn('test_username', raw_body)
-        self.assertNotIn('testpassword', raw_body)
-        self.assertNotIn('test_username', body[0])
-        self.assertNotIn('testpassword', body[0])
-        self.assertNotIn('test_username', body[1])
-        self.assertNotIn('testpassword', body[1])
+        self.assertIn("testunmasked", raw_body)
+        self.assertNotIn("test_username", raw_body)
+        self.assertNotIn("testpassword", raw_body)
+        self.assertNotIn("test_username", body[0])
+        self.assertNotIn("testpassword", body[0])
+        self.assertNotIn("test_username", body[1])
+        self.assertNotIn("testpassword", body[1])
 
         for data in [json.loads(body), json.loads(raw_body)]:
             for datum in data:
-                self.assertEqual(datum['username'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-                self.assertEqual(datum['password'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-                self.assertEqual(datum['x'], 'testunmasked')
+                self.assertEqual(
+                    datum["username"], RequestModelFactory.CLEANSED_SUBSTITUTE
+                )
+                self.assertEqual(
+                    datum["password"], RequestModelFactory.CLEANSED_SUBSTITUTE
+                )
+                self.assertEqual(datum["x"], "testunmasked")
 
     def test_authorization_header(self):
         mock_request = Mock()
-        mock_request.headers = {'authorization': 'secret'}
-        mock_request.body = ''
+        mock_request.headers = {"authorization": "secret"}
+        mock_request.body = ""
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
 
-        self.assertIn('authorization', json_headers)
-        self.assertEqual(json_headers['authorization'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertIn("authorization", json_headers)
+        self.assertEqual(
+            json_headers["authorization"], RequestModelFactory.CLEANSED_SUBSTITUTE
+        )
 
     def test_hide_cookies(self):
         SilkyConfig().SILKY_HIDE_COOKIES = True
         mock_request = Mock()
-        mock_request.headers = {'Cookie': 'secret'}
-        mock_request.body = ''
+        mock_request.headers = {"Cookie": "secret"}
+        mock_request.body = ""
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
 
-        self.assertIn('cookie', json_headers)
-        self.assertEqual(json_headers['cookie'], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertIn("cookie", json_headers)
+        self.assertEqual(
+            json_headers["cookie"], RequestModelFactory.CLEANSED_SUBSTITUTE
+        )
 
     def test_no_hide_cookies(self):
         SilkyConfig().SILKY_HIDE_COOKIES = False
         mock_request = Mock()
-        mock_request.headers = {'Cookie': 'Cookies!!!'}
-        mock_request.body = ''
+        mock_request.headers = {"Cookie": "Cookies!!!"}
+        mock_request.body = ""
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
 
-        self.assertIn('cookie', json_headers)
-        self.assertEqual(json_headers['cookie'], 'Cookies!!!')
+        self.assertIn("cookie", json_headers)
+        self.assertEqual(json_headers["cookie"], "Cookies!!!")
 
     def test_hide_sensitive_headers(self):
         SilkyConfig().SILKY_SENSITIVE_KEYS = ["foo", "bar"]
         mock_request = Mock()
-        mock_request.headers = {'FOO': 'secret', 'BAR': 'secret', 'BAZ': 'not-secret'}
-        mock_request.body = ''
+        mock_request.headers = {"FOO": "secret", "BAR": "secret", "BAZ": "not-secret"}
+        mock_request.body = ""
         mock_request.get = mock_request.headers.get
         factory = RequestModelFactory(mock_request)
         headers = factory.encoded_headers()
         json_headers = json.loads(headers)
 
-        self.assertIn('foo', json_headers)
-        self.assertIn('bar', json_headers)
-        self.assertIn('baz', json_headers)
-        self.assertEqual(json_headers['foo'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-        self.assertEqual(json_headers['bar'], RequestModelFactory.CLEANSED_SUBSTITUTE)
-        self.assertEqual(json_headers['baz'], 'not-secret')
+        self.assertIn("foo", json_headers)
+        self.assertIn("bar", json_headers)
+        self.assertIn("baz", json_headers)
+        self.assertEqual(json_headers["foo"], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertEqual(json_headers["bar"], RequestModelFactory.CLEANSED_SUBSTITUTE)
+        self.assertEqual(json_headers["baz"], "not-secret")
