@@ -29,7 +29,7 @@ class ProfileDotViewTestCase(TestCase):
         try:
             with tempfile.NamedTemporaryFile(delete=False) as stats:
                 pass
-            cProfile.run('1+1', stats.name)
+            cProfile.run("1+1", stats.name)
             yield stats.name
         finally:
             os.unlink(stats.name)
@@ -42,7 +42,7 @@ class ProfileDotViewTestCase(TestCase):
         and removing the temp file on exit.
         """
         with cls._stats_file() as filename:
-            with open(filename, 'rb') as f:
+            with open(filename, "rb") as f:
                 yield f.read()
 
     @classmethod
@@ -54,6 +54,7 @@ class ProfileDotViewTestCase(TestCase):
             @contextmanager
             def dummy(_):
                 yield filename
+
             return _create_profile(filename, dummy)
 
     @classmethod
@@ -84,7 +85,7 @@ class ProfileDotViewTestCase(TestCase):
                 # create dot
                 with tempfile.NamedTemporaryFile(delete=False) as dotfile:
                     dot = _create_dot(self._profile(), 5)
-                    dotfile.write(dot.encode('utf-8'))
+                    dotfile.write(dot.encode("utf-8"))
 
                 # verify generated dot is valid
                 G = read_dot(dotfile.name)
@@ -97,11 +98,11 @@ class ProfileDotViewTestCase(TestCase):
         """
         Verify that data held in a file like object is copied to a temp file.
         """
-        dummy_data = b'dummy data'
+        dummy_data = b"dummy data"
         stream = self._mock_file(dummy_data)
 
         with _temp_file_from_file_field(stream) as filename:
-            with open(filename, 'rb') as f:
+            with open(filename, "rb") as f:
                 self.assertEqual(f.read(), dummy_data)
 
         # file should have been removed on exit

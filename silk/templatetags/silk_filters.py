@@ -22,8 +22,8 @@ def _esc_func(autoescape):
 @stringfilter
 def spacify(value, autoescape=None):
     esc = _esc_func(autoescape)
-    val = esc(value).replace(' ', "&nbsp;")
-    val = val.replace('\t', '    ')
+    val = esc(value).replace(" ", "&nbsp;")
+    val = val.replace("\t", "    ")
     return mark_safe(val)
 
 
@@ -32,11 +32,13 @@ def _urlify(str):
     m = r.search(str)
     while m:
         group = m.groupdict()
-        src = group['src']
-        num = group['num']
-        start = m.start('src')
-        end = m.end('src')
-        rep = '<a href="/silk/src/?file_path={src}&line_num={num}">{src}</a>'.format(src=src, num=num)
+        src = group["src"]
+        num = group["num"]
+        start = m.start("src")
+        end = m.end("src")
+        rep = '<a href="/silk/src/?file_path={src}&line_num={num}">{src}</a>'.format(
+            src=src, num=num
+        )
         str = str[:start] + rep + str[end:]
         m = r.search(str)
     return str
@@ -48,20 +50,20 @@ def hash(h, key):
 
 
 def _process_microseconds(dt_strftime):
-    splt = dt_strftime.split('.')
+    splt = dt_strftime.split(".")
     micro = splt[-1]
-    time = '.'.join(splt[0:-1])
-    micro = '%.3f' % float('0.' + micro)
+    time = ".".join(splt[0:-1])
+    micro = "%.3f" % float("0." + micro)
     return time + micro[1:]
 
 
 def _silk_date_time(dt):
     today = timezone.now().date()
     if dt.date() == today:
-        dt_strftime = dt.strftime('%H:%M:%S.%f')
+        dt_strftime = dt.strftime("%H:%M:%S.%f")
         return _process_microseconds(dt_strftime)
     else:
-        return _process_microseconds(dt.strftime('%Y.%m.%d %H:%M.%f'))
+        return _process_microseconds(dt.strftime("%Y.%m.%d %H:%M.%f"))
 
 
 @register.filter(expects_localtime=True)
@@ -84,7 +86,7 @@ def filepath_urlify(value, autoescape=None):
 def body_filter(value):
     print(value)
     if len(value) > 20:
-        return 'Too big!'
+        return "Too big!"
     else:
         return value
 
