@@ -178,7 +178,7 @@ class SilkyMiddleware:
                     break
                 except (AttributeError, DatabaseError):
                     if attempts >= max_attempts:
-                        Logger.warn('Exhausted _process_response attempts; not processing request')
+                        Logger.warning('Exhausted _process_response attempts; not processing request')
                         break
                 attempts += 1
         return response
