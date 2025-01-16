@@ -26,21 +26,21 @@ class RequestView(View):
             'request': request
         }
 
-        if len(silk_request.raw_body<20000): # Don't do this for large request
+        if len(silk_request.raw_body < 20000):  # Don't do this for large request
             body = silk_request.raw_body
             try:
                 body = json.loads(body)  # Incase encoded as JSON
             except (ValueError, TypeError):
-                pass            
+                pass
             context['curl'] = curl_cmd(url=request.build_absolute_uri(silk_request.path),
-                             method=silk_request.method,
-                             query_params=query_params,
-                             body=body,
-                             content_type=silk_request.content_type),
+                                       method=silk_request.method,
+                                       query_params=query_params,
+                                       body=body,
+                                       content_type=silk_request.content_type),
             context['client'] = gen(path=silk_request.path,
-                          method=silk_request.method,
-                          query_params=query_params,
-                          data=body,
-                          content_type=silk_request.content_type),            
-        
+                                    method=silk_request.method,
+                                    query_params=query_params,
+                                    data=body,
+                                    content_type=silk_request.content_type),
+
         return render(request, 'silk/request.html', context)
