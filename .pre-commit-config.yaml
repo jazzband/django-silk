@@ -4,7 +4,7 @@ repos:
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.4.0
+  rev: v2.5.0
   hooks:
   - id: pycln
     args: ['--all']
@@ -57,7 +57,7 @@ repos:
   - id: django-upgrade
     args: [--target-version, '4.2']
 - repo: https://github.com/hhatto/autopep8
-  rev: 'v2.3.1'
+  rev: 'v2.3.2'
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
