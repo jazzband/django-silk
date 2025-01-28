@@ -26,7 +26,7 @@ class RequestView(View):
             'request': request
         }
 
-        if len(silk_request.raw_body < 20000):  # Don't do this for large request
+        if len(silk_request.raw_body) < 20000:  # Don't do this for large request
             body = silk_request.raw_body
             try:
                 body = json.loads(body)  # Incase encoded as JSON
