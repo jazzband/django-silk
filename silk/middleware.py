@@ -1,13 +1,16 @@
 import logging
 import random
 
+from django.conf import settings
 from django.db import DatabaseError, transaction
 from django.db.models.sql.compiler import SQLCompiler
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
+from silk.errors import SilkNotConfigured
 from silk.model_factory import RequestModelFactory, ResponseModelFactory
 from silk.profiling import dynamic
 from silk.profiling.profiler import silk_meta_profiler
@@ -32,6 +35,11 @@ def get_fpath():
 
 
 config = SilkyConfig()
+AUTH_AND_SESSION_MIDDLEWARES = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+]
 
 
 def _should_intercept(request):
@@ -64,10 +72,24 @@ class TestMiddleware:
 
 class SilkyMiddleware:
     def __init__(self, get_response):
+        if config.SILKY_AUTHENTICATION and not (
+            set(AUTH_AND_SESSION_MIDDLEWARES) & set(settings.MIDDLEWARE)
+        ):
+            raise SilkNotConfigured(
+                _("SILKY_AUTHENTICATION can not be enabled without Session, "
+                  "Authentication or Message Django's middlewares")
+            )
+
         self.get_response = get_response
 
     def __call__(self, request):
         self.process_request(request)
+
+        # To be able to persist filters when Session and Authentication
+        # middlewares are not present.
+        # Unlike session (which stores in DB) it won't persist filters
+        # after refresh the page.
+        request.silk_filters = {}
 
         response = self.get_response(request)
 
@@ -145,13 +167,18 @@ class SilkyMiddleware:
         Logger.debug('Process response done.')
 
     def process_response(self, request, response):
+        max_attempts = 2
+        attempts = 1
         if getattr(request, 'silk_is_intercepted', False):
-            while True:
+            while attempts <= max_attempts:
+                if attempts > 1:
+                    Logger.debug('Retrying _process_response; attempt %s' % attempts)
                 try:
                     self._process_response(request, response)
-                except (AttributeError, DatabaseError):
-                    Logger.debug('Retrying _process_response')
-                    self._process_response(request, response)
-                finally:
                     break
+                except (AttributeError, DatabaseError):
+                    if attempts >= max_attempts:
+                        Logger.warning('Exhausted _process_response attempts; not processing request')
+                        break
+                attempts += 1
         return response

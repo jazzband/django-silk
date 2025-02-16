@@ -4,6 +4,8 @@
 {% load silk_inclusion %}
 {% load static %}
 
+{% block pagetitle %}Silky - CProfile - {{ silk_request.path }}{% endblock %}
+
 {% block js %}
     <script type="text/javascript" src="{% static 'silk/lib/viz-lite.js' %}"></script>
     <script type="text/javascript" src="{% static 'silk/lib/svg-pan-zoom.min.js' %}"></script>
@@ -23,7 +25,7 @@
 
 {% block data %}
     <div class="wrapper">
-        <div id="query-div">           
+        <div id="query-div">
             {% if silk_request.pyprofile %}
             <div id="pyprofile-div">
                 <div class="heading">

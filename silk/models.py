@@ -5,7 +5,9 @@ import re
 from uuid import uuid4
 
 import sqlparse
-from django.core.files.storage import get_storage_class
+from django.conf import settings
+from django.core.files.storage import storages
+from django.core.files.storage.handler import InvalidStorageError
 from django.db import models, transaction
 from django.db.models import (
     BooleanField,
@@ -17,6 +19,7 @@ from django.db.models import (
     IntegerField,
     ManyToManyField,
     OneToOneField,
+    Sum,
     TextField,
 )
 from django.utils import timezone
@@ -25,7 +28,12 @@ from django.utils.safestring import mark_safe
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
 
-silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
+try:
+    silk_storage = storages['SILKY_STORAGE']
+except InvalidStorageError:
+    from django.utils.module_loading import import_string
+    storage_class = SilkyConfig().SILKY_STORAGE_CLASS or settings.DEFAULT_FILE_STORAGE
+    silk_storage = import_string(storage_class)()
 
 
 # Seperated out so can use in tests w/o models
@@ -70,7 +78,7 @@ class Request(models.Model):
         default='', null=True
     )
     end_time = DateTimeField(null=True, blank=True)
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
     encoded_headers = TextField(blank=True, default='')  # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
@@ -111,16 +119,13 @@ class Request(models.Model):
 
     @property
     def time_spent_on_sql_queries(self):
+        """"
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
         """
-        TODO: Perhaps there is a nicer way to do this with Django aggregates?
-        My initial thought was to perform:
-        SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
-        However this feature isnt available yet, however there has been talk
-        for use of F objects within aggregates for four years
-        here: https://code.djangoproject.com/ticket/14030. It looks
-        like this will go in soon at which point this should be changed.
-        """
-        return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+        result = SQLQuery.objects.filter(request=self).aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
 
     @property
     def headers(self):
@@ -239,7 +244,7 @@ class SQLQuery(models.Model):
     query = TextField()
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
     identifier = IntegerField(default=-1)
     request = ForeignKey(
         Request, related_name='queries', null=True,
@@ -290,7 +295,12 @@ class SQLQuery(models.Model):
         for idx, component in enumerate(components):
             # TODO: If django uses aliases on column names they will be falsely
             # identified as tables...
-            if component.lower() == 'from' or component.lower() == 'join' or component.lower() == 'as':
+            if (
+                component.lower() == "from"
+                or component.lower() == "join"
+                or component.lower() == "as"
+                or component.lower() == "update"
+            ):
                 try:
                     _next = components[idx + 1]
                     if not _next.startswith('('):  # Subquery
@@ -332,7 +342,7 @@ class BaseProfile(models.Model):
         Request, null=True, blank=True, db_index=True,
         on_delete=models.CASCADE,
     )
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
 
     class Meta:
         abstract = True
@@ -363,4 +373,10 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        return sum(x.time_taken for x in self.queries.all())
+        """
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
+        """
+        result = self.queries.aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0

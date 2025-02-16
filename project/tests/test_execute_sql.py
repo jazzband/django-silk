@@ -27,7 +27,8 @@ def mock_sql():
             spec_set=['supports_explaining_query_execution'],
             supports_explaining_query_execution=True
         ),
-        ops=NonCallableMock(spec_set=['explain_query_prefix']),
+        ops=NonCallableMock(spec_set=['explain_query_prefix'],
+                            explain_query_prefix=Mock(return_value='')),
     )
 
     return mock_sql_query, query_string
@@ -52,6 +53,9 @@ class TestCallNoRequest(TestCase):
         super().setUpClass()
         call_execute_sql(cls, None)
 
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_called(self):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
 
@@ -65,6 +69,9 @@ class TestCallRequest(TestCase):
         super().setUpClass()
         call_execute_sql(cls, Request())
 
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_called(self):
         self.mock_sql._execute_sql.assert_called_once_with(*self.args, **self.kwargs)
 
@@ -77,6 +84,9 @@ class TestCallRequest(TestCase):
 
 
 class TestCallSilky(TestCase):
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def test_no_effect(self):
         DataCollector().configure()
         sql, _ = mock_sql()
@@ -89,6 +99,9 @@ class TestCallSilky(TestCase):
 
 
 class TestCollectorInteraction(TestCase):
+    def tearDown(self):
+        DataCollector().stop_python_profiler()
+
     def _query(self):
         try:
             query = list(DataCollector().queries.values())[0]
@@ -117,4 +130,5 @@ class TestCollectorInteraction(TestCase):
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
+        self.assertNotIn(prefix, qs)
         mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())

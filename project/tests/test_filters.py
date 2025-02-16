@@ -1,11 +1,11 @@
 import calendar
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from itertools import groupby
 from math import floor
 
 from django.test import TestCase
-from django.utils import timezone
+from django.utils import timezone as django_timezone
 
 from silk import models
 from silk.request_filters import (
@@ -41,13 +41,13 @@ class TestRequestFilters(TestCase):
         requests = [mock_suite.mock_request() for _ in range(0, 10)]
         n = 0
         for r in requests:
-            r.start_time = timezone.now() - timedelta(seconds=n)
+            r.start_time = django_timezone.now() - timedelta(seconds=n)
             r.save()
             n += 1
         requests = models.Request.objects.filter(SecondsFilter(5))
         for r in requests:
             dt = r.start_time
-            seconds = self._time_stamp(timezone.now()) - self._time_stamp(dt)
+            seconds = self._time_stamp(django_timezone.now()) - self._time_stamp(dt)
             self.assertTrue(seconds < 6)  # 6 to give a bit of leeway in case takes too long
 
     def test_view_name_filter(self):
@@ -147,7 +147,7 @@ class TestRequestAfterDateFilter(TestCase):
         date_filter = AfterDateFilter
         f = date_filter(dt_str)
         new_dt = datetime.strptime(dt_str, fmt)
-        new_dt = timezone.make_aware(new_dt, timezone.utc)
+        new_dt = django_timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
 
 
@@ -176,7 +176,7 @@ class TestRequestBeforeDateFilter(TestCase):
         date_filter = BeforeDateFilter
         f = date_filter(dt_str)
         new_dt = datetime.strptime(dt_str, fmt)
-        new_dt = timezone.make_aware(new_dt, timezone.utc)
+        new_dt = django_timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
 
 

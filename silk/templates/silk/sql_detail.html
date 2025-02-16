@@ -4,6 +4,8 @@
 {% load silk_nav %}
 {% load silk_inclusion %}
 
+{% block pagetitle %}Silky - SQL Detail - {{ silk_request.path }}{% endblock %}
+
 {% block js %}
     {{ block.super }}
     <script src="{% static 'silk/js/pages/sql_detail.js' %}"></script>
