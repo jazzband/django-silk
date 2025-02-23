@@ -13,7 +13,7 @@ repos:
   hooks:
   - id: yesqa
 - repo: https://github.com/pycqa/isort
-  rev: '5.13.2'
+  rev: '6.0.0'
   hooks:
   - id: isort
     args: ['--profile', 'black']
@@ -52,7 +52,7 @@ repos:
   - id: pyupgrade
     args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.22.2'
+  rev: '1.23.1'
   hooks:
   - id: django-upgrade
     args: [--target-version, '4.2']
@@ -61,7 +61,7 @@ repos:
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
-  rev: '7.1.1'
+  rev: '7.1.2'
   hooks:
   - id: flake8
     exclude: '^docs/'
