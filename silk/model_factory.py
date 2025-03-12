@@ -91,7 +91,7 @@ class RequestModelFactory:
             pattern = re.compile(key_string, re.I)
             if isinstance(obj, dict):
                 for key in obj.keys():
-                    if pattern.search(key):
+                    if key_string and pattern.search(key):
                         obj[key] = RequestModelFactory.CLEANSED_SUBSTITUTE
                     else:
                         obj[key] = replace_pattern_values(obj[key])
@@ -99,18 +99,19 @@ class RequestModelFactory:
                 for index, item in enumerate(obj):
                     obj[index] = replace_pattern_values(item)
             else:
-                if pattern.search(str(obj)):
+                if key_string and pattern.search(str(obj)):
                     return RequestModelFactory.CLEANSED_SUBSTITUTE
             return obj
 
         try:
             json_body = json.loads(body)
         except Exception as e:
-            pattern = re.compile(fr'(({key_string})[^=]*)=(.*?)(&|$)', re.M | re.I)
-            try:
-                body = re.sub(pattern, f'\\1={RequestModelFactory.CLEANSED_SUBSTITUTE}\\4', body)
-            except Exception:
-                Logger.debug(f'{str(e)}')
+            if key_string:
+                pattern = re.compile(fr'(({key_string})[^=]*)=(.*?)(&|$)', re.M | re.I)
+                try:
+                    body = re.sub(pattern, f'\\1={RequestModelFactory.CLEANSED_SUBSTITUTE}\\4', body)
+                except Exception:
+                    Logger.debug(f'{str(e)}')
         else:
             body = json.dumps(replace_pattern_values(json_body), ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
 
