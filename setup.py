@@ -23,6 +23,7 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 4.2',
         'Framework :: Django :: 5.1',
+        'Framework :: Django :: 5.2',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
