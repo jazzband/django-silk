@@ -279,10 +279,6 @@ class ResponseModelFactory:
                         )
             if content and content_type in content_types_json:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
-                if not isinstance(content, str):
-                    # byte string is not compatible with json.loads(...)
-                    # and json.dumps(...) in python3
-                    content = content.decode()
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4
                                       , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
