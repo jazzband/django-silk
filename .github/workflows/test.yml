@@ -10,14 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-        django-version: ['4.2', '5.0', '5.1', 'main']
+        django-version: ['4.2', '5.1', 'main']
         postgres-version: ['13', '17']
         mariadb-version: ['10.6', '10.11', '11.4']
         exclude:
-          # Django 5.0 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.0/faq/install/)
-          - python-version: '3.9'
-            django-version: '5.0'
-
           # Django 5.1 doesn't support python <=3.9 (https://docs.djangoproject.com/en/5.1/faq/install/)
           - python-version: '3.9'
             django-version: '5.1'
