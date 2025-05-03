@@ -6,4 +6,4 @@ pillow==11.2.1
 pydot==3.0.4
 pygments==2.19.1
 pytest-cov==6.1.1
-pytest-django==4.9.0
+pytest-django==4.11.1
