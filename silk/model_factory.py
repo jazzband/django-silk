@@ -283,7 +283,7 @@ class ResponseModelFactory:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4
                                       , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
                 except (TypeError, ValueError):
-                    Logger.warn(
+                    Logger.warning(
                         'Response to request with pk %s has content type %s but was unable to parse it'
                         % (self.request.pk, content_type)
                     )
