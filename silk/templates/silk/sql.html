@@ -4,12 +4,14 @@
 {% load silk_filters %}
 {% load static %}
 {% load silk_inclusion %}
+{% load silk_urls %}
 
 {% block pagetitle %}Silky - SQL - {{ silk_request.path }}{% endblock %}
 
 {% block js %}
   <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
   {{ block.super }}
+  <script src="{% static 'silk/js/pages/sql.js' %}"></script>
 {% endblock %}
 
 {% block style %}
@@ -57,16 +59,8 @@
                     <th class="right-aligned">Execution Time (ms)</th>
                 </tr>
                 {% for sql_query in items %}
-                    <!-- TODO: Pretty grimy... -->
-                    <tr class="data-row" onclick="window.location=' \
-                       {% if profile and silk_request %}\
-                           {% url "silk:request_and_profile_sql_detail" silk_request.id profile.id sql_query.id %}\
-                       {% elif profile %}\
-                           {% url "silk:profile_sql_detail" profile.id sql_query.id %}\
-                       {% elif silk_request %}\
-                           {% url "silk:request_sql_detail" silk_request.id sql_query.id %}\
-                       {% endif %}\
-                        ';">
+                    {% sql_detail_url silk_request profile sql_query as detail_url %}
+                    <tr class="data-row" data-sql-detail-url="{{ detail_url }}">
                         <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
                         <td class="left-aligned">{{ sql_query.first_keywords }}</td>
                         <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
