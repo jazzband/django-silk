@@ -51,4 +51,4 @@ You can also install directly from the github repo but please note that this ver
 
 .. code-block:: bash
 
-	pip install -e git+https://github.com/jazzband/django-silk.git#egg=silk
+	pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk

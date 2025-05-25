@@ -104,7 +104,7 @@ You can install from master using the following, but please be aware that the ve
 may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
-pip install -e git+https://github.com/jazzband/django-silk.git#egg=django-silk
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk
 ```
 
 ## Features
