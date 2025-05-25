@@ -38,6 +38,16 @@ Run ``migrate`` to create Silk's database tables:
 
 And voila! Silk will begin intercepting requests and queries which you can inspect by visiting ``/silk/``
 
+Python Snippet Formatting
+-------------------------
+
+Silk supports generating Python snippets to reproduce requests.
+To enable autopep8 formatting of these snippets, install Silk with the `formatting` extras:
+
+.. code-block:: bash
+
+    pip install django-silk[formatting]
+
 Other Installation Options
 --------------------------
 
