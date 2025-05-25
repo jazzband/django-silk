@@ -1,7 +1,7 @@
 $(document).ready(function () {
   document.querySelectorAll(".data-row").forEach((rowElement) => {
     let sqlDetailUrl = rowElement.dataset.sqlDetailUrl;
-    rowElement.addEventListener("mousedown", (e) => {
+    rowElement.addEventListener("click", (e) => {
       switch (e.button) {
         case 0:
           window.location = sqlDetailUrl;
