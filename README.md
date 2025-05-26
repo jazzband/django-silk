@@ -41,6 +41,12 @@ Via pip into a `virtualenv`:
 pip install django-silk
 ```
 
+To including optional formatting of python snippets:
+
+```bash
+pip install django-silk[formatting]
+```
+
 In `settings.py` add the following:
 
 ```python
