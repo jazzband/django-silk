@@ -1,6 +1,31 @@
 # Change Log
 ## Unreleased
 
+## [5.4.0](https://github.com/jazzband/django-silk/tree/5.4.0) (2025-05-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.2..5.4.0)
+
+**Note: this release removes support for Django 5.0**
+**Note: this release removes autoformatting of python snippets; continue formatting by pip installing `django-silk[formatting]`**
+
+**Features/Enhancements:**
+
+ - Add support for Django 5.2 (#784) @albertyw
+ - Support opening SQL details in a new window (#788) @joaopedroalbq
+ - Avoid timeouts when deserializing large jsons (#768) @quertenmont
+ - Make autopep8 optional (#782) @albertyw
+
+**Fixes:**
+
+ - Fix masking sensitive data when an empty `SILKY_SENSITIVE_KEYS` is provided (#777) @ahsanshafiq742
+
+**Maintenance and Cleanup:**
+
+ - Remove support for Django 5.0 (#783) @albertyw
+ - Fix logger deprecations (#766) @rjdebastiani
+ - Update dependencies and various autoupdate cleanups
+
+
 ## [5.3.2](https://github.com/jazzband/django-silk/tree/5.3.2) (2024-12-05)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.1..5.3.2)
