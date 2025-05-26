@@ -103,7 +103,7 @@ if required. The UI can be reached at `/silk/`
 Via [github tags](https://github.com/jazzband/django-silk/releases):
 
 ```bash
-pip install https://github.com/jazzband/django-silk/archive/<version>.tar.gz
+pip install git+https://github.com/jazzband/django-silk.git@<version>#egg=django_silk
 ```
 
 You can install from master using the following, but please be aware that the version in master
