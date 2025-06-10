@@ -53,7 +53,11 @@ def _explain_query(connection, q, params):
 
         # currently we cannot use explain() method
         # for queries other than `select`
-        prefixed_query = f"{prefix} {q}"
+        if q.startswith(prefix):
+            # to avoid "EXPLAIN EXPLAIN", do not add prefix
+            prefixed_query = q
+        else:
+            prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
             cur.execute(prefixed_query, params)
             result = _unpack_explanation(cur.fetchall())
