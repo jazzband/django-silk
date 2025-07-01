@@ -2,7 +2,7 @@ coverage==7.8.0
 factory-boy==3.3.3
 freezegun==1.5.1
 networkx==3.2.1
-pillow==11.2.1
+pillow==11.3.0
 pydot==3.0.4
 pygments==2.19.1
 pytest-cov==6.1.1
