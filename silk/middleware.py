@@ -164,6 +164,10 @@ class SilkyMiddleware:
         # is not taken in account
         if silk_request:
             silk_request.save()
+        # Clean up after ourselves for the next request:
+        if hasattr(SQLCompiler, '_execute_sql'):
+            SQLCompiler.execute_sql = SQLCompiler._execute_sql
+            delattr(SQLCompiler, '_execute_sql')
         Logger.debug('Process response done.')
 
     def process_response(self, request, response):
