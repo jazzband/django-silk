@@ -14,8 +14,9 @@ def mock_sql():
     mock_sql_query._execute_sql = Mock()
     mock_sql_query.query = NonCallableMock(spec_set=['model'])
     mock_sql_query.query.model = Mock()
-    query_string = 'SELECT * from table_name'
-    mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
+    query_string = 'SELECT * FROM table_name WHERE column1 = %s AND column2 = %s'
+    params = (b'\x0a\x00\x00\xff', 1)
+    mock_sql_query.as_sql = Mock(return_value=(query_string, params))
 
     mock_sql_query.connection = NonCallableMock(
         spec_set=['cursor', 'features', 'ops'],
@@ -30,18 +31,18 @@ def mock_sql():
         ops=NonCallableMock(spec_set=['explain_query_prefix']),
     )
 
-    return mock_sql_query, query_string
+    return mock_sql_query, query_string, params
 
 
-def call_execute_sql(cls, request):
+def call_execute_sql(cls, request, args=None, kwargs=None):
     DataCollector().configure(request=request)
     delete_all_models(SQLQuery)
-    cls.mock_sql, cls.query_string = mock_sql()
-    kwargs = {
+    cls.mock_sql, cls.query_string, cls.params = mock_sql()
+    kwargs = kwargs or {
         'one': 1,
         'two': 2
     }
-    cls.args = [1, 2]
+    cls.args = args or [1, 2]
     cls.kwargs = kwargs
     execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
 
@@ -79,7 +80,7 @@ class TestCallRequest(TestCase):
 
     def test_query(self):
         query = list(DataCollector().queries.values())[0]
-        self.assertEqual(query['query'], self.query_string)
+        self.assertEqual(query['query'], self.query_string % self.params)
 
 
 class TestCallSilky(TestCase):
@@ -88,7 +89,7 @@ class TestCallSilky(TestCase):
 
     def test_no_effect(self):
         DataCollector().configure()
-        sql, _ = mock_sql()
+        sql, _, _ = mock_sql()
         sql.query.model = NonCallableMagicMock(spec_set=['__module__'])
         sql.query.model.__module__ = 'silk.models'
         # No SQLQuery models should be created for silk requests for obvious reasons
@@ -110,23 +111,33 @@ class TestCollectorInteraction(TestCase):
 
     def test_request(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, _ = mock_sql()
+        sql, _, _ = mock_sql()
         execute_sql(sql)
         query = self._query()
         self.assertEqual(query['request'], DataCollector().request)
 
     def test_registration(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, _ = mock_sql()
+        sql, _, _ = mock_sql()
         execute_sql(sql)
         query = self._query()
         self.assertIn(query, DataCollector().queries.values())
 
     def test_explain(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, qs = mock_sql()
+        sql, qs, params = mock_sql()
         prefix = "EXPLAIN"
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
-        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", params)
+
+    def test_explain_error(self):
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
+        sql, qs, params = mock_sql()
+        prefix = "EXPLAIN"
+        mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
+        mock_cursor.execute.side_effect = UnicodeDecodeError('utf-8', b'\x0a\x00\x00\xff', 3, 4, 'fake message')
+        sql.connection.ops.explain_query_prefix.return_value = prefix
+        execute_sql(sql)
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", params)
