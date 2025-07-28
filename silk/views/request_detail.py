@@ -36,11 +36,11 @@ class RequestView(View):
                                        method=silk_request.method,
                                        query_params=query_params,
                                        body=body,
-                                       content_type=silk_request.content_type),
+                                       content_type=silk_request.content_type)
             context['client'] = gen(path=silk_request.path,
                                     method=silk_request.method,
                                     query_params=query_params,
                                     data=body,
-                                    content_type=silk_request.content_type),
+                                    content_type=silk_request.content_type)
 
         return render(request, 'silk/request.html', context)
