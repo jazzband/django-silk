@@ -3,7 +3,6 @@ import traceback
 
 from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
-from django.utils.encoding import force_str
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig

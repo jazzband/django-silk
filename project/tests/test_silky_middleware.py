@@ -116,6 +116,7 @@ class TestApplyDynamicMappings(TestCase):
             ):
                 SilkyMiddleware(fake_get_response)
 
+
 class TestMiddleware(TestCase):
     def test_wrapper_cleanup(self):
         # Not yet decorated
