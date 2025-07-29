@@ -34,15 +34,15 @@ def mock_sql():
     return mock_sql_query, query_string, params
 
 
-def call_execute_sql(cls, request, args=None, kwargs=None):
+def call_execute_sql(cls, request):
     DataCollector().configure(request=request)
     delete_all_models(SQLQuery)
     cls.mock_sql, cls.query_string, cls.params = mock_sql()
-    kwargs = kwargs or {
+    kwargs = {
         'one': 1,
         'two': 2
     }
-    cls.args = args or [1, 2]
+    cls.args = [1, 2]
     cls.kwargs = kwargs
     execute_sql(cls.mock_sql, *cls.args, **cls.kwargs)
 
