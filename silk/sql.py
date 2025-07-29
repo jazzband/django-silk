@@ -3,7 +3,6 @@ import traceback
 
 from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
-from django.utils.encoding import force_str
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
@@ -55,9 +54,16 @@ def _explain_query(connection, q, params):
         # for queries other than `select`
         prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
-            cur.execute(prefixed_query, params)
-            result = _unpack_explanation(cur.fetchall())
-            return '\n'.join(result)
+            try:
+                cur.execute(prefixed_query, params)
+                result = _unpack_explanation(cur.fetchall())
+                return '\n'.join(result)
+            except UnicodeDecodeError:
+                Logger.warning(
+                    "Got an undecodable response to query %r with params %r",
+                    prefixed_query,
+                    params
+                )
     return None
 
 
@@ -77,7 +83,7 @@ def execute_sql(self, *args, **kwargs):
             return iter([])
         else:
             return
-    sql_query = q % tuple(force_str(param) for param in params)
+    sql_query = q % params
     if _should_wrap(sql_query):
         tb = ''.join(reversed(traceback.format_stack()))
         query_dict = {
