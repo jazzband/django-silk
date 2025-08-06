@@ -8,7 +8,7 @@ import sqlparse
 from django.conf import settings
 from django.core.files.storage import storages
 from django.core.files.storage.handler import InvalidStorageError
-from django.db import models, transaction, router
+from django.db import models, router, transaction
 from django.db.models import (
     BooleanField,
     CharField,

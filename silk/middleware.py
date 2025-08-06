@@ -2,7 +2,7 @@ import logging
 import random
 
 from django.conf import settings
-from django.db import DatabaseError, transaction, router
+from django.db import DatabaseError, router, transaction
 from django.db.models.sql.compiler import SQLCompiler
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
