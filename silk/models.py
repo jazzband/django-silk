@@ -8,7 +8,7 @@ import sqlparse
 from django.conf import settings
 from django.core.files.storage import storages
 from django.core.files.storage.handler import InvalidStorageError
-from django.db import models, transaction
+from django.db import models, transaction, router
 from django.db.models import (
     BooleanField,
     CharField,
@@ -226,18 +226,18 @@ class Response(models.Model):
 
 # TODO rewrite docstring
 class SQLQueryManager(models.Manager):
-    @transaction.atomic
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
         the model save() method and hence we must add this logic here too"""
-        if len(args):
-            objs = args[0]
-        else:
-            objs = kwargs.get('objs')
-        for obj in objs:
-            obj.prepare_save()
+        with transaction.atomic(using=router.db_for_write(SQLQuery)):
+            if len(args):
+                objs = args[0]
+            else:
+                objs = kwargs.get('objs')
+            for obj in objs:
+                obj.prepare_save()
 
-        return super().bulk_create(*args, **kwargs)
+            return super().bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
@@ -322,16 +322,16 @@ class SQLQuery(models.Model):
                 self.request.num_sql_queries += 1
                 self.request.save(update_fields=['num_sql_queries'])
 
-    @transaction.atomic()
     def save(self, *args, **kwargs):
-        self.prepare_save()
-        super().save(*args, **kwargs)
+        with transaction.atomic(using=router.db_for_write(self)):
+            self.prepare_save()
+            super().save(*args, **kwargs)
 
-    @transaction.atomic()
     def delete(self, *args, **kwargs):
-        self.request.num_sql_queries -= 1
-        self.request.save()
-        super().delete(*args, **kwargs)
+        with transaction.atomic(using=router.db_for_write(self)):
+            self.request.num_sql_queries -= 1
+            self.request.save()
+            super().delete(*args, **kwargs)
 
 
 class BaseProfile(models.Model):
