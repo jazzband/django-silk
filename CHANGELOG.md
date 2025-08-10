@@ -1,6 +1,22 @@
 # Change Log
 ## Unreleased
 
+## [5.4.1](https://github.com/jazzband/django-silk/tree/5.4.1) (2025-08-10)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.0..5.4.1)
+
+**Fixes:**
+
+ - Fixes curl/client values rendering in request_detail (#797) @bcmyguest
+ - Fix serialization of non-unicode binary data, add cleanup in middleware (#798) @glennmatthews
+ - Make transactions target the DB alias selected by the router (#801) @OscarVanL
+
+**Maintenance and Cleanup:**
+
+ - Dependency updates
+ - Documentation updates
+
+
 ## [5.4.0](https://github.com/jazzband/django-silk/tree/5.4.0) (2025-05-03)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.2..5.4.0)
