@@ -3,6 +3,7 @@ import traceback
 
 from django.core.exceptions import EmptyResultSet
 from django.utils import timezone
+from django.utils.encoding import force_str
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
@@ -18,6 +19,14 @@ def _should_wrap(sql_query):
         if ignore_str in sql_query:
             return False
     return True
+
+
+def force_str_with_fallback(value):
+    """As force_str, but for bytes that do not decode to utf-8, return hex instead of erroring."""
+    try:
+        return force_str(value)
+    except UnicodeDecodeError:
+        return f"0x{value.hex()}"
 
 
 def _unpack_explanation(result):
@@ -54,16 +63,9 @@ def _explain_query(connection, q, params):
         # for queries other than `select`
         prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
-            try:
-                cur.execute(prefixed_query, params)
-                result = _unpack_explanation(cur.fetchall())
-                return '\n'.join(result)
-            except UnicodeDecodeError:
-                Logger.warning(
-                    "Got an undecodable response to query %r with params %r",
-                    prefixed_query,
-                    params
-                )
+            cur.execute(prefixed_query, tuple(force_str_with_fallback(param) for param in params))
+            result = _unpack_explanation(cur.fetchall())
+            return '\n'.join(result)
     return None
 
 
@@ -83,7 +85,7 @@ def execute_sql(self, *args, **kwargs):
             return iter([])
         else:
             return
-    sql_query = q % params
+    sql_query = q % tuple(force_str_with_fallback(param) for param in params)
     if _should_wrap(sql_query):
         tb = ''.join(reversed(traceback.format_stack()))
         query_dict = {

@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
-from silk.sql import execute_sql
+from silk.sql import execute_sql, force_str_with_fallback
 
 from .util import delete_all_models
 
@@ -80,7 +80,7 @@ class TestCallRequest(TestCase):
 
     def test_query(self):
         query = list(DataCollector().queries.values())[0]
-        self.assertEqual(query['query'], self.query_string % self.params)
+        self.assertEqual(query['query'], self.query_string % tuple(force_str_with_fallback(param) for param in self.params))
 
 
 class TestCallSilky(TestCase):
@@ -130,14 +130,4 @@ class TestCollectorInteraction(TestCase):
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
-        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", params)
-
-    def test_explain_error(self):
-        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, qs, params = mock_sql()
-        prefix = "EXPLAIN"
-        mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
-        mock_cursor.execute.side_effect = UnicodeDecodeError('utf-8', b'\x0a\x00\x00\xff', 3, 4, 'fake message')
-        sql.connection.ops.explain_query_prefix.return_value = prefix
-        execute_sql(sql)
-        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", params)
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", tuple(force_str_with_fallback(param) for param in params))
