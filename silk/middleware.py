@@ -165,6 +165,7 @@ class SilkyMiddleware:
         # is not taken in account
         if silk_request:
             silk_request.save()
+        Logger.debug('Process response done.')
 
     def process_response(self, request, response):
         max_attempts = 2
