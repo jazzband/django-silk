@@ -2,12 +2,13 @@ import logging
 import random
 
 from django.conf import settings
-from django.db import DatabaseError, transaction
+from django.db import DatabaseError, router, transaction
 from django.db.models.sql.compiler import SQLCompiler
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from silk import models
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
 from silk.errors import SilkNotConfigured
@@ -144,7 +145,7 @@ class SilkyMiddleware:
         request_model = RequestModelFactory(request).construct_request_model()
         DataCollector().configure(request_model, should_profile=should_profile)
 
-    @transaction.atomic()
+    @transaction.atomic(using=router.db_for_write(models.SQLQuery))
     def _process_response(self, request, response):
         Logger.debug('Process response')
         with silk_meta_profiler():
