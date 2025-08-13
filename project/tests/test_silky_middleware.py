@@ -1,20 +1,20 @@
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.db.models.sql.compiler import SQLCompiler
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
 from silk.config import SilkyConfig
 from silk.errors import SilkNotConfigured
-from silk.middleware import SilkyMiddleware, _should_intercept
+from silk.middleware import ORIGINAL_EXECUTE_SQL, SilkyMiddleware, _should_intercept
 from silk.models import Request
 
 from .util import mock_data_collector
 
 
-def fake_get_response():
-    def fake_response():
-        return 'hello world'
-    return fake_response
+def fake_get_response(*args):
+    return HttpResponse('hello world')
 
 
 class TestApplyDynamicMappings(TestCase):
@@ -115,6 +115,28 @@ class TestApplyDynamicMappings(TestCase):
                 "SILKY_AUTHENTICATION can not be enabled without Session, Authentication or Message Django's middlewares"
             ):
                 SilkyMiddleware(fake_get_response)
+
+
+class TestMiddleware(TestCase):
+    def test_wrapper_cleanup(self):
+        # Not yet decorated
+        self.assertIs(SQLCompiler.execute_sql, ORIGINAL_EXECUTE_SQL)
+
+        middleware = SilkyMiddleware(fake_get_response)
+
+        request = RequestFactory().get("/myapp/foo")
+        middleware(request)
+        self.assertTrue(request.silk_is_intercepted)
+
+        # Cleaned up
+        self.assertIs(SQLCompiler.execute_sql, ORIGINAL_EXECUTE_SQL)
+
+        request = RequestFactory().get(reverse('silk:summary'))
+        middleware(request)
+        self.assertFalse(getattr(request, "silk_is_intercepted", False))
+
+        # Cleaned up
+        self.assertIs(SQLCompiler.execute_sql, ORIGINAL_EXECUTE_SQL)
 
 
 class TestShouldIntercept(TestCase):
