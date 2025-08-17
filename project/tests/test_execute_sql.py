@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from silk.collector import DataCollector
 from silk.models import Request, SQLQuery
-from silk.sql import execute_sql, force_str_with_fallback
+from silk.sql import execute_sql
 
 from .util import delete_all_models
 
@@ -14,9 +14,8 @@ def mock_sql():
     mock_sql_query._execute_sql = Mock()
     mock_sql_query.query = NonCallableMock(spec_set=['model'])
     mock_sql_query.query.model = Mock()
-    query_string = 'SELECT * FROM table_name WHERE column1 = %s AND column2 = %s'
-    params = (b'\x0a\x00\x00\xff', 1)
-    mock_sql_query.as_sql = Mock(return_value=(query_string, params))
+    query_string = 'SELECT * from table_name'
+    mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
 
     mock_sql_query.connection = NonCallableMock(
         spec_set=['cursor', 'features', 'ops'],
@@ -31,13 +30,13 @@ def mock_sql():
         ops=NonCallableMock(spec_set=['explain_query_prefix']),
     )
 
-    return mock_sql_query, query_string, params
+    return mock_sql_query, query_string
 
 
 def call_execute_sql(cls, request):
     DataCollector().configure(request=request)
     delete_all_models(SQLQuery)
-    cls.mock_sql, cls.query_string, cls.params = mock_sql()
+    cls.mock_sql, cls.query_string = mock_sql()
     kwargs = {
         'one': 1,
         'two': 2
@@ -80,7 +79,7 @@ class TestCallRequest(TestCase):
 
     def test_query(self):
         query = list(DataCollector().queries.values())[0]
-        self.assertEqual(query['query'], self.query_string % tuple(force_str_with_fallback(param) for param in self.params))
+        self.assertEqual(query['query'], self.query_string)
 
 
 class TestCallSilky(TestCase):
@@ -89,7 +88,7 @@ class TestCallSilky(TestCase):
 
     def test_no_effect(self):
         DataCollector().configure()
-        sql, _, _ = mock_sql()
+        sql, _ = mock_sql()
         sql.query.model = NonCallableMagicMock(spec_set=['__module__'])
         sql.query.model.__module__ = 'silk.models'
         # No SQLQuery models should be created for silk requests for obvious reasons
@@ -111,23 +110,23 @@ class TestCollectorInteraction(TestCase):
 
     def test_request(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, _, _ = mock_sql()
+        sql, _ = mock_sql()
         execute_sql(sql)
         query = self._query()
         self.assertEqual(query['request'], DataCollector().request)
 
     def test_registration(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, _, _ = mock_sql()
+        sql, _ = mock_sql()
         execute_sql(sql)
         query = self._query()
         self.assertIn(query, DataCollector().queries.values())
 
     def test_explain(self):
         DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
-        sql, qs, params = mock_sql()
+        sql, qs = mock_sql()
         prefix = "EXPLAIN"
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
-        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", tuple(force_str_with_fallback(param) for param in params))
+        mock_cursor.execute.assert_called_once_with(f"{prefix} {qs}", ())
