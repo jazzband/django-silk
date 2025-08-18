@@ -1,6 +1,23 @@
 # Change Log
 ## Unreleased
 
+## [5.4.2](https://github.com/jazzband/django-silk/tree/5.4.2) (2025-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.1..5.4.2)
+
+**Fixes:**
+
+ - Reverts #798 which causes issues when serializing JSONFields (#807) @albertyw
+ - Also reverts #798 which has a race condition when modifying `execute_sql` (#816) @albertyw
+ - Catch and ignore sql encoding errors (#810) @albertyw @bpascard
+
+**Maintenance and Cleanup:**
+
+ - Document that context_processors.request is required (#815) @albertyw
+ - Fix documentation formatting (#810) @albertyw
+ - Test refactors (#814) @albertyw
+
+
 ## [5.4.1](https://github.com/jazzband/django-silk/tree/5.4.1) (2025-08-10)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.0..5.4.1)
