@@ -55,7 +55,8 @@ def _explain_query(connection, q, params):
         # for queries other than `select`
         prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
-            cur.execute(prefixed_query, params)
+            params_str = tuple(force_str(param, errors="backslashreplace") for param in params)
+            cur.execute(prefixed_query, params_str)
             result = _unpack_explanation(cur.fetchall())
             return '\n'.join(result)
     return None
@@ -77,7 +78,7 @@ def execute_sql(self, *args, **kwargs):
             return iter([])
         else:
             return
-    sql_query = q % tuple(force_str(param) for param in params)
+    sql_query = q % tuple(force_str(param, errors="backslashreplace") for param in params)
     if _should_wrap(sql_query):
         tb = ''.join(reversed(traceback.format_stack()))
         query_dict = {
