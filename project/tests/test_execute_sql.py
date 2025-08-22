@@ -8,14 +8,16 @@ from silk.sql import execute_sql
 
 from .util import delete_all_models
 
+_simple_mock_query_sql = 'SELECT * FROM table_name'
+_simple_mock_query_params = ()
+
 
 def mock_sql():
     mock_sql_query = Mock(spec_set=['_execute_sql', 'query', 'as_sql', 'connection'])
     mock_sql_query._execute_sql = Mock()
     mock_sql_query.query = NonCallableMock(spec_set=['model'])
     mock_sql_query.query.model = Mock()
-    query_string = 'SELECT * from table_name'
-    mock_sql_query.as_sql = Mock(return_value=(query_string, ()))
+    mock_sql_query.as_sql = Mock(return_value=(_simple_mock_query_sql, _simple_mock_query_params))
 
     mock_sql_query.connection = NonCallableMock(
         spec_set=['cursor', 'features', 'ops'],
@@ -30,7 +32,7 @@ def mock_sql():
         ops=NonCallableMock(spec_set=['explain_query_prefix']),
     )
 
-    return mock_sql_query, query_string
+    return mock_sql_query, _simple_mock_query_sql
 
 
 def call_execute_sql(cls, request):
