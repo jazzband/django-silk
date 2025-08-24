@@ -29,4 +29,5 @@ Garbage Collection
 To `avoid <https://github.com/jazzband/django-silk/issues/265>`_ `deadlock <https://github.com/jazzband/django-silk/issues/294>`_ `issues <https://github.com/jazzband/django-silk/issues/371>`_, you might want to decouple silk's garbage collection from your webserver's request processing, set ``SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0`` and trigger it manually, e.g. in a cron job:
 
 .. code-block:: bash
+
     python manage.py silk_request_garbage_collect

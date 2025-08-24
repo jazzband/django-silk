@@ -12,7 +12,7 @@ First install via pip:
 Add the following to your ``settings.py``:
 
 .. code-block:: python
-	
+
 	MIDDLEWARE = [
 	    ...
 	    'silk.middleware.SilkyMiddleware',
@@ -27,7 +27,7 @@ Add the following to your ``settings.py``:
 Add the following to your ``urls.py``:
 
 .. code-block:: python
-	
+
 	urlpatterns += [path('silk', include('silk.urls', namespace='silk'))]
 
 Run ``migrate`` to create Silk's database tables:
