@@ -1,6 +1,16 @@
 # Change Log
 ## Unreleased
 
+## [5.4.2](https://github.com/jazzband/django-silk/tree/5.4.2) (2025-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.1..5.4.2)
+
+**Fixes:**
+
+ - Reverts #798 which causes issues when serializing JSONFields (#807) @albertyw
+ - Catch and ignore sql encoding errors (#810) @albertyw @bpascard
+
+
 ## [5.4.1](https://github.com/jazzband/django-silk/tree/5.4.1) (2025-08-10)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.0..5.4.1)
