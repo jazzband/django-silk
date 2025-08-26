@@ -18,6 +18,22 @@ Then it's likely your database is not configured correctly for UTF encoding.
 
 See this `github issue <https://github.com/jazzband/django-silk/issues/21>`_ for more details and workarounds.
 
+Context Processor
+-----------------
+
+Silk requires the template context to include a ``request`` object in order to save and analyze it.
+
+If you see errors like:
+
+.. code-block:: text
+
+    File "/service/venv/lib/python3.12/site-packages/silk/templatetags/silk_nav.py", line 9, in navactive
+      path = request.path
+             ^^^^^^^^^^^^
+    AttributeError: 'str' object has no attribute 'path'
+
+Include ``django.template.context_processors.request`` in your Django settings' ``TEMPLATES`` context processors as `recommended <https://github.com/jazzband/django-silk/issues/805>`_.
+
 Middleware
 ----------
 

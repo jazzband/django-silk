@@ -19,6 +19,17 @@ Add the following to your ``settings.py``:
 	    ...
 	]
 
+	TEMPLATES = [{
+	    ...
+	    'OPTIONS': {
+	        'context_processors': [
+	            ...
+	            'django.template.context_processors.request',
+	        ],
+	    },
+	}]
+
+
 	INSTALLED_APPS = [
 	    ...
 	    'silk.apps.SilkAppConfig'
