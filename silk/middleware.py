@@ -42,8 +42,6 @@ AUTH_AND_SESSION_MIDDLEWARES = [
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-ORIGINAL_EXECUTE_SQL = SQLCompiler.execute_sql
-
 
 def _should_intercept(request):
     """we want to avoid recording any requests/sql queries etc that belong to Silky"""
@@ -184,8 +182,4 @@ class SilkyMiddleware:
                         Logger.warning('Exhausted _process_response attempts; not processing request')
                         break
                 attempts += 1
-        # Clean up after ourselves for the next request:
-        if hasattr(SQLCompiler, '_execute_sql'):
-            SQLCompiler.execute_sql = ORIGINAL_EXECUTE_SQL
-            delattr(SQLCompiler, '_execute_sql')
         return response
