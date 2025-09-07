@@ -53,7 +53,11 @@ def _explain_query(connection, q, params):
 
         # currently we cannot use explain() method
         # for queries other than `select`
-        prefixed_query = f"{prefix} {q}"
+        if q.upper().startswith(prefix.upper()):
+            # to avoid "EXPLAIN EXPLAIN", do not add prefix
+            prefixed_query = q
+        else:
+            prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
             try:
                 params_str = tuple(force_str(param) for param in params)

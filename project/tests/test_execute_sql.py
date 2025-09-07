@@ -32,7 +32,8 @@ def mock_sql(mock_query_params):
             spec_set=['supports_explaining_query_execution'],
             supports_explaining_query_execution=True
         ),
-        ops=NonCallableMock(spec_set=['explain_query_prefix']),
+        ops=NonCallableMock(spec_set=['explain_query_prefix'],
+                            explain_query_prefix=Mock(return_value='')),
     )
 
     return mock_sql_query, mock_query_params
@@ -131,6 +132,7 @@ class TestCollectorInteraction(BaseTestCase):
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
+        self.assertNotIn(prefix, params)
         params = tuple(force_str(param) for param in params)
         mock_cursor.execute.assert_called_once_with(f"{prefix} {_simple_mock_query_sql}", params)
 
@@ -141,6 +143,7 @@ class TestCollectorInteraction(BaseTestCase):
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
+        self.assertNotIn(prefix, params)
         params = tuple(force_str(param) for param in params)
         mock_cursor.execute.assert_called_once_with(f"{prefix} {_simple_mock_query_sql}", params)
 
@@ -151,4 +154,5 @@ class TestCollectorInteraction(BaseTestCase):
         mock_cursor = sql.connection.cursor.return_value.__enter__.return_value
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
+        self.assertNotIn(prefix, params)
         self.assertFalse(mock_cursor.execute.called)
