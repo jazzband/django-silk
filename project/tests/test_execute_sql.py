@@ -133,7 +133,6 @@ class TestCollectorInteraction(BaseTestCase):
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
         self.assertNotIn(prefix, params)
-        params = tuple(force_str(param) for param in params)
         mock_cursor.execute.assert_called_once_with(f"{prefix} {_simple_mock_query_sql}", params)
 
     def test_explain_unicode(self):
@@ -144,7 +143,6 @@ class TestCollectorInteraction(BaseTestCase):
         sql.connection.ops.explain_query_prefix.return_value = prefix
         execute_sql(sql)
         self.assertNotIn(prefix, params)
-        params = tuple(force_str(param) for param in params)
         mock_cursor.execute.assert_called_once_with(f"{prefix} {_simple_mock_query_sql}", params)
 
     def test_explain_non_unicode(self):

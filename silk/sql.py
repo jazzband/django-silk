@@ -59,18 +59,7 @@ def _explain_query(connection, q, params):
         else:
             prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
-            try:
-                params_str = tuple(force_str(param) for param in params)
-            except UnicodeDecodeError:
-                # Sometimes `force_str` can still raise a UnicodeDecodeError
-                # Reference: https://github.com/jazzband/django-silk/issues?q=encoding
-                Logger.error(
-                    "UnicodeDecodeError while trying to explain query: %s. "
-                    "This could be caused by a non-UTF-8 encoded parameter.",
-                    q
-                )
-                return None
-            cur.execute(prefixed_query, params_str)
+            cur.execute(prefixed_query, params)
             result = _unpack_explanation(cur.fetchall())
             return '\n'.join(result)
     return None
