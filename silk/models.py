@@ -393,4 +393,3 @@ class Profile(BaseProfile):
 
     class Meta:
         db_table = silk_db_tables['PROFILE']
-
