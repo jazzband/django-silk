@@ -53,9 +53,24 @@ def _explain_query(connection, q, params):
 
         # currently we cannot use explain() method
         # for queries other than `select`
-        prefixed_query = f"{prefix} {q}"
+        if q.upper().startswith(prefix.upper()):
+            # to avoid "EXPLAIN EXPLAIN", do not add prefix
+            prefixed_query = q
+        else:
+            prefixed_query = f"{prefix} {q}"
         with connection.cursor() as cur:
-            cur.execute(prefixed_query, params)
+            try:
+                params_str = tuple(force_str(param) for param in params)
+            except UnicodeDecodeError:
+                # Sometimes `force_str` can still raise a UnicodeDecodeError
+                # Reference: https://github.com/jazzband/django-silk/issues?q=encoding
+                Logger.error(
+                    "UnicodeDecodeError while trying to explain query: %s. "
+                    "This could be caused by a non-UTF-8 encoded parameter.",
+                    q
+                )
+                return None
+            cur.execute(prefixed_query, params_str)
             result = _unpack_explanation(cur.fetchall())
             return '\n'.join(result)
     return None
@@ -77,7 +92,13 @@ def execute_sql(self, *args, **kwargs):
             return iter([])
         else:
             return
-    sql_query = q % tuple(force_str(param) for param in params)
+    try:
+        sql_query = q % tuple(force_str(param) for param in params)
+    except UnicodeDecodeError:
+        # Sometimes `force_str` can still raise a UnicodeDecodeError
+        # Reference: https://github.com/jazzband/django-silk/issues?q=encoding
+        # This could log a warning but given this is run in the hot path, logging could be too expensive.
+        return self._execute_sql(*args, **kwargs)
     if _should_wrap(sql_query):
         tb = ''.join(reversed(traceback.format_stack()))
         query_dict = {

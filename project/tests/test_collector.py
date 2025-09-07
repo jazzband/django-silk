@@ -1,3 +1,7 @@
+import cProfile
+import os.path
+import sys
+
 from django.test import TestCase
 from tests.util import DictStorage
 
@@ -47,6 +51,18 @@ class TestCollector(TestCase):
                 self.assertTrue(content)
                 self.assertGreater(len(content), 0)
 
+    def test_configure_exception(self):
+        other_profiler = cProfile.Profile()
+        other_profiler.enable()
+        collector = DataCollector()
+        collector.configure()
+        other_profiler.disable()
+        if sys.version_info >= (3, 12):
+            self.assertEqual(collector.local.pythonprofiler, None)
+        else:
+            self.assertIsNotNone(collector.local.pythonprofiler)
+            collector.stop_python_profiler()
+
     def test_profile_file_name_with_disabled_extended_file_name(self):
         SilkyConfig().SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = False
         request_path = 'normal/uri/'
@@ -80,5 +96,5 @@ class TestCollector(TestCase):
         DataCollector().configure(request)
         DataCollector().finalise()
         file_path = DataCollector().request.prof_file.name
-        filename = file_path.rsplit('/')[-1]
+        filename = os.path.basename(file_path)
         return filename.replace(f"{request.id}.prof", "")

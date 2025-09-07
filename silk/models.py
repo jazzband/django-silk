@@ -5,8 +5,10 @@ import re
 from uuid import uuid4
 
 import sqlparse
-from django.core.files.storage import get_storage_class
-from django.db import models, transaction
+from django.conf import settings
+from django.core.files.storage import storages
+from django.core.files.storage.handler import InvalidStorageError
+from django.db import models, router, transaction
 from django.db.models import (
     BooleanField,
     CharField,
@@ -17,6 +19,7 @@ from django.db.models import (
     IntegerField,
     ManyToManyField,
     OneToOneField,
+    Sum,
     TextField,
 )
 from django.utils import timezone
@@ -25,7 +28,12 @@ from django.utils.safestring import mark_safe
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
 
-silk_storage = get_storage_class(SilkyConfig().SILKY_STORAGE_CLASS)()
+try:
+    silk_storage = storages['SILKY_STORAGE']
+except InvalidStorageError:
+    from django.utils.module_loading import import_string
+    storage_class = SilkyConfig().SILKY_STORAGE_CLASS or settings.DEFAULT_FILE_STORAGE
+    silk_storage = import_string(storage_class)()
 silk_db_tables = SilkyConfig().SILKY_DATABASE_TABLES
 
 
@@ -71,7 +79,7 @@ class Request(models.Model):
         default='', null=True
     )
     end_time = DateTimeField(null=True, blank=True)
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
     encoded_headers = TextField(blank=True, default='')  # stores json
     meta_time = FloatField(null=True, blank=True)
     meta_num_queries = IntegerField(null=True, blank=True)
@@ -112,16 +120,13 @@ class Request(models.Model):
 
     @property
     def time_spent_on_sql_queries(self):
+        """"
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
         """
-        TODO: Perhaps there is a nicer way to do this with Django aggregates?
-        My initial thought was to perform:
-        SQLQuery.objects.filter.aggregate(Sum(F('end_time')) - Sum(F('start_time')))
-        However this feature isnt available yet, however there has been talk
-        for use of F objects within aggregates for four years
-        here: https://code.djangoproject.com/ticket/14030. It looks
-        like this will go in soon at which point this should be changed.
-        """
-        return sum(x.time_taken for x in SQLQuery.objects.filter(request=self))
+        result = SQLQuery.objects.filter(request=self).aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
 
     @property
     def headers(self):
@@ -228,25 +233,25 @@ class Response(models.Model):
 
 # TODO rewrite docstring
 class SQLQueryManager(models.Manager):
-    @transaction.atomic
     def bulk_create(self, *args, **kwargs):
         """ensure that num_sql_queries remains consistent. Bulk create does not call
         the model save() method and hence we must add this logic here too"""
-        if len(args):
-            objs = args[0]
-        else:
-            objs = kwargs.get('objs')
-        for obj in objs:
-            obj.prepare_save()
+        with transaction.atomic(using=router.db_for_write(SQLQuery)):
+            if len(args):
+                objs = args[0]
+            else:
+                objs = kwargs.get('objs')
+            for obj in objs:
+                obj.prepare_save()
 
-        return super().bulk_create(*args, **kwargs)
+            return super().bulk_create(*args, **kwargs)
 
 
 class SQLQuery(models.Model):
     query = TextField()
     start_time = DateTimeField(null=True, blank=True, default=timezone.now)
     end_time = DateTimeField(null=True, blank=True)
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
     identifier = IntegerField(default=-1)
     request = ForeignKey(
         Request, related_name='queries', null=True,
@@ -297,7 +302,12 @@ class SQLQuery(models.Model):
         for idx, component in enumerate(components):
             # TODO: If django uses aliases on column names they will be falsely
             # identified as tables...
-            if component.lower() == 'from' or component.lower() == 'join' or component.lower() == 'as':
+            if (
+                component.lower() == "from"
+                or component.lower() == "join"
+                or component.lower() == "as"
+                or component.lower() == "update"
+            ):
                 try:
                     _next = components[idx + 1]
                     if not _next.startswith('('):  # Subquery
@@ -319,16 +329,16 @@ class SQLQuery(models.Model):
                 self.request.num_sql_queries += 1
                 self.request.save(update_fields=['num_sql_queries'])
 
-    @transaction.atomic()
     def save(self, *args, **kwargs):
-        self.prepare_save()
-        super().save(*args, **kwargs)
+        with transaction.atomic(using=router.db_for_write(self)):
+            self.prepare_save()
+            super().save(*args, **kwargs)
 
-    @transaction.atomic()
     def delete(self, *args, **kwargs):
-        self.request.num_sql_queries -= 1
-        self.request.save()
-        super().delete(*args, **kwargs)
+        with transaction.atomic(using=router.db_for_write(self)):
+            self.request.num_sql_queries -= 1
+            self.request.save()
+            super().delete(*args, **kwargs)
 
     class Meta:
         db_table = silk_db_tables['SQLQUERY']
@@ -342,7 +352,7 @@ class BaseProfile(models.Model):
         Request, null=True, blank=True, db_index=True,
         on_delete=models.CASCADE,
     )
-    time_taken = FloatField(blank=True, null=True)
+    time_taken = FloatField(blank=True, null=True)  # milliseconds
 
     class Meta:
         abstract = True
@@ -373,7 +383,14 @@ class Profile(BaseProfile):
 
     @property
     def time_spent_on_sql_queries(self):
-        return sum(x.time_taken for x in self.queries.all())
+        """
+        Calculate the total time spent in milliseconds on SQL queries using Django aggregates.
+        """
+        result = self.queries.aggregate(
+            total_time=Sum('time_taken', output_field=FloatField())
+        )
+        return result['total_time'] or 0.0
 
     class Meta:
         db_table = silk_db_tables['PROFILE']
+

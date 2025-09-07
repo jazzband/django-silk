@@ -69,7 +69,6 @@ class RequestTest(TestCase):
 
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
 
-    # FIXME probably a bug
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_with_no_time_taken(self):
 
         query = SQLQueryFactory()
@@ -77,8 +76,8 @@ class RequestTest(TestCase):
 
         self.assertEqual(query.time_taken, None)
 
-        with self.assertRaises(TypeError):
-            self.obj.time_spent_on_sql_queries
+        # No exception should be raised, and the result should be 0.0
+        self.assertEqual(self.obj.time_spent_on_sql_queries, 0.0)
 
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
 
@@ -421,6 +420,32 @@ class SQLQueryTest(TestCase):
         query = 'SELECT foo AS bar FROM some_table;'
         self.obj.query = query
         self.assertEqual(self.obj.tables_involved, ['bar', 'some_table;'])
+
+    def test_tables_involved_if_query_has_update_token(self):
+
+        query = """UPDATE Book SET title = 'New Title' WHERE id = 1;"""
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Book'])
+
+    def test_tables_involved_in_complex_update_query(self):
+
+        query = '''UPDATE Person p
+                SET p.name = (SELECT c.name FROM Company c WHERE c.id = p.company_id),
+                    p.salary = p.salary * 1.1
+                FROM Department d
+                WHERE p.department_id = d.id AND d.budget > 100000;
+        '''
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Person', 'Company', 'Department'])
+
+    def test_tables_involved_in_update_with_subquery(self):
+
+        query = '''UPDATE Employee e
+                SET e.bonus = (SELECT AVG(salary) FROM Employee WHERE department_id = e.department_id)
+                WHERE e.performance = 'excellent';
+        '''
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Employee', 'Employee'])
 
     def test_save_if_no_end_and_start_time(self):
 
