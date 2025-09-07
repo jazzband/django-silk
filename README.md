@@ -30,7 +30,7 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 4.2, 5.0, 5.1
+* Django: 4.2, 5.1, 5.2
 * Python: 3.9, 3.10, 3.11, 3.12, 3.13
 
 ## Installation
@@ -41,6 +41,12 @@ Via pip into a `virtualenv`:
 pip install django-silk
 ```
 
+To including optional formatting of python snippets:
+
+```bash
+pip install django-silk[formatting]
+```
+
 In `settings.py` add the following:
 
 ```python
@@ -49,6 +55,17 @@ MIDDLEWARE = [
     'silk.middleware.SilkyMiddleware',
     ...
 ]
+
+TEMPLATES = [{
+    ...
+    'OPTIONS': {
+        'context_processors': [
+            ...
+            'django.template.context_processors.request',
+        ],
+    },
+}]
+
 
 INSTALLED_APPS = (
     ...
@@ -97,14 +114,14 @@ if required. The UI can be reached at `/silk/`
 Via [github tags](https://github.com/jazzband/django-silk/releases):
 
 ```bash
-pip install https://github.com/jazzband/silk/archive/<version>.tar.gz
+pip install git+https://github.com/jazzband/django-silk.git@<version>#egg=django_silk
 ```
 
 You can install from master using the following, but please be aware that the version in master
 may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
-pip install -e git+https://github.com/jazzband/django-silk.git#egg=django-silk
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk
 ```
 
 ## Features

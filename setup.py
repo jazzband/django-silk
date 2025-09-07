@@ -22,8 +22,8 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 4.2',
-        'Framework :: Django :: 5.0',
         'Framework :: Django :: 5.1',
+        'Framework :: Django :: 5.2',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
@@ -38,9 +38,11 @@ setup(
     install_requires=[
         'Django>=4.2',
         'sqlparse',
-        'autopep8',
         'gprof2dot>=2017.09.19',
     ],
+    extras_require={
+        'formatting': ['autopep8'],
+    },
     python_requires='>=3.9',
     setup_requires=['setuptools_scm'],
 )

@@ -1,6 +1,64 @@
 # Change Log
 ## Unreleased
 
+## [5.4.2](https://github.com/jazzband/django-silk/tree/5.4.2) (2025-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.1..5.4.2)
+
+**Fixes:**
+
+ - Reverts #798 which causes issues when serializing JSONFields (#807) @albertyw
+ - Also reverts #798 which has a race condition when modifying `execute_sql` (#816) @albertyw
+ - Catch and ignore sql encoding errors (#810) @albertyw @bpascard
+
+**Maintenance and Cleanup:**
+
+ - Document that context_processors.request is required (#815) @albertyw
+ - Fix documentation formatting (#810) @albertyw
+ - Test refactors (#814) @albertyw
+
+
+## [5.4.1](https://github.com/jazzband/django-silk/tree/5.4.1) (2025-08-10)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.0..5.4.1)
+
+**Fixes:**
+
+ - Fixes curl/client values rendering in request_detail (#797) @bcmyguest
+ - Fix serialization of non-unicode binary data, add cleanup in middleware (#798) @glennmatthews
+ - Make transactions target the DB alias selected by the router (#801) @OscarVanL
+
+**Maintenance and Cleanup:**
+
+ - Dependency updates
+ - Documentation updates
+
+
+## [5.4.0](https://github.com/jazzband/django-silk/tree/5.4.0) (2025-05-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.2..5.4.0)
+
+**Note: this release removes support for Django 5.0**
+**Note: this release removes autoformatting of python snippets; continue formatting by pip installing `django-silk[formatting]`**
+
+**Features/Enhancements:**
+
+ - Add support for Django 5.2 (#784) @albertyw
+ - Support opening SQL details in a new window (#788) @joaopedroalbq
+ - Avoid timeouts when deserializing large jsons (#768) @quertenmont
+ - Make autopep8 optional (#782) @albertyw
+
+**Fixes:**
+
+ - Fix masking sensitive data when an empty `SILKY_SENSITIVE_KEYS` is provided (#777) @ahsanshafiq742
+
+**Maintenance and Cleanup:**
+
+ - Remove support for Django 5.0 (#783) @albertyw
+ - Fix logger deprecations (#766) @rjdebastiani
+ - Update dependencies and various autoupdate cleanups
+
+
 ## [5.3.2](https://github.com/jazzband/django-silk/tree/5.3.2) (2024-12-05)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.1..5.3.2)

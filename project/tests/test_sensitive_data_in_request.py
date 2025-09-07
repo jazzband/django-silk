@@ -75,6 +75,12 @@ class MaskCredentialsInFormsTest(TestCase):
         expected = f"foo={CLEANSED}"
         self.assertEqual(expected, self._mask(body))
 
+    def test_sensitive_values_remain_unmasked_with_empty_settings(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = {}
+        body = "foo=hidethis"
+        expected = "foo=hidethis"
+        self.assertEqual(expected, self._mask(body))
+
 
 class MaskCredentialsInJsonTest(TestCase):
     def tearDown(self):
@@ -121,6 +127,10 @@ class MaskCredentialsInJsonTest(TestCase):
     def test_mask_credentials_masks_sensitive_values_listed_in_settings(self):
         SilkyConfig().SILKY_SENSITIVE_KEYS = {"foo"}
         self.assertNotIn("hidethis", self._mask({"foo": "hidethis"}))
+
+    def test_sensitive_values_remain_unmasked_with_empty_settings(self):
+        SilkyConfig().SILKY_SENSITIVE_KEYS = {}
+        self.assertIn("hidethis", self._mask({"foo": "hidethis"}))
 
 
 class TestEncodingForRequests(TestCase):
