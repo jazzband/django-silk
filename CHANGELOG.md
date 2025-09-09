@@ -1,6 +1,16 @@
 # Change Log
 ## Unreleased
 
+## [5.4.3](https://github.com/jazzband/django-silk/tree/5.4.3) (2025-09-08)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.2..5.4.3)
+
+**Fixes:**
+
+ - Fix double EXPLAIN when calling explain on queryset (#654) @stereodamage
+ - Fix serialization issues for binary and json fields (#821) @albertyw
+
+
 ## [5.4.2](https://github.com/jazzband/django-silk/tree/5.4.2) (2025-08-17)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.1..5.4.2)
