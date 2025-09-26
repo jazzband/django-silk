@@ -144,6 +144,8 @@ class SilkyMiddleware:
         DataCollector().configure(request_model, should_profile=should_profile)
 
     def _process_response(self, request, response):
+        # Use a context manager instead of a decorator so db_for_write is evaluated at runtime,
+        # which is important for dynamic database configurations (e.g., multitenancy).
         with transaction.atomic(using=router.db_for_write(models.SQLQuery)):
             Logger.debug('Process response')
             with silk_meta_profiler():
