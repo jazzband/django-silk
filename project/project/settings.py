@@ -122,3 +122,5 @@ SILKY_PYTHON_PROFILER_BINARY = True
 SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
 # SILKY_AUTHENTICATION = True
 # SILKY_AUTHORISATION = True
+# SILKY_DATABASE_TABLES = {'REQUEST': 'test_silk_request', 'RESPONSE': 'silk_response',
+#                   'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}
