@@ -13,7 +13,7 @@ repos:
   hooks:
   - id: yesqa
 - repo: https://github.com/pycqa/isort
-  rev: '6.0.1'
+  rev: '6.1.0'
   hooks:
   - id: isort
     args: ['--profile', 'black']
@@ -52,7 +52,7 @@ repos:
   - id: pyupgrade
     args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.28.0'
+  rev: '1.29.0'
   hooks:
   - id: django-upgrade
     args: [--target-version, '4.2']
