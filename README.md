@@ -30,8 +30,8 @@ Silk is a live profiling and inspection tool for the Django framework. Silk inte
 
 Silk has been tested with:
 
-* Django: 3.2, 4.0, 4.1
-* Python: 3.7, 3.8, 3.9, 3.10, 3.11
+* Django: 4.2, 5.1, 5.2
+* Python: 3.9, 3.10, 3.11, 3.12, 3.13
 
 ## Installation
 
@@ -39,6 +39,12 @@ Via pip into a `virtualenv`:
 
 ```bash
 pip install django-silk
+```
+
+To including optional formatting of python snippets:
+
+```bash
+pip install django-silk[formatting]
 ```
 
 In `settings.py` add the following:
@@ -50,13 +56,24 @@ MIDDLEWARE = [
     ...
 ]
 
+TEMPLATES = [{
+    ...
+    'OPTIONS': {
+        'context_processors': [
+            ...
+            'django.template.context_processors.request',
+        ],
+    },
+}]
+
+
 INSTALLED_APPS = (
     ...
     'silk'
 )
 ```
 
-**Note:** The middleware placement is sensitive. If the middleware before `silk.middleware.SilkyMiddleware` returns from `process_request` then `SilkyMiddleware` will never get the chance to execute. Therefore you must ensure that any middleware placed before never returns anything from `process_request`. See the [django docs](https://docs.djangoproject.com/en/dev/topics/http/middleware/#process-request) for more information on this.
+**Note:** The order of middleware is sensitive. If any middleware placed before `silk.middleware.SilkyMiddleware` returns a response without invoking its `get_response`, the `SilkyMiddleware` won’t run. To avoid this, ensure that middleware preceding `SilkyMiddleware` does not bypass or return a response without calling its `get_response`. For further details, check out the [Django documentation](https://docs.djangoproject.com/en/dev/topics/http/middleware/#middleware-order-and-layering).
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
@@ -97,14 +114,14 @@ if required. The UI can be reached at `/silk/`
 Via [github tags](https://github.com/jazzband/django-silk/releases):
 
 ```bash
-pip install https://github.com/jazzband/silk/archive/<version>.tar.gz
+pip install git+https://github.com/jazzband/django-silk.git@<version>#egg=django_silk
 ```
 
 You can install from master using the following, but please be aware that the version in master
 may not be working for all versions specified in [requirements](#requirements)
 
 ```bash
-pip install -e git+https://github.com/jazzband/django-silk.git#egg=django-silk
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk
 ```
 
 ## Features
@@ -150,7 +167,7 @@ Before diving into the stack trace to figure out where this request is coming fr
 
 ### Profiling
 
-Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in cProfile profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.
+Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in `cProfile` profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.  Note that as of Python 3.12, `cProfile` cannot run concurrently so [django-silk under Python 3.12 and later will not profile if another profile is running](https://github.com/jazzband/django-silk/pull/692) (even its own profiler in another thread).
 
 ```python
 SILKY_PYTHON_PROFILER = True
@@ -170,6 +187,16 @@ When enabled, a graph visualisation generated using [gprof2dot](https://github.c
 A custom storage class can be used for the saved generated binary `.prof` files:
 
 ```python
+# For Django >= 4.2 and Django-Silk >= 5.1.0:
+# See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
+STORAGES = {
+    'SILKY_STORAGE': {
+        'BACKEND': 'path.to.StorageClass',
+    },
+    # ...
+}
+
+# For Django < 4.2 or Django-Silk < 5.1.0
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
 

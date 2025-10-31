@@ -1,6 +1,204 @@
 # Change Log
 ## Unreleased
 
+## [5.4.3](https://github.com/jazzband/django-silk/tree/5.4.3) (2025-09-08)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.2..5.4.3)
+
+**Fixes:**
+
+ - Fix double EXPLAIN when calling explain on queryset (#654) @stereodamage
+ - Fix serialization issues for binary and json fields (#821) @albertyw
+
+
+## [5.4.2](https://github.com/jazzband/django-silk/tree/5.4.2) (2025-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.1..5.4.2)
+
+**Fixes:**
+
+ - Reverts #798 which causes issues when serializing JSONFields (#807) @albertyw
+ - Also reverts #798 which has a race condition when modifying `execute_sql` (#816) @albertyw
+ - Catch and ignore sql encoding errors (#810) @albertyw @bpascard
+
+**Maintenance and Cleanup:**
+
+ - Document that context_processors.request is required (#815) @albertyw
+ - Fix documentation formatting (#810) @albertyw
+ - Test refactors (#814) @albertyw
+
+
+## [5.4.1](https://github.com/jazzband/django-silk/tree/5.4.1) (2025-08-10)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.0..5.4.1)
+
+**Fixes:**
+
+ - Fixes curl/client values rendering in request_detail (#797) @bcmyguest
+ - Fix serialization of non-unicode binary data, add cleanup in middleware (#798) @glennmatthews
+ - Make transactions target the DB alias selected by the router (#801) @OscarVanL
+
+**Maintenance and Cleanup:**
+
+ - Dependency updates
+ - Documentation updates
+
+
+## [5.4.0](https://github.com/jazzband/django-silk/tree/5.4.0) (2025-05-03)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.2..5.4.0)
+
+**Note: this release removes support for Django 5.0**
+**Note: this release removes autoformatting of python snippets; continue formatting by pip installing `django-silk[formatting]`**
+
+**Features/Enhancements:**
+
+ - Add support for Django 5.2 (#784) @albertyw
+ - Support opening SQL details in a new window (#788) @joaopedroalbq
+ - Avoid timeouts when deserializing large jsons (#768) @quertenmont
+ - Make autopep8 optional (#782) @albertyw
+
+**Fixes:**
+
+ - Fix masking sensitive data when an empty `SILKY_SENSITIVE_KEYS` is provided (#777) @ahsanshafiq742
+
+**Maintenance and Cleanup:**
+
+ - Remove support for Django 5.0 (#783) @albertyw
+ - Fix logger deprecations (#766) @rjdebastiani
+ - Update dependencies and various autoupdate cleanups
+
+
+## [5.3.2](https://github.com/jazzband/django-silk/tree/5.3.2) (2024-12-05)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.1..5.3.2)
+
+**Fixes:**
+
+ - Fix missing image from jQuery UI 1.13.2 (#757) @Tatsh
+
+**Maintenance and Cleanup:**
+
+ - Adds updated documentation on middleware ordering (#758) @SoyJoseC
+ - Updated python dependencies (#761, #760) @albertyw
+
+
+## [5.3.1](https://github.com/jazzband/django-silk/tree/5.3.1) (2024-11-08)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.3.0..5.3.1)
+
+**Fixes:**
+
+ - Fix missing jQuery UI images (#754) @Tatsh
+ - Fix swallowing exceptions when processing response in silk middleware (#753) @albertyw
+
+
+## [5.3.0](https://github.com/jazzband/django-silk/tree/5.3.0) (2024-10-25)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.2.0..5.3.0)
+
+**Note: this release removes support for Django 3.2 and Python 3.8**
+
+**Features/Enhancements:**
+
+ - Support python 3.13 (#747)
+
+**Fixes:**
+
+ - Upgrade jQuery-UI to 1.13.2 to fix XSS vulnerability (#742)
+
+**Maintenance and Cleanup:**
+
+ - Remove Django 3.2 support (#736)
+ - Drop support for python 3.8 (#749)
+ - Update python dependencies (#748)
+
+
+## [5.2.0](https://github.com/jazzband/django-silk/tree/5.2.0) (2024-08-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.1.0..5.2.0)
+
+**Features/Enhancements:**
+
+ - Support Django 5.1 (#734, #732) @albertyw
+
+**Fixes:**
+
+ - Fix when Session, Authentication or Message middleware are not present (#667) @mgaligniana
+ - Update 'tables_involved' property to include tables from UPDATE operation (#717) @emregeldegul
+ - Fix double-escaping of the curl and Python example code (#709) @SpecLad
+ - Correct units in profiling and requests pages (#725) @ka28kumar
+
+**Maintenance and Cleanup:**
+
+ - Update python dependencies (#733) @albertyw
+ - Refactor SQL query time calculation to use Django aggregation (#720) @beltagymohamed
+ - Fix test failures on Windows (#707) @SpecLad
+ - Update workflow actions (#700) @albertyw
+ - Update test matrix to latest version of django, postgres, and mariadb #701) @albertyw
+
+
+## [5.1.0](https://github.com/jazzband/django-silk/tree/5.1.0) (2023-12-30)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.4..5.1.0)
+
+**Upgrading:**
+
+This release includes [Fix deprecation warning for get_storage_class #669](https://github.com/jazzband/django-silk/pull/669)
+which deprecates `SILKY_STORAGE_CLASS`.  Users should instead use the Django
+`STORAGES` configuration.  See [README](https://github.com/albertyw/django-silk/blob/master/README.md#profiling)
+and [Django documentation](https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES)
+for more information.
+
+Also, for python 3.12, the `cProfile` stdlib library cannot be enabled multiple times concurrently.
+Silk will therefore skip profiling if another profile is already enabled.
+
+
+**Features/Enhancements:**
+
+ - Allow option to delete profiles (#652) @viralj
+
+**Fixes:**
+
+ - Gracefully error out when there are concurrent profilers (#692) @albertyw
+ - Always disable cProfile as part of cleanup (#699) @albertyw
+ - Fix when Session, Authentication or Message middlewares are not present (#667) @mgaligniana
+
+**Maintenance and Cleanup:**
+
+ - Fix deprecation warning for get_storage_class (#669) @albertyw
+ - Support Django 4.2 (#685) @albertyw
+ - Support python 3.12 (#683) @albertyw
+ - Support Django 5 (#686) @albertyw
+ - Remove deprecated datetime.timezone.utc (#687) @albertyw
+ - Derive version from importlib (#697) @robinchow
+
+**Dependencies:**
+
+ - Update python dependencies (#693) @albertyw
+
+
+## [5.0.4](https://github.com/jazzband/django-silk/tree/5.0.4) (2023-09-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.3..5.0.4)
+
+**Features/Enhancements:**
+
+ - Handle case-insensitive sensitive headers (#674) @shtimn
+ - Add a "pagetitle" block to Silky templates (#661) @vsajip
+ - Allow to generate more informative profile file name (#638) @k4rl85
+
+**Maintenance and Cleanup:**
+
+ - Remove unsupported versions of Django and Python (#668) @albertyw
+ - Outsource all inline scripts and styles (#635) @sgelis
+ - Remove support for looking up headers on django &lt;3.2 (#643) @albertyw
+
+**Dependencies:**
+
+ - Update python dependencies (#677) @albertyw
+
+
 ## [5.0.3](https://github.com/jazzband/django-silk/tree/5.0.3) (2023-01-12)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.0.2..5.0.3)
@@ -134,7 +332,7 @@
 - Add query execution plan to sql_detail (#452)
 - Add Python 3.9 compatibility (#404)
 - Replace re_path with path
-- Fix transaction error for mysql 
+- Fix transaction error for mysql
 - parse query when count joins to match only Keyword
 - fix: DB connection to ClearDB when multiple databases
 - fix: DataCollector sql_queries model not found on filter(request=self.request)

@@ -1,11 +1,14 @@
 from urllib.parse import urlencode
 
-import autopep8
+try:
+    import autopep8
+except ImportError:
+    autopep8 = None
 from django.template import Context, Template
 
 from silk.profiling.dynamic import is_str_typ
 
-template = """
+template = """\
 from django.test import Client
 c = Client()
 response = c.{{ lower_case_method }}(path='{{ path }}'{% if data or content_type %},{% else %}){% endif %}{% if data %}
@@ -42,7 +45,13 @@ def gen(path, method=None, query_params=None, data=None, content_type=None):
             data = "'%s'" % data
         context['data'] = data
         context['query_params'] = query_params
-    return autopep8.fix_code(
-        t.render(Context(context)),
-        options=autopep8.parse_args(['--aggressive', '']),
-    )
+    code = t.render(Context(context, autoescape=False))
+    if autopep8:
+        # autopep8 is not a hard requirement, so we check if it's available
+        # if autopep8 is available, we use it to format the code and do things
+        # like remove long lines and improve readability
+        code = autopep8.fix_code(
+            code,
+            options=autopep8.parse_args(['--aggressive', '']),
+        )
+    return code

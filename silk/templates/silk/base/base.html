@@ -2,17 +2,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Silky</title>
+    <title>{% block pagetitle %}Silky{% endblock %}</title>
     <link rel="stylesheet" href="{% static "silk/css/components/fonts.css" %}"/>
     <link rel="stylesheet" href="{% static "silk/css/components/colors.css" %}"/>
-    <link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.13.1.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.13.2.min.css" %}"/>
     <link rel="icon" type="image/png" href="{% static 'silk/favicon-32x32.png' %}" sizes="32x32">
     <link rel="icon" type="image/png" href="{% static 'silk/favicon-16x16.png' %}" sizes="16x16">
     <link rel="stylesheet" href="{% static "silk/css/pages/base.css" %}"/>
     {% block style %}
     {% endblock %}
     <script src="{% static 'silk/lib/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'silk/lib/jquery-ui-1.13.1.min.js' %}"></script>
+    <script src="{% static 'silk/lib/jquery-ui-1.13.2.min.js' %}"></script>
     <script src="{% static 'silk/js/components/cell.js' %}"></script>
     <script src="{% static 'silk/js/pages/base.js' %}"></script>
     {% block js %}

@@ -3,7 +3,6 @@ import uuid
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.utils import timezone
 from freezegun import freeze_time
 
 from silk import models
@@ -45,7 +44,7 @@ class RequestTest(TestCase):
     def test_start_time_field_default(self):
 
         obj = RequestMinFactory.create()
-        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc))
 
     def test_total_meta_time_if_have_no_meta_and_queries_time(self):
 
@@ -70,7 +69,6 @@ class RequestTest(TestCase):
 
         self.assertEqual(self.obj.time_spent_on_sql_queries, 0)
 
-    # FIXME probably a bug
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_with_no_time_taken(self):
 
         query = SQLQueryFactory()
@@ -78,8 +76,8 @@ class RequestTest(TestCase):
 
         self.assertEqual(query.time_taken, None)
 
-        with self.assertRaises(TypeError):
-            self.obj.time_spent_on_sql_queries
+        # No exception should be raised, and the result should be 0.0
+        self.assertEqual(self.obj.time_spent_on_sql_queries, 0.0)
 
     def test_time_spent_on_sql_queries_if_has_related_SQLQueries_and_time_taken(self):
 
@@ -185,7 +183,7 @@ class RequestTest(TestCase):
     @freeze_time('2016-01-01 12:00:00')
     def test_save_if_have_end_time(self):
 
-        date = datetime.datetime(2016, 1, 1, 12, 0, 3, tzinfo=timezone.utc)
+        date = datetime.datetime(2016, 1, 1, 12, 0, 3, tzinfo=datetime.timezone.utc)
         obj = models.Request(path='/some/path/', method='get', end_time=date)
         obj.save()
         self.assertEqual(obj.end_time, date)
@@ -262,14 +260,14 @@ class SQLQueryTest(TestCase):
     def setUp(self):
 
         self.obj = SQLQueryFactory.create()
-        self.end_time = datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=timezone.utc)
-        self.start_time = datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        self.end_time = datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=datetime.timezone.utc)
+        self.start_time = datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
     @freeze_time('2016-01-01 12:00:00')
     def test_start_time_field_default(self):
 
         obj = SQLQueryFactory.create()
-        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(obj.start_time, datetime.datetime(2016, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc))
 
     def test_is_m2o_related_to_request(self):
 
@@ -423,6 +421,32 @@ class SQLQueryTest(TestCase):
         self.obj.query = query
         self.assertEqual(self.obj.tables_involved, ['bar', 'some_table;'])
 
+    def test_tables_involved_if_query_has_update_token(self):
+
+        query = """UPDATE Book SET title = 'New Title' WHERE id = 1;"""
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Book'])
+
+    def test_tables_involved_in_complex_update_query(self):
+
+        query = '''UPDATE Person p
+                SET p.name = (SELECT c.name FROM Company c WHERE c.id = p.company_id),
+                    p.salary = p.salary * 1.1
+                FROM Department d
+                WHERE p.department_id = d.id AND d.budget > 100000;
+        '''
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Person', 'Company', 'Department'])
+
+    def test_tables_involved_in_update_with_subquery(self):
+
+        query = '''UPDATE Employee e
+                SET e.bonus = (SELECT AVG(salary) FROM Employee WHERE department_id = e.department_id)
+                WHERE e.performance = 'excellent';
+        '''
+        self.obj.query = query
+        self.assertEqual(self.obj.tables_involved, ['Employee', 'Employee'])
+
     def test_save_if_no_end_and_start_time(self):
 
         obj = SQLQueryFactory.create()
@@ -432,7 +456,7 @@ class SQLQueryTest(TestCase):
     @freeze_time('2016-01-01 12:00:00')
     def test_save_if_has_end_time(self):
 
-        # datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=timezone.utc)
+        # datetime.datetime(2016, 1, 1, 12, 0, 5, tzinfo=datetime.timezone.utc)
         obj = SQLQueryFactory.create(end_time=self.end_time)
 
         self.assertEqual(obj.time_taken, 5000.0)

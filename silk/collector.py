@@ -59,6 +59,7 @@ class DataCollector(metaclass=Singleton):
     def _configure(self):
         self.local.objects = {}
         self.local.temp_identifier = 0
+        self.stop_python_profiler()
         self.local.pythonprofiler = None
 
     @property
@@ -92,7 +93,13 @@ class DataCollector(metaclass=Singleton):
         self._configure()
         if should_profile:
             self.local.pythonprofiler = cProfile.Profile()
-            self.local.pythonprofiler.enable()
+            try:
+                self.local.pythonprofiler.enable()
+            except ValueError as e:
+                # Deal with cProfile not being allowed to run concurrently
+                # https://github.com/jazzband/django-silk/issues/682
+                Logger.error('Could not enable python profiler, %s' % str(e), exc_info=True)
+                self.local.pythonprofiler = None
 
     def clear(self):
         self.request = None

@@ -1,24 +1,24 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.4.0'
+  rev: 'v6.0.0'
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.2
+  rev: v2.6.0
   hooks:
   - id: pycln
     args: ['--all']
 - repo: https://github.com/asottile/yesqa
-  rev: v1.4.0
+  rev: v1.5.0
   hooks:
   - id: yesqa
 - repo: https://github.com/pycqa/isort
-  rev: '5.11.4'
+  rev: '7.0.0'
   hooks:
   - id: isort
     args: ['--profile', 'black']
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: 'v4.4.0'
+  rev: 'v6.0.0'
   hooks:
   - id: end-of-file-fixer
     exclude: >-
@@ -47,21 +47,21 @@ repos:
   - id: detect-private-key
     exclude: ^examples|(?:tests/ssl)/
 - repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.3.1'
+  rev: 'v3.21.0'
   hooks:
   - id: pyupgrade
-    args: ['--py37-plus', '--keep-mock']
+    args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.12.0'
+  rev: '1.29.1'
   hooks:
   - id: django-upgrade
-    args: [--target-version, '3.2']
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: 'v2.0.1'
+    args: [--target-version, '4.2']
+- repo: https://github.com/hhatto/autopep8
+  rev: 'v2.3.2'
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
-  rev: '6.0.0'
+  rev: '7.3.0'
   hooks:
   - id: flake8
     exclude: '^docs/'

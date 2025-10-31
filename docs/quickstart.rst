@@ -12,12 +12,23 @@ First install via pip:
 Add the following to your ``settings.py``:
 
 .. code-block:: python
-	
+
 	MIDDLEWARE = [
 	    ...
 	    'silk.middleware.SilkyMiddleware',
 	    ...
 	]
+
+	TEMPLATES = [{
+	    ...
+	    'OPTIONS': {
+	        'context_processors': [
+	            ...
+	            'django.template.context_processors.request',
+	        ],
+	    },
+	}]
+
 
 	INSTALLED_APPS = [
 	    ...
@@ -27,7 +38,7 @@ Add the following to your ``settings.py``:
 Add the following to your ``urls.py``:
 
 .. code-block:: python
-	
+
 	urlpatterns += [path('silk', include('silk.urls', namespace='silk'))]
 
 Run ``migrate`` to create Silk's database tables:
@@ -37,6 +48,16 @@ Run ``migrate`` to create Silk's database tables:
     python manage.py migrate
 
 And voila! Silk will begin intercepting requests and queries which you can inspect by visiting ``/silk/``
+
+Python Snippet Formatting
+-------------------------
+
+Silk supports generating Python snippets to reproduce requests.
+To enable autopep8 formatting of these snippets, install Silk with the `formatting` extras:
+
+.. code-block:: bash
+
+    pip install django-silk[formatting]
 
 Other Installation Options
 --------------------------
@@ -51,4 +72,4 @@ You can also install directly from the github repo but please note that this ver
 
 .. code-block:: bash
 
-	pip install -e git+https://github.com/jazzband/django-silk.git#egg=silk
+	pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk

@@ -38,7 +38,7 @@ class TestContext(TestCase):
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertNotIn('path', context)
         self.assertIn('results', context)
 
@@ -60,7 +60,7 @@ class TestContext(TestCase):
             'options_order_by': RequestsView().options_order_by,
             'options_order_dir': RequestsView().options_order_dir,
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
 
     def test_post(self):
@@ -74,8 +74,47 @@ class TestContext(TestCase):
                 'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
             },
         }, context))
-        self.assertQuerysetEqual(context['options_paths'], RequestsView()._get_paths())
+        self.assertQuerySetEqual(context['options_paths'], RequestsView()._get_paths())
         self.assertIn('results', context)
+
+    def test_view_without_session_and_auth_middlewares(self):
+        """
+        Filters are not present because there is no `session` to store them.
+        """
+        with self.modify_settings(MIDDLEWARE={
+            'remove': [
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+                'django.contrib.messages.middleware.MessageMiddleware',
+            ],
+        }):
+            # test filters on GET
+            show = 10
+            path = '/path/to/somewhere/'
+            order_by = 'path'
+            response = self.client.get(silky_reverse('requests'), {
+                'show': show,
+                'path': path,
+                'order_by': order_by,
+            })
+            context = response.context
+            self.assertTrue(dict_contains({
+                'show': show,
+                'order_by': order_by,
+                'path': path,
+            }, context))
+
+            # test filters on POST
+            response = self.client.post(silky_reverse('requests'), {
+                'filter-overalltime-value': 100,
+                'filter-overalltime-typ': 'TimeSpentOnQueriesFilter',
+            })
+            context = response.context
+            self.assertTrue(dict_contains({
+                'filters': {
+                    'overalltime': {'typ': 'TimeSpentOnQueriesFilter', 'value': 100, 'str': 'DB Time >= 100'}
+                },
+            }, context))
 
 
 class TestGetObjects(TestCase):
