@@ -22,6 +22,26 @@
     <link rel="stylesheet" href="{% static 'silk/css/components/cell.css' %}">
 {% endblock %}
 
+{% block filter %}
+    <form id="filter-form" action="." method="get"></form>
+
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Show:
+                    <select name="per_page" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_page_size %}
+                            <option value="{{ option }}"
+                                    {% if option == per_page %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}
+
 {% block menu %}
     {% if profile %}
         {% profile_menu request profile silk_request %}
@@ -78,13 +98,13 @@
 
                 <div class="step-links">
                     {% if items.has_previous %}
-                        <a href="?page={{ items.previous_page_number }}">previous</a>
+                        <a href="?page={{ items.previous_page_number }}&per_page={{ per_page }}">previous</a>
                     {% else %}
                         previous
                     {% endif %}
                     |
                     {% if items.has_next %}
-                        <a href="?page={{ items.next_page_number }}">next</a>
+                        <a href="?page={{ items.next_page_number }}&per_page={{ per_page }}">next</a>
                     {% else %}
                         next
                     {% endif %}
