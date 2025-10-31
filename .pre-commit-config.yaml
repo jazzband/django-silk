@@ -4,7 +4,7 @@ repos:
   hooks:
   - id: check-merge-conflict
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.5.0
+  rev: v2.6.0
   hooks:
   - id: pycln
     args: ['--all']
@@ -52,7 +52,7 @@ repos:
   - id: pyupgrade
     args: ['--keep-mock']
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: '1.29.0'
+  rev: '1.29.1'
   hooks:
   - id: django-upgrade
     args: [--target-version, '4.2']
