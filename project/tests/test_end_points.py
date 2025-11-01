@@ -61,7 +61,16 @@ class TestEndPoints(TestCase):
             .filter(request_id__isnull=False)
         )
         request_id = request_query_data['request_id']
-        response = self.client.get(silky_reverse('request_sql', kwargs={'request_id': request_id}))
+        base_url = silky_reverse('request_sql', kwargs={'request_id': request_id})
+        response = self.client.get(base_url)
+        self.assertTrue(response.status_code == 200)
+
+        # Test with valid page size
+        response = self.client.get(base_url + "?per_page=100")
+        self.assertTrue(response.status_code == 200)
+
+        # Test with invalid page size
+        response = self.client.get(base_url + "?per_page=notanumber")
         self.assertTrue(response.status_code == 200)
 
     def test_request_sql_detail(self):
