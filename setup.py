@@ -27,11 +27,11 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
@@ -43,6 +43,6 @@ setup(
     extras_require={
         'formatting': ['autopep8'],
     },
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     setup_requires=['setuptools_scm'],
 )
