@@ -1,0 +1,605 @@
+/* Silk CSS Styles */
+
+/* Base styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Container */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.silk-header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.silk-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+/* Navigation */
+.silk-nav {
+    background-color: white;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.silk-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.silk-nav li {
+    display: inline-block;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* SQL View Styles */
+.sql-view {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.sql-header {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sql-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.sql-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.sql-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sql-stat-label {
+    font-weight: 600;
+}
+
+.sql-stat-value {
+    color: #495057;
+}
+
+/* SQL Query Card */
+.sql-query-card {
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.sql-query-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sql-query-header {
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sql-query-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex: 1;
+}
+
+.sql-query-number {
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 30px;
+}
+
+.sql-query-type {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sql-query-type.select {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.sql-query-type.insert {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.sql-query-type.update {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.sql-query-type.delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.sql-query-tables {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sql-query-table {
+    padding: 3px 8px;
+    background-color: #e7f3ff;
+    color: #004085;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.sql-query-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.sql-query-time {
+    font-weight: 600;
+    color: #495057;
+}
+
+.sql-query-time.slow {
+    color: #dc3545;
+}
+
+.sql-query-time.medium {
+    color: #ffc107;
+}
+
+.sql-query-time.fast {
+    color: #28a745;
+}
+
+.sql-query-body {
+    padding: 15px;
+    background-color: #f8f9fa;
+    display: none;
+}
+
+.sql-query-card.expanded .sql-query-body {
+    display: block;
+}
+
+.sql-query-code {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.sql-query-code pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* SQL Syntax Highlighting */
+.sql-keyword {
+    color: #66d9ef;
+    font-weight: 600;
+}
+
+.sql-string {
+    color: #a6e22e;
+}
+
+.sql-number {
+    color: #ae81ff;
+}
+
+.sql-comment {
+    color: #75715e;
+    font-style: italic;
+}
+
+.sql-function {
+    color: #f92672;
+}
+
+/* SQL Query Details */
+.sql-query-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+}
+
+.sql-query-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sql-query-detail-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6c757d;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.sql-query-detail-value {
+    font-size: 14px;
+    color: #495057;
+}
+
+/* Filters */
+.sql-filters {
+    padding: 15px 20px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.sql-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sql-filters-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sql-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.sql-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sql-filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.sql-filter-input {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.15s;
+}
+
+.sql-filter-input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.sql-filter-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.sql-filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sql-filter-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.sql-filter-checkbox label {
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* N+1 Query Grouping */
+.sql-n-plus-one-group {
+    border: 2px solid #ffc107;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.sql-n-plus-one-header {
+    padding: 15px 20px;
+    background-color: #fff3cd;
+    border-bottom: 1px solid #ffc107;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sql-n-plus-one-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #856404;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sql-n-plus-one-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.sql-n-plus-one-info {
+    font-size: 13px;
+    color: #856404;
+}
+
+.sql-n-plus-one-body {
+    background-color: #fffbf0;
+    display: none;
+}
+
+.sql-n-plus-one-group.expanded .sql-n-plus-one-body {
+    display: block;
+}
+
+.sql-n-plus-one-pattern {
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid #ffc107;
+}
+
+.sql-n-plus-one-queries {
+    padding: 10px 20px;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background-color: #0066cc;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.badge-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.badge-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Alerts */
+.alert {
+    padding: 15px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Loading spinner */
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #0066cc;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 20px 0;
+}
+
+.pagination a,
