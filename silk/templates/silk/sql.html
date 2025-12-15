@@ -91,6 +91,7 @@
 
             </table>
 
+            {% if items.paginator.num_pages > 1 %}
             <div id="table-pagination" class="pagination">
                 <div class="current">
                     Page {{ items.number }} of {{ items.paginator.num_pages }}.
@@ -110,6 +111,7 @@
                     {% endif %}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
