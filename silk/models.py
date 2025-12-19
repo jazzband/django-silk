@@ -158,7 +158,8 @@ class Request(models.Model):
 
         # Make sure we can delete everything if needed by settings
         if target_count <= 0:
-            cls.objects.all().delete()
+            # delete all requests using raw_delete to avoid memory issues
+            Request.objects.all()._raw_delete(Request.objects.db)
             return
 
         try:
