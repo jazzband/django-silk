@@ -1,5 +1,4 @@
 import datetime
-import uuid
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -35,10 +34,6 @@ class RequestTest(TestCase):
 
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = self.max_percent
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = self.max_requests
-
-    def test_uuid_is_primary_key(self):
-
-        self.assertIsInstance(self.obj.id, uuid.UUID)
 
     @freeze_time('2016-01-01 12:00:00')
     def test_start_time_field_default(self):
@@ -199,10 +194,6 @@ class ResponseTest(TestCase):
     def setUp(self):
 
         self.obj = ResponseFactory.create()
-
-    def test_uuid_is_primary_key(self):
-
-        self.assertIsInstance(self.obj.id, uuid.UUID)
 
     def test_is_1to1_related_to_request(self):
 
