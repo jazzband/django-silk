@@ -14,4 +14,10 @@
         <span class="numeric">{{ silk_request.num_sql_queries }}</span>
         <span class="appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span>
     </div>
+    <div>
+        <form action="{% url 'silk:request_detail' silk_request.id %}" method="POST">
+            {% csrf_token %}
+            <button class="silk-button" type="submit" value="Delete">Delete</button>
+        </form>
+    </div>
 </div>
