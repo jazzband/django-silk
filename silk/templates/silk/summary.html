@@ -1,88 +1,127 @@
 {% extends 'silk/base/root_base.html' %}
 {% load silk_inclusion %}
 {% load static %}
-{% block menu %}
-    {% root_menu request %}
-{% endblock %}
 
 {% block pagetitle %}Silky - Summary{% endblock %}
 
 {% block style %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'silk/css/pages/summary.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/requests.css' %}"/>
+    <style>
+        .row-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            background-color: #fff;  /* Ensuring rows have a white background */
+            color: #000;  /* Ensuring text color is black */
+            border-radius: 5px;
+        }
+
+        .row div {
+            flex: 1;
+            text-align: center;
+        }
+
+        .summary-cell {
+            display: inline-block;
+            width: 18%;
+            text-align: center;
+            margin: 10px 1%;
+        }
+
+        .summary-cell .num {
+            font-size: 24px;
+        }
+
+        .no-data {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+        }
+    </style>
+{% endblock %}
+
+{% block menu %}
+    {% root_menu request %}
 {% endblock %}
 
 {% block js %}
     {{ block.super }}
-    <script src="{% static 'silk/js/pages/summary.js' %}"></script>
+    <script src="{% static 'silk/js/pages/requests.js' %}"></script>
 {% endblock %}
+
+{% block filter %}
+    <form id="filter-form" action="." method="get"></form>
+    <div class="menu-item ">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>View:
+                    <select name="view_style" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_view_style %}
+                            <option value="{{ option.value }}"
+                                    {% if option.value == view_style %}selected{% endif %}>{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item ">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Show:
+                    <select name="show" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_show %}
+                            <option value="{{ option }}"
+                                    {% if option == show %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Order:
+                    <select name="order_by" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_order_by %}
+                            <option value="{{ option.value }}"
+                                    {% if option.value == order_by %}selected{% endif %}>{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="menu-item">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <label>Order:
+                    <select name="order_dir" form="filter-form" onchange="this.form.submit();">
+                        {% for option in options_order_dir %}
+                            <option value="{{ option.value }}"
+                                    {% if option.value == order_dir %}selected{% endif %}>{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}
+
 {% block data %}
     <div class="wrapper">
         <div class="inner">
-            <div id="filters">
-                <form action="." name="filter-form" id="filter-form" method="post">
-                    {% csrf_token %}
-                </form>
-                <table id="filter-table">
-                    <tr>
-                        <td>
-                            <img id="filter-image" src="{% static 'silk/filter2.png' %}">
-
-                        </td>
-                        <td id="filter-cell">
-                            <div class="resizing-input">
-                                Using requests that executed
-                                <input form="filter-form"
-                                       class="typ"
-                                       type="hidden"
-                                       value="SecondsFilter"
-                                       name="filter-seconds-typ">
-                                <input type="text"
-                                       placeholder="seconds"
-                                       form="filter-form"
-                                       name="filter-seconds-value"
-                                       value="{{ filters.seconds.value }}"
-                                        >
-                                seconds ago,
-                                <span style="display:none"></span>
-                            </div>
-                            <div class="resizing-input">
-                                before
-                                <input form="filter-form"
-                                       class="typ"
-                                       type="hidden"
-                                       value="BeforeDateFilter"
-                                       name="filter-beforedate-typ">
-                                <input class="datetimepicker"
-                                       type="text"
-                                       placeholder="date"
-                                       form="filter-form"
-                                       name="filter-beforedate-value"
-                                       value="{{ filters.beforedate.value }}"
-                                        />,
-                                <span style="display:none"></span>
-                            </div>
-                            <div class="resizing-input">
-                                and after
-                                <input form="filter-form"
-                                       class="typ"
-                                       type="hidden"
-                                       value="AfterDateFilter"
-                                       name="filter-afterdate-typ">
-                                <input class="datetimepicker"
-                                       type="text"
-                                       placeholder="date"
-                                       form="filter-form"
-                                       name="filter-afterdate-value"
-                                       value="{{ filters.afterdate.value }}"
-                                        >.
-                                <span style="display:none"></span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-            </div>
             <h2>Summary</h2>
             {% if num_requests %}
                 <div class="summary-cell">
@@ -90,59 +129,71 @@
                     <div class="desc">Requests</div>
                 </div>
                 <div class="summary-cell">
-                    <div class="num"><span class="numeric">{{ num_profiles }}</span></div>
-                    <div class="desc">Profiles</div>
-                </div>
-                <div class="summary-cell">
-                    <div class="num"><span class="numeric">{{ avg_overall_time | floatformat:0 }}<span class="unit">ms</span></span></div>
+                    <div class="num"><span class="numeric">{{ avg_overall_time|floatformat:0 }}<span class="unit">ms</span></span></div>
                     <div class="desc">Avg. Time</div>
                 </div>
                 <div class="summary-cell">
-                    <div class="num"><span class="numeric">{{ avg_num_queries | floatformat:2 }}</span></div>
+                    <div class="num"><span class="numeric">{{ avg_num_queries|floatformat:2 }}</span></div>
                     <div class="desc">Avg. #Queries</div>
                 </div>
                 <div class="summary-cell">
-                    <div class="num"><span class="numeric">{{ avg_time_spent_on_queries |floatformat:0 }}<span class="unit">ms</span></span></div>
+                    <div class="num"><span class="numeric">{{ avg_time_spent_on_queries|floatformat:0 }}<span class="unit">ms</span></span></div>
                     <div class="desc">Avg. DB Time</div>
                 </div>
             {% else %}
                 <p class="no-data">No data</p>
             {% endif %}
+
             <h2>Most Time Overall</h2>
             {% if longest_queries_by_view %}
-                {% for x in longest_queries_by_view %}
-                    <a href="{% url "silk:request_detail" request_id=x.pk %}">
-                        {% request_summary x %}
-                    </a>
-                {% endfor %}
+                <div class="row-wrapper">
+                    {% for x in longest_queries_by_view %}
+                        <a href="{% url 'silk:request_detail' request_id=x.pk %}" class="row">
+                            <div>{{ x.start_time }}</div>
+                            <div>{{ x.path }}</div>
+                            <div>{{ x.meta_num_queries }} queries</div>
+                            <div>{{ x.time_taken }} ms</div>
+                            <div>{{ x.meta_time_spent_queries }} ms</div>
+                        </a>
+                    {% endfor %}
+                </div>
             {% else %}
                 <p class="no-data">No data</p>
             {% endif %}
+
             <h2>Most Time Spent in Database</h2>
             {% if most_time_spent_in_db %}
-                {% for x in most_time_spent_in_db %}
-                    <a href="{% url "silk:request_detail" request_id=x.pk %}">
-                        {% request_summary x %}
-                    </a>
-                {% endfor %}
+                <div class="row-wrapper">
+                    {% for x in most_time_spent_in_db %}
+                        <a href="{% url 'silk:request_detail' request_id=x.pk %}" class="row">
+                            <div>{{ x.start_time }}</div>
+                            <div>{{ x.path }}</div>
+                            <div>{{ x.meta_num_queries }} queries</div>
+                            <div>{{ x.time_taken }} ms</div>
+                            <div>{{ x.meta_time_spent_queries }} ms</div>
+                        </a>
+                    {% endfor %}
+                </div>
             {% else %}
                 <p class="no-data">No data</p>
             {% endif %}
+
             <h2>Most Database Queries</h2>
             {% if most_queries %}
-                {% for x in most_queries %}
-                    <a href="{% url "silk:request_detail" request_id=x.pk %}">
-                        {% request_summary x %}
-                    </a>
-                {% endfor %}
+                <div class="row-wrapper">
+                    {% for x in most_queries %}
+                        <a href="{% url 'silk:request_detail' request_id=x.pk %}" class="row">
+                            <div>{{ x.start_time }}</div>
+                            <div>{{ x.path }}</div>
+                            <div>{{ x.meta_num_queries }} queries</div>
+                            <div>{{ x.time_taken }} ms</div>
+                            <div>{{ x.meta_time_spent_queries }} ms</div>
+                        </a>
+                    {% endfor %}
+                </div>
             {% else %}
                 <p class="no-data">No data</p>
             {% endif %}
         </div>
     </div>
-
 {% endblock %}
-
-{# Hide filter hamburger menu #}
-{% block top %}{% endblock %}
-{% block filter %}{% endblock %}
