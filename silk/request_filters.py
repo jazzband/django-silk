@@ -1,6 +1,7 @@
 """
 Django queryset filters used by the requests view
 """
+import json
 import logging
 from datetime import datetime, timedelta
 
@@ -212,6 +213,105 @@ class StatusCodeFilter(BaseFilter):
 class MethodFilter(BaseFilter):
     def __init__(self, value):
         super().__init__(value, method=value)
+
+
+class MultiMethodFilter(BaseFilter):
+    """Filter on one or more HTTP methods. value is a JSON list e.g. '["GET", "POST"]'.
+    Also accepts a plain string for backward compatibility with old MethodFilter sessions."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    methods = [str(m).upper() for m in parsed if m]
+                else:
+                    methods = [str(parsed).upper()] if parsed else []
+            except (ValueError, TypeError):
+                methods = [value.strip().upper()] if value.strip() else []
+        else:
+            methods = [str(m).upper() for m in value if m]
+
+        if not methods:
+            raise FilterValidationError('No methods selected')
+
+        super().__init__(json.dumps(methods), method__in=methods)
+
+    def __str__(self):
+        try:
+            methods = json.loads(self.value)
+            if len(methods) == 1:
+                return 'Method == %s' % methods[0]
+            return 'Method in [%s]' % ', '.join(methods)
+        except Exception:
+            return 'Method: %s' % self.value
+
+
+class MultiPathFilter(BaseFilter):
+    """Filter on one or more paths. value is a JSON list e.g. '["/api/users/", "/api/products/"]'.
+    Also accepts a plain string for backward compatibility with old PathFilter sessions."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    paths = [str(p) for p in parsed if p]
+                else:
+                    paths = [str(parsed)] if parsed else []
+            except (ValueError, TypeError):
+                paths = [value.strip()] if value.strip() else []
+        else:
+            paths = [str(p) for p in value if p]
+
+        if not paths:
+            raise FilterValidationError('No paths selected')
+
+        super().__init__(json.dumps(paths), path__in=paths)
+
+    def __str__(self):
+        try:
+            paths = json.loads(self.value)
+            if len(paths) == 1:
+                return 'Path == %s' % paths[0]
+            return 'Path in [%s]' % ', '.join(paths)
+        except Exception:
+            return 'Path: %s' % self.value
+
+
+class MultiStatusCodeFilter(BaseFilter):
+    """Filter on one or more status codes. value is a JSON list e.g. '[200, 404]'.
+    Also accepts a plain int string for backward compatibility."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    codes = [int(c) for c in parsed if c != '' and c is not None]
+                else:
+                    codes = [int(parsed)] if parsed != '' else []
+            except (ValueError, TypeError):
+                try:
+                    codes = [int(value)]
+                except (ValueError, TypeError):
+                    codes = []
+        else:
+            codes = [int(c) for c in value if c]
+
+        if not codes:
+            raise FilterValidationError('No status codes selected')
+
+        super().__init__(json.dumps(codes), response__status_code__in=codes)
+
+    def __str__(self):
+        try:
+            codes = json.loads(self.value)
+            if len(codes) == 1:
+                return 'Status == %d' % codes[0]
+            return 'Status in [%s]' % ', '.join(str(c) for c in codes)
+        except Exception:
+            return 'Status: %s' % self.value
 
 
 def filters_from_request(request):

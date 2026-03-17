@@ -47,6 +47,9 @@
   /* Filter bar */
   --silk-filter-bg: #f5f7fb;
   --silk-filter-border: #d8dce8;
+  /* Interactive action color (buttons, active chips) — distinct from nav in dark mode */
+  --silk-action-bg: #1e2235;
+  --silk-action-text: #e8eaf6;
   /* Chart accent — visible on light background */
   --silk-chart-accent: #4f46e5;
 }
@@ -98,6 +101,9 @@
   /* Filter bar */
   --silk-filter-bg: #1a1a30;
   --silk-filter-border: #2e2e48;
+  /* Interactive action color — visible indigo on dark backgrounds */
+  --silk-action-bg: #5252c8;
+  --silk-action-text: #e8e8ff;
   /* Chart accent — bright on dark background */
   --silk-chart-accent: #818cf8;
 }

@@ -17,6 +17,7 @@ It keeps 100 % of the original functionality (request/response recording, SQL in
 |---|---|---|
 | Theme | Fixed dark nav, light body | Full light/dark toggle, persisted in `localStorage` |
 | Filter UI | 300 px slide-out drawer | Inline collapsible filter bar |
+| Filter selectors | Single-value dropdowns | Multi-select for method, status code, and path (with search) |
 | Sort | Single column, GET param | Multi-column sort chips (session-persisted) |
 | Pagination | Query-slice (`LIMIT N`) | Real Django `Paginator` with prev/next/page numbers |
 | Detail pages | Plain tables | Hero bar + metric pills + section cards |
