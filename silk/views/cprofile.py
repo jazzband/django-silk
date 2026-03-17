@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -12,7 +12,7 @@ class CProfileView(View):
     @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         request_id = kwargs['request_id']
-        silk_request = Request.objects.get(pk=request_id)
+        silk_request = get_object_or_404(Request, pk=request_id)
         context = {
             'silk_request': silk_request,
             'request': request}

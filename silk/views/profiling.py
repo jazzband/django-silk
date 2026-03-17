@@ -1,5 +1,5 @@
 from django.db.models import Count, Sum
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -85,7 +85,7 @@ class ProfilingView(View):
     def _create_context(self, request, *args, **kwargs):
         request_id = kwargs.get('request_id')
         if request_id:
-            silk_request = Request.objects.get(pk=request_id)
+            silk_request = get_object_or_404(Request, pk=request_id)
         else:
             silk_request = None
         show_param = request.GET.get('show')

@@ -17,7 +17,7 @@ def _curl_process_params(body, content_type, query_params):
     if query_params:
         try:
             query_params = urlencode(
-                [(k, v.encode('utf8')) for k, v in query_params.items()]
+                [(k, str(v).encode('utf8')) for k, v in query_params.items()]
             )
         except TypeError:
             pass

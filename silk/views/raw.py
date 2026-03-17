@@ -1,7 +1,7 @@
 import logging
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -20,7 +20,7 @@ class Raw(View):
         subtyp = request.GET.get('subtyp', None)
         body = None
         if typ and subtyp:
-            silk_request = Request.objects.get(pk=request_id)
+            silk_request = get_object_or_404(Request, pk=request_id)
             if typ == 'request':
                 body = silk_request.raw_body if subtyp == 'raw' else silk_request.body
             elif typ == 'response':
