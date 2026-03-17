@@ -7,7 +7,7 @@
 {% block style %}
     <link rel="stylesheet" href="{% static 'silk/css/components/theme.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/pages/request.css' %}"/>
-    <link rel="stylesheet" href="{% static 'silk/lib/highlight/foundation.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/lib/highlight/silk-theme.css' %}"/>
 {% endblock %}
 
 {% block js %}
@@ -149,7 +149,7 @@
                 <i data-lucide="terminal" class="silk-icon silk-icon--sm"></i> Curl
             </h3>
             <p class="silk-detail-note">Paste into a terminal to repeat this request.</p>
-            <pre class="silk-pre"><code>{{ curl.strip }}</code></pre>
+            <pre class="silk-pre"><code class="language-bash">{{ curl.strip }}</code></pre>
         </section>
         {% endif %}
 
@@ -159,7 +159,7 @@
                 <i data-lucide="code" class="silk-icon silk-icon--sm"></i> Django Test Client
             </h3>
             <p class="silk-detail-note">Python code to replicate this request in a Django unit test.</p>
-            <pre class="silk-pre"><code>{{ client.strip }}</code></pre>
+            <pre class="silk-pre"><code class="language-python">{{ client.strip }}</code></pre>
         </section>
         {% endif %}
     </div>

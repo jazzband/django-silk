@@ -9,20 +9,21 @@ body {
 }
 
 pre {
-  font-family: Fantasque;
-  background-color: var(--silk-surface) !important;
-  padding: 0.5em !important;
-  margin: 0 !important;
-  font-size: 14px;
+  font-family: Fantasque, "Fira Mono", monospace;
+  background-color: var(--silk-code-bg);
+  padding: 0.5em;
+  margin: 0;
+  font-size: 13px;
   text-align: left;
 }
 
 code {
-  font-family: Fantasque;
-  background-color: var(--silk-surface) !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-size: 14px;
+  font-family: Fantasque, "Fira Mono", monospace;
+  background-color: var(--silk-code-bg);
+  color: var(--silk-code-text);
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
 }
 
 html {

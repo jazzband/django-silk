@@ -2,6 +2,32 @@
   overflow: visible;
 }
 
+/* ── Python code snippet (from {% code %} inclusion tag) ── */
+.silk-code-snippet {
+  margin: 0;
+}
+
+.silk-code-ellipsis {
+  font-family: Fantasque, 'Fira Mono', monospace;
+  font-size: 13px;
+  color: var(--silk-text-muted);
+  padding: 4px 1rem;
+  background: var(--silk-code-bg);
+  user-select: none;
+}
+
+/* Each line wrapper added by JS after hljs runs */
+.silk-code-line {
+  display: block;
+  min-height: 1.65em;
+}
+
+/* Active / highlighted line */
+.the-line {
+  background: var(--silk-code-active-line);
+  outline: 1px solid var(--silk-code-active-line-border);
+}
+
 #time-div {
   text-align: center;
   margin-bottom: 30px;
@@ -16,15 +42,6 @@
   text-align: left;
   margin: 0 auto;
   display: inline-block;
-}
-
-.line {
-  width: 100%;
-  display: inline-block;
-}
-
-.the-line {
-  background-color: var(--silk-border);
 }
 
 pre {

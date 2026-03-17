@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="{% static 'silk/css/pages/requests.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/pages/request.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/pages/sql.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/lib/highlight/silk-theme.css' %}">
 {% endblock %}
 
 {% block js %}
     <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
     {{ block.super }}
+    <script src="{% static 'silk/lib/highlight/highlight.pack.js' %}"></script>
     <script src="{% static 'silk/js/pages/sql.js' %}"></script>
 {% endblock %}
 
@@ -105,19 +107,38 @@
     {# ── N+1 detection banner ── #}
     {% if n_plus_one and n_plus_one.has_n_plus_one %}
     <div class="silk-n1-banner">
+
         <div class="silk-n1-banner__header">
-            <i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>
-            <strong>N+1 Query Detected</strong>
-            <span class="silk-n1-badge">{{ n_plus_one.groups|length }} pattern{% if n_plus_one.groups|length != 1 %}s{% endif %}</span>
+            <div class="silk-n1-banner__title">
+                <i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>
+                <strong>N+1 Queries Detected</strong>
+            </div>
+            <div class="silk-n1-banner__pills">
+                <span class="silk-n1-pill">{{ n_plus_one.groups|length }} pattern{% if n_plus_one.groups|length != 1 %}s{% endif %}</span>
+                <span class="silk-n1-pill">{{ n_plus_one.flagged_query_ids|length }} queries</span>
+            </div>
+            <p class="silk-n1-hint">
+                <i data-lucide="lightbulb" class="silk-icon silk-icon--sm"></i>
+                Eliminate by batching with <code>select_related()</code> or <code>prefetch_related()</code>
+            </p>
         </div>
-        <ul class="silk-n1-list">
+
+        <div class="silk-n1-patterns">
             {% for group in n_plus_one.groups %}
-            <li class="silk-n1-query">
-                <span class="silk-n1-count">{{ group.count }}×</span>
-                <code class="silk-n1-fp">{{ group.representative.query|truncatechars:140 }}</code>
-            </li>
+            <div class="silk-n1-pattern">
+                <button type="button" class="silk-n1-row" aria-expanded="false">
+                    <span class="silk-n1-count">{{ group.count }}×</span>
+                    <span class="silk-n1-preview">{{ group.representative.query|truncatechars:120 }}</span>
+                    <span class="silk-n1-time">~{{ group.total_time_taken|floatformat:0 }}<span class="silk-unit">ms</span></span>
+                    <i data-lucide="chevron-down" class="silk-icon silk-icon--sm silk-n1-chevron"></i>
+                </button>
+                <div class="silk-n1-body" hidden>
+                    <pre class="silk-pre silk-pre--n1"><code class="language-sql">{{ group.representative.formatted_query }}</code></pre>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
+
     </div>
     {% endif %}
 

@@ -61,6 +61,28 @@
 
   /* Chart accent — visible on light background */
   --silk-chart-accent:    #4f46e5;
+
+  /* Syntax highlighting — GitHub Light palette */
+  --silk-code-bg:         #f6f8fa;
+  --silk-code-text:       #24292f;
+  --silk-code-comment:    #6e7781;
+  --silk-code-keyword:    #cf222e;
+  --silk-code-string:     #0a3069;
+  --silk-code-number:     #0550ae;
+  --silk-code-function:   #8250df;
+  --silk-code-type:       #0550ae;
+  --silk-code-builtin:    #953800;
+  --silk-code-meta:       #6e7781;
+  --silk-code-attr:       #116329;
+  --silk-code-variable:   #953800;
+  --silk-code-tag:        #116329;
+  --silk-code-operator:   #24292f;
+  --silk-code-regexp:     #116329;
+  --silk-code-deletion:   #82071e;
+
+  /* Active line highlight in code snippets */
+  --silk-code-active-line:        rgba(207, 34, 46, 0.08);
+  --silk-code-active-line-border: rgba(207, 34, 46, 0.30);
 }
 
 /* Dark mode tokens */
@@ -125,4 +147,26 @@
 
   /* Chart accent — bright on dark background */
   --silk-chart-accent:    #818cf8;
+
+  /* Syntax highlighting — GitHub Dark palette */
+  --silk-code-bg:         #161b22;
+  --silk-code-text:       #c9d1d9;
+  --silk-code-comment:    #8b949e;
+  --silk-code-keyword:    #ff7b72;
+  --silk-code-string:     #a5d6ff;
+  --silk-code-number:     #79c0ff;
+  --silk-code-function:   #d2a8ff;
+  --silk-code-type:       #79c0ff;
+  --silk-code-builtin:    #ffa657;
+  --silk-code-meta:       #8b949e;
+  --silk-code-attr:       #7ee787;
+  --silk-code-variable:   #ffa657;
+  --silk-code-tag:        #7ee787;
+  --silk-code-operator:   #c9d1d9;
+  --silk-code-regexp:     #7ee787;
+  --silk-code-deletion:   #ffdcd7;
+
+  /* Active line highlight in code snippets */
+  --silk-code-active-line:        rgba(255, 123, 114, 0.12);
+  --silk-code-active-line-border: rgba(255, 123, 114, 0.40);
 }
