@@ -1,7 +1,9 @@
 # Create your tests here.
 
 from django.db import transaction
+
 from silk.profiling.profiler import silk_profile
+
 
 class TestTransactionProfiling:
 
