@@ -107,6 +107,17 @@ Must be placed inside a <form> element that POSTs to the current URL.
                        placeholder="n" value="{{ filters.numqueriesfilter.value }}" min="0">
                 <input type="hidden" name="filter-numqueriesfilter-typ" value="NumQueriesFilter">
             </label>
+
+            <button type="button"
+                    id="silk-n1-btn"
+                    class="silk-preset-btn {% if filters.nplusone.value %}silk-preset-btn--active{% endif %}"
+                    onclick="silkToggleN1(this)">
+                <i data-lucide="triangle-alert" class="silk-icon" style="width:13px;height:13px;vertical-align:-2px"></i>
+                N+1 only
+            </button>
+            <input type="hidden" name="filter-nplusone-typ" value="NPlusOneFilter">
+            <input type="hidden" name="filter-nplusone-value" id="silk-n1-val"
+                   value="{{ filters.nplusone.value|default:'' }}">
         </div>
 
         {# Actions #}

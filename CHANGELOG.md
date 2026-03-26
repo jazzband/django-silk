@@ -1,4 +1,59 @@
 # Change Log
+
+<!-- ──────────────────────────────────────────────────────────────────────────
+     django-silky releases (fork maintained by Vaishnav Ghenge)
+     https://github.com/VaishnavGhenge/django-silky
+     ────────────────────────────────────────────────────────────────────────── -->
+
+## [1.0.5](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.0.5) (2026-03-26)
+
+### Features
+
+- **N+1 filter on request listing** — new "N+1 only" toggle button in the filter bar that shows only requests with potential N+1 SQL patterns (3+ structurally identical queries). Implemented as `NPlusOneFilter`, serialised/persisted in the session like all other filters.
+- **Multi-select HTTP method filter** — method buttons now support multi-toggle (`MultiMethodFilter`). Backward-compatible with existing single-value sessions.
+- **Multi-select status code filter** — replaced with a searchable multi-select dropdown showing coloured badges (`MultiStatusCodeFilter`). Backward-compatible.
+- **Multi-select path filter** — replaced with a searchable multi-select dropdown (`MultiPathFilter`). Backward-compatible.
+- **"Changes pending" indicator** — filter bar now shows a "Changes pending" label whenever a filter value is modified but not yet applied.
+- **Syntax highlighting upgrade** — replaced highlight.js 8.x with 11.11.1; language hints on all code blocks (Python, SQL, JSON, Bash); light/dark theme awareness via CSS custom properties.
+- **N+1 banner redesign** — expandable per-pattern rows with count badge, truncated SQL preview, total cost in ms, and lazy syntax highlighting on expand.
+- **`silk_seed` management command** — populate realistic dev data (normal, N+1, error, slow-with-cProfile scenarios) for onboarding and UI development.
+
+### Bug Fixes
+
+- All bare `Model.objects.get()` in views replaced with `get_object_or_404`; stale/deleted UUIDs now return 404 instead of 500.
+- `ProfilingDetailView` scoped to `request__pk` to prevent cross-request profile access.
+- Curl code-gen crash fixed when query param values are non-string types.
+- Active filter states now visible in dark mode (`--silk-action-bg` / `--silk-action-text` tokens).
+- Hover contrast fixed for HEAD/OPTIONS method buttons.
+- Number inputs highlight border on focus and when non-empty.
+
+### Tests
+
+- Added 29 new tests covering `MultiMethodFilter`, `MultiPathFilter`, `MultiStatusCodeFilter`, and `NPlusOneFilter` (unit + view-level).
+- Test baseline: **277 passed, 1 skipped**.
+
+---
+
+## [1.0.4](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.0.4) (2026-02-19)
+
+### Bug Fixes
+
+- Chart accent colour now visible in dark mode.
+- N+1 banner on the SQL queries page shows real SQL instead of placeholder text.
+
+---
+
+## [1.0.0 – 1.0.3](https://github.com/VaishnavGhenge/django-silky/releases)
+
+See git history for changes in v1.0.0–v1.0.3.
+
+---
+
+<!-- ──────────────────────────────────────────────────────────────────────────
+     Upstream django-silk changelog (jazzband/django-silk)
+     Kept for reference only — upstream changes are not automatically included.
+     ────────────────────────────────────────────────────────────────────────── -->
+
 ## Unreleased
 
 ## [5.4.3](https://github.com/jazzband/django-silk/tree/5.4.3) (2025-09-08)

@@ -17,6 +17,7 @@ from django.utils import timezone
 
 from silk.profiling.dynamic import _get_module
 from silk.templatetags.silk_filters import _silk_date_time
+from silk.utils.n_plus_one import fingerprint_query
 
 logger = logging.getLogger('silk.request_filters')
 
@@ -312,6 +313,42 @@ class MultiStatusCodeFilter(BaseFilter):
             return 'Status in [%s]' % ', '.join(str(c) for c in codes)
         except Exception:
             return 'Status: %s' % self.value
+
+
+class NPlusOneFilter(BaseFilter):
+    """Filter requests that have potential N+1 SQL query patterns (3+ identical queries).
+
+    All filtering is performed in contribute_to_query_set — the Q object itself is empty
+    so the subsequent .filter(self) is a no-op. This mirrors the batch N+1 detection
+    already used on the requests list page for badge display.
+    """
+
+    def __init__(self, value='1'):
+        # value is a boolean flag ('1' = enabled).
+        super().__init__(value)
+
+    def contribute_to_query_set(self, query_set):
+        from silk.models import SQLQuery  # local import avoids circular reference
+        request_ids = list(query_set.values_list('pk', flat=True))
+        if not request_ids:
+            return query_set
+        sql_rows = SQLQuery.objects.filter(
+            request_id__in=request_ids
+        ).values('request_id', 'query')
+        buckets = {}
+        for row in sql_rows:
+            rid = row['request_id']
+            fp = fingerprint_query(row['query'])
+            buckets.setdefault(rid, {}).setdefault(fp, 0)
+            buckets[rid][fp] += 1
+        n1_ids = [
+            rid for rid, fps in buckets.items()
+            if any(cnt >= 3 for cnt in fps.values())
+        ]
+        return query_set.filter(pk__in=n1_ids)
+
+    def __str__(self):
+        return 'Has N+1 queries'
 
 
 def filters_from_request(request):

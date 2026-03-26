@@ -24,10 +24,22 @@
   function silkSetSeconds(btn, seconds) {
     var input = document.getElementById('silk-seconds-val');
     if (input) input.value = seconds;
-    document.querySelectorAll('.silk-preset-btn').forEach(function (b) {
+    // Scope to the time-presets row only so other preset-style buttons (e.g. N+1) are unaffected
+    document.querySelectorAll('.silk-filter-presets .silk-preset-btn').forEach(function (b) {
       b.classList.remove('silk-preset-btn--active');
     });
     if (btn) btn.classList.add('silk-preset-btn--active');
+    silkMarkFilterDirty();
+  }
+
+  /* ─── N+1-only toggle ────────────────────────────────────── */
+
+  function silkToggleN1(btn) {
+    var inp = document.getElementById('silk-n1-val');
+    if (!inp) return;
+    var active = inp.value === '1';
+    inp.value = active ? '' : '1';
+    btn.classList.toggle('silk-preset-btn--active', !active);
     silkMarkFilterDirty();
   }
 
