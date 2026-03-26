@@ -39,7 +39,6 @@ setup(
     install_requires=[
         'Django>=4.2',
         'sqlparse',
-        'gprof2dot>=2017.09.19',
     ],
     extras_require={
         'formatting': ['autopep8'],
