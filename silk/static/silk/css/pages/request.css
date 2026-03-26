@@ -91,16 +91,16 @@ pre {
 .silk-pre {
   margin: 0;
   padding: 1rem;
-  background: var(--silk-surface) !important;
-  font-family: Fantasque, monospace;
+  background: var(--silk-code-bg);
+  font-family: Fantasque, "Fira Mono", monospace;
   font-size: 13px;
-  color: var(--silk-text-primary);
+  color: var(--silk-code-text);
   overflow-x: auto;
+  border-radius: 6px;
 }
 .silk-pre code {
-  background: transparent !important;
-  padding: 0 !important;
-  color: inherit;
+  background: transparent;
+  padding: 0;
 }
 
 /* ── Headers table ── */

@@ -3,7 +3,9 @@ import unittest
 from unittest.mock import Mock
 
 from django.test import TestCase
+from django.utils import timezone as django_timezone
 
+from silk import models
 from silk.middleware import silky_reverse
 from silk.views.requests import RequestsView
 
@@ -177,3 +179,93 @@ class TestOrderingRequestView(TestCase):
                           sort_field='time_taken')
         self.assertSorted(objects=RequestsView()._get_objects(order_by='db_time'),
                           sort_field='db_time')
+
+
+class TestNPlusOneViewFilter(TestCase):
+    """Integration tests for the NPlusOneFilter wired through the requests view."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        now = django_timezone.now()
+
+        # Request WITH N+1: 3 structurally identical queries
+        cls.n1_request = models.Request.objects.create(
+            method='GET', path='/n1-view/', num_sql_queries=3,
+            start_time=now, end_time=now, time_taken=10,
+        )
+        models.Response.objects.create(
+            request=cls.n1_request, status_code=200,
+            encoded_headers='{}', body='',
+        )
+        for i in range(1, 4):
+            models.SQLQuery.objects.create(
+                query=f'SELECT * FROM "silk_request" WHERE "silk_request"."id" = {i}',
+                start_time=now, end_time=now, traceback='',
+                request=cls.n1_request,
+            )
+
+        # Request WITHOUT N+1: one structurally unique query
+        cls.clean_request = models.Request.objects.create(
+            method='GET', path='/clean-view/', num_sql_queries=1,
+            start_time=now, end_time=now, time_taken=5,
+        )
+        models.Response.objects.create(
+            request=cls.clean_request, status_code=200,
+            encoded_headers='{}', body='',
+        )
+        models.SQLQuery.objects.create(
+            query='SELECT COUNT(*) FROM "silk_request"',
+            start_time=now, end_time=now, traceback='',
+            request=cls.clean_request,
+        )
+
+    def test_n1_filter_shows_only_n1_requests(self):
+        """POSTing NPlusOneFilter must include N+1 requests and exclude clean ones."""
+        response = self.client.post(silky_reverse('requests'), {
+            'filter-nplusone-typ': 'NPlusOneFilter',
+            'filter-nplusone-value': '1',
+        })
+        self.assertEqual(response.status_code, 200)
+        result_pks = [str(r.pk) for r in response.context['results']]
+        self.assertIn(str(self.n1_request.pk), result_pks)
+        self.assertNotIn(str(self.clean_request.pk), result_pks)
+
+    def test_n1_filter_stored_in_context(self):
+        """After POSTing NPlusOneFilter the context filters dict contains it."""
+        response = self.client.post(silky_reverse('requests'), {
+            'filter-nplusone-typ': 'NPlusOneFilter',
+            'filter-nplusone-value': '1',
+        })
+        filters = response.context['filters']
+        self.assertTrue(
+            any(f.get('typ') == 'NPlusOneFilter' for f in filters.values()),
+            'NPlusOneFilter not found in context filters',
+        )
+
+    def test_has_n1_annotation_on_page_results(self):
+        """_create_context annotates page items with has_n1 based on SQL patterns."""
+        response = self.client.get(silky_reverse('requests'))
+        results = list(response.context['results'])
+        result_pks = [str(r.pk) for r in results]
+
+        if str(self.n1_request.pk) in result_pks:
+            n1_result = next(r for r in results if str(r.pk) == str(self.n1_request.pk))
+            self.assertTrue(n1_result.has_n1)
+
+        if str(self.clean_request.pk) in result_pks:
+            clean_result = next(r for r in results if str(r.pk) == str(self.clean_request.pk))
+            self.assertFalse(clean_result.has_n1)
+
+    def test_clear_filters_removes_n1_filter(self):
+        """Submitting clear_filters after an N+1 filter resets to show all requests."""
+        # First apply the filter
+        self.client.post(silky_reverse('requests'), {
+            'filter-nplusone-typ': 'NPlusOneFilter',
+            'filter-nplusone-value': '1',
+        })
+        # Then clear it
+        response = self.client.post(silky_reverse('requests'), {'clear_filters': '1'})
+        self.assertEqual(response.status_code, 200)
+        result_pks = [str(r.pk) for r in response.context['results']]
+        self.assertIn(str(self.clean_request.pk), result_pks)

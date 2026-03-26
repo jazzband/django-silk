@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -37,7 +37,7 @@ class SQLView(View):
             'per_page': per_page,
         }
         if request_id:
-            silk_request = Request.objects.get(id=request_id)
+            silk_request = get_object_or_404(Request, id=request_id)
             all_queries = list(SQLQuery.objects.filter(request=silk_request).order_by('-start_time'))
             for q in all_queries:
                 q.start_time_relative = q.start_time - silk_request.start_time
@@ -47,7 +47,7 @@ class SQLView(View):
             context['n_plus_one'] = n_plus_one
             context['n_plus_one_ids'] = n_plus_one.flagged_query_ids
         if profile_id:
-            p = Profile.objects.get(id=profile_id)
+            p = get_object_or_404(Profile, id=profile_id)
             page = _page(request, p.queries.order_by('-start_time').all(), per_page)
             context['profile'] = p
         if not (request_id or profile_id):

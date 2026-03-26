@@ -15,13 +15,14 @@ def fingerprint_query(sql: str) -> str:
 
 
 class NPlusOneGroup:
-    __slots__ = ('fingerprint', 'queries', 'count', 'representative')
+    __slots__ = ('fingerprint', 'queries', 'count', 'representative', 'total_time_taken')
 
     def __init__(self, fingerprint, queries):
         self.fingerprint = fingerprint
         self.queries = queries
         self.count = len(queries)
         self.representative = queries[0]
+        self.total_time_taken = sum(q.time_taken for q in queries)
 
 
 class NPlusOneResult:

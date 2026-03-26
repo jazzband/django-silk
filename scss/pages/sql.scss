@@ -14,61 +14,137 @@
   margin-top: 1rem;
   border: 1px solid var(--silk-perf-ok);
   border-radius: var(--silk-card-radius, 8px);
-  background: color-mix(in srgb, var(--silk-perf-ok) 8%, var(--silk-surface));
+  background: color-mix(in srgb, var(--silk-perf-ok) 6%, var(--silk-surface));
   overflow: hidden;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--silk-perf-ok);
-    border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 20%, transparent);
-  }
 }
 
-.silk-n1-badge {
-  margin-left: auto;
+.silk-n1-banner__header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 20%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.silk-n1-banner__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--silk-perf-ok);
+}
+
+.silk-n1-banner__pills {
+  display: flex;
+  gap: 6px;
+}
+
+.silk-n1-pill {
   background: var(--silk-perf-ok);
   color: #fff;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
+  padding: 2px 9px;
   border-radius: 10px;
+  white-space: nowrap;
 }
 
-.silk-n1-list {
-  list-style: none;
-  margin: 0;
-  padding: 6px 0;
-}
-
-.silk-n1-query {
+.silk-n1-hint {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 5px 14px;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 10%, transparent);
+  font-style: italic;
+  color: var(--silk-text-muted);
+  margin: 0;
 
-  &:last-child {
-    border-bottom: none;
+  code {
+    background: transparent;
+    color: var(--silk-text-secondary);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 600;
+  }
+}
+
+/* ── Pattern list ── */
+.silk-n1-patterns {
+  display: flex;
+  flex-direction: column;
+}
+
+.silk-n1-pattern {
+  border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 12%, transparent);
+
+  &:last-child { border-bottom: none; }
+}
+
+/* The clickable row toggle */
+.silk-n1-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover {
+    background: color-mix(in srgb, var(--silk-perf-ok) 8%, transparent);
+  }
+
+  &[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--silk-perf-ok) 10%, transparent);
+
+    .silk-n1-chevron { transform: rotate(180deg); }
   }
 }
 
 .silk-n1-count {
+  flex-shrink: 0;
+  font-size: 12px;
   font-weight: 700;
   color: var(--silk-perf-ok);
-  white-space: nowrap;
-  min-width: 28px;
+  min-width: 32px;
 }
 
-.silk-n1-fp {
-  font-family: Fantasque, monospace;
-  font-size: 11px;
+.silk-n1-preview {
+  flex: 1;
+  font-family: Fantasque, 'Fira Mono', monospace;
+  font-size: 11.5px;
   color: var(--silk-text-secondary);
-  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.silk-n1-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--silk-text-muted);
+  white-space: nowrap;
+}
+
+.silk-n1-chevron {
+  flex-shrink: 0;
+  color: var(--silk-text-muted);
+  transition: transform 0.15s ease;
+}
+
+/* Expanded SQL body */
+.silk-n1-body {
+  border-top: 1px solid color-mix(in srgb, var(--silk-perf-ok) 12%, transparent);
+
+  .silk-pre--n1 {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    font-size: 12px;
+  }
 }
 
 /* ── N+1 highlighted table row ── */

@@ -24,10 +24,23 @@
   function silkSetSeconds(btn, seconds) {
     var input = document.getElementById('silk-seconds-val');
     if (input) input.value = seconds;
-    document.querySelectorAll('.silk-preset-btn').forEach(function (b) {
+    // Scope to the time-presets row only so other preset-style buttons (e.g. N+1) are unaffected
+    document.querySelectorAll('.silk-filter-presets .silk-preset-btn').forEach(function (b) {
       b.classList.remove('silk-preset-btn--active');
     });
     if (btn) btn.classList.add('silk-preset-btn--active');
+    silkMarkFilterDirty();
+  }
+
+  /* ─── N+1-only toggle ────────────────────────────────────── */
+
+  function silkToggleN1(btn) {
+    var inp = document.getElementById('silk-n1-val');
+    if (!inp) return;
+    var active = inp.value === '1';
+    inp.value = active ? '' : '1';
+    btn.classList.toggle('silk-preset-btn--active', !active);
+    silkMarkFilterDirty();
   }
 
   // kept for any legacy references
@@ -35,21 +48,180 @@
     silkSetSeconds(null, key);
   }
 
-  /* ─── Method toggle ─────────────────────────────────────────── */
+  /* ─── Method toggle (multi-select) ──────────────────────────── */
 
-  function silkFilterMethod(btn, method) {
+  function silkMethodInit() {
     var input = document.getElementById('silk-method-value');
-    var isActive = btn.classList.contains('silk-method-btn--active');
-    // Deactivate all method buttons
-    document.querySelectorAll('.silk-method-btn').forEach(function (b) {
-      b.classList.remove('silk-method-btn--active');
-    });
-    if (!isActive) {
-      btn.classList.add('silk-method-btn--active');
-      if (input) input.value = method;
-    } else {
-      if (input) input.value = '';
+    if (!input) return;
+    var value = input.value;
+    var selected = [];
+    if (value) {
+      try {
+        var parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          selected = parsed.map(function (m) { return m.toUpperCase(); });
+        } else if (parsed) {
+          selected = [String(parsed).toUpperCase()];
+        }
+      } catch (e) {
+        if (value.trim()) selected = [value.trim().toUpperCase()];
+      }
     }
+    document.querySelectorAll('.silk-method-btn').forEach(function (btn) {
+      var m = (btn.dataset.method || btn.textContent.trim()).toUpperCase();
+      btn.classList.toggle('silk-method-btn--active', selected.indexOf(m) !== -1);
+    });
+  }
+
+  function silkFilterMethod(btn) {
+    var input = document.getElementById('silk-method-value');
+    btn.classList.toggle('silk-method-btn--active');
+    var active = [];
+    document.querySelectorAll('.silk-method-btn--active').forEach(function (b) {
+      active.push(b.dataset.method || b.textContent.trim());
+    });
+    if (input) input.value = active.length ? JSON.stringify(active) : '';
+    silkMarkFilterDirty();
+  }
+
+  /* ─── Dirty state indicator ─────────────────────────────────── */
+
+  function silkMarkFilterDirty() {
+    var indicator = document.getElementById('silk-filter-dirty-indicator');
+    if (indicator) indicator.classList.add('is-visible');
+  }
+
+  /* ─── Custom multi-select ───────────────────────────────────── */
+
+  function silkMsInit(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    var hiddenId = container.dataset.hiddenId;
+    var hiddenInput = hiddenId ? document.getElementById(hiddenId) : null;
+    if (!hiddenInput) return;
+
+    var value = hiddenInput.value;
+    var selected = [];
+    if (value) {
+      try {
+        var parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          selected = parsed.map(String);
+        } else if (parsed) {
+          selected = [String(parsed)];
+        }
+      } catch (e) {
+        if (value.trim()) selected = [value.trim()];
+      }
+    }
+
+    container.querySelectorAll('.silk-ms__option-cb').forEach(function (cb) {
+      cb.checked = selected.indexOf(cb.value) !== -1;
+    });
+
+    silkMsUpdateDisplay(id);
+  }
+
+  function silkMsToggle(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    var panel = container.querySelector('.silk-ms__panel');
+    if (!panel) return;
+
+    var isHidden = panel.hasAttribute('hidden');
+
+    // Close all open panels first
+    document.querySelectorAll('.silk-ms').forEach(function (ms) {
+      var p = ms.querySelector('.silk-ms__panel');
+      if (p) p.setAttribute('hidden', '');
+      ms.classList.remove('is-open');
+      var t = ms.querySelector('.silk-ms__trigger');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+
+    if (isHidden) {
+      panel.removeAttribute('hidden');
+      container.classList.add('is-open');
+      var trigger = container.querySelector('.silk-ms__trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', 'true');
+      // Auto-focus the search input if present
+      var searchInput = panel.querySelector('.silk-ms__search-input');
+      if (searchInput) {
+        setTimeout(function () { searchInput.focus(); }, 30);
+      }
+    }
+  }
+
+  function silkMsChange(id) {
+    silkMsUpdateDisplay(id);
+    silkMarkFilterDirty();
+  }
+
+  function silkMsUpdateDisplay(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    var hiddenId = container.dataset.hiddenId;
+    var hiddenInput = hiddenId ? document.getElementById(hiddenId) : null;
+    var displayEl = container.querySelector('.silk-ms__display');
+    var trigger = container.querySelector('.silk-ms__trigger');
+
+    var checked = [];
+    container.querySelectorAll('.silk-ms__option-cb:checked').forEach(function (cb) {
+      checked.push(cb.value);
+    });
+
+    if (hiddenInput) {
+      hiddenInput.value = checked.length ? JSON.stringify(checked) : '';
+    }
+
+    if (displayEl) {
+      if (checked.length === 0) {
+        displayEl.textContent = 'Any';
+      } else if (checked.length === 1) {
+        displayEl.textContent = checked[0];
+      } else {
+        displayEl.textContent = checked.length + ' selected';
+      }
+    }
+
+    if (trigger) {
+      if (checked.length > 0) {
+        trigger.classList.add('silk-ms__trigger--active');
+      } else {
+        trigger.classList.remove('silk-ms__trigger--active');
+      }
+    }
+  }
+
+  function silkMsSearch(id, query) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    var q = query.toLowerCase().trim();
+    container.querySelectorAll('.silk-ms__option').forEach(function (opt) {
+      var val = (opt.dataset.value || '').toLowerCase();
+      var label = opt.querySelector('.silk-ms__option-label');
+      var text = label ? label.textContent.toLowerCase() : val;
+      if (q === '' || text.indexOf(q) !== -1 || val.indexOf(q) !== -1) {
+        opt.removeAttribute('hidden');
+      } else {
+        opt.setAttribute('hidden', '');
+      }
+    });
+  }
+
+  function silkMsClear(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    container.querySelectorAll('.silk-ms__option-cb').forEach(function (cb) {
+      cb.checked = false;
+    });
+    var searchInput = container.querySelector('.silk-ms__search-input');
+    if (searchInput) {
+      searchInput.value = '';
+      silkMsSearch(id, '');
+    }
+    silkMsUpdateDisplay(id);
+    silkMarkFilterDirty();
   }
 
   /* ─── Sort chips ────────────────────────────────────────────── */
@@ -117,21 +289,20 @@
 
   function silkSortAdd(field, label) {
     var list = _getSortList();
-    // Avoid duplicates
     var exists = list.some(function (item) { return item.field === field; });
     if (!exists) {
       list.push({ field: field, dir: 'DESC' });
       _setSortList(list);
       _submitSortForm();
     }
-    // Close menu
     var menu = document.getElementById('silk-sort-menu');
     if (menu) menu.setAttribute('hidden', '');
   }
 
-  /* ─── Close sort menu on outside click ──────────────────────── */
+  /* ─── Close menus on outside click ──────────────────────────── */
 
   document.addEventListener('click', function (e) {
+    // Sort menu
     var menu = document.getElementById('silk-sort-menu');
     var addWrapper = document.getElementById('silk-sort-add-wrapper');
     if (menu && !menu.hasAttribute('hidden') && addWrapper && !addWrapper.contains(e.target)) {
@@ -139,6 +310,19 @@
       var addBtn = document.getElementById('silk-sort-add-btn');
       if (addBtn) addBtn.setAttribute('aria-expanded', 'false');
     }
+
+    // Multi-select panels — close if click is outside any .silk-ms
+    var clickedMs = e.target.closest('.silk-ms');
+    document.querySelectorAll('.silk-ms').forEach(function (ms) {
+      if (ms === clickedMs) return;
+      var panel = ms.querySelector('.silk-ms__panel');
+      if (panel && !panel.hasAttribute('hidden')) {
+        panel.setAttribute('hidden', '');
+        ms.classList.remove('is-open');
+        var t = ms.querySelector('.silk-ms__trigger');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      }
+    });
   });
 
   /* ─── Expose helpers to window for inline onclick attributes ── */
@@ -146,7 +330,13 @@
   window.silkFilterToggle = silkFilterToggle;
   window.silkSetSeconds = silkSetSeconds;
   window.silkFilterPreset = silkFilterPreset;
+  window.silkMethodInit = silkMethodInit;
   window.silkFilterMethod = silkFilterMethod;
+  window.silkMarkFilterDirty = silkMarkFilterDirty;
+  window.silkMsToggle = silkMsToggle;
+  window.silkMsChange = silkMsChange;
+  window.silkMsSearch = silkMsSearch;
+  window.silkMsClear = silkMsClear;
   window.silkSortToggleDir = silkSortToggleDir;
   window.silkSortRemove = silkSortRemove;
   window.silkSortToggleMenu = silkSortToggleMenu;
@@ -171,8 +361,32 @@
       }
     } catch (e) {}
 
-    // Reflect current sort + per_page in the browser URL so the page is shareable.
-    // Uses history.replaceState — no navigation, just updates the address bar.
+    // Init multi-selects and method buttons from session values
+    silkMethodInit();
+    silkMsInit('silk-status-ms');
+    silkMsInit('silk-path-ms');
+
+    // Mark dirty on number/text input changes within the filter bar
+    var filterBar = document.getElementById('silk-filter-bar');
+    if (filterBar) {
+      filterBar.addEventListener('input', function (e) {
+        var t = e.target;
+        if (t.type === 'number' || (t.type === 'text' && !t.classList.contains('silk-ms__search-input'))) {
+          silkMarkFilterDirty();
+        }
+      });
+    }
+
+    // Clear dirty indicator when filter form is submitted
+    var filterForm = document.getElementById('silk-filter-form');
+    if (filterForm) {
+      filterForm.addEventListener('submit', function () {
+        var indicator = document.getElementById('silk-filter-dirty-indicator');
+        if (indicator) indicator.classList.remove('is-visible');
+      });
+    }
+
+    // Reflect current sort + per_page in URL for shareability
     try {
       var sortInput = document.getElementById('silk-sort-criteria');
       var perPageSelect = document.querySelector('select[name="per_page"]');

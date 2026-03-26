@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -13,10 +13,14 @@ class ProfilingDetailView(View):
     @method_decorator(permissions_possibly_required)
     def get(self, request, *_, **kwargs):
         profile_id = kwargs['profile_id']
+        request_id = kwargs.get('request_id')
         context = {
             'request': request
         }
-        profile = Profile.objects.get(pk=profile_id)
+        if request_id:
+            profile = get_object_or_404(Profile, pk=profile_id, request__pk=request_id)
+        else:
+            profile = get_object_or_404(Profile, pk=profile_id)
         file_path = profile.file_path
         line_num = profile.line_num
 

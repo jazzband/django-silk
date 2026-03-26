@@ -48,6 +48,7 @@
         </div>
     </div>
 
+    <div class="silk-detail-body">
     {# ── Source location ── #}
     <section class="silk-section">
         <h3 class="silk-section__heading">
@@ -60,7 +61,7 @@
         </h3>
         <p class="silk-detail-note">Where in your code this profile was defined.</p>
         {% if code %}
-            <pre class="silk-pre"><code>{% code code actual_line %}</code></pre>
+            {% code code actual_line %}
         {% elif code_error %}
             <p class="silk-detail-note">{{ code_error }}</p>
         {% endif %}
@@ -104,5 +105,6 @@
     </section>
     {% endif %}
 
+    </div>
 </div>
 {% endblock %}

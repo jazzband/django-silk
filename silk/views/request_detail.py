@@ -1,6 +1,6 @@
 import json
 
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
@@ -16,7 +16,7 @@ class RequestView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def get(self, request, request_id):
-        silk_request = Request.objects.get(pk=request_id)
+        silk_request = get_object_or_404(Request, pk=request_id)
         query_params = None
         if silk_request.query_params:
             query_params = json.loads(silk_request.query_params)
