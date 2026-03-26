@@ -55,6 +55,8 @@ def _should_intercept(request):
             return False
 
     try:
+        if hasattr(request, 'scope'):
+            return False
         silky = request.path.startswith(get_fpath())
     except NoReverseMatch:
         silky = False
