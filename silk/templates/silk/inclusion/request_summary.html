@@ -9,9 +9,10 @@
     </div>
     <div class="time-taken-queries-div">
         <span class="numeric">{{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="unit">ms</span></span>
-        <span class="appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></div>
+        <span class="appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></span>
+    </div>
     <div class="num-queries-div">
         <span class="numeric">{{ silk_request.num_sql_queries }}</span>
-        <span class="appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span>
+        <span class="appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span></span>
     </div>
 </div>
