@@ -1,5 +1,5 @@
-from django.apps import AppConfig
 import django
+from django.apps import AppConfig
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -8,8 +8,3 @@ class SilkAppConfig(AppConfig):
     name = "silk"
 
     def ready(self):
-        if django.VERSION < (4, 2):
-            raise ImproperlyConfigured(
-                'Django Silk requires Django 4.2 or later. '
-                'Please upgrade your Django version.'
-            )
