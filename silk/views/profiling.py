@@ -63,7 +63,7 @@ class ProfilingView(View):
         elif order_by == 'Function Name':
             query_set = query_set.order_by('-func_name')
         elif order_by == 'Num. Queries':
-            query_set = query_set.annotate(num_queries=Count('queries')).order_by('-num_queries')
+            query_set = query_set.order_by('-request__num_sql_queries')
         elif order_by == 'Time':
             query_set = query_set.order_by('-time_taken')
         elif order_by == 'Time on queries':
