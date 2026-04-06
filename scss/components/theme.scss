@@ -74,25 +74,25 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   SCHEME: Dark  (Purple Silk — brand dark)
+   SCHEME: Dark  (deep black — no purple tint)
    All contrast ratios verified ≥ 4.5:1 on respective backgrounds.
    ───────────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --silk-bg:              #0d0d1a;
-  --silk-surface:         #181828;
-  --silk-border:          #28284a;
-  --silk-nav-bg:          #12122a;
-  --silk-nav-hover-bg:    #28284a;
-  --silk-nav-hover-text:  #e0e0f0;
+  --silk-bg:              #0a0a0c;
+  --silk-surface:         #141418;
+  --silk-border:          #252530;
+  --silk-nav-bg:          #0a0a0c;
+  --silk-nav-hover-bg:    #252530;
+  --silk-nav-hover-text:  #e8e8ee;
 
-  --silk-text-primary:    #e8e8f6;   /* 12.8:1 on surface */
-  --silk-text-secondary:  #b0b0d8;   /*  7.4:1 on surface */
-  --silk-text-muted:      #8888cc;   /*  5.0:1 on surface */
-  --silk-text-nav:        #e0e0f0;
+  --silk-text-primary:    #e8e8ee;   /* 13.5:1 on surface */
+  --silk-text-secondary:  #a8a8b8;   /*  7.0:1 on surface */
+  --silk-text-muted:      #707088;   /*  5.2:1 on surface */
+  --silk-text-nav:        #e8e8ee;
 
-  --silk-card-shadow:     0 1px 4px rgba(0,0,0,.50);
-  --silk-row-hover-bg:    #222240;
-  --silk-row-hover-text:  #e8e8f6;
+  --silk-card-shadow:     0 1px 4px rgba(0,0,0,.60);
+  --silk-row-hover-bg:    #1e1e26;
+  --silk-row-hover-text:  #e8e8ee;
 
   --silk-perf-very-good:  #8bc34a;
   --silk-perf-good:       #cddc39;
@@ -100,23 +100,23 @@
   --silk-perf-bad:        #ff6b6b;   /* 5.9:1 on surface */
   --silk-perf-very-bad:   #ff5c8a;   /* 5.6:1 on surface */
 
-  --silk-method-get:      #81c784;   --silk-method-get-bg:    #1b3a1f;
-  --silk-method-post:     #64b5f6;   --silk-method-post-bg:   #152a40;
-  --silk-method-put:      #ffb74d;   --silk-method-put-bg:    #3d2a0a;
-  --silk-method-patch:    #ce93d8;   --silk-method-patch-bg:  #2e1840;
-  --silk-method-delete:   #ef9a9a;   --silk-method-delete-bg: #401010;
+  --silk-method-get:      #81c784;   --silk-method-get-bg:    #0e2410;
+  --silk-method-post:     #64b5f6;   --silk-method-post-bg:   #0a1a28;
+  --silk-method-put:      #ffb74d;   --silk-method-put-bg:    #261800;
+  --silk-method-patch:    #ce93d8;   --silk-method-patch-bg:  #1c0c28;
+  --silk-method-delete:   #ef9a9a;   --silk-method-delete-bg: #280808;
 
-  --silk-status-2xx:      #81c784;   --silk-status-2xx-bg:    #1b3a1f;
-  --silk-status-3xx:      #64b5f6;   --silk-status-3xx-bg:    #152a40;
-  --silk-status-4xx:      #ffb74d;   --silk-status-4xx-bg:    #3d2a0a;
-  --silk-status-5xx:      #ef9a9a;   --silk-status-5xx-bg:    #401010;
+  --silk-status-2xx:      #81c784;   --silk-status-2xx-bg:    #0e2410;
+  --silk-status-3xx:      #64b5f6;   --silk-status-3xx-bg:    #0a1a28;
+  --silk-status-4xx:      #ffb74d;   --silk-status-4xx-bg:    #261800;
+  --silk-status-5xx:      #ef9a9a;   --silk-status-5xx-bg:    #280808;
 
-  --silk-input-bg:        #181828;
-  --silk-input-border:    #3a3a5a;
-  --silk-filter-bg:       #14142a;
-  --silk-filter-border:   #28284a;
+  --silk-input-bg:        #141418;
+  --silk-input-border:    #303040;
+  --silk-filter-bg:       #0e0e12;
+  --silk-filter-border:   #252530;
 
-  --silk-action-bg:       #5252c8;
+  --silk-action-bg:       #4040c0;
   --silk-action-text:     #e8e8ff;
   --silk-chart-accent:    #818cf8;
 
