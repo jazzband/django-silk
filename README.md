@@ -32,23 +32,20 @@ It keeps 100 % of the original functionality (request/response recording, SQL in
 
 <table>
 <tr>
-<td><img src="screenshots/1.png" alt="Summary dashboard – dark mode" width="420"/><br/><sub><b>Summary dashboard</b> — metric cards, top-N tables, and analytics overview</sub></td>
-<td><img src="screenshots/2.png" alt="Analytics charts – dark mode" width="420"/><br/><sub><b>Analytics</b> — activity timeline, status donut, method lollipop, RT histogram, latency percentiles</sub></td>
+<td><img src="screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method lollipop, RT histogram, latency percentiles</sub></td>
+<td><img src="screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Inline filter bar</b> — multi-select method, status, path chips; active filters shown inline</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/3.png" alt="Requests list – dark mode" width="420"/><br/><sub><b>Requests list</b> — filterable, multi-sort, paginated table with method/status badges</sub></td>
-<td><img src="screenshots/4.png" alt="Requests list with filter bar" width="420"/><br/><sub><b>Inline filter bar</b> — date range, method, status, path, sort chips</sub></td>
+<td><img src="screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — orange banner with query pattern, count badge, and total ms cost</sub></td>
+<td><img src="screenshots/n1-highlighted-rows.png" alt="N+1 highlighted query rows" width="420"/><br/><sub><b>N+1 highlighted rows</b> — offending queries highlighted in the table</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/5.png" alt="Request detail – light mode" width="420"/><br/><sub><b>Request detail</b> — hero bar with timing pills, headers, response body</sub></td>
-<td><img src="screenshots/6.png" alt="SQL query list – dark mode" width="420"/><br/><sub><b>SQL queries</b> — per-request query table with timing colour scale</sub></td>
+<td><img src="screenshots/request-detail.png" alt="Request detail – dark mode" width="420"/><br/><sub><b>Request detail</b> — hero bar with timing pills, query params, headers, response body, curl snippet</sub></td>
+<td><img src="screenshots/profiling-list.png" alt="Profiling list – light mode" width="420"/><br/><sub><b>Profiling list</b> — function name, duration, query count, DB time</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/7.png" alt="N+1 detection badge" width="420"/><br/><sub><b>N+1 detection</b> — warning pill in the hero bar when repeated queries are found</sub></td>
-<td><img src="screenshots/8.png" alt="N+1 banner and highlighted rows" width="420"/><br/><sub><b>N+1 banner</b> — pattern count, real SQL preview, and highlighted offending rows</sub></td>
-</tr>
-<tr>
-<td colspan="2"><img src="screenshots/9.png" alt="SQL detail – EXPLAIN plan and traceback" width="420"/><br/><sub><b>SQL detail</b> — full query text, EXPLAIN plan, and Python stack trace</sub></td>
+<td><img src="screenshots/sql-query-detail.png" alt="SQL query detail – dark mode" width="420"/><br/><sub><b>SQL query detail</b> — full query text, EXPLAIN plan, and Python stack trace</sub></td>
+<td><img src="screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code, and associated queries</sub></td>
 </tr>
 </table>
 
