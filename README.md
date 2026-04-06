@@ -3,6 +3,8 @@
 [![PyPI](https://img.shields.io/pypi/v/django-silky.svg)](https://pypi.org/project/django-silky/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-silky.svg)](https://pypi.org/project/django-silky/)
 [![Supported Django versions](https://img.shields.io/pypi/djversions/django-silky.svg)](https://pypi.org/project/django-silky/)
+[![Tests](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml/badge.svg)](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/django-silky.svg)](https://pypi.org/project/django-silky/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **django-silky** is a modernized-UI fork of [django-silk](https://github.com/jazzband/django-silk) — a live profiling and inspection tool for the Django framework.

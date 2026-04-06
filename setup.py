@@ -12,6 +12,7 @@ setup(
     include_package_data=True,
     license='MIT License',
     description='Silky smooth profiling for the Django Framework — modernized UI fork of django-silk',
+    keywords='django profiling debugging sql n+1 performance monitoring dark-mode',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/VaishnavGhenge/django-silky',
