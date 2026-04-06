@@ -224,6 +224,46 @@
     silkMarkFilterDirty();
   }
 
+  /* ─── View single-select helpers (checkbox-based, avoids radio onchange quirk) ── */
+
+  function silkViewChange(id, cb) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    // Enforce single selection — uncheck all others
+    container.querySelectorAll('.silk-ms__option-cb').forEach(function (other) {
+      if (other !== cb) other.checked = false;
+    });
+    var hidden = document.getElementById('silk-view-value');
+    var display = container.querySelector('.silk-ms__display');
+    var btn = container.querySelector('.silk-ms__trigger');
+    if (cb.checked) {
+      if (hidden) hidden.value = cb.value;
+      if (display) display.textContent = cb.value.length > 28 ? cb.value.slice(0, 27) + '\u2026' : cb.value;
+      if (btn) btn.classList.add('silk-ms__trigger--active');
+      silkMsToggle(id); // close panel after selection
+    } else {
+      if (hidden) hidden.value = '';
+      if (display) display.textContent = 'Any';
+      if (btn) btn.classList.remove('silk-ms__trigger--active');
+    }
+    silkMarkFilterDirty();
+  }
+
+  function silkViewClear(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    container.querySelectorAll('.silk-ms__option-cb').forEach(function (cb) { cb.checked = false; });
+    var searchInput = container.querySelector('.silk-ms__search-input');
+    if (searchInput) { searchInput.value = ''; silkMsSearch(id, ''); }
+    var hidden = document.getElementById('silk-view-value');
+    if (hidden) hidden.value = '';
+    var display = container.querySelector('.silk-ms__display');
+    if (display) display.textContent = 'Any';
+    var btn = container.querySelector('.silk-ms__trigger');
+    if (btn) btn.classList.remove('silk-ms__trigger--active');
+    silkMarkFilterDirty();
+  }
+
   /* ─── Sort chips ────────────────────────────────────────────── */
 
   function _getSortList() {
@@ -338,6 +378,8 @@
   window.silkMsChange = silkMsChange;
   window.silkMsSearch = silkMsSearch;
   window.silkMsClear = silkMsClear;
+  window.silkViewChange = silkViewChange;
+  window.silkViewClear = silkViewClear;
   window.silkSortToggleDir = silkSortToggleDir;
   window.silkSortRemove = silkSortRemove;
   window.silkSortToggleMenu = silkSortToggleMenu;
