@@ -233,7 +233,7 @@
                 </thead>
                 <tbody>
                     {% for x in n1_suspects %}
-                    <tr class="silk-table__row">
+                    <tr class="silk-table__row" onclick="window.location='{% url "silk:requests" %}?view={{ x.view_name|urlencode }}'">
                         <td class="silk-td silk-td--path">{{ x.view_name }}</td>
                         <td class="silk-td silk-td--numeric">{{ x.count }}</td>
                         <td class="silk-td silk-td--numeric">
