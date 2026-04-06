@@ -145,7 +145,7 @@ class RequestsView(View):
     # Sentinel so we can distinguish "not passed" from explicit None
     _SHOW_NOT_SET = object()
 
-    def _get_objects(self, show=_SHOW_NOT_SET, order_by=None, order_dir=None, path=None, view_name=None, filters=None, sort_list=None, request=None):
+    def _get_objects(self, show=_SHOW_NOT_SET, order_by=None, order_dir=None, path=None, filters=None, sort_list=None, request=None):
         """Build and return a queryset (or sliced queryset for backward compat).
 
         When *show* is not passed, defaults to self.default_show and slices the
@@ -170,8 +170,6 @@ class RequestsView(View):
 
         if path:
             query_set = query_set.filter(path=path)
-        if view_name:
-            query_set = query_set.filter(view_name=view_name)
         for f in filters:
             query_set = f.contribute_to_query_set(query_set)
             query_set = query_set.filter(f)
@@ -195,7 +193,6 @@ class RequestsView(View):
         per_page = show or DEFAULT_PER_PAGE
 
         path = request.GET.get('path', None)
-        view_name = request.GET.get('view', None)
         sort_list = self._get_sort_list(request)
 
         qs = self._get_objects(
@@ -203,7 +200,6 @@ class RequestsView(View):
             order_by=order_by,
             order_dir=order_dir,
             path=path,
-            view_name=view_name,
             filters=[BaseFilter.from_dict(x) for _, x in raw_filters.items()],
             sort_list=sort_list,
         )
@@ -294,6 +290,10 @@ class RequestsView(View):
             # per_page in URL is an alias for show (enables shared URLs to restore page size)
             if 'per_page' in request.GET and 'show' not in request.GET:
                 filters['show'] = request.GET['per_page']
+            # ?view= from N+1 suspects link — save as a proper ViewNameFilter in session
+            if request.GET.get('view'):
+                from silk.request_filters import ViewNameFilter
+                filters['view_filter'] = ViewNameFilter(request.GET['view']).as_dict()
             self.filters_manager.save(request, filters)
         return render(request, 'silk/requests.html', self._create_context(request))
 
