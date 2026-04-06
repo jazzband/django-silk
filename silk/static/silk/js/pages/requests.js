@@ -329,6 +329,7 @@
 
   window.silkFilterToggle = silkFilterToggle;
   window.silkSetSeconds = silkSetSeconds;
+  window.silkToggleN1 = silkToggleN1;
   window.silkFilterPreset = silkFilterPreset;
   window.silkMethodInit = silkMethodInit;
   window.silkFilterMethod = silkFilterMethod;

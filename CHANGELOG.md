@@ -5,6 +5,14 @@
      https://github.com/VaishnavGhenge/django-silky
      ────────────────────────────────────────────────────────────────────────── -->
 
+## [1.0.6](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.0.6) (2026-04-06)
+
+### Bug Fixes
+
+- **N+1 filter button non-functional** ([#2](https://github.com/VaishnavGhenge/django-silky/issues/2)) — `silkToggleN1` was defined inside the IIFE in `requests.js` but never exported to `window`, making the inline `onclick` handler a no-op. Fixed by adding `window.silkToggleN1 = silkToggleN1` to the expose block.
+
+---
+
 ## [1.0.5](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.0.5) (2026-03-26)
 
 ### Features
