@@ -79,6 +79,11 @@
             <div class="silk-metric-card__value">{{ avg_time_spent_on_queries|floatformat:0 }}<span class="silk-unit">ms</span></div>
             <div class="silk-metric-card__label">Avg DB Time</div>
         </div>
+        <div class="silk-metric-card {% if db_pressure >= 80 %}silk-metric-card--bad{% elif db_pressure >= 50 %}silk-metric-card--warn{% endif %}">
+            <div class="silk-metric-card__icon"><i data-lucide="gauge" class="silk-icon silk-icon--lg"></i></div>
+            <div class="silk-metric-card__value">{{ db_pressure|floatformat:0 }}<span class="silk-unit">%</span></div>
+            <div class="silk-metric-card__label">DB-Bound</div>
+        </div>
     </div>
 
     {# ── Top tables ── #}
@@ -176,6 +181,77 @@
 
     </div>
 
+    {# ── Optimization targets ── #}
+    <div class="silk-top-tables" style="margin-top:1.5rem">
+
+        <div class="silk-top-table">
+            <h2 class="silk-top-table__heading">
+                <i data-lucide="target" class="silk-icon"></i> Hot Paths
+                <span class="silk-top-table__hint">count × avg time — fix these first</span>
+            </h2>
+            {% if hot_paths %}
+            <table class="silk-table">
+                <thead>
+                    <tr>
+                        <th class="silk-th">Path</th>
+                        <th class="silk-th silk-th--numeric">Hits</th>
+                        <th class="silk-th silk-th--numeric">Avg Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in hot_paths %}
+                    <tr class="silk-table__row" onclick="window.location='{% url "silk:requests" %}?path={{ x.path|urlencode }}'">
+                        <td class="silk-td silk-td--path">{{ x.path }}</td>
+                        <td class="silk-td silk-td--numeric">{{ x.count }}</td>
+                        <td class="silk-td silk-td--numeric">
+                            <span class="silk-num {% if x.avg_time >= 1000 %}silk-num--very-bad{% elif x.avg_time >= 500 %}silk-num--bad{% elif x.avg_time >= 200 %}silk-num--ok{% endif %}">
+                                {{ x.avg_time|floatformat:0 }}<span class="silk-unit">ms</span>
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="silk-no-data">No data</p>
+            {% endif %}
+        </div>
+
+        <div class="silk-top-table">
+            <h2 class="silk-top-table__heading">
+                <i data-lucide="alert-triangle" class="silk-icon"></i> N+1 Suspects
+                <span class="silk-top-table__hint">views with high avg query count</span>
+            </h2>
+            {% if n1_suspects %}
+            <table class="silk-table">
+                <thead>
+                    <tr>
+                        <th class="silk-th">View</th>
+                        <th class="silk-th silk-th--numeric">Req.</th>
+                        <th class="silk-th silk-th--numeric">Avg Queries</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in n1_suspects %}
+                    <tr class="silk-table__row" onclick="window.location='{% url "silk:requests" %}?view={{ x.view_name|urlencode }}'">
+                        <td class="silk-td silk-td--path">{{ x.view_name }}</td>
+                        <td class="silk-td silk-td--numeric">{{ x.count }}</td>
+                        <td class="silk-td silk-td--numeric">
+                            <span class="silk-num {% if x.avg_queries >= 50 %}silk-num--very-bad{% elif x.avg_queries >= 20 %}silk-num--bad{% elif x.avg_queries >= 10 %}silk-num--ok{% endif %}">
+                                {{ x.avg_queries|floatformat:1 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="silk-no-data">No views with ≥ 2 requests and ≥ 5 avg queries</p>
+            {% endif %}
+        </div>
+
+    </div>
+
     {# ── Analytics Dashboard ── #}
     <div class="silk-analytics">
 
@@ -220,8 +296,8 @@
             </div>
         </div>
 
-        {# Row 3: Latency percentile charts #}
-        <div class="silk-analytics-grid silk-analytics-grid--2">
+        {# Row 3: Latency percentile charts + query count distribution #}
+        <div class="silk-analytics-grid silk-analytics-grid--3">
             <div class="silk-chart-card">
                 <div class="silk-chart-card__head">
                     <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
@@ -245,6 +321,13 @@
                     <span class="silk-pct-pill silk-pct-pill--p{{ p }}">p{{ p }} <strong>{{ v|floatformat:0 }}ms</strong></span>
                     {% endfor %}
                 </div>
+            </div>
+            <div class="silk-chart-card">
+                <div class="silk-chart-card__head">
+                    <i data-lucide="hash" class="silk-icon silk-icon--sm"></i>
+                    Queries per Request
+                </div>
+                <svg id="silk-chart-query-hist" class="silk-chart-svg"></svg>
             </div>
         </div>
 

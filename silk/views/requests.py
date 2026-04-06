@@ -290,6 +290,10 @@ class RequestsView(View):
             # per_page in URL is an alias for show (enables shared URLs to restore page size)
             if 'per_page' in request.GET and 'show' not in request.GET:
                 filters['show'] = request.GET['per_page']
+            # ?view= from N+1 suspects link — save as a proper ViewNameFilter in session
+            if request.GET.get('view'):
+                from silk.request_filters import ViewNameFilter
+                filters['view'] = ViewNameFilter(request.GET['view']).as_dict()
             self.filters_manager.save(request, filters)
         return render(request, 'silk/requests.html', self._create_context(request))
 

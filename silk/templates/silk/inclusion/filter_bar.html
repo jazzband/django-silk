@@ -96,6 +96,38 @@ Must be placed inside a <form> element that POSTs to the current URL.
             <input type="hidden" name="filter-path-typ" value="MultiPathFilter">
             <input type="hidden" name="filter-path-value" id="silk-path-value" value="{{ filters.path.value|default:'' }}">
 
+            {# View name selector #}
+            {% if view_names %}
+            <span class="silk-filter-label">View:</span>
+            <div class="silk-ms silk-ms--wide" id="silk-view-ms" data-hidden-id="silk-view-value">
+                <button type="button" class="silk-ms__trigger {% if filters.view.value %}silk-ms__trigger--active{% endif %}" onclick="silkMsToggle('silk-view-ms')" aria-expanded="false" aria-haspopup="listbox">
+                    <span class="silk-ms__display">{% if filters.view.value %}{{ filters.view.value|truncatechars:28 }}{% else %}Any{% endif %}</span>
+                    <svg class="silk-ms__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="silk-ms__panel" hidden>
+                    <div class="silk-ms__search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--silk-text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" class="silk-ms__search-input" placeholder="Search views…" oninput="silkMsSearch('silk-view-ms', this.value)" autocomplete="off">
+                    </div>
+                    <div class="silk-ms__options" role="listbox">
+                        {% for v in view_names %}
+                        <label class="silk-ms__option" data-value="{{ v }}">
+                            <input type="checkbox" class="silk-ms__option-cb" value="{{ v }}"
+                                   {% if filters.view.value == v %}checked{% endif %}
+                                   onchange="silkViewChange('silk-view-ms', this)">
+                            <span class="silk-ms__option-label">{{ v }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="silk-ms__footer">
+                        <button type="button" class="silk-ms__clear-btn" onclick="silkViewClear('silk-view-ms')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-view-typ" value="ViewNameFilter">
+            <input type="hidden" name="filter-view-value" id="silk-view-value" value="{{ filters.view.value|default:'' }}">
+            {% endif %}
+
             <label class="silk-filter-label">Min time:
                 <input type="number" name="filter-overalltime-value" class="silk-filter-input"
                        placeholder="ms" value="{{ filters.overalltime.value }}" min="0">

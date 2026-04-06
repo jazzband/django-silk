@@ -1,24 +1,80 @@
-.silk-theme-toggle {
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  color: var(--silk-text-nav);
-  cursor: pointer;
+@charset "UTF-8";
+/* ── Nav scheme picker (global — loaded on every page) ─────────── */
+.silk-scheme-picker {
+  position: relative;
+}
+
+.silk-scheme-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  font-size: 12px;
+  gap: 6px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--silk-text-nav);
   font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
-  transition: background-color 0.2s, border-color 0.2s;
-  vertical-align: middle;
+  font-size: var(--silk-font-size-sm);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
   height: 30px;
 }
-.silk-theme-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.6);
+.silk-scheme-btn .silk-icon {
+  width: 13px;
+  height: 13px;
 }
-.silk-theme-toggle .silk-icon {
-  width: 14px;
-  height: 14px;
+.silk-scheme-btn svg {
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+.silk-scheme-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.silk-scheme-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: var(--silk-surface);
+  border: 1px solid var(--silk-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  padding: 4px;
+  z-index: 999;
+}
+
+.silk-scheme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--silk-text-primary);
+  font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.silk-scheme-option .silk-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--silk-text-secondary);
+  flex-shrink: 0;
+}
+.silk-scheme-option:hover {
+  background: var(--silk-row-hover-bg);
+}
+.silk-scheme-option.is-active {
+  background: color-mix(in srgb, var(--silk-chart-accent) 12%, var(--silk-surface));
+  color: var(--silk-chart-accent);
+}
+.silk-scheme-option.is-active .silk-icon {
+  color: var(--silk-chart-accent);
 }
