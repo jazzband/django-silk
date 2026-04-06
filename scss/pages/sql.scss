@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   font-weight: 600;
   color: var(--silk-perf-ok);
 }
@@ -43,7 +43,7 @@
 .silk-n1-pill {
   background: var(--silk-perf-ok);
   color: #3d1a00;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   padding: 2px 9px;
   border-radius: 10px;
@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-style: italic;
   color: var(--silk-text-muted);
   margin: 0;
@@ -63,7 +63,7 @@
     background: transparent;
     color: var(--silk-text-secondary);
     font-style: normal;
-    font-size: 11px;
+    font-size: var(--silk-font-size-xs);
     font-weight: 600;
   }
 }
@@ -106,7 +106,7 @@
 
 .silk-n1-count {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-weight: 700;
   color: var(--silk-perf-ok);
   min-width: 32px;
@@ -115,7 +115,7 @@
 .silk-n1-preview {
   flex: 1;
   font-family: Fantasque, 'Fira Mono', monospace;
-  font-size: 11.5px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -124,7 +124,7 @@
 
 .silk-n1-time {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-text-muted);
   white-space: nowrap;
 }
@@ -143,7 +143,7 @@
     margin: 0;
     border-radius: 0;
     border: none;
-    font-size: 12px;
+    font-size: var(--silk-font-size-sm);
   }
 }
 

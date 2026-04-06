@@ -41,7 +41,7 @@
 }
 
 .silk-toolbar-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-primary);
   font-weight: normal;
   display: inline-flex;
@@ -51,7 +51,7 @@
 
 /* ── Shared button/select ── */
 .silk-select {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 4px 8px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -66,7 +66,7 @@
 }
 
 .silk-btn {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: FiraSans, sans-serif;
   padding: 5px 12px;
   border-radius: 6px;
@@ -111,7 +111,7 @@
   gap: 4px;
   padding: 3px 8px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-weight: normal;
   background: var(--silk-filter-bg);
   border: 1px solid var(--silk-border);
@@ -159,7 +159,7 @@
     width: 100%;
     text-align: left;
     padding: 7px 14px;
-    font-size: 13px;
+    font-size: var(--silk-font-size-base);
     background: none;
     border: none;
     cursor: pointer;
@@ -196,7 +196,7 @@
 }
 
 .silk-filter-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-primary);
   font-weight: normal;
   display: inline-flex;
@@ -212,7 +212,7 @@
 }
 
 .silk-preset-btn {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-weight: normal;
   padding: 3px 10px;
   border: 1px solid var(--silk-border);
@@ -222,7 +222,13 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 
-  &:hover, &--active {
+  &:hover {
+    background: var(--silk-interactive-hover-bg);
+    color: var(--silk-interactive-hover-text);
+    border-color: var(--silk-interactive-hover-bg);
+  }
+
+  &--active {
     background: var(--silk-action-bg);
     color: var(--silk-action-text);
     border-color: var(--silk-action-bg);
@@ -236,7 +242,7 @@
 }
 
 .silk-method-btn {
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
@@ -247,10 +253,16 @@
   transition: background 0.15s, color 0.15s;
 
   // Generic hover/active — fallback for methods without specific colors (HEAD, OPTIONS, etc.)
-  &--active, &:hover {
-    border-color: transparent;
-    background: var(--silk-row-hover-bg);
-    color: var(--silk-text-primary);
+  &:hover {
+    border-color: var(--silk-interactive-hover-bg);
+    background: var(--silk-interactive-hover-bg);
+    color: var(--silk-interactive-hover-text);
+  }
+
+  &--active {
+    border-color: var(--silk-action-bg);
+    background: var(--silk-action-bg);
+    color: var(--silk-action-text);
   }
 
   // Specific method overrides — take precedence via higher specificity
@@ -262,7 +274,7 @@
 }
 
 .silk-filter-select {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 3px 6px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -271,7 +283,7 @@
 }
 
 .silk-filter-input {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 3px 6px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -307,7 +319,7 @@
     align-items: center;
     gap: 5px;
     padding: 3px 8px;
-    font-size: 12px;
+    font-size: var(--silk-font-size-sm);
     font-family: inherit;
     border: 1px solid var(--silk-border);
     border-radius: 6px;
@@ -320,8 +332,9 @@
     transition: border-color 0.15s, background 0.15s, color 0.15s;
 
     &:hover {
-      background: var(--silk-row-hover-bg);
-      border-color: var(--silk-text-muted);
+      background: var(--silk-interactive-hover-bg);
+      border-color: var(--silk-interactive-hover-bg);
+      color: var(--silk-interactive-hover-text);
     }
 
     // When options are selected
@@ -330,7 +343,11 @@
       background: var(--silk-action-bg);
       color: var(--silk-action-text);
 
-      &:hover { filter: brightness(1.15); }
+      &:hover {
+        background: color-mix(in srgb, var(--silk-action-bg) 80%, var(--silk-surface));
+        border-color: var(--silk-action-bg);
+        color: var(--silk-action-text);
+      }
     }
   }
 
@@ -382,7 +399,7 @@
       background: transparent;
       border: none;
       outline: none;
-      font-size: 12px;
+      font-size: var(--silk-font-size-sm);
       color: var(--silk-text-primary);
 
       &::placeholder { color: var(--silk-text-muted); }
@@ -411,7 +428,10 @@
     cursor: pointer;
     user-select: none;
 
-    &:hover { background: var(--silk-row-hover-bg); }
+    &:hover {
+      background: var(--silk-interactive-hover-bg);
+      color: var(--silk-interactive-hover-text);
+    }
 
     &[hidden] { display: none; }
 
@@ -424,7 +444,7 @@
     }
 
     &-label {
-      font-size: 12px;
+      font-size: var(--silk-font-size-sm);
       font-family: Fantasque, monospace;
       color: var(--silk-text-primary);
       overflow: hidden;
@@ -441,7 +461,7 @@
   }
 
   &__clear-btn {
-    font-size: 11px;
+    font-size: var(--silk-font-size-xs);
     padding: 2px 8px;
     border: 1px solid var(--silk-border);
     border-radius: 4px;
@@ -461,7 +481,7 @@
 .silk-filter-dirty {
   // Hidden by default via CSS (not [hidden] attr, which can be overridden)
   display: none;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-perf-ok);
   align-items: center;
   gap: 5px;
@@ -493,7 +513,7 @@
 .silk-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   background: var(--silk-surface);
 }
 
@@ -506,7 +526,7 @@
 .silk-th {
   padding: 10px 12px;
   text-align: left;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -529,9 +549,9 @@
   vertical-align: middle;
 
   &--numeric { text-align: right; font-variant-numeric: tabular-nums; }
-  &--timestamp { font-size: 12px; color: var(--silk-text-secondary); white-space: nowrap; }
+  &--timestamp { font-size: var(--silk-font-size-sm); color: var(--silk-text-secondary); white-space: nowrap; }
   &--method { white-space: nowrap; }
-  &--path { font-family: Fantasque, monospace; font-size: 12px; word-break: break-all; }
+  &--path { font-family: Fantasque, monospace; font-size: var(--silk-font-size-sm); word-break: break-all; }
 }
 
 .silk-table__row {
@@ -556,7 +576,7 @@
   display: inline-block;
   padding: 2px 7px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   white-space: nowrap;
 
@@ -635,13 +655,13 @@
 
   &__timestamp {
     margin-left: auto;
-    font-size: 11px;
+    font-size: var(--silk-font-size-xs);
     color: var(--silk-text-muted);
   }
 
   &__path {
     font-family: Fantasque, monospace;
-    font-size: 13px;
+    font-size: var(--silk-font-size-base);
     margin-bottom: 8px;
     word-break: break-all;
     color: var(--silk-text-primary);
@@ -658,7 +678,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-secondary);
 
   &--very-good { color: var(--silk-perf-very-good); }
@@ -708,7 +728,7 @@
     padding: 5px 10px;
     border-radius: 6px;
     border: 1px solid var(--silk-border);
-    font-size: 13px;
+    font-size: var(--silk-font-size-base);
     color: var(--silk-text-primary);
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
@@ -721,7 +741,7 @@
 
   &__info {
     margin-top: 0.5rem;
-    font-size: 12px;
+    font-size: var(--silk-font-size-sm);
     color: var(--silk-text-muted);
   }
 }
@@ -766,7 +786,7 @@
   }
 
   &__desc {
-    font-size: 14px;
+    font-size: var(--silk-font-size-base);
     margin: 0 0 1.5rem;
   }
 }

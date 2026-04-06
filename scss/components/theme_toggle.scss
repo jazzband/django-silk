@@ -14,7 +14,7 @@
   border-radius: 6px;
   color: var(--silk-text-nav);
   font-family: FiraSans, "Helvetica Neue", Arial, sans-serif;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
   white-space: nowrap;

@@ -2,7 +2,7 @@
   text-align: left;
   display: inline-block;
   margin: 0 0 1.5rem;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-secondary);
 }
 .silk-empty__list li {
@@ -13,7 +13,7 @@
   border: 1px solid var(--silk-border);
   border-radius: 3px;
   padding: 1px 4px;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
 }
 
 .pyprofile {

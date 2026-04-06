@@ -26,7 +26,7 @@ pre {
 
 .silk-hero__time {
   margin-left: auto;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-muted);
 }
 
@@ -48,7 +48,7 @@ pre {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 14px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-secondary);
 
   &--bad  { color: var(--silk-perf-very-bad); }
@@ -69,7 +69,7 @@ pre {
   overflow: hidden;
 
   &__heading {
-    font-size: 13px;
+    font-size: var(--silk-font-size-base);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -90,7 +90,7 @@ pre {
   padding: 1rem;
   background: var(--silk-code-bg);
   font-family: Fantasque, 'Fira Mono', monospace;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-code-text);
   overflow-x: auto;
   border-radius: 6px;
@@ -106,7 +106,7 @@ pre {
 .silk-headers {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: Fantasque, monospace;
 }
 
@@ -134,7 +134,7 @@ pre {
 
 /* ── Detail note ── */
 .silk-detail-note {
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   font-style: italic;
   color: var(--silk-text-muted);
   padding: 0.75rem 1rem;
@@ -149,7 +149,7 @@ pre {
   display: inline-block;
   padding: 2px 7px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   white-space: nowrap;
 

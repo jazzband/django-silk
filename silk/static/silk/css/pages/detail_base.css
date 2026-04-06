@@ -10,7 +10,7 @@
 
 .silk-code-ellipsis {
   font-family: Fantasque, "Fira Mono", monospace;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-muted);
   padding: 4px 1rem;
   background: var(--silk-code-bg);

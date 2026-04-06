@@ -157,10 +157,10 @@
     var total = Object.values(status).reduce(function (a, b) { return a + b; }, 0);
 
     var statusColors = {
-      '2xx': css('--silk-status-2xx') || '#2a7a3a',
-      '3xx': css('--silk-status-3xx') || '#1a4a8a',
-      '4xx': css('--silk-status-4xx') || '#8a5010',
-      '5xx': css('--silk-status-5xx') || '#8a1a1a',
+      '2xx': css('--silk-chart-2xx') || '#10b981',
+      '3xx': css('--silk-chart-3xx') || '#3b82f6',
+      '4xx': css('--silk-chart-4xx') || '#f59e0b',
+      '5xx': css('--silk-chart-5xx') || '#ef4444',
     };
 
     var pieData = Object.entries(status)
@@ -498,16 +498,103 @@
   }
 
   /* ════════════════════════════════════════════════════════════
-     Master render — draw all 5 charts
+     Chart 6 — Queries-per-request histogram
+     ════════════════════════════════════════════════════════════ */
+  function renderQueryHist(el, queryHist) {
+    d3.select(el).selectAll('*').remove();
+    if (!queryHist || queryHist.length === 0) { emptyState(el, 'No data', 200); return; }
+
+    /* colour by bucket index — green→red as query count rises */
+    var bucketColors = [
+      css('--silk-perf-very-good'),
+      css('--silk-perf-good'),
+      css('--silk-perf-ok'),
+      css('--silk-perf-bad'),
+      css('--silk-perf-very-bad'),
+      css('--silk-perf-very-bad'),
+    ];
+
+    var m = { top: 20, right: 8, bottom: 52, left: 36 };
+    var d = setupSvg(el, m, 200);
+    var g = d3.select(el).append('g').attr('transform', 'translate(' + m.left + ',' + m.top + ')');
+
+    var xSc = d3.scaleBand()
+      .domain(queryHist.map(function (r) { return r.label; }))
+      .range([0, d.w]).padding(0.22);
+    var yMax = d3.max(queryHist, function (r) { return r.count; }) || 1;
+    var ySc  = d3.scaleLinear().domain([0, yMax * 1.2]).range([d.h, 0]);
+
+    var gridC = css('--silk-border');
+    var axC   = css('--silk-border');
+    var txtC  = css('--silk-text-secondary');
+
+    g.append('g')
+      .call(d3.axisLeft(ySc).ticks(4).tickSize(-d.w).tickFormat(''))
+      .call(function (a) {
+        a.select('.domain').remove();
+        a.selectAll('line').attr('stroke', gridC).attr('stroke-dasharray', '3,3').attr('opacity', 0.5);
+      });
+
+    g.append('g')
+      .call(d3.axisLeft(ySc).ticks(4).tickFormat(d3.format('d')))
+      .call(function (a) {
+        a.select('.domain').attr('stroke', axC);
+        a.selectAll('text').attr('fill', txtC).attr('font-size', '11px');
+        a.selectAll('line').attr('stroke', axC);
+      });
+
+    g.append('g').attr('transform', 'translate(0,' + d.h + ')')
+      .call(d3.axisBottom(xSc).tickSize(0))
+      .call(function (a) {
+        a.select('.domain').attr('stroke', axC);
+        a.selectAll('text').attr('fill', txtC).attr('font-size', '10px')
+          .attr('transform', 'rotate(-35)').attr('text-anchor', 'end').attr('dy', '0.35em');
+      });
+
+    queryHist.forEach(function (row, i) {
+      var color = bucketColors[Math.min(i, bucketColors.length - 1)];
+      var barH  = d.h - ySc(row.count);
+
+      var defs  = d3.select(el).append('defs');
+      var gId   = 'qh-bar-' + el.id + '-' + i;
+      var bg = defs.append('linearGradient').attr('id', gId)
+        .attr('x1', '0%').attr('x2', '0%').attr('y1', '0%').attr('y2', '100%');
+      bg.append('stop').attr('offset', '0%').attr('stop-color', color).attr('stop-opacity', '1');
+      bg.append('stop').attr('offset', '100%').attr('stop-color', color).attr('stop-opacity', '0.5');
+
+      g.append('rect')
+        .attr('x', xSc(row.label)).attr('y', ySc(row.count))
+        .attr('width', xSc.bandwidth()).attr('height', Math.max(barH, 0))
+        .attr('fill', 'url(#' + gId + ')').attr('rx', 4)
+        .on('mouseover', function (evt) {
+          tipShow(evt, '<strong>' + row.label + ' queries</strong>: '
+            + row.count + ' request' + (row.count !== 1 ? 's' : ''));
+          d3.select(this).attr('opacity', 0.8);
+        })
+        .on('mouseout', function () { d3.select(this).attr('opacity', 1); tipHide(); });
+
+      if (row.count > 0) {
+        g.append('text')
+          .attr('x', xSc(row.label) + xSc.bandwidth() / 2)
+          .attr('y', ySc(row.count) - 4)
+          .attr('text-anchor', 'middle').attr('font-size', '10px')
+          .attr('fill', color).attr('font-weight', '600').text(row.count);
+      }
+    });
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     Master render — draw all charts
      ════════════════════════════════════════════════════════════ */
   function renderAll(chartData) {
     var get = function (id) { return document.getElementById(id); };
-    renderActivity(get('silk-chart-activity'), chartData.timeline  || []);
-    renderStatusDonut(get('silk-chart-status'),  chartData.status   || {});
-    renderMethods(get('silk-chart-methods'),     chartData.methods  || []);
-    renderRTHist(get('silk-chart-rt-hist'),      chartData.rt_hist  || []);
-    renderPercentile(get('silk-chart-request'),  chartData.request  || {});
-    renderPercentile(get('silk-chart-query'),    chartData.sql      || {});
+    renderActivity(get('silk-chart-activity'),       chartData.timeline    || []);
+    renderStatusDonut(get('silk-chart-status'),       chartData.status      || {});
+    renderMethods(get('silk-chart-methods'),          chartData.methods     || []);
+    renderRTHist(get('silk-chart-rt-hist'),           chartData.rt_hist     || []);
+    renderPercentile(get('silk-chart-request'),       chartData.request     || {});
+    renderPercentile(get('silk-chart-query'),         chartData.sql         || {});
+    renderQueryHist(get('silk-chart-query-hist'),     chartData.query_hist  || []);
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -524,7 +611,7 @@
 
     renderAll(chartData);
 
-    document.addEventListener('silk-theme-changed', function () { renderAll(chartData); });
+    document.addEventListener('silk-scheme-changed', function () { renderAll(chartData); });
 
     var rzTimer;
     window.addEventListener('resize', function () {

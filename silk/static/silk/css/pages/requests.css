@@ -41,7 +41,7 @@
 }
 
 .silk-toolbar-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-primary);
   font-weight: normal;
   display: inline-flex;
@@ -51,7 +51,7 @@
 
 /* ── Shared button/select ── */
 .silk-select {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 4px 8px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -65,7 +65,7 @@
 }
 
 .silk-btn {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: FiraSans, sans-serif;
   padding: 5px 12px;
   border-radius: 6px;
@@ -114,7 +114,7 @@
   gap: 4px;
   padding: 3px 8px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-weight: normal;
   background: var(--silk-filter-bg);
   border: 1px solid var(--silk-border);
@@ -164,7 +164,7 @@
   width: 100%;
   text-align: left;
   padding: 7px 14px;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   background: none;
   border: none;
   cursor: pointer;
@@ -201,7 +201,7 @@
 }
 
 .silk-filter-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-primary);
   font-weight: normal;
   display: inline-flex;
@@ -217,7 +217,7 @@
 }
 
 .silk-preset-btn {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-weight: normal;
   padding: 3px 10px;
   border: 1px solid var(--silk-border);
@@ -227,7 +227,12 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.silk-preset-btn:hover, .silk-preset-btn--active {
+.silk-preset-btn:hover {
+  background: var(--silk-interactive-hover-bg);
+  color: var(--silk-interactive-hover-text);
+  border-color: var(--silk-interactive-hover-bg);
+}
+.silk-preset-btn--active {
   background: var(--silk-action-bg);
   color: var(--silk-action-text);
   border-color: var(--silk-action-bg);
@@ -240,7 +245,7 @@
 }
 
 .silk-method-btn {
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
@@ -250,10 +255,15 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.silk-method-btn--active, .silk-method-btn:hover {
-  border-color: transparent;
-  background: var(--silk-row-hover-bg);
-  color: var(--silk-text-primary);
+.silk-method-btn:hover {
+  border-color: var(--silk-interactive-hover-bg);
+  background: var(--silk-interactive-hover-bg);
+  color: var(--silk-interactive-hover-text);
+}
+.silk-method-btn--active {
+  border-color: var(--silk-action-bg);
+  background: var(--silk-action-bg);
+  color: var(--silk-action-text);
 }
 .silk-method-btn--get.silk-method-btn--active, .silk-method-btn--get:hover {
   background: var(--silk-method-get-bg);
@@ -277,7 +287,7 @@
 }
 
 .silk-filter-select {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 3px 6px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -286,7 +296,7 @@
 }
 
 .silk-filter-input {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 3px 6px;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -318,7 +328,7 @@
   align-items: center;
   gap: 5px;
   padding: 3px 8px;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: inherit;
   border: 1px solid var(--silk-border);
   border-radius: 6px;
@@ -331,8 +341,9 @@
   transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 .silk-ms__trigger:hover {
-  background: var(--silk-row-hover-bg);
-  border-color: var(--silk-text-muted);
+  background: var(--silk-interactive-hover-bg);
+  border-color: var(--silk-interactive-hover-bg);
+  color: var(--silk-interactive-hover-text);
 }
 .silk-ms__trigger--active {
   border-color: var(--silk-action-bg);
@@ -340,7 +351,9 @@
   color: var(--silk-action-text);
 }
 .silk-ms__trigger--active:hover {
-  filter: brightness(1.15);
+  background: color-mix(in srgb, var(--silk-action-bg) 80%, var(--silk-surface));
+  border-color: var(--silk-action-bg);
+  color: var(--silk-action-text);
 }
 .silk-ms__display {
   overflow: hidden;
@@ -385,7 +398,7 @@
   background: transparent;
   border: none;
   outline: none;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-primary);
 }
 .silk-ms__search-input::placeholder {
@@ -415,7 +428,8 @@
   user-select: none;
 }
 .silk-ms__option:hover {
-  background: var(--silk-row-hover-bg);
+  background: var(--silk-interactive-hover-bg);
+  color: var(--silk-interactive-hover-text);
 }
 .silk-ms__option[hidden] {
   display: none;
@@ -428,7 +442,7 @@
   accent-color: var(--silk-nav-bg);
 }
 .silk-ms__option-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: Fantasque, monospace;
   color: var(--silk-text-primary);
   overflow: hidden;
@@ -442,7 +456,7 @@
   border-top: 1px solid var(--silk-border);
 }
 .silk-ms__clear-btn {
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   padding: 2px 8px;
   border: 1px solid var(--silk-border);
   border-radius: 4px;
@@ -459,7 +473,7 @@
 /* ── Dirty / pending indicator ── */
 .silk-filter-dirty {
   display: none;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-perf-ok);
   align-items: center;
   gap: 5px;
@@ -489,7 +503,7 @@
 .silk-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   background: var(--silk-surface);
 }
 
@@ -502,7 +516,7 @@
 .silk-th {
   padding: 10px 12px;
   text-align: left;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -538,7 +552,7 @@
   font-variant-numeric: tabular-nums;
 }
 .silk-td--timestamp {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-secondary);
   white-space: nowrap;
 }
@@ -547,7 +561,7 @@
 }
 .silk-td--path {
   font-family: Fantasque, monospace;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   word-break: break-all;
 }
 
@@ -572,7 +586,7 @@
   display: inline-block;
   padding: 2px 7px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -681,12 +695,12 @@
 }
 .silk-card__timestamp {
   margin-left: auto;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-text-muted);
 }
 .silk-card__path {
   font-family: Fantasque, monospace;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   margin-bottom: 8px;
   word-break: break-all;
   color: var(--silk-text-primary);
@@ -701,7 +715,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-secondary);
 }
 .silk-metric--very-good {
@@ -756,7 +770,7 @@
   padding: 5px 10px;
   border-radius: 6px;
   border: 1px solid var(--silk-border);
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   color: var(--silk-text-primary);
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
@@ -767,7 +781,7 @@
 }
 .silk-pagination__info {
   margin-top: 0.5rem;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-muted);
 }
 
@@ -809,6 +823,6 @@
   color: var(--silk-text-primary);
 }
 .silk-empty__desc {
-  font-size: 14px;
+  font-size: var(--silk-font-size-base);
   margin: 0 0 1.5rem;
 }

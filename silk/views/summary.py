@@ -169,10 +169,59 @@ class SummaryView(View):
                 pass
         return sorted(requests, key=lambda item: item.t, reverse=True)
 
+    def _hot_paths(self, filters):
+        """Top 5 endpoints by optimization impact (request_count × avg_time_taken)."""
+        rows = list(
+            models.Request.objects.filter(*filters)
+            .filter(time_taken__isnull=False)
+            .values('path')
+            .annotate(count=Count('id'), avg_time=Avg('time_taken'))
+        )
+        rows.sort(key=lambda r: r['count'] * r['avg_time'], reverse=True)
+        return rows[:5]
+
+    def _n1_suspects(self, filters):
+        """Top 5 view names with highest average SQL query count — likely N+1 candidates."""
+        rows = (
+            models.Request.objects.filter(*filters)
+            .filter(view_name__isnull=False, num_sql_queries__gt=0)
+            .exclude(view_name='')
+            .values('view_name')
+            .annotate(avg_queries=Avg('num_sql_queries'), count=Count('id'))
+            .filter(count__gte=2)
+            .order_by('-avg_queries')[:5]
+        )
+        return list(rows)
+
+    def _query_count_histogram(self, filters):
+        """Bucket requests by the number of SQL queries they fired."""
+        counts = list(
+            models.Request.objects.filter(*filters)
+            .values_list('num_sql_queries', flat=True)
+        )
+        buckets = [
+            {'label': '0',     'max': 1},
+            {'label': '1–5',   'max': 6},
+            {'label': '6–10',  'max': 11},
+            {'label': '11–25', 'max': 26},
+            {'label': '26–50', 'max': 51},
+            {'label': '>50',   'max': None},
+        ]
+        result = [{'label': b['label'], 'count': 0} for b in buckets]
+        for n in counts:
+            for i, b in enumerate(buckets):
+                if b['max'] is None or n < b['max']:
+                    result[i]['count'] += 1
+                    break
+        return result
+
     def _create_context(self, request):
         raw_filters = self.filters_manager.get(request)
         filters = [BaseFilter.from_dict(filter_d) for _, filter_d in raw_filters.items()]
-        avg_overall_time = self._avg_num_queries(filters)
+        avg_num_q = self._avg_num_queries(filters)
+        avg_db_time = self._avg_time_spent_on_queries(filters) or 0
+        avg_total_time = self._avg_overall_time(filters) or 0
+        db_pressure = round(avg_db_time / avg_total_time * 100, 1) if avg_total_time > 0 else 0
         num_requests = models.Request.objects.filter(*filters).count()
         active_preset = raw_filters.get('time_preset', {}).get('value')
         request_percentiles = self._request_time_percentiles(filters)
@@ -181,12 +230,15 @@ class SummaryView(View):
             'request': request,
             'num_requests': num_requests,
             'num_profiles': models.Profile.objects.filter(*filters).count(),
-            'avg_num_queries': avg_overall_time,
-            'avg_time_spent_on_queries': self._avg_time_spent_on_queries(filters),
-            'avg_overall_time': self._avg_overall_time(filters),
+            'avg_num_queries': avg_num_q,
+            'avg_time_spent_on_queries': avg_db_time,
+            'avg_overall_time': avg_total_time,
+            'db_pressure': db_pressure,
             'longest_queries_by_view': self._longest_query_by_view(filters),
             'most_time_spent_in_db': self._time_spent_in_db_by_view(filters),
             'most_queries': self._num_queries_by_view(filters),
+            'hot_paths': self._hot_paths(filters),
+            'n1_suspects': self._n1_suspects(filters),
             'filters': raw_filters,
             'has_data': num_requests > 0,
             'time_presets': [
@@ -202,6 +254,7 @@ class SummaryView(View):
                 'status': self._status_distribution(filters),
                 'methods': self._method_distribution(filters),
                 'rt_hist': self._response_time_histogram(filters),
+                'query_hist': self._query_count_histogram(filters),
             }),
         }
         c.update(csrf(request))

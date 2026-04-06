@@ -5,7 +5,7 @@
 .silk-pre--wide {
   overflow-x: auto;
   white-space: pre;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
 }
 
 /* Profile graph container */

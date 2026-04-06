@@ -3,8 +3,8 @@
 :root {
   --silk-card-radius: 10px;
   --silk-font-size-base: 14px;
-  --silk-font-size-sm: 12.5px;
-  --silk-font-size-xs: 11.5px;
+  --silk-font-size-sm: 13px;
+  --silk-font-size-xs: 12px;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -54,7 +54,20 @@
   --silk-filter-border: #d8dce8;
   --silk-action-bg: #1e2235;
   --silk-action-text: #e8eaf6;
+  --silk-interactive-hover-bg: #e2e7f4; /* button hover — visible on both white + filter-bg */
+  --silk-interactive-hover-text: #111827;
   --silk-chart-accent: #4f46e5;
+  /* Categorical chart palette — vivid fills for SVG data-viz */
+  --silk-chart-1: #6366f1; /* indigo   */
+  --silk-chart-2: #10b981; /* emerald  */
+  --silk-chart-3: #f59e0b; /* amber    */
+  --silk-chart-4: #ef4444; /* red      */
+  --silk-chart-5: #8b5cf6; /* violet   */
+  /* Status fills — vivid, optimised for SVG (not text contrast) */
+  --silk-chart-2xx: #10b981;
+  --silk-chart-3xx: #3b82f6;
+  --silk-chart-4xx: #f59e0b;
+  --silk-chart-5xx: #ef4444;
   --silk-code-bg: #f6f8fa;
   --silk-code-text: #24292f;
   --silk-code-comment: #6e7781;
@@ -122,7 +135,18 @@
   --silk-filter-border: #252530;
   --silk-action-bg: #4040c0;
   --silk-action-text: #e8e8ff;
+  --silk-interactive-hover-bg: #25253a;
+  --silk-interactive-hover-text: #e8e8ee;
   --silk-chart-accent: #818cf8;
+  --silk-chart-1: #818cf8;
+  --silk-chart-2: #34d399;
+  --silk-chart-3: #fbbf24;
+  --silk-chart-4: #f87171;
+  --silk-chart-5: #a78bfa;
+  --silk-chart-2xx: #34d399;
+  --silk-chart-3xx: #60a5fa;
+  --silk-chart-4xx: #fbbf24;
+  --silk-chart-5xx: #f87171;
   --silk-code-bg: #161b22;
   --silk-code-text: #c9d1d9;
   --silk-code-comment: #8b949e;
@@ -189,7 +213,18 @@
   --silk-filter-border: #2e2e34;
   --silk-action-bg: #3a3a50;
   --silk-action-text: #e0e0f0;
+  --silk-interactive-hover-bg: #26262e;
+  --silk-interactive-hover-text: #f0f0f2;
   --silk-chart-accent: #a78bfa;
+  --silk-chart-1: #a78bfa;
+  --silk-chart-2: #34d399;
+  --silk-chart-3: #fcd34d;
+  --silk-chart-4: #fca5a5;
+  --silk-chart-5: #93c5fd;
+  --silk-chart-2xx: #34d399;
+  --silk-chart-3xx: #93c5fd;
+  --silk-chart-4xx: #fcd34d;
+  --silk-chart-5xx: #fca5a5;
   --silk-code-bg: #161618;
   --silk-code-text: #d4d4d8;
   --silk-code-comment: #71717a;
@@ -256,7 +291,18 @@
   --silk-filter-border: #555555;
   --silk-action-bg: #ffffff;
   --silk-action-text: #000000;
+  --silk-interactive-hover-bg: #1a1a1a;
+  --silk-interactive-hover-text: #ffffff;
   --silk-chart-accent: #60a5fa;
+  --silk-chart-1: #60a5fa;
+  --silk-chart-2: #4ade80;
+  --silk-chart-3: #facc15;
+  --silk-chart-4: #f87171;
+  --silk-chart-5: #c084fc;
+  --silk-chart-2xx: #4ade80;
+  --silk-chart-3xx: #60a5fa;
+  --silk-chart-4xx: #facc15;
+  --silk-chart-5xx: #f87171;
   --silk-code-bg: #000000;
   --silk-code-text: #ffffff;
   --silk-code-comment: #aaaaaa;

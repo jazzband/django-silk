@@ -34,13 +34,13 @@
 }
 
 .silk-filter-label {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-secondary);
   white-space: nowrap;
 }
 
 .silk-preset-btn {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 4px 12px;
   border: 1px solid var(--silk-border);
   border-radius: 14px;
@@ -51,13 +51,14 @@
   font-family: FiraSans, sans-serif;
 }
 .silk-preset-btn:hover {
-  background: var(--silk-row-hover-bg);
-  color: var(--silk-text-primary);
+  background: var(--silk-interactive-hover-bg);
+  color: var(--silk-interactive-hover-text);
+  border-color: var(--silk-interactive-hover-bg);
 }
 .silk-preset-btn--active {
-  background: var(--silk-nav-bg);
-  color: var(--silk-text-nav);
-  border-color: var(--silk-nav-bg);
+  background: var(--silk-action-bg);
+  color: var(--silk-action-text);
+  border-color: var(--silk-action-bg);
 }
 
 /* ── Metric cards row ── */
@@ -100,7 +101,7 @@
   font-variant-numeric: tabular-nums;
 }
 .silk-metric-card__label {
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   color: var(--silk-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -118,7 +119,7 @@
 }
 
 .silk-unit {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   opacity: 0.65;
   margin-left: 2px;
 }
@@ -138,7 +139,7 @@
   overflow: hidden;
 }
 .silk-top-table__heading {
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   font-weight: 600;
   color: var(--silk-text-primary);
   padding: 12px 16px 10px;
@@ -147,20 +148,27 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
+}
+.silk-top-table__hint {
+  font-size: var(--silk-font-size-xs);
+  font-weight: 400;
+  color: var(--silk-text-muted);
+  margin-left: 2px;
 }
 
 /* ── Shared table styles (also used on requests page) ── */
 .silk-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--silk-font-size-base);
   background: var(--silk-surface);
 }
 
 .silk-th {
   padding: 8px 12px;
   text-align: left;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -185,7 +193,7 @@
 }
 .silk-td--path {
   font-family: Fantasque, monospace;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   word-break: break-all;
 }
 
@@ -241,7 +249,7 @@
   color: var(--silk-text-primary);
 }
 .silk-empty__desc {
-  font-size: 14px;
+  font-size: var(--silk-font-size-base);
   margin: 0 0 1.5rem;
 }
 
@@ -251,7 +259,7 @@
 }
 
 .silk-no-data {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-style: italic;
   color: var(--silk-text-muted);
   padding: 1rem 1.2rem;
@@ -319,7 +327,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -345,7 +353,7 @@
 }
 
 .silk-pct-pill {
-  font-size: 11px;
+  font-size: var(--silk-font-size-xs);
   padding: 2px 8px;
   border-radius: 10px;
   border: 1px solid var(--silk-border);
@@ -383,7 +391,7 @@
   pointer-events: none;
   background: var(--silk-nav-bg);
   color: var(--silk-text-nav);
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   padding: 6px 10px;
   border-radius: 6px;
   white-space: nowrap;

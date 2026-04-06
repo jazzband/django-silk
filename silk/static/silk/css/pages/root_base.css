@@ -67,7 +67,7 @@ h3 {
   }
 }
 .active-filter {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-nav);
 }
 
@@ -186,7 +186,7 @@ select::-moz-focus-inner {
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 0;
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   color: var(--silk-text-nav);
   font-style: oblique;
   line-height: 16px;
@@ -214,7 +214,7 @@ select::-moz-focus-inner {
 }
 
 .resizing-input input, .resizing-input span {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: FiraSans;
   white-space: pre;
   font-weight: 300;
@@ -242,7 +242,7 @@ h4 {
 
 .filter-section {
   color: var(--silk-text-nav);
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   line-height: 2.3;
   padding: 10px;
 }
