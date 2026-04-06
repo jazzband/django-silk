@@ -2,70 +2,126 @@
   'use strict';
 
   var STORAGE_KEY = 'silk-theme';
-  var ROOT_ID = 'silk-root';
+  var ROOT_ID     = 'silk-root';
 
-  function applyTheme(theme) {
+  var SCHEMES = [
+    { value: 'light',         label: 'Light',         icon: 'sun' },
+    { value: 'dark',          label: 'Dark',           icon: 'moon' },
+    { value: 'midnight',      label: 'Midnight',       icon: 'moon-star' },
+    { value: 'high-contrast', label: 'High Contrast',  icon: 'contrast' },
+  ];
+
+  /* ─── Core helpers ───────────────────────────────────────────── */
+
+  function applyScheme(scheme) {
     var root = document.getElementById(ROOT_ID);
-    if (root) {
-      root.setAttribute('data-theme', theme);
-    }
+    if (root) root.setAttribute('data-theme', scheme);
   }
 
-  function getSavedTheme() {
+  function getSaved() {
     try {
-      return localStorage.getItem(STORAGE_KEY) || 'light';
-    } catch (e) {
-      return 'light';
-    }
+      var v = localStorage.getItem(STORAGE_KEY);
+      // backward-compat: old 'dark'/'light' strings are valid scheme values
+      return v || 'light';
+    } catch (e) { return 'light'; }
   }
 
-  function saveTheme(theme) {
-    try {
-      localStorage.setItem(STORAGE_KEY, theme);
-    } catch (e) {}
+  function save(scheme) {
+    try { localStorage.setItem(STORAGE_KEY, scheme); } catch (e) {}
   }
 
-  function toggleTheme() {
+  function getActive() {
     var root = document.getElementById(ROOT_ID);
-    var current = root ? root.getAttribute('data-theme') : 'light';
-    var next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    saveTheme(next);
-    updateToggleButton(next);
-    document.dispatchEvent(new CustomEvent('silk-theme-changed'));
+    return root ? root.getAttribute('data-theme') || 'light' : 'light';
   }
 
-  function updateToggleButton(theme) {
-    var btn = document.getElementById('silk-theme-toggle');
-    if (!btn) return;
-    var icon = btn.querySelector('[data-lucide]');
-    var label = btn.querySelector('.silk-theme-label');
+  /* ─── Nav picker UI ─────────────────────────────────────────── */
+
+  function updatePickerLabel(scheme) {
+    var meta = SCHEMES.find(function (s) { return s.value === scheme; })
+            || SCHEMES[0];
+    var label = document.getElementById('silk-scheme-label');
+    var icon  = document.getElementById('silk-scheme-icon');
+    if (label) label.textContent = meta.label;
     if (icon) {
-      icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-      if (window.lucide) {
-        lucide.createIcons();
-      }
+      icon.setAttribute('data-lucide', meta.icon);
+      if (window.lucide) lucide.createIcons();
     }
-    if (label) {
-      label.textContent = theme === 'dark' ? 'Light' : 'Dark';
-    }
+    // Mark active option in dropdown
+    document.querySelectorAll('.silk-scheme-option').forEach(function (btn) {
+      btn.classList.toggle('is-active', btn.dataset.scheme === scheme);
+    });
   }
 
-  // Apply saved theme immediately (before paint) to prevent flash
-  applyTheme(getSavedTheme());
+  function openPicker() {
+    var menu = document.getElementById('silk-scheme-menu');
+    var btn  = document.getElementById('silk-scheme-btn');
+    if (!menu) return;
+    menu.removeAttribute('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+  }
 
+  function closePicker() {
+    var menu = document.getElementById('silk-scheme-menu');
+    var btn  = document.getElementById('silk-scheme-btn');
+    if (!menu) return;
+    menu.setAttribute('hidden', '');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+
+  function isPickerOpen() {
+    var menu = document.getElementById('silk-scheme-menu');
+    return menu && !menu.hasAttribute('hidden');
+  }
+
+  /* ─── Apply saved theme immediately (before paint) ──────────── */
+  applyScheme(getSaved());
+
+  /* ─── DOMContentLoaded init ─────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
-    var saved = getSavedTheme();
-    applyTheme(saved);
+    var saved = getSaved();
+    applyScheme(saved);
+    updatePickerLabel(saved);
 
-    var btn = document.getElementById('silk-theme-toggle');
+    // Toggle open/close on picker button
+    var btn = document.getElementById('silk-scheme-btn');
     if (btn) {
-      btn.addEventListener('click', toggleTheme);
-      updateToggleButton(saved);
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        isPickerOpen() ? closePicker() : openPicker();
+      });
     }
 
-    if (window.lucide) {
-      lucide.createIcons();
-    }
+    // Select scheme from dropdown
+    document.querySelectorAll('.silk-scheme-option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        var scheme = this.dataset.scheme;
+        applyScheme(scheme);
+        save(scheme);
+        updatePickerLabel(scheme);
+        closePicker();
+        document.dispatchEvent(new CustomEvent('silk-scheme-changed', { detail: scheme }));
+      });
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+      var picker = document.getElementById('silk-scheme-picker');
+      if (picker && !picker.contains(e.target)) closePicker();
+    });
+
+    if (window.lucide) lucide.createIcons();
   });
+
+  /* ─── Expose for settings page ─────────────────────────────── */
+  window.silkApplyScheme = function (scheme) {
+    applyScheme(scheme);
+    save(scheme);
+    updatePickerLabel(scheme);
+    document.dispatchEvent(new CustomEvent('silk-scheme-changed', { detail: scheme }));
+  };
+
+  window.silkGetActiveScheme = getActive;
+  window.silkSchemes = SCHEMES;
+
 }());
