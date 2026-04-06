@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "Django==${{ matrix.django-version }}.*" pytest pytest-django pytest-cov
+          python -m pip install "Django==${{ matrix.django-version }}.*" pytest pytest-django pytest-cov factory-boy freezegun networkx
 
       - name: Install package
         run: python -m pip install -e .
