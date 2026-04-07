@@ -32,20 +32,16 @@ It keeps 100 % of the original functionality (request/response recording, SQL in
 
 <table>
 <tr>
-<td><img src="screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method lollipop, RT histogram, latency percentiles</sub></td>
-<td><img src="screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Inline filter bar</b> — multi-select method, status, path chips; active filters shown inline</sub></td>
+<td><img src="screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method bars, RT histogram, latency percentiles, queries-per-request histogram</sub></td>
+<td><img src="screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Requests list</b> — inline filter bar with multi-select method, status, path, and view filters; multi-column sort chips</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — orange banner with query pattern, count badge, and total ms cost</sub></td>
-<td><img src="screenshots/n1-highlighted-rows.png" alt="N+1 highlighted query rows" width="420"/><br/><sub><b>N+1 highlighted rows</b> — offending queries highlighted in the table</sub></td>
+<td><img src="screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — banner with detected pattern, query count badge, and per-query cost; offending rows highlighted</sub></td>
+<td><img src="screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code highlighted, and associated SQL queries</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/request-detail.png" alt="Request detail – dark mode" width="420"/><br/><sub><b>Request detail</b> — hero bar with timing pills, query params, headers, response body, curl snippet</sub></td>
-<td><img src="screenshots/profiling-list.png" alt="Profiling list – light mode" width="420"/><br/><sub><b>Profiling list</b> — function name, duration, query count, DB time</sub></td>
-</tr>
-<tr>
-<td><img src="screenshots/sql-query-detail.png" alt="SQL query detail – dark mode" width="420"/><br/><sub><b>SQL query detail</b> — full query text, EXPLAIN plan, and Python stack trace</sub></td>
-<td><img src="screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code, and associated queries</sub></td>
+<td><img src="screenshots/profile-detail-queries.png" alt="cProfile output" width="420"/><br/><sub><b>cProfile output</b> — raw cProfile dump with ncalls, tottime, cumtime, and filename:function</sub></td>
+<td><img src="screenshots/meta.png" alt="Settings page – colour scheme picker and data management" width="420"/><br/><sub><b>Settings</b> — colour scheme picker (Light / Dark / Midnight / High Contrast) and selective data-clear controls</sub></td>
 </tr>
 </table>
 
