@@ -11,6 +11,7 @@ jobs:
     environment: pypi        # optional: add a GitHub environment for approval gate
     permissions:
       id-token: write        # required for PyPI Trusted Publishing (no API token needed)
+      contents: write        # required for creating GitHub Releases (gh release create)
 
     steps:
       - uses: actions/checkout@v4
@@ -37,3 +38,34 @@ jobs:
         # Set up Trusted Publishing once at pypi.org:
         #   Project → Manage → Publishing → Add publisher
         #   Owner: VaishnavGhenge  Repo: django-silky  Workflow: release.yml
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Extracts the matching ## [X.Y.Z] section from CHANGELOG.md and uses it
+        # as the release body. Falls back to GitHub's auto-generated notes if no
+        # matching CHANGELOG entry is found (so the workflow never fails on a
+        # missing changelog). Runs *after* PyPI publish so we never cut a GH
+        # release for a version that didn't actually ship to PyPI.
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"   # strip leading v: v1.2.3 → 1.2.3
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { found=1; next }
+            found && /^## \[/         { exit }
+            found && /^---$/          { next }
+            found                     { print }
+          ' CHANGELOG.md > /tmp/release_notes.md
+
+          if [ -s /tmp/release_notes.md ]; then
+            echo "Using CHANGELOG.md entry for $VERSION"
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file /tmp/release_notes.md
+          else
+            echo "No CHANGELOG.md entry for $VERSION — falling back to auto-generated notes"
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi
