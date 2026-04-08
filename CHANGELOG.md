@@ -5,6 +5,50 @@
      https://github.com/VaishnavGhenge/django-silky
      ────────────────────────────────────────────────────────────────────────── -->
 
+## [1.1.1](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.1.1) (2026-04-08)
+
+### Documentation
+
+- **PyPI README rendering fixes** — screenshot `<img src="...">` paths rewritten from relative (`screenshots/...`) to absolute `raw.githubusercontent.com` URLs so they render on the PyPI project page (PyPI's README renderer does not resolve relative paths).
+- **All-time downloads badge** — added `static.pepy.tech` total-downloads badge alongside the existing monthly badge; monthly badge relabeled `downloads/month` for clarity.
+
+### Packaging
+
+- **Author metadata corrected** — `setup.py` now lists Vaishnav Ghenge (`vaishnavghenge@gmail.com`) as both author and maintainer of the `django-silky` fork. Original `django-silk` attribution to Michael Ford and Jazzband remains in `README.md` and `LICENSE`.
+
+---
+
+## [1.1.0](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.1.0) (2026-04-07)
+
+### Features
+
+- **Four colour schemes + scheme picker** ([#4](https://github.com/VaishnavGhenge/django-silky/issues/4)) — Light, Dark, Midnight, and High Contrast themes selectable from a picker in the nav and on a redesigned settings page. All schemes share the same `--silk-*` token surface so component CSS works unchanged.
+- **Analytics insights** — new insight cards on the dashboard surface notable patterns (slow endpoints, error spikes, N+1 candidates) alongside the existing charts.
+- **Flat chart palettes + font-size tokens** — chart colours moved to a flat, vivid palette per scheme; font sizes centralised as CSS tokens (`--silk-fs-*`) so typography scales consistently.
+- **Production/Stable classifier** — package now ships with the `Development Status :: 5 - Production/Stable` PyPI classifier.
+
+### Bug Fixes
+
+- **View filter uses checkboxes, not radios** — fixes a Chrome quirk where `onchange` on a radio group with the same value did not fire, leaving the filter visually selected but functionally inert.
+- **`?view=` URL param now persists to session** — visiting `…/silk/requests/?view=foo` now saves a `ViewNameFilter` into the session so the filter bar reflects the active filter on the next pageview, instead of silently dropping it.
+- **Scheme picker CSS scoped globally** — moved from `requests.scss` into `theme_toggle.scss` so it works on all pages, not just the requests list. Purple chart accent dropped from the dark scheme (poor contrast against `--silk-bg`).
+- **Performance pill colours rebalanced** — perf palette and pill text colours adjusted for better legibility across all four schemes.
+
+### CI / Tooling
+
+- **Lean SQLite pytest workflow** — replaced the upstream tox matrix with a single `DB_ENGINE=sqlite3 pytest` job; runs in seconds instead of minutes.
+- **Test dependencies completed** — `pytest-cov`, `factory-boy`, `freezegun`, `networkx`, `pydot`, `Pillow`, `autopep8` added as missing dev requirements.
+
+### Documentation
+
+- **README screenshots reorganised** — replaced numbered screenshots with named ones (`analytics-dashboard.png`, `requests-filter-bar.png`, etc.); added CI status, downloads, and PyPI keyword badges.
+
+### Tests
+
+- Test baseline: **277 passed, 1 skipped**.
+
+---
+
 ## [1.0.6](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.0.6) (2026-04-06)
 
 ### Bug Fixes

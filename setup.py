@@ -16,9 +16,10 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/VaishnavGhenge/django-silky',
-    author='Michael Ford',
-    author_email='mtford@gmail.com',
+    author='Vaishnav Ghenge',
+    author_email='vaishnavghenge@gmail.com',
     maintainer='Vaishnav Ghenge',
+    maintainer_email='vaishnavghenge@gmail.com',
     project_urls={
         'Source': 'https://github.com/VaishnavGhenge/django-silky',
         'Bug Tracker': 'https://github.com/VaishnavGhenge/django-silky/issues',

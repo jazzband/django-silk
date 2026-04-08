@@ -4,7 +4,8 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-silky.svg)](https://pypi.org/project/django-silky/)
 [![Supported Django versions](https://img.shields.io/pypi/djversions/django-silky.svg)](https://pypi.org/project/django-silky/)
 [![Tests](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml/badge.svg)](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/django-silky.svg)](https://pypi.org/project/django-silky/)
+[![Downloads/month](https://img.shields.io/pypi/dm/django-silky.svg?label=downloads%2Fmonth)](https://pypi.org/project/django-silky/)
+[![Downloads total](https://static.pepy.tech/badge/django-silky)](https://pepy.tech/project/django-silky)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **django-silky** is a modernized-UI fork of [django-silk](https://github.com/jazzband/django-silk) — a live profiling and inspection tool for the Django framework.
@@ -32,16 +33,16 @@ It keeps 100 % of the original functionality (request/response recording, SQL in
 
 <table>
 <tr>
-<td><img src="screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method bars, RT histogram, latency percentiles, queries-per-request histogram</sub></td>
-<td><img src="screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Requests list</b> — inline filter bar with multi-select method, status, path, and view filters; multi-column sort chips</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method bars, RT histogram, latency percentiles, queries-per-request histogram</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Requests list</b> — inline filter bar with multi-select method, status, path, and view filters; multi-column sort chips</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — banner with detected pattern, query count badge, and per-query cost; offending rows highlighted</sub></td>
-<td><img src="screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code highlighted, and associated SQL queries</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — banner with detected pattern, query count badge, and per-query cost; offending rows highlighted</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code highlighted, and associated SQL queries</sub></td>
 </tr>
 <tr>
-<td><img src="screenshots/profile-detail-queries.png" alt="cProfile output" width="420"/><br/><sub><b>cProfile output</b> — raw cProfile dump with ncalls, tottime, cumtime, and filename:function</sub></td>
-<td><img src="screenshots/meta.png" alt="Settings page – colour scheme picker and data management" width="420"/><br/><sub><b>Settings</b> — colour scheme picker (Light / Dark / Midnight / High Contrast) and selective data-clear controls</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/profile-detail-queries.png" alt="cProfile output" width="420"/><br/><sub><b>cProfile output</b> — raw cProfile dump with ncalls, tottime, cumtime, and filename:function</sub></td>
+<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/meta.png" alt="Settings page – colour scheme picker and data management" width="420"/><br/><sub><b>Settings</b> — colour scheme picker (Light / Dark / Midnight / High Contrast) and selective data-clear controls</sub></td>
 </tr>
 </table>
 
