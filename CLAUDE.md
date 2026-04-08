@@ -29,7 +29,7 @@ npx gulp watch
 # One-shot SCSS compile
 npx gulp sass
 
-# Run tests (expected: 248 passed)
+# Run tests (expected: 277 passed, 1 skipped)
 DB_ENGINE=sqlite3 .venv/bin/python -m pytest project/tests/ -q
 ```
 
@@ -137,20 +137,40 @@ Config: `gulpfile.js`, `package.json`.
 
 ## Publishing to PyPI
 
-```bash
-# 1. Build the distribution
-.venv/bin/python -m build
-# Creates: dist/django_silky-X.Y.Z.tar.gz + dist/django_silky-X.Y.Z-py3-none-any.whl
+**Releases are fully automated.** `.github/workflows/release.yml` triggers on any
+`v[0-9]*` tag push, builds the distribution in CI, and publishes to PyPI via
+**Trusted Publishing (OIDC)** — no API token, no `~/.pypirc`, no manual upload.
 
-# 2. Upload
-.venv/bin/twine upload dist/*
-# Requires ~/.pypirc or TWINE_USERNAME / TWINE_PASSWORD env vars
+To ship a new version:
+
+```bash
+# 1. (Optional but recommended) Local dry-run build to catch packaging errors
+#    BEFORE pushing the tag. This does NOT upload anything.
+.venv/bin/python -m build
+.venv/bin/twine check dist/*
+rm dist/django_silky-*   # clean up so the locally-built artifacts don't linger
+
+# 2. Tag and push — the push to origin is what triggers the release pipeline
+git tag -a vX.Y.Z -m "vX.Y.Z — short summary"
+git push origin master
+git push origin vX.Y.Z
 ```
+
+**Never run `twine upload` manually.** The CI pipeline races local uploads —
+whichever finishes first claims the filename, and the loser gets a `400 File
+already exists` because PyPI filename slots are immutable forever. If you see
+that error, it almost certainly means CI already published successfully and the
+manual upload was redundant.
+
+Version numbers are derived from git tags by `setuptools_scm`, so the tag *is*
+the source of truth — there's no `__version__` constant to bump anywhere.
 
 Package metadata: `setup.py`
 - Name: `django-silky`
 - URL: `https://github.com/VaishnavGhenge/django-silky`
-- Original author: Michael Ford; Maintainer: Vaishnav Ghenge
+- Author / Maintainer: Vaishnav Ghenge (`vaishnavghenge@gmail.com`)
+- Original `django-silk` attribution to Michael Ford / Jazzband lives in
+  `README.md` and `LICENSE`, not in package metadata.
 
 ---
 
@@ -178,7 +198,7 @@ See `MIGRATING.md` for the full guide.
 ## Test baseline
 
 ```
-248 passed, 1 skipped
+277 passed, 1 skipped
 ```
 
 Run with: `DB_ENGINE=sqlite3 .venv/bin/python -m pytest project/tests/ -q`
