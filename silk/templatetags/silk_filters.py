@@ -91,6 +91,16 @@ def sorted(value):
     return sorted(value)
 
 
+@register.filter
+def unlocalize(value):
+    """
+    Render values without Django's locale-aware numeric formatting.
+    """
+    if value is None:
+        return ''
+    return str(value)
+
+
 @stringfilter
 def filepath_urlify(value, autoescape=None):
     value = _urlify(value)
