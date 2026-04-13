@@ -1,66 +1,14 @@
-# django-silky
+# django-silk
 
-[![PyPI](https://img.shields.io/pypi/v/django-silky.svg)](https://pypi.org/project/django-silky/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-silky.svg)](https://pypi.org/project/django-silky/)
-[![Supported Django versions](https://img.shields.io/pypi/djversions/django-silky.svg)](https://pypi.org/project/django-silky/)
-[![Tests](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml/badge.svg)](https://github.com/VaishnavGhenge/django-silky/actions/workflows/test.yml)
-[![Downloads/month](https://img.shields.io/pypi/dm/django-silky.svg?label=downloads%2Fmonth)](https://pypi.org/project/django-silky/)
-[![Downloads total](https://static.pepy.tech/badge/django-silky)](https://pepy.tech/project/django-silky)
+[![PyPI](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.org/project/django-silk/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.org/project/django-silk/)
+[![Supported Django versions](https://img.shields.io/pypi/djversions/django-silk.svg)](https://pypi.org/project/django-silk/)
+[![Tests](https://github.com/jazzband/django-silk/actions/workflows/test.yml/badge.svg)](https://github.com/jazzband/django-silk/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**django-silky** is a modernized-UI fork of [django-silk](https://github.com/jazzband/django-silk) — a live profiling and inspection tool for the Django framework.
+**django-silk** is a live profiling and inspection tool for the Django framework.
 
-It keeps 100 % of the original functionality (request/response recording, SQL inspection, code profiling, dynamic profiling) while shipping a fully redesigned interface built on CSS custom properties (light **and** dark mode), Lucide icons, an inline filter bar, multi-column sort chips, and proper pagination.
-
----
-
-## What's different from django-silk?
-
-| Feature | django-silk | django-silky |
-|---|---|---|
-| Theme | Fixed dark nav, light body | Full light/dark toggle, persisted in `localStorage` |
-| Filter UI | 300 px slide-out drawer | Inline collapsible filter bar |
-| Filter selectors | Single-value dropdowns | Multi-select for method, status code, and path (with search) |
-| Sort | Single column, GET param | Multi-column sort chips (session-persisted) |
-| Pagination | Query-slice (`LIMIT N`) | Real Django `Paginator` with prev/next/page numbers |
-| Detail pages | Plain tables | Hero bar + metric pills + section cards |
-| Icons | Font Awesome (CDN) | Lucide (self-hosted, no external requests) |
-| URL sharing | State lost on reload | Sort + per-page encoded in URL; filter bar state in `localStorage` |
-
----
-
-## Screenshots
-
-<table>
-<tr>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/analytics-dashboard.png" alt="Analytics dashboard – dark mode" width="420"/><br/><sub><b>Analytics dashboard</b> — activity timeline, status donut, method bars, RT histogram, latency percentiles, queries-per-request histogram</sub></td>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/requests-filter-bar.png" alt="Requests list with filter bar open" width="420"/><br/><sub><b>Requests list</b> — inline filter bar with multi-select method, status, path, and view filters; multi-column sort chips</sub></td>
-</tr>
-<tr>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/n1-banner.png" alt="N+1 detection banner on SQL tab" width="420"/><br/><sub><b>N+1 detection</b> — banner with detected pattern, query count badge, and per-query cost; offending rows highlighted</sub></td>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/profile-detail-code.png" alt="Profile detail – code view" width="420"/><br/><sub><b>Profile detail</b> — source file, function code highlighted, and associated SQL queries</sub></td>
-</tr>
-<tr>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/profile-detail-queries.png" alt="cProfile output" width="420"/><br/><sub><b>cProfile output</b> — raw cProfile dump with ncalls, tottime, cumtime, and filename:function</sub></td>
-<td><img src="https://raw.githubusercontent.com/VaishnavGhenge/django-silky/master/screenshots/meta.png" alt="Settings page – colour scheme picker and data management" width="420"/><br/><sub><b>Settings</b> — colour scheme picker (Light / Dark / Midnight / High Contrast) and selective data-clear controls</sub></td>
-</tr>
-</table>
-
----
-
-## Migrating from django-silk
-
-`django-silky` is a drop-in replacement — same app label (`silk`), same
-database schema (migrations 0001 – 0008), all your existing data is retained.
-
-```bash
-pip uninstall django-silk
-pip install django-silky
-# No manage.py migrate needed — schema is identical
-```
-
-For full instructions, version compatibility details, and rollback steps see
-**[MIGRATING.md](MIGRATING.md)**.
+Silk intercepts and stores HTTP requests and database queries made during those requests, presenting them in a browsable web UI with filtering, sorting, and code profiling capabilities.
 
 ---
 
@@ -74,13 +22,13 @@ For full instructions, version compatibility details, and rollback steps see
 ## Installation
 
 ```bash
-pip install django-silky
+pip install django-silk
 ```
 
 With optional request body formatting:
 
 ```bash
-pip install django-silky[formatting]
+pip install django-silk[formatting]
 ```
 
 ### settings.py
@@ -273,8 +221,8 @@ SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
 ## Development
 
 ```bash
-git clone https://github.com/VaishnavGhenge/django-silky.git
-cd django-silky
+git clone https://github.com/jazzband/django-silk.git
+cd django-silk
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[formatting]"
 pip install -r project/requirements.txt
@@ -293,12 +241,6 @@ DB_ENGINE=sqlite3 python -m pytest project/tests/ -q
 
 ---
 
-## Credits
-
-django-silky is a fork of [django-silk](https://github.com/jazzband/django-silk), originally created by [Michael Ford](https://github.com/mtford90) and maintained by [Jazzband](https://jazzband.co/). All core profiling functionality comes from the upstream project; this fork focuses solely on UI improvements.
-
----
-
 ## License
 
-MIT — same as the upstream [django-silk](https://github.com/jazzband/django-silk).
+MIT — see [LICENSE](LICENSE).

@@ -1,4 +1,4 @@
-"""WSGI config for django_silky project.
+"""WSGI config for django-silk project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
