@@ -1,14 +1,16 @@
 """
 Django queryset filters used by the requests view
 """
-from silk.utils.n_plus_one import fingerprint_query
-from silk.templatetags.silk_filters import _silk_date_time
-from silk.profiling.dynamic import _get_module
-from django.utils import timezone
-from django.db.models import Count, Q, Sum
 import json
 import logging
 from datetime import datetime, timedelta
+
+from django.db.models import Count, Q, Sum
+from django.utils import timezone
+
+from silk.profiling.dynamic import _get_module
+from silk.templatetags.silk_filters import _silk_date_time
+from silk.utils.n_plus_one import fingerprint_query
 
 TIME_RANGE_PRESETS = {
     '1h': 3600,
@@ -327,8 +329,7 @@ class NPlusOneFilter(BaseFilter):
         super().__init__(value)
 
     def contribute_to_query_set(self, query_set):
-        from silk.models import \
-            SQLQuery  # local import avoids circular reference
+        from silk.models import SQLQuery  # local import avoids circular reference
         request_ids = list(query_set.values_list('pk', flat=True))
         if not request_ids:
             return query_set
