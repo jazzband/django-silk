@@ -1,6 +1,11 @@
 """
 Django queryset filters used by the requests view
 """
+from silk.utils.n_plus_one import fingerprint_query
+from silk.templatetags.silk_filters import _silk_date_time
+from silk.profiling.dynamic import _get_module
+from django.utils import timezone
+from django.db.models import Count, Q, Sum
 import json
 import logging
 from datetime import datetime, timedelta
@@ -12,12 +17,6 @@ TIME_RANGE_PRESETS = {
     '7d': 604800,
 }
 
-from django.db.models import Count, Q, Sum
-from django.utils import timezone
-
-from silk.profiling.dynamic import _get_module
-from silk.templatetags.silk_filters import _silk_date_time
-from silk.utils.n_plus_one import fingerprint_query
 
 logger = logging.getLogger('silk.request_filters')
 

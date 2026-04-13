@@ -6,8 +6,12 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile, Request
-from silk.request_filters import (TIME_RANGE_PRESETS, BaseFilter,
-                                  FiltersManager, filters_from_request)
+from silk.request_filters import (
+    TIME_RANGE_PRESETS,
+    BaseFilter,
+    FiltersManager,
+    filters_from_request,
+)
 from silk.utils.pagination import get_page
 
 

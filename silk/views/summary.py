@@ -9,8 +9,12 @@ from django.views.generic import View
 
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.request_filters import (TIME_RANGE_PRESETS, BaseFilter,
-                                  FiltersManager, filters_from_request)
+from silk.request_filters import (
+    TIME_RANGE_PRESETS,
+    BaseFilter,
+    FiltersManager,
+    filters_from_request,
+)
 
 
 def _percentile(sorted_data, p):

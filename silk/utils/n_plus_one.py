@@ -3,8 +3,8 @@ import re
 # Only replace single-quoted string *literals* (values).
 # Double-quoted identifiers like "table"."column" are kept intact
 # so the fingerprint remains human-readable for grouping.
-_RE_STRINGS    = re.compile(r"'[^']*'")
-_RE_NUMBERS    = re.compile(r'\b\d+\b')
+_RE_STRINGS = re.compile(r"'[^']*'")
+_RE_NUMBERS = re.compile(r'\b\d+\b')
 _RE_WHITESPACE = re.compile(r'\s+')
 
 
