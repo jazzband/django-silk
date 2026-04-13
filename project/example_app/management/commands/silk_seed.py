@@ -21,7 +21,6 @@ from django.utils import timezone
 from silk import models
 from silk.models import Profile, SQLQuery
 
-
 # ---------------------------------------------------------------------------
 # Data pools
 # ---------------------------------------------------------------------------

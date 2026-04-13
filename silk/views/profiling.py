@@ -6,7 +6,8 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile, Request
-from silk.request_filters import BaseFilter, FiltersManager, TIME_RANGE_PRESETS, filters_from_request
+from silk.request_filters import (TIME_RANGE_PRESETS, BaseFilter,
+                                  FiltersManager, filters_from_request)
 from silk.utils.pagination import get_page
 
 
@@ -126,11 +127,11 @@ class ProfilingView(View):
         if name:
             context['name'] = name
         qs = self._get_objects(show=None,
-                              order_by=order_by,
-                              func_name=func_name,
-                              silk_request=silk_request,
-                              name=name,
-                              filters=[BaseFilter.from_dict(x) for _, x in filters.items()])
+                               order_by=order_by,
+                               func_name=func_name,
+                               silk_request=silk_request,
+                               name=name,
+                               filters=[BaseFilter.from_dict(x) for _, x in filters.items()])
         page_obj = get_page(request, qs, show)
         context['page_obj'] = page_obj
         context['results'] = page_obj.object_list

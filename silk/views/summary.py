@@ -1,7 +1,7 @@
 import json
 
 from django.db.models import Avg, Count, Max, Min, Sum
-from django.db.models.functions import TruncHour, TruncDay
+from django.db.models.functions import TruncDay, TruncHour
 from django.shortcuts import render
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
@@ -9,12 +9,8 @@ from django.views.generic import View
 
 from silk import models
 from silk.auth import login_possibly_required, permissions_possibly_required
-from silk.request_filters import (
-    BaseFilter,
-    FiltersManager,
-    TIME_RANGE_PRESETS,
-    filters_from_request,
-)
+from silk.request_filters import (TIME_RANGE_PRESETS, BaseFilter,
+                                  FiltersManager, filters_from_request)
 
 
 def _percentile(sorted_data, p):
@@ -142,14 +138,13 @@ class SummaryView(View):
             .values_list('time_taken', flat=True)
         )
         buckets = [
-            {'label': '<50ms',    'max': 50,   'count': 0},
-            {'label': '50-100ms', 'max': 100,  'count': 0},
-            {'label': '100-200ms','max': 200,  'count': 0},
-            {'label': '200-500ms','max': 500,  'count': 0},
+            {'label': '<50ms', 'max': 50, 'count': 0},
+            {'label': '50-100ms', 'max': 100, 'count': 0},
+            {'label': '100-200ms', 'max': 200, 'count': 0},
+            {'label': '200-500ms', 'max': 500, 'count': 0},
             {'label': '500ms-1s', 'max': 1000, 'count': 0},
-            {'label': '>1s',      'max': None,  'count': 0},
+            {'label': '>1s', 'max': None, 'count': 0},
         ]
-        prev = 0
         for t in times:
             for b in buckets:
                 if b['max'] is None or t < b['max']:
@@ -200,12 +195,12 @@ class SummaryView(View):
             .values_list('num_sql_queries', flat=True)
         )
         buckets = [
-            {'label': '0',     'max': 1},
-            {'label': '1–5',   'max': 6},
-            {'label': '6–10',  'max': 11},
+            {'label': '0', 'max': 1},
+            {'label': '1–5', 'max': 6},
+            {'label': '6–10', 'max': 11},
             {'label': '11–25', 'max': 26},
             {'label': '26–50', 'max': 51},
-            {'label': '>50',   'max': None},
+            {'label': '>50', 'max': None},
         ]
         result = [{'label': b['label'], 'count': 0} for b in buckets]
         for n in counts:

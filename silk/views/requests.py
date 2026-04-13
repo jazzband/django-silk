@@ -8,12 +8,8 @@ from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Request, Response, SQLQuery
-from silk.request_filters import (
-    BaseFilter,
-    FiltersManager,
-    TIME_RANGE_PRESETS,
-    filters_from_request,
-)
+from silk.request_filters import (TIME_RANGE_PRESETS, BaseFilter,
+                                  FiltersManager, filters_from_request)
 from silk.utils.n_plus_one import fingerprint_query
 from silk.utils.pagination import get_page
 
