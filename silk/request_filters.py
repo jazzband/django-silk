@@ -327,7 +327,8 @@ class NPlusOneFilter(BaseFilter):
         super().__init__(value)
 
     def contribute_to_query_set(self, query_set):
-        from silk.models import SQLQuery  # local import avoids circular reference
+        from silk.models import \
+            SQLQuery  # local import avoids circular reference
         request_ids = list(query_set.values_list('pk', flat=True))
         if not request_ids:
             return query_set
