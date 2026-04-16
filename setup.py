@@ -1,6 +1,6 @@
 import os
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -8,7 +8,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='django-silk',
     use_scm_version=True,
-    packages=find_packages(exclude=['project*', 'tests*', 'node_modules*']),
+    packages=['silk'],
     include_package_data=True,
     license='MIT License',
     description='Silky smooth profiling for the Django Framework',
