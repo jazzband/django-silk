@@ -12,40 +12,6 @@ Silk intercepts and stores HTTP requests and database queries made during those 
 
 ---
 
-## UI Overview
-
-### Requests list — dark mode
-
-![Requests list with dark theme, sort chips, and inline filter bar](https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/requests-filter-bar.png)
-
-**Key features:**
-- **Light/dark theme toggle** — persisted in localStorage for every visit
-- **Inline collapsible filter bar** — replaces the old slide-out drawer; easily filter by status, path, method, time range, SQL count, and more
-- **Multi-column sort chips** — session-persisted and reflected in the URL for easy sharing
-- **Real Django Paginator** — per-page setting stored in URL query params
-
-### Analytics dashboard
-
-![Summary dashboard with metric cards and time-range presets](https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/analytics-dashboard.png)
-
-At-a-glance metrics for total requests, unique paths, error rate, average response time, and slow/fast request counts.
-
-### N+1 detection banner
-
-![N+1 query detection banner on request detail](https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/n1-banner.png)
-
-Automatic detection and prominent highlighting of N+1 query patterns on the request detail page.
-
-### Profile detail
-
-![Profile detail with code view](https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/profile-detail-code.png)
-
-![Profile detail with SQL queries](https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/profile-detail-queries.png)
-
-**Hero bar + metric pills:** Each detail page displays response time, SQL query count, number of profiles, and Python execution time with performance-colored pill badges.
-
----
-
 ## Requirements
 
 * Django 4.2, 5.1, 5.2, 6.0
