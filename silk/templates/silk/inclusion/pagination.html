@@ -1,0 +1,47 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="silk-pagination" aria-label="Pagination">
+    <ul class="silk-pagination__list">
+        {% if page_obj.has_previous %}
+        <li class="silk-pagination__item">
+            <a class="silk-pagination__link" href="?{% if request.GET %}{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous page">
+                <i data-lucide="chevron-left" class="silk-icon"></i> Prev
+            </a>
+        </li>
+        {% else %}
+        <li class="silk-pagination__item silk-pagination__item--disabled" aria-disabled="true">
+            <span class="silk-pagination__link"><i data-lucide="chevron-left" class="silk-icon"></i> Prev</span>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+            <li class="silk-pagination__item silk-pagination__item--current" aria-current="page">
+                <span class="silk-pagination__link">{{ num }}</span>
+            </li>
+            {% elif num == 1 or num == page_obj.paginator.num_pages or num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <li class="silk-pagination__item">
+                <a class="silk-pagination__link" href="?{% if request.GET %}{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}{% endif %}page={{ num }}">{{ num }}</a>
+            </li>
+            {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+            <li class="silk-pagination__item silk-pagination__item--ellipsis"><span>…</span></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="silk-pagination__item">
+            <a class="silk-pagination__link" href="?{% if request.GET %}{% for k, v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next page">
+                Next <i data-lucide="chevron-right" class="silk-icon"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="silk-pagination__item silk-pagination__item--disabled" aria-disabled="true">
+            <span class="silk-pagination__link">Next <i data-lucide="chevron-right" class="silk-icon"></i></span>
+        </li>
+        {% endif %}
+    </ul>
+    <p class="silk-pagination__info">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        &nbsp;&middot;&nbsp; {{ page_obj.paginator.count }} total
+    </p>
+</nav>
+{% endif %}

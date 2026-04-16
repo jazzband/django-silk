@@ -1,6 +1,7 @@
 """
 Django queryset filters used by the requests view
 """
+import json
 import logging
 from datetime import datetime, timedelta
 
@@ -9,6 +10,15 @@ from django.utils import timezone
 
 from silk.profiling.dynamic import _get_module
 from silk.templatetags.silk_filters import _silk_date_time
+from silk.utils.n_plus_one import fingerprint_query
+
+TIME_RANGE_PRESETS = {
+    '1h': 3600,
+    '6h': 21600,
+    '24h': 86400,
+    '7d': 604800,
+}
+
 
 logger = logging.getLogger('silk.request_filters')
 
@@ -207,6 +217,141 @@ class MethodFilter(BaseFilter):
         super().__init__(value, method=value)
 
 
+class MultiMethodFilter(BaseFilter):
+    """Filter on one or more HTTP methods. value is a JSON list e.g. '["GET", "POST"]'.
+    Also accepts a plain string for backward compatibility with old MethodFilter sessions."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    methods = [str(m).upper() for m in parsed if m]
+                else:
+                    methods = [str(parsed).upper()] if parsed else []
+            except (ValueError, TypeError):
+                methods = [value.strip().upper()] if value.strip() else []
+        else:
+            methods = [str(m).upper() for m in value if m]
+
+        if not methods:
+            raise FilterValidationError('No methods selected')
+
+        super().__init__(json.dumps(methods), method__in=methods)
+
+    def __str__(self):
+        try:
+            methods = json.loads(self.value)
+            if len(methods) == 1:
+                return 'Method == %s' % methods[0]
+            return 'Method in [%s]' % ', '.join(methods)
+        except Exception:
+            return 'Method: %s' % self.value
+
+
+class MultiPathFilter(BaseFilter):
+    """Filter on one or more paths. value is a JSON list e.g. '["/api/users/", "/api/products/"]'.
+    Also accepts a plain string for backward compatibility with old PathFilter sessions."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    paths = [str(p) for p in parsed if p]
+                else:
+                    paths = [str(parsed)] if parsed else []
+            except (ValueError, TypeError):
+                paths = [value.strip()] if value.strip() else []
+        else:
+            paths = [str(p) for p in value if p]
+
+        if not paths:
+            raise FilterValidationError('No paths selected')
+
+        super().__init__(json.dumps(paths), path__in=paths)
+
+    def __str__(self):
+        try:
+            paths = json.loads(self.value)
+            if len(paths) == 1:
+                return 'Path == %s' % paths[0]
+            return 'Path in [%s]' % ', '.join(paths)
+        except Exception:
+            return 'Path: %s' % self.value
+
+
+class MultiStatusCodeFilter(BaseFilter):
+    """Filter on one or more status codes. value is a JSON list e.g. '[200, 404]'.
+    Also accepts a plain int string for backward compatibility."""
+
+    def __init__(self, value):
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+                if isinstance(parsed, list):
+                    codes = [int(c) for c in parsed if c != '' and c is not None]
+                else:
+                    codes = [int(parsed)] if parsed != '' else []
+            except (ValueError, TypeError):
+                try:
+                    codes = [int(value)]
+                except (ValueError, TypeError):
+                    codes = []
+        else:
+            codes = [int(c) for c in value if c]
+
+        if not codes:
+            raise FilterValidationError('No status codes selected')
+
+        super().__init__(json.dumps(codes), response__status_code__in=codes)
+
+    def __str__(self):
+        try:
+            codes = json.loads(self.value)
+            if len(codes) == 1:
+                return 'Status == %d' % codes[0]
+            return 'Status in [%s]' % ', '.join(str(c) for c in codes)
+        except Exception:
+            return 'Status: %s' % self.value
+
+
+class NPlusOneFilter(BaseFilter):
+    """Filter requests that have potential N+1 SQL query patterns (3+ identical queries).
+
+    All filtering is performed in contribute_to_query_set — the Q object itself is empty
+    so the subsequent .filter(self) is a no-op. This mirrors the batch N+1 detection
+    already used on the requests list page for badge display.
+    """
+
+    def __init__(self, value='1'):
+        # value is a boolean flag ('1' = enabled).
+        super().__init__(value)
+
+    def contribute_to_query_set(self, query_set):
+        from silk.models import SQLQuery  # local import avoids circular reference
+        request_ids = list(query_set.values_list('pk', flat=True))
+        if not request_ids:
+            return query_set
+        sql_rows = SQLQuery.objects.filter(
+            request_id__in=request_ids
+        ).values('request_id', 'query')
+        buckets = {}
+        for row in sql_rows:
+            rid = row['request_id']
+            fp = fingerprint_query(row['query'])
+            buckets.setdefault(rid, {}).setdefault(fp, 0)
+            buckets[rid][fp] += 1
+        n1_ids = [
+            rid for rid, fps in buckets.items()
+            if any(cnt >= 3 for cnt in fps.values())
+        ]
+        return query_set.filter(pk__in=n1_ids)
+
+    def __str__(self):
+        return 'Has N+1 queries'
+
+
 def filters_from_request(request):
     raw_filters = {}
     for key in request.POST:
@@ -217,6 +362,33 @@ def filters_from_request(request):
             if ident not in raw_filters:
                 raw_filters[ident] = {}
             raw_filters[ident][typ] = request.POST[key]
+    filters = {}
+    for ident, raw_filter in raw_filters.items():
+        value = raw_filter.get('value', '')
+        if value.strip():
+            typ = raw_filter['typ']
+            module = _get_module('silk.request_filters')
+            filter_class = getattr(module, typ)
+            try:
+                f = filter_class(value)
+                filters[ident] = f
+            except FilterValidationError:
+                logger.warning(f'Validation error when processing filter {typ}({value})')
+    return filters
+
+
+def filters_from_data(data):
+    """Same logic as filters_from_request but accepts a plain dict (e.g. request.POST or
+    request.session data) instead of a Django request object."""
+    raw_filters = {}
+    for key in data:
+        splt = key.split('-')
+        if splt[0].startswith('filter'):
+            ident = splt[1]
+            typ = splt[2]
+            if ident not in raw_filters:
+                raw_filters[ident] = {}
+            raw_filters[ident][typ] = data[key]
     filters = {}
     for ident, raw_filter in raw_filters.items():
         value = raw_filter.get('value', '')

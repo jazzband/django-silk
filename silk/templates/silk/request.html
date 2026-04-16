@@ -2,21 +2,17 @@
 {% load silk_filters %}
 {% load silk_inclusion %}
 {% load static %}
-{% block pagetitle %}Silky - Request - {{ silk_request.path }}{% endblock %}
+{% block pagetitle %}Silky - {{ silk_request.method }} {{ silk_request.path }}{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'silk/css/components/cell.css' %}"/>
-    <link rel="stylesheet" href="{% static 'silk/css/components/numeric.css' %}"/>
-    <link rel="stylesheet" href="{% static 'silk/css/components/heading.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/components/theme.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/pages/request.css' %}"/>
-    <link rel="stylesheet" href="{% static 'silk/lib/highlight/foundation.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/lib/highlight/silk-theme.css' %}"/>
 {% endblock %}
+
 {% block js %}
     <script src="{% static 'silk/lib/highlight/highlight.pack.js' %}"></script>
     <script src="{% static 'silk/js/pages/request.js' %}"></script>
-    <script src="{% static 'silk/js/components/cell.js' %}"></script>
-{% endblock %}
-{% block onload %}
 {% endblock %}
 
 {% block menu %}
@@ -24,99 +20,148 @@
 {% endblock %}
 
 {% block data %}
-    <div class="wrapper">
-        <div id="request-summary">
-            {% request_summary silk_request %}
+<div class="silk-detail-page">
+
+    {# ── Hero bar ── #}
+    <div class="silk-hero">
+        <div class="silk-hero__badges">
+            <span class="silk-badge silk-badge--method silk-badge--{{ silk_request.method|lower }}">{{ silk_request.method }}</span>
+            {% if silk_request.response.status_code %}
+            <span class="silk-badge silk-badge--status
+                {% with sc=silk_request.response.status_code %}
+                {% if sc >= 500 %}silk-badge--status-5xx
+                {% elif sc >= 400 %}silk-badge--status-4xx
+                {% elif sc >= 300 %}silk-badge--status-3xx
+                {% else %}silk-badge--status-2xx
+                {% endif %}
+                {% endwith %}">{{ silk_request.response.status_code }}</span>
+            {% endif %}
+            <span class="silk-hero__time">{{ silk_request.start_time | silk_full_datetime }}</span>
         </div>
-        <div id="request-info">
-            {% if query_params %}
-                {% heading 'Query Parameters' %}
-                <pre><code>{{ query_params }}</code></pre>
-            {% endif %}
-            {% heading 'Request Headers' %}
-            <table class="headers">
-                {% for k,v in silk_request.headers.items %}
-                    <tr>
-                        <td class="key">{{ k.upper }}</td>
-                        <td class="value">{{ v }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-            {% if silk_request.raw_body %}
-                {% heading 'Raw Request Body' %}
-                {% if silk_request.raw_body|length > 1000 %}
-                    The raw request body is <b>{{ silk_request.raw_body|length }}</b> characters long
-                    and hence is <b>too big</b> to show here.
-                    Click <a href="{% url "silk:raw" silk_request.pk %}?typ=request&subtyp=raw">here</a> to view the raw request body.
-                {% else %}
-                    <pre>{{ silk_request.raw_body }}</pre>
-                {% endif %}
-            {% endif %}
-            {% if silk_request.body %}
-                {% heading 'Request Body' %}
-                {% if silk_request.body|length > 1000 %}
-                    The processed request body is <b>{{ silk_request.body|length }}</b> characters long
-                    and hence is <b>too big</b> to show here.
-                    Click <a href="{% url "silk:raw" silk_request.pk %}?typ=request&subtyp=processed">here</a> to view the request body.
-                {% else %}
-                    <div class="description">
-                        This is the body of the HTTP request represented as JSON for easier reading.
-                    </div>
-                    <pre><code>{{ silk_request.body }}</code></pre>
-                {% endif %}
-            {% endif %}
-            {% if silk_request.response.headers %}
-                {% heading 'Response Headers' %}
-                <table class="headers">
-                    {% for k, v in silk_request.response.headers.items %}
-                        <tr>
-                            <td class="key">{{ k.upper }}</td>
-                            <td class="value">{{ v }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-            {% if silk_request.response.raw_body %}
-                {% heading 'Raw Response Body' %}
-                {% with raw_body=silk_request.response.raw_body_decoded %}
-                    {% if raw_body|length > 1000 %}
-                        The raw response body is <b>{{ raw_body|length }}</b> characters long
-                        and hence is <b>too big</b> to show here.
-                        Click <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=raw">here</a> to view the raw response body.
-                    {% else %}
-                        <pre>{{ raw_body }}</pre>
-                    {% endif %}
-                {% endwith %}
-            {% endif %}
-            {% if silk_request.response.body %}
-                {% heading 'Response Body' %}
-                <div class="description">
-                    This is the body of the HTTP response represented as JSON for easier reading.
-                </div>
-                {% if silk_request.response.body|length > 1000 %}
-                    The response body is <b>{{ silk_request.response.body|length }}</b> characters long
-                    and hence is <b>too big</b> to show here.
-                    Click <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=processed">here</a> to view the response body.
-                {% else %}
-                    <pre><code>{{ silk_request.response.body }}</code></pre>
-                {% endif %}
-            {% endif %}
-            {% if curl %}
-                {% heading 'Curl' %}
-                <div class="description">
-                    Curl is a command-line utility for transferring data from servers. Paste the following into
-                    a terminal to repeat this request via command line.
-                </div>
-                <pre id="pre-curl"><code>{{ curl.strip }}</code></pre>
-            {% endif %}
-            {% if client %}
-                {% heading 'Django Test Client' %}
-                <div class="description">
-                    The following is working python code that makes use of the Django test client. It can be used to
-                    replicate this request from within a Django unit test, or simply as standalone Python.
-                </div>
-                <pre id="pre-curl"><code>{{ client.strip }}</code></pre>
+        <div class="silk-hero__path">{{ silk_request.path }}</div>
+        <div class="silk-hero__metrics">
+            <span class="silk-hero__metric {% if silk_request.time_taken >= 2000 %}silk-hero__metric--bad{% elif silk_request.time_taken >= 500 %}silk-hero__metric--warn{% endif %}">
+                <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.time_taken|floatformat:"0" }}<span class="silk-unit">ms</span>
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="database" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="silk-unit">ms</span> DB
+            </span>
+            <span class="silk-hero__metric {% if silk_request.num_sql_queries >= 50 %}silk-hero__metric--bad{% elif silk_request.num_sql_queries >= 20 %}silk-hero__metric--warn{% endif %}">
+                <i data-lucide="database" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.num_sql_queries }} queries
+            </span>
+            {% if n_plus_one and n_plus_one.has_n_plus_one %}
+            <a href="{% url 'silk:request_sql' request_id=silk_request.pk %}" class="silk-hero__metric silk-hero__metric--n1 silk-n1-link">
+                <i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>
+                N+1 ({{ n_plus_one.groups|length }})
+            </a>
             {% endif %}
         </div>
     </div>
+
+    <div class="silk-detail-body">
+        {% if query_params %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Query Parameters</h3>
+            <pre class="silk-pre"><code>{{ query_params }}</code></pre>
+        </section>
+        {% endif %}
+
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Request Headers</h3>
+            <table class="silk-headers">
+                {% for k, v in silk_request.headers.items %}
+                <tr class="silk-headers__row">
+                    <td class="silk-headers__key">{{ k.upper }}</td>
+                    <td class="silk-headers__val">{{ v }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        {% if silk_request.raw_body %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Raw Request Body</h3>
+            {% if silk_request.raw_body|length > 1000 %}
+                <p class="silk-detail-note">The raw request body is <strong>{{ silk_request.raw_body|length }}</strong> characters — <a href="{% url "silk:raw" silk_request.pk %}?typ=request&subtyp=raw">view raw</a>.</p>
+            {% else %}
+                <pre class="silk-pre">{{ silk_request.raw_body }}</pre>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if silk_request.body %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Request Body</h3>
+            <p class="silk-detail-note">Processed as JSON for readability.</p>
+            {% if silk_request.body|length > 1000 %}
+                <p class="silk-detail-note">Body is <strong>{{ silk_request.body|length }}</strong> characters — <a href="{% url "silk:raw" silk_request.pk %}?typ=request&subtyp=processed">view body</a>.</p>
+            {% else %}
+                <pre class="silk-pre"><code>{{ silk_request.body }}</code></pre>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if silk_request.response.headers %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Response Headers</h3>
+            <table class="silk-headers">
+                {% for k, v in silk_request.response.headers.items %}
+                <tr class="silk-headers__row">
+                    <td class="silk-headers__key">{{ k.upper }}</td>
+                    <td class="silk-headers__val">{{ v }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+        {% endif %}
+
+        {% if silk_request.response.raw_body %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Raw Response Body</h3>
+            {% with raw_body=silk_request.response.raw_body_decoded %}
+                {% if raw_body|length > 1000 %}
+                    <p class="silk-detail-note">The raw response body is <strong>{{ raw_body|length }}</strong> characters — <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=raw">view raw</a>.</p>
+                {% else %}
+                    <pre class="silk-pre">{{ raw_body }}</pre>
+                {% endif %}
+            {% endwith %}
+        </section>
+        {% endif %}
+
+        {% if silk_request.response.body %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">Response Body</h3>
+            <p class="silk-detail-note">Processed as JSON for readability.</p>
+            {% if silk_request.response.body|length > 1000 %}
+                <p class="silk-detail-note">Response body is <strong>{{ silk_request.response.body|length }}</strong> characters — <a href="{% url "silk:raw" silk_request.pk %}?typ=response&subtyp=processed">view body</a>.</p>
+            {% else %}
+                <pre class="silk-pre"><code>{{ silk_request.response.body }}</code></pre>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if curl %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">
+                <i data-lucide="terminal" class="silk-icon silk-icon--sm"></i> Curl
+            </h3>
+            <p class="silk-detail-note">Paste into a terminal to repeat this request.</p>
+            <pre class="silk-pre"><code class="language-bash">{{ curl.strip }}</code></pre>
+        </section>
+        {% endif %}
+
+        {% if client %}
+        <section class="silk-section">
+            <h3 class="silk-section__heading">
+                <i data-lucide="code" class="silk-icon silk-icon--sm"></i> Django Test Client
+            </h3>
+            <p class="silk-detail-note">Python code to replicate this request in a Django unit test.</p>
+            <pre class="silk-pre"><code class="language-python">{{ client.strip }}</code></pre>
+        </section>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

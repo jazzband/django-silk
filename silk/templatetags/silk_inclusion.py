@@ -36,7 +36,10 @@ def heading(text):
 
 
 def code(lines, actual_line):
-    return {'code': lines, 'actual_line': [x.strip() for x in actual_line]}
+    # Exclude empty strings — otherwise every blank line in the snippet matches
+    stripped_actual = {x.strip() for x in actual_line if x.strip()}
+    active_indices = [i for i, line in enumerate(lines) if line.strip() and line.strip() in stripped_actual]
+    return {'code': lines, 'actual_line': list(stripped_actual), 'active_indices': active_indices}
 
 
 register.inclusion_tag('silk/inclusion/request_summary.html')(request_summary)

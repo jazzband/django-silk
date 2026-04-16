@@ -1,55 +1,159 @@
-.right-aligned {
-  text-align: right;
+/* sql.html inherits silk-table, silk-hero, silk-pagination, silk-empty from request.css.
+   Only SQL-list-specific overrides live here. */
 
+.silk-page .silk-hero {
+  padding-top: 1.25rem;
 }
 
-.center-aligned {
-  text-align: center;
-
+.silk-page .silk-table-wrapper {
+  margin-top: 1.25rem;
 }
 
-.left-aligned {
-  text-align: left;
+/* ── N+1 detection banner ── */
+.silk-n1-banner {
+  margin-top: 1rem;
+  border: 1px solid var(--silk-perf-ok);
+  border-radius: var(--silk-card-radius, 8px);
+  background: color-mix(in srgb, var(--silk-perf-ok) 6%, var(--silk-surface));
+  overflow: hidden;
 }
 
-#table-pagination {
-  text-align: center;
-  margin: 20px;
+.silk-n1-banner__header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 20%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-table {
-  border-spacing: 0;
-  margin: auto;
-  max-width: 920px;
+.silk-n1-banner__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--silk-font-size-base);
+  font-weight: 600;
+  color: var(--silk-perf-ok);
 }
 
-tr {
-  height: 20px;
+.silk-n1-banner__pills {
+  display: flex;
+  gap: 6px;
 }
 
-tr.data-row:hover {
-  background-color: rgb(51, 51, 68);
-  color: white;
-  cursor: pointer;
+.silk-n1-pill {
+  background: var(--silk-perf-ok);
+  color: #3d1a00;
+  font-size: var(--silk-font-size-xs);
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
 }
 
-td {
-  padding: 5px;
-  padding-left: 20px;
-  padding-right: 20px;
+.silk-n1-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--silk-font-size-sm);
+  font-style: italic;
+  color: var(--silk-text-muted);
+  margin: 0;
+
+  code {
+    background: transparent;
+    color: var(--silk-text-secondary);
+    font-style: normal;
+    font-size: var(--silk-font-size-xs);
+    font-weight: 600;
+  }
 }
 
-th {
-  height: 40px;
-  padding-left: 20px;
-  padding-right: 20px;
+/* ── Pattern list ── */
+.silk-n1-patterns {
+  display: flex;
+  flex-direction: column;
 }
 
-#table-div {
+.silk-n1-pattern {
+  border-bottom: 1px solid color-mix(in srgb, var(--silk-perf-ok) 12%, transparent);
+
+  &:last-child { border-bottom: none; }
+}
+
+/* The clickable row toggle */
+.silk-n1-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  margin-top: 40px;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover {
+    background: color-mix(in srgb, var(--silk-perf-ok) 8%, transparent);
+  }
+
+  &[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--silk-perf-ok) 10%, transparent);
+
+    .silk-n1-chevron { transform: rotate(180deg); }
+  }
 }
 
-#table-pagination div {
-  padding: 5px;
+.silk-n1-count {
+  flex-shrink: 0;
+  font-size: var(--silk-font-size-sm);
+  font-weight: 700;
+  color: var(--silk-perf-ok);
+  min-width: 32px;
+}
+
+.silk-n1-preview {
+  flex: 1;
+  font-family: Fantasque, 'Fira Mono', monospace;
+  font-size: var(--silk-font-size-xs);
+  color: var(--silk-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.silk-n1-time {
+  flex-shrink: 0;
+  font-size: var(--silk-font-size-xs);
+  color: var(--silk-text-muted);
+  white-space: nowrap;
+}
+
+.silk-n1-chevron {
+  flex-shrink: 0;
+  color: var(--silk-text-muted);
+  transition: transform 0.15s ease;
+}
+
+/* Expanded SQL body */
+.silk-n1-body {
+  border-top: 1px solid color-mix(in srgb, var(--silk-perf-ok) 12%, transparent);
+
+  .silk-pre--n1 {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    font-size: var(--silk-font-size-sm);
+  }
+}
+
+/* ── N+1 highlighted table row ── */
+.silk-table__row--n1 {
+  td {
+    background: color-mix(in srgb, var(--silk-perf-ok) 6%, transparent) !important;
+  }
+
+  &:hover td {
+    background: color-mix(in srgb, var(--silk-perf-ok) 12%, transparent) !important;
+  }
 }

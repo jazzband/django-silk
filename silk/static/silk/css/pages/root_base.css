@@ -1,6 +1,6 @@
 .cell:hover {
-  background-color: rgb(51, 51, 68);
-  color: white;
+  background-color: var(--silk-row-hover-bg);
+  color: var(--silk-row-hover-text);
   cursor: pointer;
 }
 
@@ -10,25 +10,19 @@
 
 /* General styles for all menus */
 .cbp-spmenu {
-  background: rgb(51, 51, 68);
+  background: var(--silk-nav-bg);
   position: fixed;
 }
 
 h3 {
-  color: white;
+  color: var(--silk-text-nav);
   font-size: 1.9em;
   padding: 10px;
   margin: 0;
   font-weight: 300;
-  background: rgb(51, 51, 68);
+  background: var(--silk-nav-bg);
 }
 
-/*.cbp-spmenu div {*/
-/*display: block;*/
-/*color: #fff;*/
-/*font-size: 1.1em;*/
-/*font-weight: 300;*/
-/*}*/
 /* Orientation-dependent styles for the content of the menu */
 .cbp-spmenu-vertical {
   width: 300px;
@@ -73,8 +67,8 @@ h3 {
   }
 }
 .active-filter {
-  font-size: 12px;
-  color: white;
+  font-size: var(--silk-font-size-sm);
+  color: var(--silk-text-nav);
 }
 
 .active-filter td {
@@ -83,14 +77,14 @@ h3 {
 }
 
 #cbp-spmenu-s2 button {
-  color: white;
+  color: var(--silk-text-nav);
   background: none;
   border: none;
 }
 
 #cbp-spmenu-s2 button:hover {
-  color: black;
-  background: white;
+  color: var(--silk-nav-hover-text);
+  background: var(--silk-nav-hover-bg);
   border: none;
   cursor: pointer;
 }
@@ -121,7 +115,14 @@ h3 {
 
 input[type=number],
 input[type=text] {
-  border: none;
+  border: 1px solid var(--silk-input-border);
+  background-color: var(--silk-input-bg);
+  color: var(--silk-text-primary);
+}
+
+/* Old drawer inputs keep their legacy sizing */
+#cbp-spmenu-s2 input[type=number],
+#cbp-spmenu-s2 input[type=text] {
   padding: 10px;
   width: 222px;
 }
@@ -148,8 +149,8 @@ input[type=text] {
 
 .apply-div {
   display: inline-block;
-  background-color: white;
-  color: black;
+  background-color: var(--silk-surface);
+  color: var(--silk-text-primary);
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
@@ -162,13 +163,16 @@ input[type=text] {
 select {
   border-radius: 0;
   max-width: 100%;
+  background-color: var(--silk-input-bg);
+  color: var(--silk-text-primary);
+  border: 1px solid var(--silk-input-border);
 }
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   /*safari and chrome*/
   select {
     line-height: 30px;
-    background: #f4f4f4;
+    background: var(--silk-input-bg);
   }
 }
 select::-moz-focus-inner {
@@ -182,8 +186,8 @@ select::-moz-focus-inner {
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 0;
-  font-size: 12px;
-  color: white;
+  font-size: var(--silk-font-size-sm);
+  color: var(--silk-text-nav);
   font-style: oblique;
   line-height: 16px;
 }
@@ -210,12 +214,12 @@ select::-moz-focus-inner {
 }
 
 .resizing-input input, .resizing-input span {
-  font-size: 12px;
+  font-size: var(--silk-font-size-sm);
   font-family: FiraSans;
   white-space: pre;
   font-weight: 300;
   background-color: transparent;
-  color: white;
+  color: var(--silk-text-nav);
   padding: 0;
   padding-left: 4px;
   padding-right: 4px;
@@ -231,14 +235,14 @@ h4 {
   padding: 0;
   margin: 3px;
   margin-left: 10px;
-  color: white;
+  color: var(--silk-text-nav);
   font-weight: lighter;
   font-size: 20px;
 }
 
 .filter-section {
-  color: white;
-  font-size: 12px;
+  color: var(--silk-text-nav);
+  font-size: var(--silk-font-size-sm);
   line-height: 2.3;
   padding: 10px;
 }

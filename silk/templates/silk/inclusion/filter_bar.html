@@ -1,0 +1,163 @@
+{% load silk_filters %}
+{% comment %}
+Inline collapsible filter bar — replaces the old CBP drawer.
+Must be placed inside a <form> element that POSTs to the current URL.
+{% endcomment %}
+<div class="silk-filter-bar" id="silk-filter-bar" hidden>
+    <div class="silk-filter-bar__body">
+
+        {# Time presets #}
+        <div class="silk-filter-row">
+            <span class="silk-filter-label">Time:</span>
+            <div class="silk-filter-presets">
+                <button type="button"
+                        class="silk-preset-btn {% if not filters.seconds.value %}silk-preset-btn--active{% endif %}"
+                        onclick="silkSetSeconds(this, '')">All</button>
+                {% for preset in time_presets %}
+                <button type="button"
+                        class="silk-preset-btn {% if filters.seconds.value == preset.seconds %}silk-preset-btn--active{% endif %}"
+                        onclick="silkSetSeconds(this, '{{ preset.seconds|unlocalize }}')">{{ preset.label }}</button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="filter-seconds-typ" value="SecondsFilter">
+            <input type="hidden" name="filter-seconds-value" id="silk-seconds-val"
+                   value="{{ filters.seconds.value|unlocalize }}">
+        </div>
+
+        {# Method toggles — multi-select, active state managed by JS on init #}
+        <div class="silk-filter-row">
+            <span class="silk-filter-label">Method:</span>
+            <div class="silk-filter-methods">
+                {% for method in options_methods %}
+                <button type="button"
+                        class="silk-method-btn silk-method-btn--{{ method|lower }}"
+                        data-method="{{ method }}"
+                        onclick="silkFilterMethod(this)">
+                    {{ method }}
+                </button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="filter-method-typ" value="MultiMethodFilter">
+            <input type="hidden" name="filter-method-value" id="silk-method-value"
+                   value="{{ filters.method.value }}">
+        </div>
+
+        {# Status / Path / Thresholds #}
+        <div class="silk-filter-row">
+
+            {# Status multi-select #}
+            <span class="silk-filter-label">Status:</span>
+            <div class="silk-ms" id="silk-status-ms" data-hidden-id="silk-status-value">
+                <button type="button" class="silk-ms__trigger" onclick="silkMsToggle('silk-status-ms')" aria-expanded="false" aria-haspopup="listbox">
+                    <span class="silk-ms__display">Any</span>
+                    <svg class="silk-ms__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="silk-ms__panel" hidden>
+                    <div class="silk-ms__options" role="listbox">
+                        {% for sc in options_status_codes %}
+                        <label class="silk-ms__option" data-value="{{ sc }}">
+                            <input type="checkbox" class="silk-ms__option-cb" value="{{ sc }}" onchange="silkMsChange('silk-status-ms')">
+                            <span class="silk-badge silk-badge--status silk-badge--status-{{ sc|stringformat:'s'|slice:':1' }}xx">{{ sc }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="silk-ms__footer">
+                        <button type="button" class="silk-ms__clear-btn" onclick="silkMsClear('silk-status-ms')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-status_code-typ" value="MultiStatusCodeFilter">
+            <input type="hidden" name="filter-status_code-value" id="silk-status-value" value="{{ filters.status_code.value|default:'' }}">
+
+            {# Path multi-select with search #}
+            <span class="silk-filter-label">Path:</span>
+            <div class="silk-ms silk-ms--wide" id="silk-path-ms" data-hidden-id="silk-path-value">
+                <button type="button" class="silk-ms__trigger" onclick="silkMsToggle('silk-path-ms')" aria-expanded="false" aria-haspopup="listbox">
+                    <span class="silk-ms__display">Any</span>
+                    <svg class="silk-ms__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="silk-ms__panel" hidden>
+                    <div class="silk-ms__search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--silk-text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" class="silk-ms__search-input" placeholder="Search paths…" oninput="silkMsSearch('silk-path-ms', this.value)" autocomplete="off">
+                    </div>
+                    <div class="silk-ms__options" role="listbox">
+                        {% for p in options_paths %}
+                        <label class="silk-ms__option" data-value="{{ p }}">
+                            <input type="checkbox" class="silk-ms__option-cb" value="{{ p }}" onchange="silkMsChange('silk-path-ms')">
+                            <span class="silk-ms__option-label">{{ p }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="silk-ms__footer">
+                        <button type="button" class="silk-ms__clear-btn" onclick="silkMsClear('silk-path-ms')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-path-typ" value="MultiPathFilter">
+            <input type="hidden" name="filter-path-value" id="silk-path-value" value="{{ filters.path.value|default:'' }}">
+
+            {# View name selector #}
+            {% if view_names %}
+            <span class="silk-filter-label">View:</span>
+            <div class="silk-ms silk-ms--wide" id="silk-view-ms" data-hidden-id="silk-view-value">
+                <button type="button" class="silk-ms__trigger {% if filters.view.value %}silk-ms__trigger--active{% endif %}" onclick="silkMsToggle('silk-view-ms')" aria-expanded="false" aria-haspopup="listbox">
+                    <span class="silk-ms__display">{% if filters.view.value %}{{ filters.view.value|truncatechars:28 }}{% else %}Any{% endif %}</span>
+                    <svg class="silk-ms__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="silk-ms__panel" hidden>
+                    <div class="silk-ms__search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--silk-text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" class="silk-ms__search-input" placeholder="Search views…" oninput="silkMsSearch('silk-view-ms', this.value)" autocomplete="off">
+                    </div>
+                    <div class="silk-ms__options" role="listbox">
+                        {% for v in view_names %}
+                        <label class="silk-ms__option" data-value="{{ v }}">
+                            <input type="checkbox" class="silk-ms__option-cb" value="{{ v }}"
+                                   {% if filters.view.value == v %}checked{% endif %}
+                                   onchange="silkViewChange('silk-view-ms', this)">
+                            <span class="silk-ms__option-label">{{ v }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="silk-ms__footer">
+                        <button type="button" class="silk-ms__clear-btn" onclick="silkViewClear('silk-view-ms')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="filter-view-typ" value="ViewNameFilter">
+            <input type="hidden" name="filter-view-value" id="silk-view-value" value="{{ filters.view.value|default:'' }}">
+            {% endif %}
+
+            <label class="silk-filter-label">Min time:
+                <input type="number" name="filter-overalltime-value" class="silk-filter-input"
+                       placeholder="ms" value="{{ filters.overalltime.value }}" min="0">
+                <input type="hidden" name="filter-overalltime-typ" value="OverallTimeFilter">
+            </label>
+
+            <label class="silk-filter-label">Queries ≥:
+                <input type="number" name="filter-numqueriesfilter-value" class="silk-filter-input"
+                       placeholder="n" value="{{ filters.numqueriesfilter.value }}" min="0">
+                <input type="hidden" name="filter-numqueriesfilter-typ" value="NumQueriesFilter">
+            </label>
+
+            <button type="button"
+                    id="silk-n1-btn"
+                    class="silk-preset-btn {% if filters.nplusone.value %}silk-preset-btn--active{% endif %}"
+                    onclick="silkToggleN1(this)">
+                <i data-lucide="triangle-alert" class="silk-icon" style="width:13px;height:13px;vertical-align:-2px"></i>
+                N+1 only
+            </button>
+            <input type="hidden" name="filter-nplusone-typ" value="NPlusOneFilter">
+            <input type="hidden" name="filter-nplusone-value" id="silk-n1-val"
+                   value="{{ filters.nplusone.value|default:'' }}">
+        </div>
+
+        {# Actions #}
+        <div class="silk-filter-row silk-filter-row--actions">
+            <button type="submit" class="silk-btn silk-btn--primary">Apply</button>
+            <button type="submit" name="clear_filters" value="1" class="silk-btn silk-btn--ghost">Clear all</button>
+            <span id="silk-filter-dirty-indicator" class="silk-filter-dirty">Changes pending</span>
+        </div>
+    </div>
+</div>

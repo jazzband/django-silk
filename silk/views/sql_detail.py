@@ -2,7 +2,7 @@ import os
 import re
 
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic import View
@@ -42,7 +42,7 @@ class SQLDetailView(View):
         sql_id = kwargs.get('sql_id', None)
         request_id = kwargs.get('request_id', None)
         profile_id = kwargs.get('profile_id', None)
-        sql_query = SQLQuery.objects.get(pk=sql_id)
+        sql_query = get_object_or_404(SQLQuery, pk=sql_id)
         pos = int(request.GET.get('pos', 0))
         file_path = request.GET.get('file_path', '')
         line_num = int(request.GET.get('line_num', 0))
@@ -62,9 +62,9 @@ class SQLDetailView(View):
             'virtualenv_path': os.environ.get('VIRTUAL_ENV') or '',
         }
         if request_id:
-            context['silk_request'] = Request.objects.get(pk=request_id)
+            context['silk_request'] = get_object_or_404(Request, pk=request_id)
         if profile_id:
-            context['profile'] = Profile.objects.get(pk=int(profile_id))
+            context['profile'] = get_object_or_404(Profile, pk=int(profile_id))
         if pos and file_path and line_num:
             actual_line, code = _code(file_path, line_num)
             context['code'] = code

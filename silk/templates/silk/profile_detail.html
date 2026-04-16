@@ -14,7 +14,6 @@
 
 {% block style %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'silk/css/components/summary.css' %}">
     <link rel="stylesheet" href="{% static 'silk/css/pages/profile_detail.css' %}">
 {% endblock %}
 
@@ -23,72 +22,89 @@
 {% endblock %}
 
 {% block data %}
-    <div class="wrapper">
-        <div id="query-div">
-            <div id="query-info-div">
-                {% profile_summary profile %}
-            </div>
-            <div class="heading">
-                <div class="inner-heading">
-                    {% if profile.file_path and profile.line_num %}
-                        {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}:{{ profile.end_line_num }}{% endif %}
-                    {% else %}
-                        Location
-                    {% endif %}
-                </div>
-            </div>
-            <div class="description">
-                Below shows where in your code this profile was defined. If your profile was defined dynamically (i.e in your settings.py),
-                then this will show the range of lines that are covered by the profiling.
-            </div>
-            {% if code %}
-                <pre id="code"><code>{% code code actual_line %}</code></pre>
-            {% elif code_error %}
-                <div id="error-div">
-                    {{ code_error }}
-                </div>
-            {% endif %}
+<div class="silk-detail-page">
 
-            {% if silk_request.prof_file %}
-            <div class="heading">
-                <div class="inner-heading">Profile graph</div>
-            </div>
-            <div class="description">
-                Below is a graph of the profile, with the nodes coloured by the time taken (red is more time). This should give a good indication of the slowest path through the profiled code.</div>
-
-                <span>Prune nodes taking up less than </span>
-                <input id='percent' type="text" value='5'
-                       onkeypress='return event.charCode >= 48 && event.charCode <= 57 && $("#percent").val().length < 2'
-                       oninput="createViz()"
-                >
-
-                </input>
-                <span>% of the total time</span>
-
-            </div>
-            <div id="graph-div">
-            </div>
-            {% url 'silk:request_profile_dot' request_id=silk_request.pk as profile_dot_url %}
-            {{ profile_dot_url|json_script:'profileDotURL' }}
-            <script src="{% static 'silk/js/pages/profile_detail.js' %}"></script>
-            {% endif %}
-
-            {% if silk_request.pyprofile %}
-            <div id="pyprofile-div">
-                <div class="heading">
-                    <div class="inner-heading">Python Profiler</div>
-                </div>
-                <div class="description">
-                    The below is a dump from the cPython profiler.
-                </div>
-                {% if silk_request.prof_file %}
-                Click <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">here</a> to download profile.
-                {% endif %}
-                <pre class="pyprofile">{{ silk_request.pyprofile }}</pre>
-                {% endif %}
-            </div>
-
+    {# ── Profile summary hero ── #}
+    <div class="silk-hero">
+        <div class="silk-hero__badges">
+            <span class="silk-hero__time">{{ profile.start_time | silk_full_datetime }}</span>
+        </div>
+        <div class="silk-hero__path">
+            {% if profile.name %}{{ profile.name }}{% elif profile.func_name %}{{ profile.func_name }}{% endif %}
+        </div>
+        <div class="silk-hero__metrics">
+            <span class="silk-hero__metric">
+                <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
+                {{ profile.time_taken|floatformat:"0" }}<span class="silk-unit">ms</span>
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="database" class="silk-icon silk-icon--sm"></i>
+                {{ profile.time_spent_on_sql_queries|floatformat:"0" }}<span class="silk-unit">ms</span> DB
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="layers" class="silk-icon silk-icon--sm"></i>
+                {{ profile.queries.count }} queries
+            </span>
         </div>
     </div>
 
+    <div class="silk-detail-body">
+    {# ── Source location ── #}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="map-pin" class="silk-icon silk-icon--sm"></i>
+            {% if profile.file_path and profile.line_num %}
+                {{ profile.file_path }}:{{ profile.line_num }}{% if profile.end_line_num %}–{{ profile.end_line_num }}{% endif %}
+            {% else %}
+                Location
+            {% endif %}
+        </h3>
+        <p class="silk-detail-note">Where in your code this profile was defined.</p>
+        {% if code %}
+            {% code code actual_line %}
+        {% elif code_error %}
+            <p class="silk-detail-note">{{ code_error }}</p>
+        {% endif %}
+    </section>
+
+    {# ── Profile graph ── #}
+    {% if silk_request.prof_file %}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="share-2" class="silk-icon silk-icon--sm"></i> Profile Graph
+        </h3>
+        <p class="silk-detail-note">
+            Call graph coloured by time (red = slower).
+            Prune nodes taking less than
+            <input id="percent" type="text" value="5"
+                   onkeypress="return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 2"
+                   oninput="createViz()"
+                   class="silk-filter-input" style="width:36px; text-align:center;">
+            % of total time.
+        </p>
+        <div id="graph-div" class="silk-graph-div"></div>
+    </section>
+    {% url 'silk:request_profile_dot' request_id=silk_request.pk as profile_dot_url %}
+    {{ profile_dot_url|json_script:'profileDotURL' }}
+    <script src="{% static 'silk/js/pages/profile_detail.js' %}"></script>
+    {% endif %}
+
+    {# ── Python profiler output ── #}
+    {% if silk_request.pyprofile %}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="bar-chart-2" class="silk-icon silk-icon--sm"></i> Python Profiler
+        </h3>
+        <p class="silk-detail-note">
+            Raw dump from the cPython profiler.
+            {% if silk_request.prof_file %}
+            <a href="{% url 'silk:request_profile_download' request_id=silk_request.pk %}">Download .prof file</a>
+            {% endif %}
+        </p>
+        <pre class="silk-pre silk-pre--wide">{{ silk_request.pyprofile }}</pre>
+    </section>
+    {% endif %}
+
+    </div>
+</div>
 {% endblock %}

@@ -3,7 +3,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 __author__ = 'mtford'
 
 
-def _page(request, query_set, per_page=200):
+def get_page(request, query_set, per_page=25):
     paginator = Paginator(query_set, per_page)
     page_number = request.GET.get('page')
     try:
@@ -13,3 +13,7 @@ def _page(request, query_set, per_page=200):
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
     return page
+
+
+# Backward-compatible alias
+_page = get_page

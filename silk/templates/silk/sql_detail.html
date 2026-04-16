@@ -17,77 +17,72 @@
 {% endblock %}
 
 {% block menu %}
-
-    <a href="
-        {% if silk_request and profile %}
-            {% url "silk:request_and_profile_sql" silk_request.id profile.id %}
-        {% elif silk_request %}
-            {% url "silk:request_sql" silk_request.pk %}
-        {% elif profile %}
-            {% url "silk:profile_sql" profile.pk %}
-        {% endif %}
-    ">
-        <div class="menu-item selectable-menu-item">
-            <div class="menu-item-outer">
-                <div class="menu-item-inner">&larr;</div>
+<a href="{% if silk_request and profile %}{% url "silk:request_and_profile_sql" silk_request.id profile.id %}{% elif silk_request %}{% url "silk:request_sql" silk_request.pk %}{% elif profile %}{% url "silk:profile_sql" profile.pk %}{% endif %}">
+    <div class="menu-item menu-item--back selectable-menu-item" title="Back to SQL">
+        <div class="menu-item-outer">
+            <div class="menu-item-inner">
+                <i data-lucide="chevron-left" class="silk-icon"></i>
             </div>
         </div>
-    </a>
-
-    <div class="menu-item menu-item-selected">
-        <div class="menu-item-outer ">
-            <div class="menu-item-inner">SQL Query</div>
+    </div>
+</a>
+<div class="menu-item menu-item-selected">
+    <div class="menu-item-outer">
+        <div class="menu-item-inner">
+            <i data-lucide="database" class="silk-icon"></i> SQL Query
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block data %}
-    <div class="wrapper">
-        <div id="query-div">
-            <pre id="query"><code>{{ sql_query.formatted_query|spacify|linebreaksbr }}</code></pre>
-            <div id="query-info-div">
-                <div id="time-taken-div">
-                    <span class="numeric">{{ sql_query.time_taken }}<span class="unit">ms</span></span>
-                </div>
-                <div id="num-joins-div">
-                    <span class="numeric">{{ sql_query.num_joins }}</span> joins
-                </div>
-            </div>
+<div class="silk-detail-page">
+<div class="silk-detail-body">
 
+    {# ── Query ── #}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="database" class="silk-icon silk-icon--sm"></i> Query
+        </h3>
+        <pre class="silk-pre"><code class="language-sql">{{ sql_query.formatted_query }}</code></pre>
+        <div class="silk-sql-meta">
+            <span class="silk-hero__metric">
+                <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
+                <span class="silk-num {% if sql_query.time_taken >= 1000 %}silk-num--very-bad{% elif sql_query.time_taken >= 500 %}silk-num--bad{% elif sql_query.time_taken >= 100 %}silk-num--ok{% else %}silk-num--very-good{% endif %}">{{ sql_query.time_taken }}</span><span class="silk-unit">ms</span>
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="git-merge" class="silk-icon silk-icon--sm"></i>
+                {{ sql_query.num_joins }} joins
+            </span>
         </div>
-        {% if analysis %}
-        <div id="query-plan-div">
-            <div class="heading">
-                <div class="inner-heading">
-                    Query Plan
-                </div>
-            </div>
-            <code id="plan">{{ analysis | spacify | linebreaksbr }}</code>
-        </div>
-        {% endif %}
-        <div id="traceback">
-            <div class="heading">
-                <div class="inner-heading">
-                    Traceback
-                </div>
-            </div>
-            <div class="description">
-                The below is the Python stacktrace that leads up the execution of the above SQL query.
-                Use it to figure out where and why this SQL query is being executed and whether or not
-                it's actually neccessary.
-            </div>
+    </section>
+
+    {# ── Query Plan ── #}
+    {% if analysis %}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="list-tree" class="silk-icon silk-icon--sm"></i> Query Plan
+        </h3>
+        <pre class="silk-pre"><code>{{ analysis }}</code></pre>
+    </section>
+    {% endif %}
+
+    {# ── Traceback ── #}
+    <section class="silk-section">
+        <h3 class="silk-section__heading">
+            <i data-lucide="layers" class="silk-icon silk-icon--sm"></i> Traceback
+        </h3>
+        <p class="silk-detail-note">Python stack trace leading to this SQL query. Your code is highlighted; library frames are muted.</p>
+        <div class="silk-traceback">
             {% for ln in traceback %}
                 {% if ln %}
-                    <div class="file-path {% if virtualenv_path not in ln %}not-{% else %}is-{% endif %}third-party">
-                        {{ ln }}
-                    </div>
-                    {% if forloop.counter == pos %}
-                        {% code code actual_line %}
-                    {% endif %}
+                <div class="silk-traceback__line {% if virtualenv_path not in ln %}silk-traceback__line--app not-third-party{% else %}silk-traceback__line--lib is-third-party{% endif %}">{{ ln }}</div>
+                {% if forloop.counter == pos %}{% code code actual_line %}{% endif %}
                 {% endif %}
             {% endfor %}
         </div>
-    </div>
+    </section>
 
-
+</div>
+</div>
 {% endblock %}

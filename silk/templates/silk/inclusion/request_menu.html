@@ -1,40 +1,46 @@
 {% load silk_nav %}
-<a href="
-
-    {% url "silk:requests" %}
-">
-    <div class="menu-item selectable-menu-item">
+<a href="{% url "silk:requests" %}">
+    <div class="menu-item menu-item--back selectable-menu-item" title="Back to Requests">
         <div class="menu-item-outer">
-            <div class="menu-item-inner">&larr;</div>
+            <div class="menu-item-inner">
+                <i data-lucide="chevron-left" class="silk-icon"></i>
+            </div>
         </div>
     </div>
 </a>
 <a href="{% url "silk:request_detail" silk_request.id %}">
     <div class="menu-item {% navactive request 'silk:request_detail' silk_request.id %} selectable-menu-item">
         <div class="menu-item-outer">
-            <div class="menu-item-inner">Details</div>
+            <div class="menu-item-inner">
+                <i data-lucide="file-text" class="silk-icon"></i> Details
+            </div>
         </div>
     </div>
 </a>
 <a href="{% url "silk:request_sql" silk_request.id %}">
     <div class="menu-item {% navactive request 'silk:request_sql' silk_request.id %} selectable-menu-item">
         <div class="menu-item-outer">
-            <div class="menu-item-inner">SQL</div>
+            <div class="menu-item-inner">
+                <i data-lucide="database" class="silk-icon"></i> SQL
+            </div>
         </div>
     </div>
 </a>
 <a href="{% url "silk:request_profiling" silk_request.id %}">
     <div class="menu-item {% navactive request 'silk:request_profiling' silk_request.id %} selectable-menu-item">
         <div class="menu-item-outer">
-            <div class="menu-item-inner">Profiling</div>
+            <div class="menu-item-inner">
+                <i data-lucide="cpu" class="silk-icon"></i> Profiling
+            </div>
         </div>
     </div>
 </a>
-
 <a href="{% url "silk:cprofile" silk_request.id %}">
     <div class="menu-item {% navactive request 'silk:cprofile' silk_request.id %} selectable-menu-item">
         <div class="menu-item-outer">
-            <div class="menu-item-inner">CProfile</div>
+            <div class="menu-item-inner">
+                <i data-lucide="bar-chart-2" class="silk-icon"></i> CProfile
+            </div>
         </div>
     </div>
 </a>

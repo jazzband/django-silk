@@ -9,7 +9,7 @@
 
 Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
-<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/requests-filter-bar.png" width="720px"/>
 
 ## Contents
 
@@ -73,7 +73,7 @@ INSTALLED_APPS = (
 )
 ```
 
-**Note:** The order of middleware is sensitive. If any middleware placed before `silk.middleware.SilkyMiddleware` returns a response without invoking its `get_response`, the `SilkyMiddleware` won’t run. To avoid this, ensure that middleware preceding `SilkyMiddleware` does not bypass or return a response without calling its `get_response`. For further details, check out the [Django documentation](https://docs.djangoproject.com/en/dev/topics/http/middleware/#middleware-order-and-layering).
+**Note:** The order of middleware is sensitive. If any middleware placed before `silk.middleware.SilkyMiddleware` returns a response without invoking its `get_response`, the `SilkyMiddleware` won't run. To avoid this, ensure that middleware preceding `SilkyMiddleware` does not bypass or return a response without calling its `get_response`. For further details, check out the [Django documentation](https://docs.djangoproject.com/en/dev/topics/http/middleware/#middleware-order-and-layering).
 
 **Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
 
@@ -138,7 +138,7 @@ Silk primarily consists of:
 The Silk middleware intercepts and stores requests and responses in the configured database.
 These requests can then be filtered and inspecting using Silk's UI through the request overview:
 
-<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/1.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/requests-filter-bar.png" width="720px"/>
 
 It records things like:
 
@@ -152,7 +152,7 @@ and so on.
 
 Further details on each request are also available by clicking the relevant request:
 
-<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/2.png" width="720px"/>
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/n1-banner.png" width="720px"/>
 
 ### SQL Inspection
 

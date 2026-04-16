@@ -1,8 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html id="silk-root" data-theme="light">
 <head>
     <title>{% block pagetitle %}Silky{% endblock %}</title>
+    {# Anti-flash: apply saved scheme before paint #}
+    <script>
+      (function(){try{var t=localStorage.getItem('silk-theme');if(t)document.getElementById('silk-root').setAttribute('data-theme',t);}catch(e){}}());
+    </script>
+    <link rel="stylesheet" href="{% static "silk/css/components/theme.css" %}"/>
+    <link rel="stylesheet" href="{% static "silk/css/components/theme_toggle.css" %}"/>
     <link rel="stylesheet" href="{% static "silk/css/components/fonts.css" %}"/>
     <link rel="stylesheet" href="{% static "silk/css/components/colors.css" %}"/>
     <link rel="stylesheet" href="{% static "silk/lib/jquery-ui-1.13.2.min.css" %}"/>
@@ -15,6 +21,9 @@
     <script src="{% static 'silk/lib/jquery-ui-1.13.2.min.js' %}"></script>
     <script src="{% static 'silk/js/components/cell.js' %}"></script>
     <script src="{% static 'silk/js/pages/base.js' %}"></script>
+    <script src="{% static 'silk/lib/lucide.min.js' %}"></script>
+    <script src="{% static 'silk/js/components/theme.js' %}"></script>
+    <script src="{% static 'silk/js/components/timeago.js' %}"></script>
     {% block js %}
     {% endblock %}
 
@@ -33,6 +42,29 @@
         <div id="filter" class="menu">
             {% block filter %}
             {% endblock %}
+            <div class="menu-item" style="display:inline-flex;align-items:center;position:relative;">
+                <div class="silk-scheme-picker" id="silk-scheme-picker">
+                    <button class="silk-scheme-btn" id="silk-scheme-btn" aria-haspopup="true" aria-expanded="false" aria-label="Select colour scheme">
+                        <i data-lucide="sun" class="silk-icon" id="silk-scheme-icon"></i>
+                        <span id="silk-scheme-label">Light</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="silk-scheme-menu" id="silk-scheme-menu" hidden>
+                        <button class="silk-scheme-option" data-scheme="light">
+                            <i data-lucide="sun" class="silk-icon silk-icon--sm"></i> Light
+                        </button>
+                        <button class="silk-scheme-option" data-scheme="dark">
+                            <i data-lucide="moon" class="silk-icon silk-icon--sm"></i> Dark
+                        </button>
+                        <button class="silk-scheme-option" data-scheme="midnight">
+                            <i data-lucide="moon-star" class="silk-icon silk-icon--sm"></i> Midnight
+                        </button>
+                        <button class="silk-scheme-option" data-scheme="high-contrast">
+                            <i data-lucide="contrast" class="silk-icon silk-icon--sm"></i> High Contrast
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="data">

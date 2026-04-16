@@ -1,12 +1,18 @@
 from django.db.models import Count, Sum
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from silk.auth import login_possibly_required, permissions_possibly_required
 from silk.models import Profile, Request
-from silk.request_filters import BaseFilter, FiltersManager, filters_from_request
+from silk.request_filters import (
+    TIME_RANGE_PRESETS,
+    BaseFilter,
+    FiltersManager,
+    filters_from_request,
+)
+from silk.utils.pagination import get_page
 
 
 class ProfilingView(View):
@@ -77,18 +83,32 @@ class ProfilingView(View):
         for f in filters:
             query_set = f.contribute_to_query_set(query_set)
             query_set = query_set.filter(f)
-        return list(query_set[:show])
+        if show is not None:
+            return list(query_set[:show])
+        return query_set
 
     def _create_context(self, request, *args, **kwargs):
         request_id = kwargs.get('request_id')
         if request_id:
-            silk_request = Request.objects.get(pk=request_id)
+            silk_request = get_object_or_404(Request, pk=request_id)
         else:
             silk_request = None
-        show = request.GET.get('show', self.default_show)
+        show_param = request.GET.get('show')
+        has_session = hasattr(request, 'session')
+        if show_param is not None:
+            try:
+                show = int(show_param)
+            except (TypeError, ValueError):
+                show = self.default_show
+            if has_session:
+                request.session['silk_profiling_show'] = show
+        else:
+            try:
+                saved = request.session.get('silk_profiling_show', self.default_show) if has_session else self.default_show
+                show = int(saved)
+            except (TypeError, ValueError):
+                show = self.default_show
         order_by = request.GET.get('order_by', self.defualt_order_by)
-        if show:
-            show = int(show)
         func_name = request.GET.get('func_name', None)
         name = request.GET.get('name', None)
         filters = self.filters_manager.get(request)
@@ -110,13 +130,18 @@ class ProfilingView(View):
             context['func_name'] = func_name
         if name:
             context['name'] = name
-        objs = self._get_objects(show=show,
-                                 order_by=order_by,
-                                 func_name=func_name,
-                                 silk_request=silk_request,
-                                 name=name,
-                                 filters=[BaseFilter.from_dict(x) for _, x in filters.items()])
-        context['results'] = objs
+        qs = self._get_objects(show=None,
+                               order_by=order_by,
+                               func_name=func_name,
+                               silk_request=silk_request,
+                               name=name,
+                               filters=[BaseFilter.from_dict(x) for _, x in filters.items()])
+        page_obj = get_page(request, qs, show)
+        context['page_obj'] = page_obj
+        context['results'] = page_obj.object_list
+        context['time_presets'] = [
+            {'key': k, 'seconds': v, 'label': k} for k, v in TIME_RANGE_PRESETS.items()
+        ]
         return context
 
     @method_decorator(login_possibly_required)
@@ -127,7 +152,10 @@ class ProfilingView(View):
     @method_decorator(login_possibly_required)
     @method_decorator(permissions_possibly_required)
     def post(self, request):
-        filters = filters_from_request(request)
-        filters_as_dict = {ident: f.as_dict() for ident, f in filters.items()}
+        if 'clear_filters' in request.POST:
+            filters_as_dict = {}
+        else:
+            filters = filters_from_request(request)
+            filters_as_dict = {ident: f.as_dict() for ident, f in filters.items()}
         self.filters_manager.save(request, filters_as_dict)
         return render(request, 'silk/profiling.html', self._create_context(request))

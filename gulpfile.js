@@ -1,5 +1,5 @@
 let gulp = require('gulp'),
-    sass = require('gulp-sass');
+    sass = require('gulp-sass')(require('sass'));
 
 
 gulp.task('watch', function () {
@@ -8,6 +8,6 @@ gulp.task('watch', function () {
 
 gulp.task('sass', function () {
     return gulp.src('scss/**/*.scss')
-        .pipe(sass().on('error', sass.logError))
+        .pipe(sass.sync().on('error', sass.logError))
         .pipe(gulp.dest('silk/static/silk/css'));
 });
