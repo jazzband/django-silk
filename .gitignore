@@ -119,5 +119,3 @@ fabric.properties
 
 package-lock.json
 *.db
-
-postgres

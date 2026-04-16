@@ -1,37 +1,53 @@
-# django-silk
+# Silk
 
-[![PyPI](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.org/project/django-silk/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.org/project/django-silk/)
-[![Supported Django versions](https://img.shields.io/pypi/djversions/django-silk.svg)](https://pypi.org/project/django-silk/)
-[![Tests](https://github.com/jazzband/django-silk/actions/workflows/test.yml/badge.svg)](https://github.com/jazzband/django-silk/actions/workflows/test.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Actions](https://github.com/jazzband/django-silk/workflows/Test/badge.svg)](https://github.com/jazzband/django-silk/actions)
+[![GitHub Actions](https://codecov.io/gh/jazzband/django-silk/branch/master/graph/badge.svg)](https://codecov.io/gh/jazzband/django-silk)
+[![PyPI Download](https://img.shields.io/pypi/v/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![PyPI Python Versions](https://img.shields.io/pypi/pyversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![Supported Django versions](https://img.shields.io/pypi/djversions/django-silk.svg)](https://pypi.python.org/pypi/django-silk)
+[![Jazzband](https://jazzband.co/static/img/badge.svg)](https://jazzband.co/)
 
-**django-silk** is a live profiling and inspection tool for the Django framework.
+Silk is a live profiling and inspection tool for the Django framework. Silk intercepts and stores HTTP requests and database queries before presenting them in a user interface for further inspection:
 
-Silk intercepts and stores HTTP requests and database queries made during those requests, presenting them in a browsable web UI with filtering, sorting, and code profiling capabilities.
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/requests-filter-bar.png" width="720px"/>
 
----
+## Contents
+
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Features](#features)
+* [Configuration](#configuration)
+  * [Authentication/Authorisation](#authenticationauthorisation)
+  * [Request/Response bodies](#requestresponse-bodies)
+  * [Meta-Profiling](#meta-profiling)
+  * [Recording a fraction of requests](#recording-a-fraction-of-requests)
+  * [Limiting request/response data](#limiting-requestresponse-data)
+  * [Clearing logged data](#clearing-logged-data)
+* [Contributing](#contributing)
+  * [Development Environment](#development-environment)
 
 ## Requirements
 
-* Django 4.2, 5.1, 5.2, 6.0
-* Python 3.10, 3.11, 3.12, 3.13, 3.14
+Silk has been tested with:
 
----
+* Django: 4.2, 5.1, 5.2, 6.0
+* Python: 3.10, 3.11, 3.12, 3.13, 3.14
 
 ## Installation
+
+Via pip into a `virtualenv`:
 
 ```bash
 pip install django-silk
 ```
 
-With optional request body formatting:
+To including optional formatting of python snippets:
 
 ```bash
 pip install django-silk[formatting]
 ```
 
-### settings.py
+In `settings.py` add the following:
 
 ```python
 MIDDLEWARE = [
@@ -50,197 +66,549 @@ TEMPLATES = [{
     },
 }]
 
-INSTALLED_APPS = [
+
+INSTALLED_APPS = (
     ...
-    'silk',
-]
+    'silk'
+)
 ```
 
-> **Middleware order:** Any middleware placed *before* `SilkyMiddleware` that returns a response without calling `get_response` will prevent Silk from running. If you use `django.middleware.gzip.GZipMiddleware`, place it **before** `SilkyMiddleware`.
+**Note:** The order of middleware is sensitive. If any middleware placed before `silk.middleware.SilkyMiddleware` returns a response without invoking its `get_response`, the `SilkyMiddleware` won't run. To avoid this, ensure that middleware preceding `SilkyMiddleware` does not bypass or return a response without calling its `get_response`. For further details, check out the [Django documentation](https://docs.djangoproject.com/en/dev/topics/http/middleware/#middleware-order-and-layering).
 
-### urls.py
+**Note:** If you are using `django.middleware.gzip.GZipMiddleware`, place that **before** `silk.middleware.SilkyMiddleware`, otherwise you will get an encoding error.
+
+If you want to use custom middleware, for example you developed the subclass of `silk.middleware.SilkyMiddleware`, so you can use this combination of settings:
 
 ```python
-from django.urls import include, path
+# Specify the path where is the custom middleware placed
+SILKY_MIDDLEWARE_CLASS = 'path.to.your.middleware.MyCustomSilkyMiddleware'
 
-urlpatterns += [
-    path('silk/', include('silk.urls', namespace='silk')),
+# Use this variable in list of middleware
+MIDDLEWARE = [
+    ...
+    SILKY_MIDDLEWARE_CLASS,
+    ...
 ]
 ```
 
-### Migrate and collect static
+To enable access to the user interface add the following to your `urls.py`:
+
+```python
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
+```
+
+before running migrate:
 
 ```bash
 python manage.py migrate
+
 python manage.py collectstatic
 ```
 
-The UI is now available at `/silk/`.
 
----
+Silk will automatically begin interception of requests and you can proceed to add profiling
+if required. The UI can be reached at `/silk/`
+
+### Alternative Installation
+
+Via [github tags](https://github.com/jazzband/django-silk/releases):
+
+```bash
+pip install git+https://github.com/jazzband/django-silk.git@<version>#egg=django_silk
+```
+
+You can install from master using the following, but please be aware that the version in master
+may not be working for all versions specified in [requirements](#requirements)
+
+```bash
+pip install -e git+https://github.com/jazzband/django-silk.git#egg=django_silk
+```
 
 ## Features
 
+Silk primarily consists of:
+
+* Middleware for intercepting Requests/Responses
+* A wrapper around SQL execution for profiling of database queries
+* A context manager/decorator for profiling blocks of code and functions either manually or dynamically.
+* A user interface for inspection and visualisation of the above.
+
 ### Request Inspection
 
-Silk's middleware records every HTTP request and response — method, status code, path, timing, SQL query count, and headers/bodies — and presents them in a filterable, sortable, paginated table.
+The Silk middleware intercepts and stores requests and responses in the configured database.
+These requests can then be filtered and inspecting using Silk's UI through the request overview:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/requests-filter-bar.png" width="720px"/>
+
+It records things like:
+
+* Time taken
+* Num. queries
+* Time spent on queries
+* Request/Response headers
+* Request/Response bodies
+
+and so on.
+
+Further details on each request are also available by clicking the relevant request:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/n1-banner.png" width="720px"/>
 
 ### SQL Inspection
 
-Every SQL query executed during a request is captured with its execution time, tables involved, number of joins, and a full stack trace so you can see exactly where in your code it was triggered.
+Silk also intercepts SQL queries that are generated by each request. We can get a summary on things like
+the tables involved, number of joins and execution time (the table can be sorted by clicking on a column header):
 
-### Code Profiling
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/3.png" width="720px"/>
 
-#### Decorator / context manager
+Before diving into the stack trace to figure out where this request is coming from:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/5.png" width="720px"/>
+
+### Profiling
+
+Turn on the SILKY_PYTHON_PROFILER setting to use Python's built-in `cProfile` profiler. Each request will be separately profiled and the profiler's output will be available on the request's Profiling page in the Silk UI.  Note that as of Python 3.12, `cProfile` cannot run concurrently so [django-silk under Python 3.12 and later will not profile if another profile is running](https://github.com/jazzband/django-silk/pull/692) (even its own profiler in another thread).
+
+```python
+SILKY_PYTHON_PROFILER = True
+```
+
+If you would like to also generate a binary `.prof` file set the following:
+
+```python
+SILKY_PYTHON_PROFILER_BINARY = True
+```
+
+When enabled, a graph visualisation generated using [gprof2dot](https://github.com/jrfonseca/gprof2dot) and [viz.js](https://github.com/almende/vis) is shown in the profile detail page:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/10.png" width="720px"/>
+
+
+A custom storage class can be used for the saved generated binary `.prof` files:
+
+```python
+# For Django >= 4.2 and Django-Silk >= 5.1.0:
+# See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
+STORAGES = {
+    'SILKY_STORAGE': {
+        'BACKEND': 'path.to.StorageClass',
+    },
+    # ...
+}
+
+# For Django < 4.2 or Django-Silk < 5.1.0
+SILKY_STORAGE_CLASS = 'path.to.StorageClass'
+```
+
+The default storage class is `silk.storage.ProfilerResultStorage`, and when using that you can specify a path of your choosing. You must ensure the specified directory exists.
+
+```python
+# If this is not set, MEDIA_ROOT will be used.
+SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
+```
+
+A download button will become available with a binary `.prof` file for every request. This file can be used for further analysis using [snakeviz](https://github.com/jiffyclub/snakeviz) or other cProfile tools
+
+To retrieve which endpoint generates a specific profile file it is possible to add a stub of the request path in the file name with the following:
+
+```python
+SILKY_PYTHON_PROFILER_EXTENDED_FILE_NAME = True
+```
+
+Silk can also be used to profile specific blocks of code/functions. It provides a decorator and a context
+manager for this purpose.
+
+For example:
 
 ```python
 from silk.profiling.profiler import silk_profile
 
+
 @silk_profile(name='View Blog Post')
 def post(request, post_id):
     p = Post.objects.get(pk=post_id)
-    return render(request, 'post.html', {'post': p})
+    return render(request, 'post.html', {
+        'post': p
+    })
 ```
+
+Whenever a blog post is viewed we get an entry within the Silk UI:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/7.png" width="720px"/>
+
+Silk profiling not only provides execution time, but also collects SQL queries executed within the block in the same fashion as with requests:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/8.png" width="720px"/>
+
+#### Decorator
+
+The silk decorator can be applied to both functions and methods
+
+```python
+from silk.profiling.profiler import silk_profile
+
+
+# Profile a view function
+@silk_profile(name='View Blog Post')
+def post(request, post_id):
+    p = Post.objects.get(pk=post_id)
+    return render(request, 'post.html', {
+        'post': p
+    })
+
+
+# Profile a method in a view class
+class MyView(View):
+    @silk_profile(name='View Blog Post')
+    def get(self, request):
+        p = Post.objects.get(pk=post_id)
+        return render(request, 'post.html', {
+            'post': p
+        })
+```
+
+#### Context Manager
+
+Using a context manager means we can add additional context to the name which can be useful for
+narrowing down slowness to particular database records.
 
 ```python
 def post(request, post_id):
-    with silk_profile(name='View Blog Post #%d' % post_id):
+    with silk_profile(name='View Blog Post #%d' % self.pk):
         p = Post.objects.get(pk=post_id)
-        return render(request, 'post.html', {'post': p})
+        return render(request, 'post.html', {
+            'post': p
+        })
 ```
 
-#### cProfile integration
+#### Dynamic Profiling
 
-```python
-SILKY_PYTHON_PROFILER = True
-SILKY_PYTHON_PROFILER_BINARY = True  # also save .prof files
-```
-
-When enabled, a call-graph coloured by time is shown on the profile detail page.
-
-#### Dynamic profiling
-
-Profile third-party code without touching its source:
+One of Silk's more interesting features is dynamic profiling. If for example we wanted to profile a function in a dependency to which we only have read-only access (e.g. system python libraries owned by root) we can add the following to `settings.py` to apply a decorator at runtime:
 
 ```python
 SILKY_DYNAMIC_PROFILING = [{
     'module': 'path.to.module',
-    'function': 'MyClass.bar',
+    'function': 'MyClass.bar'
 }]
+```
+
+which is roughly equivalent to:
+
+```python
+class MyClass:
+    @silk_profile()
+    def bar(self):
+        pass
+```
+
+The below summarizes the possibilities:
+
+```python
+
+"""
+Dynamic function decorator
+"""
+
+SILKY_DYNAMIC_PROFILING = [{
+    'module': 'path.to.module',
+    'function': 'foo'
+}]
+
+# ... is roughly equivalent to
+@silk_profile()
+def foo():
+    pass
+
+"""
+Dynamic method decorator
+"""
+
+SILKY_DYNAMIC_PROFILING = [{
+    'module': 'path.to.module',
+    'function': 'MyClass.bar'
+}]
+
+# ... is roughly equivalent to
+class MyClass:
+
+    @silk_profile()
+    def bar(self):
+        pass
+
+"""
+Dynamic code block profiling
+"""
+
+SILKY_DYNAMIC_PROFILING = [{
+    'module': 'path.to.module',
+    'function': 'foo',
+    # Line numbers are relative to the function as opposed to the file in which it resides
+    'start_line': 1,
+    'end_line': 2,
+    'name': 'Slow Foo'
+}]
+
+# ... is roughly equivalent to
+def foo():
+    with silk_profile(name='Slow Foo'):
+        print (1)
+        print (2)
+    print(3)
+    print(4)
+```
+
+Note that dynamic profiling behaves in a similar fashion to that of the python mock framework in that
+we modify the function in-place e.g:
+
+```python
+""" my.module """
+from another.module import foo
+
+# ...do some stuff
+foo()
+# ...do some other stuff
+```
+
+,we would profile `foo` by dynamically decorating `my.module.foo` as opposed to `another.module.foo`:
+
+```python
+SILKY_DYNAMIC_PROFILING = [{
+    'module': 'my.module',
+    'function': 'foo'
+}]
+```
+
+If we were to apply the dynamic profile to the functions source module `another.module.foo` **after**
+it has already been imported, no profiling would be triggered.
+
+
+#### Custom Logic for Profiling
+
+Sometimes you may want to dynamically control when the profiler runs. You can write your own logic for when to enable the profiler. To do this add the following to your `settings.py`:
+
+This setting is mutually exclusive with SILKY_PYTHON_PROFILER and will be used over it if present. It will work with SILKY_DYNAMIC_PROFILING.
+
+```python
+def my_custom_logic(request):
+    return 'profile_requests' in request.session
+
+SILKY_PYTHON_PROFILER_FUNC = my_custom_logic # profile only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# profile only session has recording enabled.
+SILKY_PYTHON_PROFILER_FUNC = lambda request: 'profile_requests' in request.session
 ```
 
 ### Code Generation
 
-Silk generates a `curl` command and a Django test-client snippet for every request, making it easy to replay a captured request from the terminal or a unit test.
+Silk currently generates two bits of code per request:
 
----
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/9.png" width="720px"/>
+
+Both are intended for use in replaying the request. The curl command can be used to replay via command-line and the python code can be used within a Django unit test or simply as a standalone script.
 
 ## Configuration
 
-### Authentication
+### Authentication/Authorisation
+
+By default anybody can access the Silk user interface by heading to `/silk/`. To enable your Django
+auth backend place the following in `settings.py`:
 
 ```python
-SILKY_AUTHENTICATION = True   # user must be logged in
-SILKY_AUTHORISATION = True    # user must have is_staff=True (default)
+SILKY_AUTHENTICATION = True  # User must login
+SILKY_AUTHORISATION = True  # User must have permissions
+```
 
-# Custom permission check:
+If `SILKY_AUTHORISATION` is `True`, by default Silk will only authorise users with `is_staff` attribute set to `True`.
+
+You can customise this using the following in `settings.py`:
+
+```python
+def my_custom_perms(user):
+    return user.is_allowed_to_use_silk
+
+SILKY_PERMISSIONS = my_custom_perms
+```
+
+You can also use a `lambda`.
+
+```python
 SILKY_PERMISSIONS = lambda user: user.is_superuser
 ```
 
-### Request / response body limits
+### Request/Response bodies
+
+By default, Silk will save down the request and response bodies for each request for future viewing
+no matter how large. If Silk is used in production under heavy volume with large bodies this can have
+a huge impact on space/time performance. This behaviour can be configured with the following options:
 
 ```python
-SILKY_MAX_REQUEST_BODY_SIZE = -1    # -1 = no limit
-SILKY_MAX_RESPONSE_BODY_SIZE = 1024 # bytes; larger bodies are discarded
+SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything <0 as no limit
+SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024 bytes, ignore
 ```
 
-### Sampling (high-traffic sites)
+### Meta-Profiling
+
+Sometimes it is useful to be able to see what effect Silk is having on the request/response time. To do this add
+the following to your `settings.py`:
 
 ```python
-SILKY_INTERCEPT_PERCENT = 50  # record only 50 % of requests
-# or
-SILKY_INTERCEPT_FUNC = lambda request: 'profile' in request.session
+SILKY_META = True
 ```
 
-### Garbage collection
+Silk will then record how long it takes to save everything down to the database at the end of each
+request:
+
+<img src="https://raw.githubusercontent.com/jazzband/django-silk/master/screenshots/meta.png"/>
+
+Note that in the above screenshot, this means that the request took 29ms (22ms from Django and 7ms from Silk)
+
+### Recording a Fraction of Requests
+
+On high-load sites it may be helpful to only record a fraction of the requests that are made. To do this add the following to your `settings.py`:
+
+Note: This setting is mutually exclusive with SILKY_INTERCEPT_FUNC.
 
 ```python
-SILKY_MAX_RECORDED_REQUESTS = 10_000
-SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10  # GC runs on 10 % of requests
+SILKY_INTERCEPT_PERCENT = 50 # log only 50% of requests
 ```
 
-Trigger manually (e.g. from a cron job):
+#### Custom Logic for Recording Requests
+
+On high-load sites it may also be helpful to write your own logic for when to intercept requests. To do this add the following to your `settings.py`:
+
+Note: This setting is mutually exclusive with SILKY_INTERCEPT_PERCENT.
+
+```python
+def my_custom_logic(request):
+    return 'record_requests' in request.session
+
+SILKY_INTERCEPT_FUNC = my_custom_logic # log only session has recording enabled.
+```
+
+You can also use a `lambda`.
+
+```python
+# log only session has recording enabled.
+SILKY_INTERCEPT_FUNC = lambda request: 'record_requests' in request.session
+```
+
+### Limiting request/response data
+
+To make sure silky garbage collects old request/response data, a config var can be set to limit the number of request/response rows it stores.
+
+```python
+SILKY_MAX_RECORDED_REQUESTS = 10**4
+```
+
+The garbage collection is only run on a percentage of requests to reduce overhead.  It can be adjusted with this config:
+
+```python
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+```
+
+In case you want decouple silk's garbage collection from your webserver's request processing, set SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0 and trigger it manually, e.g. in a cron job:
 
 ```bash
 python manage.py silk_request_garbage_collect
 ```
 
-Clear all data immediately:
+### Enable query analysis
+
+To enable query analysis when supported by the dbms a config var can be set in order to execute queries with the analyze features.
+
+```python
+SILKY_ANALYZE_QUERIES = True
+```
+
+**Warning:** This setting may cause the database to execute the same query twice, depending on the backend. For instance, `EXPLAIN ANALYZE` in Postgres will [actually execute the query](https://www.postgresql.org/docs/current/sql-explain.html), which may result in unexpected data updates. Set this to True with caution.
+
+To pass additional params for profiling when supported by the dbms (e.g. VERBOSE, FORMAT JSON), you can do this in the following manner.
+
+```python
+SILKY_EXPLAIN_FLAGS = {'format':'JSON', 'costs': True}
+```
+
+
+### Masking sensitive data on request body
+
+By default, Silk is filtering values that contains the following keys (they are case insensitive)
+
+```python
+SILKY_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
+```
+
+But sometimes, you might want to have your own sensitive keywords, then above configuration can be modified
+
+```python
+SILKY_SENSITIVE_KEYS = {'custom-password'}
+```
+
+
+### Clearing logged data
+
+A management command will wipe out all logged data:
 
 ```bash
 python manage.py silk_clear_request_log
 ```
 
-### Query analysis
+## Contributing
 
-```python
-SILKY_ANALYZE_QUERIES = True
-SILKY_EXPLAIN_FLAGS = {'format': 'JSON', 'costs': True}
-```
+[![Jazzband](https://jazzband.co/static/img/jazzband.svg)](https://jazzband.co/)
 
-> **Warning:** `EXPLAIN ANALYZE` on PostgreSQL actually executes the query, which may cause unintended side effects. Use with caution.
+This is a [Jazzband](https://jazzband.co/) project. By contributing you agree to abide by the [Contributor Code of Conduct](https://jazzband.co/about/conduct) and follow the [guidelines](https://jazzband.co/about/guidelines).
 
-### Meta-profiling
+### Development Environment
 
-```python
-SILKY_META = True  # shows how long Silk itself takes per request
-```
+Silk features a project named `project` that can be used for `silk` development. It has the `silk` code symlinked so
+you can work on the sample `project` and on the `silk` package at the same time.
 
-### Sensitive data masking
-
-```python
-# Default set — case insensitive
-SILKY_SENSITIVE_KEYS = {'username', 'api', 'token', 'key', 'secret', 'password', 'signature'}
-```
-
-### Custom profiler storage
-
-```python
-# Django >= 4.2
-STORAGES = {
-    'SILKY_STORAGE': {
-        'BACKEND': 'path.to.StorageClass',
-    },
-}
-
-SILKY_PYTHON_PROFILER_RESULT_PATH = '/path/to/profiles/'
-```
-
----
-
-## Development
+In order to setup local development you should first install all the dependencies for the test `project`. From the
+root of the `project` directory:
 
 ```bash
-git clone https://github.com/jazzband/django-silk.git
-cd django-silk
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[formatting]"
-pip install -r project/requirements.txt
-
-# Run the example project
-DB_ENGINE=sqlite3 python project/manage.py migrate
-DB_ENGINE=sqlite3 python project/manage.py runserver
-# Visit http://127.0.0.1:8000/silk/  (login: admin / admin)
-
-# Watch SCSS while editing UI
-npx gulp watch
-
-# Run tests
-DB_ENGINE=sqlite3 python -m pytest project/tests/ -q
+pip install -r requirements.txt
 ```
 
----
+You will also need to install `silk`'s dependencies. From the root of the git repository:
 
-## License
+```bash
+pip install -e .
+```
 
-MIT — see [LICENSE](LICENSE).
+At this point your virtual environment should have everything it needs to run both the sample `project` and
+`silk` successfully.
+
+Before running, you must set the `DB_ENGINE` and `DB_NAME` environment variables:
+
+```bash
+export DB_ENGINE=sqlite3
+export DB_NAME=db.sqlite3
+```
+
+For other combinations, check [`tox.ini`](./tox.ini).
+
+Now from the root of the sample `project` apply the migrations
+
+```bash
+python manage.py migrate
+```
+
+Now from the root of the sample `project` directory start the django server
+
+```bash
+python manage.py runserver
+```
+
+#### Running the tests
+
+```bash
+cd project
+python manage.py test
+```
+
+Happy profiling!

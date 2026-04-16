@@ -1,26 +1,5 @@
 # Change Log
-
 ## Unreleased
-
-## [5.5.0](https://github.com/jazzband/django-silk/tree/5.5.0) (2026-03-06)
-:release-by: Albert Wang (@albertyw)
-[Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.3..5.5.0)
-
-**Fixes:**
- - Fix context manager for `_process_response` (#827) @izabala033
- - Fix mouse event for sql navigation (#847) @albertyw
-
-**Features/Enhancements:**
-
- - Add support for Django 6.0 (#836) @albertyw
- - Add support for Python 3.14 (#834) @albertyw
- - Get paginator limit from URL params (#646) @strig
- - Hide pagination when there's only one page (#844) @ShlomoCode
-
-**Maintenance and Cleanup:**
- - Remove official support for Python 3.9 (#834) @albertyw
- - Dependency updates
-
 
 ## [5.4.3](https://github.com/jazzband/django-silk/tree/5.4.3) (2025-09-08)
 :release-by: Albert Wang (@albertyw)
