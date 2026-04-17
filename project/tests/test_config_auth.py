@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.urls import NoReverseMatch, reverse
 
 from silk.config import SilkyConfig, default_permissions
 from silk.middleware import silky_reverse
@@ -10,14 +9,7 @@ class TestAuth(TestCase):
     def test_authentication(self):
         SilkyConfig().SILKY_AUTHENTICATION = True
         response = self.client.get(silky_reverse('requests'))
-        self.assertEqual(response.status_code, 302)
-        url = response.url
-        try:
-            # If we run tests within the django_silk project, a login url is available from example_app
-            self.assertIn(reverse('login'), url)
-        except NoReverseMatch:
-            # Otherwise the Django default login url is used, in which case we can test for that instead
-            self.assertIn('http://testserver/login/', url)
+        self.assertEqual(response.status_code, 404)
 
     def test_default_authorisation(self):
         SilkyConfig().SILKY_AUTHENTICATION = True
