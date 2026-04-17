@@ -99,9 +99,12 @@ class Request(models.Model):
     def profile_table(self):
         for n, columns in enumerate(parse_profile(self.pyprofile)):
             location = columns[-1]
-            if n and '{' not in location and '<' not in location:
-                r = re.compile(r'(?P<src>.*\.py)\:(?P<num>[0-9]+).*')
+            if n and '{' not in location:
+                r = re.compile(r'^<?(?P<src>.*\.py)>?\:(?P<num>[0-9]+)\((?P<func>.*)\)$')
                 m = r.search(location)
+                if not m:
+                    yield columns
+                    continue
                 group = m.groupdict()
                 src = group['src']
                 num = group['num']

@@ -42,3 +42,22 @@ class ProfileParserTestCase(TestCase):
                         text, expected_regex,
                         msg="Expected something like {} but found {}"
                     )
+
+    def test_profile_parser_normalizes_file_locations(self):
+        actual = list(parse_profile([
+            "",
+            "         1 function calls in 0.000 seconds",
+            "",
+            "   Ordered by: standard name",
+            "",
+            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)",
+            "        1    0.000    0.000    0.000    0.000 tempfile.py:447(cleanup)",
+        ]))
+
+        self.assertEqual(
+            actual,
+            [
+                ["ncalls", "tottime", "percall", "cumtime", "percall", "filename:lineno(function)"],
+                ["1", "0.000", "0.000", "0.000", "0.000", "<tempfile.py>:447(cleanup)"],
+            ],
+        )
