@@ -4,25 +4,36 @@ Configuration
 Authentication and Authorisation
 --------------------------------
 
-By default anybody can access the Silk user interface by heading to `/silk/`. To enable your Django 
-auth backend place the following in `settings.py`:
+**Silk is locked down by default.** Unauthenticated requests, and authenticated
+requests from users without ``is_staff=True``, receive a ``404 Not Found`` from
+every ``/silk/…`` URL — as if the app weren't mounted. This avoids
+accidentally shipping an unauthenticated profiling UI to production.
 
-
-.. code-block:: python
-
-	SILKY_AUTHENTICATION = True  # User must login
-	SILKY_AUTHORISATION = True  # User must have permissions
-
-If ``SILKY_AUTHORISATION`` is ``True``, by default Silk will only authorise users with ``is_staff`` attribute set to ``True``.
-
-You can customise this using the following in ``settings.py``:
+To expose the UI publicly (for example in a fully-internal dev environment),
+disable both flags:
 
 .. code-block:: python
 
-	def my_custom_perms(user):
-	    return user.is_allowed_to_use_silk
+    SILKY_AUTHENTICATION = False
+    SILKY_AUTHORISATION = False
 
-	SILKY_PERMISSIONS = my_custom_perms
+To customise *which* authenticated users see the UI, replace the default
+predicate (``user.is_staff``) with your own:
+
+.. code-block:: python
+
+    def my_custom_perms(user):
+        return user.is_allowed_to_use_silk
+
+    SILKY_PERMISSIONS = my_custom_perms
+
+.. note::
+
+    Silk returns 404 (not 403) on unauthorised access so that the UI's
+    existence can't be fingerprinted by an anonymous probe. Static assets
+    under ``/static/silk/…`` are not covered by this — if you serve them
+    through nginx, whitenoise, or similar, restrict them at your edge for
+    full opacity.
 
 
 Request and Response bodies

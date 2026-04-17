@@ -5,6 +5,21 @@
      https://github.com/VaishnavGhenge/django-silky
      ────────────────────────────────────────────────────────────────────────── -->
 
+## [1.2.0](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.2.0) (2026-04-17)
+
+### BREAKING CHANGES
+
+- **Silk UI is now locked down by default.** `SILKY_AUTHENTICATION` and `SILKY_AUTHORISATION` now default to `True`. Unauthenticated or non-staff requests to `/silk/` return **404 Not Found** (not 302 to `LOGIN_URL`, not 403 Forbidden). This closes the most common django-silk foot-gun: accidentally shipping an unauthenticated profiling UI to production. To opt out (internal dev-only deployments), set both flags to `False` in `settings.py`. See `MIGRATING.md` for the full migration note.
+
+  Credit: addresses upstream [jazzband/django-silk#860](https://github.com/jazzband/django-silk/issues/860) and PR [#861](https://github.com/jazzband/django-silk/pull/861), which upstream declined on major-bump grounds. Ships here as a minor bump — see `django-silky`'s versioning policy.
+
+### Internal
+
+- `silk/auth.py` simplified: both `login_possibly_required` and `user_passes_test` now raise `Http404` uniformly. Dropped dependency on `django.contrib.auth.decorators.login_required` and `django.core.exceptions.PermissionDenied` in this module.
+- `project/tests/conftest.py` introduced with an autouse fixture that disables silk auth flags for every test in the suite, so view-level tests can exercise the UI without staging a staff user.
+
+---
+
 ## [1.1.1](https://github.com/VaishnavGhenge/django-silky/releases/tag/v1.1.1) (2026-04-08)
 
 ### Documentation

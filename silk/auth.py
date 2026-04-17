@@ -1,15 +1,21 @@
 from functools import WRAPPER_ASSIGNMENTS, wraps
 
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.http import Http404
 
 from silk.config import SilkyConfig
 
 
 def login_possibly_required(function=None, **kwargs):
-    if SilkyConfig().SILKY_AUTHENTICATION:
-        return login_required(function, **kwargs)
-    return function
+    if not SilkyConfig().SILKY_AUTHENTICATION:
+        return function
+
+    @wraps(function, assigned=WRAPPER_ASSIGNMENTS)
+    def _wrapped_view(request, *args, **kw):
+        if not request.user.is_authenticated:
+            raise Http404
+        return function(request, *args, **kw)
+
+    return _wrapped_view
 
 
 def permissions_possibly_required(function=None):
@@ -29,8 +35,7 @@ def user_passes_test(test_func):
         def _wrapped_view(request, *args, **kwargs):
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
-            else:
-                raise PermissionDenied
+            raise Http404
 
         return _wrapped_view
 
