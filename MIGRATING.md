@@ -1,5 +1,28 @@
 # Migrating from django-silk to django-silky
 
+## Upgrading to django-silky 1.2.0 — defaults are now secure
+
+**What changed.** In earlier releases `SILKY_AUTHENTICATION` and `SILKY_AUTHORISATION` both defaulted to `False`, so anyone with network access to `/silk/` could read the full profiling UI. Starting with 1.2.0 both default to `True`, and the default `SILKY_PERMISSIONS` predicate requires `user.is_staff`.
+
+**Who is affected.** Anyone who was relying on the unauthenticated `/silk/` UI — whether intentionally (internal dev server, air-gapped environment) or not.
+
+**Symptom after upgrade.** Visiting `/silk/` as an anonymous user, or as a logged-in non-staff user, now returns `404 Not Found`. Logged-in staff users see the UI unchanged.
+
+**Opting back in to the old behaviour.** Add to `settings.py`:
+
+```python
+SILKY_AUTHENTICATION = False
+SILKY_AUTHORISATION = False
+```
+
+**Why 404 and not 403?** To reduce fingerprinting — a 404 doesn't reveal that silk is mounted. This is defense-in-depth; the real security is the auth check itself.
+
+**Caveat: static-asset fingerprinting.** Static files under `/static/silk/…` are served by your static-file stack (nginx, whitenoise, etc.) and are not covered by silk's auth decorators. If you need full opacity, restrict that prefix at your edge.
+
+---
+
+## From django-silk to django-silky
+
 `django-silky` is a **drop-in replacement** for `django-silk`. It uses the
 same Django app label (`silk`), the same database schema, and the same
 migrations (0001 – 0008). Switching does **not** drop, alter, or move any

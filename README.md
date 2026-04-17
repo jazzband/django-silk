@@ -191,11 +191,14 @@ Silk generates a `curl` command and a Django test-client snippet for every reque
 
 ### Authentication
 
-```python
-SILKY_AUTHENTICATION = True   # user must be logged in
-SILKY_AUTHORISATION = True    # user must have is_staff=True (default)
+**Silk is locked down by default.** Unauthenticated or non-staff requests to `/silk/` return **404 Not Found** — as if the app weren't mounted — so an accidental production deployment can't leak profiling data.
 
-# Custom permission check:
+```python
+# To expose the UI publicly (internal dev-only, not recommended):
+SILKY_AUTHENTICATION = False
+SILKY_AUTHORISATION = False
+
+# To change who is allowed in (default: user.is_staff):
 SILKY_PERMISSIONS = lambda user: user.is_superuser
 ```
 
