@@ -21,7 +21,7 @@ class TestAuth(TestCase):
         user.save()
         self.client.login(username=username_and_password, password=username_and_password)
         response = self.client.get(silky_reverse('requests'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
         user.is_staff = True
         user.save()
         response = self.client.get(silky_reverse('requests'))
@@ -41,7 +41,7 @@ class TestAuth(TestCase):
         user.save()
         self.client.login(username=username_and_password, password=username_and_password)
         response = self.client.get(silky_reverse('requests'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
         user.username = 'mike2'
         user.save()
         response = self.client.get(silky_reverse('requests'))
