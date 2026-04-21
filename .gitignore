@@ -121,3 +121,4 @@ package-lock.json
 *.db
 
 postgres
+docs/superpowers
