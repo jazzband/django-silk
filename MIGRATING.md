@@ -38,7 +38,7 @@ retained.
 | 5.4.x (latest) | ✅ Yes — direct swap | No migration needed |
 | 5.3.x | ✅ Yes | No migration needed |
 | 5.0 – 5.2 | ✅ Yes | No migration needed |
-| < 5.0 | ⚠️ Upgrade first | Run upstream migrations to 0008 before switching |
+| < 5.0 | ✅ Yes — direct swap | No migration needed |
 
 > **Baseline:** `django-silky` is forked from `django-silk` master
 > (post-5.4.3, commit `2db6175`). The database schema is identical.
@@ -69,29 +69,9 @@ retained.
    pip install django-silky
    ```
 
-3. **No `migrate` needed.** The schema is identical. Confirm the migration
-   state is clean:
-
-   ```bash
-   python manage.py showmigrations silk
-   ```
-
-   Expected output:
-
-   ```
-   silk
-    [X] 0001_initial
-    [X] 0002_auto_update_uuid4_id_field
-    [X] 0003_request_prof_file
-    [X] 0004_request_prof_file_storage
-    [X] 0005_increase_request_prof_file_length
-    [X] 0006_fix_request_prof_file_blank
-    [X] 0007_sqlquery_identifier
-    [X] 0008_sqlquery_analysis
-   ```
-
-   All 8 migrations should already be checked off — they were applied when
-   you were running django-silk, and the files are identical.
+3. **No `migrate` needed.** django-silky ships the exact same app label
+   (`silk`) and the exact same migration files (0001 – 0008) as django-silk.
+   Nothing to apply, nothing to fake, nothing to roll back.
 
 4. **No `settings.py` changes.** The app label stays `'silk'`:
 
@@ -110,18 +90,10 @@ retained.
 
 ### From django-silk < 5.0
 
-You must first bring the upstream migrations up to `0008` before switching.
-
-1. While still on django-silk, run all pending migrations:
-
-   ```bash
-   pip install "django-silk>=5.4"
-   python manage.py migrate silk
-   ```
-
-2. Confirm all 8 migrations are applied (`showmigrations silk` shows all `[X]`).
-
-3. Then follow the **From django-silk 5.x** steps above.
+Same steps as above — just swap the package. django-silky carries the full
+set of upstream migrations (0001 – 0008), so any not-yet-applied migrations
+from older django-silk installs are already included; Django will see them
+as part of the installed app and treat the state as consistent.
 
 ---
 
@@ -163,13 +135,13 @@ After switching, spot-check a few things in the `/silk/` UI:
 - [ ] Profiling page shows any previously recorded profiles
 - [ ] Summary page shows aggregate metrics from historical data
 
-If any page raises a `ProgrammingError` or `OperationalError`, run
-`python manage.py showmigrations silk` — if any migration shows `[ ]`
-(unapplied), run `python manage.py migrate silk` to apply it.
-
 ---
 
 ## Frequently asked questions
+
+**Do I need to run `manage.py migrate` when switching?**
+No. django-silky ships the identical schema and the same migration files
+(0001 – 0008) as django-silk. The swap is purely a package replacement.
 
 **Does django-silky add new migrations?**
 Not at this time. If future schema changes are needed they will be added as
