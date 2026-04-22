@@ -17,6 +17,7 @@ Logger = logging.getLogger('silk.model_factory')
 
 content_types_json = ['application/json',
                       'application/x-javascript',
+                      'application/javascript',
                       'text/javascript',
                       'text/x-javascript',
                       'text/x-json']
