@@ -16,11 +16,12 @@ from silk.config import SilkyConfig
 Logger = logging.getLogger('silk.model_factory')
 
 content_types_json = ['application/json',
-                      'application/x-javascript',
-                      'application/javascript',
-                      'text/javascript',
-                      'text/x-javascript',
                       'text/x-json']
+content_types_js = ['application/javascript',
+                    'application/x-javascript',
+                    'text/javascript',
+                    'text/x-javascript']
+content_types_parseable = content_types_json + content_types_js
 multipart_form = 'multipart/form-data'
 content_type_form = [multipart_form,
                      'application/x-www-form-urlencoded']
@@ -128,7 +129,7 @@ class RequestModelFactory:
             body = self.request.POST
             body = json.dumps(dict(body), sort_keys=True, indent=4
                               , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
-        elif content_type in content_types_json:
+        elif content_type in content_types_parseable:
             try:
                 body = json.dumps(json.loads(raw_body), sort_keys=True, indent=4
                                   , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
@@ -278,16 +279,17 @@ class ResponseModelFactory:
                             'Size of %d for %s is less than %d so saving response body'
                             % (size, self.request.path, max_body_size)
                         )
-            if content and content_type in content_types_json:
+            if content and content_type in content_types_parseable:
                 # TODO: Perhaps theres a way to format the JSON without parsing it?
                 try:
                     body = json.dumps(json.loads(content), sort_keys=True, indent=4
                                       , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
                 except (TypeError, ValueError):
-                    Logger.warning(
-                        'Response to request with pk %s has content type %s but was unable to parse it'
-                        % (self.request.pk, content_type)
-                    )
+                    if content_type in content_types_json:
+                        Logger.warning(
+                            'Response to request with pk %s has content type %s but was unable to parse it'
+                            % (self.request.pk, content_type)
+                        )
         return body, content
 
     def construct_response_model(self):
