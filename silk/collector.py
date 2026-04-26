@@ -161,7 +161,7 @@ class DataCollector(metaclass=Singleton):
         sql_queries = []
         for identifier, query in self.queries.items():
             query['identifier'] = identifier
-            sql_query = models.SQLQuery(**query)
+            sql_query = models.SQLQuery(**{k: v for k, v in query.items() if k != 'model'})
             sql_queries += [sql_query]
 
         models.SQLQuery.objects.bulk_create(sql_queries)
