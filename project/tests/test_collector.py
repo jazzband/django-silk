@@ -3,6 +3,7 @@ import os.path
 import sys
 
 from django.test import TestCase
+from django.utils import timezone
 from tests.util import DictStorage
 
 from silk.collector import DataCollector
@@ -50,6 +51,21 @@ class TestCollector(TestCase):
                 content = f.read()
                 self.assertTrue(content)
                 self.assertGreater(len(content), 0)
+
+    def test_finalise_is_idempotent(self):
+        request = RequestMinFactory()
+        DataCollector().configure(request, should_profile=False)
+        DataCollector().register_query({
+            'query': 'SELECT 1',
+            'start_time': timezone.now(),
+            'end_time': timezone.now(),
+            'traceback': '',
+            'analysis': None,
+            'request': request,
+        })
+        DataCollector().finalise()
+        # Second call must not raise TypeError from stale 'model' key in query dict
+        DataCollector().finalise()
 
     def test_configure_exception(self):
         other_profiler = cProfile.Profile()
