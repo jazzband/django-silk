@@ -286,9 +286,10 @@ class ResponseModelFactory:
                                       , ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
                 except (TypeError, ValueError):
                     if content_type in content_types_json:
+                        request_pk = self.request.pk if self.request else None
                         Logger.warning(
                             'Response to request with pk %s has content type %s but was unable to parse it'
-                            % (self.request.pk, content_type)
+                            % (request_pk, content_type)
                         )
         return body, content
 
