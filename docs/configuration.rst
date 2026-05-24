@@ -68,3 +68,32 @@ The garbage collection is only run on a percentage of requests to reduce overhea
 .. code-block:: python
 
     SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+
+
+Query Analysis
+--------------
+
+To enable query analysis when supported by the DBMS, set the following in ``settings.py``:
+
+.. code-block:: python
+
+    SILKY_ANALYZE_QUERIES = True
+
+This causes Silk to run ``EXPLAIN ANALYZE`` on each intercepted query, which provides execution plan
+details including actual runtime statistics.
+
+.. warning::
+
+    When ``SILKY_ANALYZE_QUERIES`` is ``True``, the database may execute the same query twice.
+    For example, PostgreSQL's ``EXPLAIN ANALYZE`` [actually executes the query](https://www.postgresql.org/docs/current/sql-explain.html),
+    not just plans it. This means that ``UPDATE``, ``INSERT``, and ``DELETE`` statements will be
+    executed once by your application code and again by Silk's query analysis — potentially causing
+    unexpected side effects such as duplicate counter increments or duplicate log entries.
+
+    Use this setting with caution, especially in production environments.
+
+To pass additional parameters for profiling when supported by the DBMS (e.g. ``VERBOSE``, ``FORMAT JSON``):
+
+.. code-block:: python
+
+    SILKY_EXPLAIN_FLAGS = {'format': 'JSON', 'costs': True}
