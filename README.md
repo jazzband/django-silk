@@ -274,7 +274,7 @@ narrowing down slowness to particular database records.
 
 ```python
 def post(request, post_id):
-    with silk_profile(name='View Blog Post #%d' % self.pk):
+    with silk_profile(name='View Blog Post #%d' % post_id):
         p = Post.objects.get(pk=post_id)
         return render(request, 'post.html', {
             'post': p
@@ -369,7 +369,7 @@ foo()
 # ...do some other stuff
 ```
 
-,we would profile `foo` by dynamically decorating `my.module.foo` as opposed to `another.module.foo`:
+, we would profile `foo` by dynamically decorating `my.module.foo` as opposed to `another.module.foo`:
 
 ```python
 SILKY_DYNAMIC_PROFILING = [{
