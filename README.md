@@ -41,7 +41,7 @@ Via pip into a `virtualenv`:
 pip install django-silk
 ```
 
-To including optional formatting of python snippets:
+To include optional formatting of Python snippets:
 
 ```bash
 pip install django-silk[formatting]
@@ -369,7 +369,7 @@ foo()
 # ...do some other stuff
 ```
 
-,we would profile `foo` by dynamically decorating `my.module.foo` as opposed to `another.module.foo`:
+, we would profile `foo` by dynamically decorating `my.module.foo` as opposed to `another.module.foo`:
 
 ```python
 SILKY_DYNAMIC_PROFILING = [{
