@@ -1,16 +1,15 @@
 {% extends 'silk/base/base.html' %}
 {% load static %}
 {% block style %}
-    <link rel="stylesheet" href="{% static 'silk/lib/highlight/foundation.css' %}"/>
-    <link rel="stylesheet" href="{% static 'silk/css/components/heading.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/lib/highlight/silk-theme.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/components/numeric.css' %}"/>
     <link rel="icon" type="image/png" href="{% static 'silk/favicon-32x32.png' %}" sizes="32x32">
     <link rel="icon" type="image/png" href="{% static 'silk/favicon-16x16.png' %}" sizes="16x16">
-    <link rel="stylesheet" href="{% static 'silk/css/components/numeric.css' %}"/>
     <link rel="stylesheet" href="{% static 'silk/css/pages/detail_base.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/request.css' %}"/>
 {% endblock %}
 
 {% block js %}
-    <script src="{% static 'silk/js/components/cell.js' %}"></script>
     <script src="{% static 'silk/lib/highlight/highlight.pack.js' %}"></script>
     <script src="{% static 'silk/js/pages/detail_base.js' %}"></script>
 {% endblock %}

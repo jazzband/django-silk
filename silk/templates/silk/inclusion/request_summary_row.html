@@ -1,15 +1,43 @@
 {% load silk_filters %}
-    <div class="col timestamp-div">{{ silk_request.start_time | silk_date_time }}</div>
-    <div class="col method-div">{% if silk_request.response.status_code %}{{ silk_request.response.status_code }} {% endif %}{{ silk_request.method }}</div>
-    <div class="col path-div">{{ silk_request.path }}</div>
-    <div class="col time-taken-div spacing">
-        <span class="numeric">{{ silk_request.time_taken|floatformat:"0" }}<span class="unit">ms</span></span>
-        <span class="appendage">overall<span class="meta">{% if silk_request.total_meta_time %} +{{ silk_request.total_meta_time | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></span>
-    </div>
-    <div class="col time-taken-queries-div spacing">
-        <span class="col numeric">{{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="unit">ms</span></span>
-        <span class="col appenage">on queries<span class="meta">{% if silk_request.meta_time_spent_queries %} +{{ silk_request.meta_time_spent_queries | floatformat:"0" }}<span class="unit">ms</span>{% endif %}</span></div>
-    <div class="col num-queries-div spacing">
-        <span class="col numeric">{{ silk_request.num_sql_queries }}</span>
-        <span class="col appendage">queries<span class="meta">{% if silk_request.meta_num_queries %} +{{ silk_request.meta_num_queries  }}{% endif %}</span></span>
-    </div>
+<td class="silk-td silk-td--timestamp">
+    <span>{{ silk_request.start_time | silk_full_datetime }}</span>
+</td>
+<td class="silk-td silk-td--method">
+    <span class="silk-badge silk-badge--method silk-badge--{{ silk_request.method|lower }}">{{ silk_request.method }}</span>
+</td>
+<td class="silk-td silk-td--status">
+    {% if silk_request.response.status_code %}
+    <span class="silk-badge silk-badge--status
+        {% with sc=silk_request.response.status_code %}
+        {% if sc >= 500 %}silk-badge--status-5xx
+        {% elif sc >= 400 %}silk-badge--status-4xx
+        {% elif sc >= 300 %}silk-badge--status-3xx
+        {% else %}silk-badge--status-2xx
+        {% endif %}
+        {% endwith %}">
+        {{ silk_request.response.status_code }}
+    </span>
+    {% else %}
+    <span class="silk-text-muted">—</span>
+    {% endif %}
+</td>
+<td class="silk-td silk-td--path">{{ silk_request.path }}</td>
+<td class="silk-td silk-td--numeric">
+    <span class="silk-num {% if silk_request.time_taken >= 2000 %}silk-num--very-bad{% elif silk_request.time_taken >= 1000 %}silk-num--bad{% elif silk_request.time_taken >= 400 %}silk-num--ok{% elif silk_request.time_taken >= 100 %}silk-num--good{% else %}silk-num--very-good{% endif %}">
+        {% if silk_request.time_taken >= 2000 %}<i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>{% endif %}
+        {{ silk_request.time_taken|floatformat:"0" }}<span class="silk-unit">ms</span>
+    </span>
+</td>
+<td class="silk-td silk-td--numeric">
+    <span class="silk-num">{{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="silk-unit">ms</span></span>
+</td>
+<td class="silk-td silk-td--numeric">
+    <span class="silk-num {% if silk_request.num_sql_queries >= 50 %}silk-num--very-bad{% elif silk_request.num_sql_queries >= 20 %}silk-num--bad{% elif silk_request.num_sql_queries >= 10 %}silk-num--ok{% endif %}">
+        {{ silk_request.num_sql_queries }}
+    </span>
+    {% if silk_request.has_n1 %}
+    <span class="silk-n1-row-badge" title="N+1 query detected">
+        <i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>
+    </span>
+    {% endif %}
+</td>

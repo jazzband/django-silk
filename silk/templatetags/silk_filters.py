@@ -1,3 +1,4 @@
+import json
 import re
 
 from django.template import Library
@@ -69,9 +70,35 @@ def silk_date_time(dt):
     return _silk_date_time(dt)
 
 
+@register.filter(expects_localtime=True)
+def silk_full_datetime(dt):
+    """Full date + 12 h clock + optional timezone — used in hero bars."""
+    if dt is None:
+        return ''
+    hour = dt.hour % 12 or 12
+    am_pm = 'AM' if dt.hour < 12 else 'PM'
+    date_part = '{} {}, {}'.format(dt.strftime('%b'), dt.day, dt.year)
+    time_part = '{}:{} {}'.format(hour, dt.strftime('%M:%S'), am_pm)
+    tz_name = dt.strftime('%Z')
+    result = '{}, {}'.format(date_part, time_part)
+    if tz_name and tz_name != 'UTC':
+        result += ' {}'.format(tz_name)
+    return result
+
+
 @register.filter
 def sorted(value):
     return sorted(value)
+
+
+@register.filter
+def unlocalize(value):
+    """
+    Render values without Django's locale-aware numeric formatting.
+    """
+    if value is None:
+        return ''
+    return str(value)
 
 
 @stringfilter
@@ -87,6 +114,12 @@ def body_filter(value):
         return 'Too big!'
     else:
         return value
+
+
+@register.filter
+def silk_json(value):
+    """Serialize a Python value to JSON, marked safe for template output."""
+    return mark_safe(json.dumps(value))
 
 
 spacify.needs_autoescape = True

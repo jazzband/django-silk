@@ -1,0 +1,45 @@
+{% load silk_filters %}
+{# Hidden input for submitting sort_list via POST #}
+<input type="hidden" name="sort_criteria" id="silk-sort-criteria" value='{{ sort_list|silk_json }}'>
+
+<div class="silk-sort-chips" id="silk-sort-chips">
+    {% for item in sort_list %}
+    <span class="silk-sort-chip" data-field="{{ item.field }}" data-dir="{{ item.dir }}">
+        <button type="button" class="silk-sort-chip__dir" aria-label="Toggle sort direction"
+                onclick="silkSortToggleDir(this)">
+            {% if item.dir == "DESC" %}
+                <i data-lucide="arrow-down" class="silk-icon"></i>
+            {% else %}
+                <i data-lucide="arrow-up" class="silk-icon"></i>
+            {% endif %}
+        </button>
+        <span class="silk-sort-chip__label">
+            {% for opt in sort_options %}{% if opt.value == item.field %}{{ opt.label }}{% endif %}{% endfor %}
+        </span>
+        <button type="button" class="silk-sort-chip__remove" aria-label="Remove sort"
+                onclick="silkSortRemove(this)">
+            <i data-lucide="x" class="silk-icon"></i>
+        </button>
+    </span>
+    {% endfor %}
+
+    {# Show "Add sort" only when at least one option hasn't been added yet #}
+    {% if sort_fields_used|length < sort_options|length %}
+    <div class="silk-sort-add" id="silk-sort-add-wrapper">
+        <button type="button" class="silk-sort-chip silk-sort-chip--add" id="silk-sort-add-btn"
+                onclick="silkSortToggleMenu(event)" aria-haspopup="true" aria-expanded="false">
+            <i data-lucide="plus" class="silk-icon"></i> Add sort
+        </button>
+        <div class="silk-sort-menu" id="silk-sort-menu" hidden>
+            {% for opt in sort_options %}
+            {% if opt.value not in sort_fields_used %}
+            <button type="button" class="silk-sort-menu__item"
+                    onclick="silkSortAdd('{{ opt.value }}', '{{ opt.label }}')">
+                {{ opt.label }}
+            </button>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

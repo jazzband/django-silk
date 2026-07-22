@@ -1,20 +1,24 @@
-.name-div {
-  font-weight: bold;
-}
+.silk-empty__list {
+  text-align: left;
+  display: inline-block;
+  margin: 0 0 1.5rem;
+  font-size: var(--silk-font-size-base);
+  color: var(--silk-text-secondary);
 
-.container {
-  padding: 0 1em;
-}
+  li {
+    margin-bottom: 4px;
+  }
 
-.description {
-
-}
-
-h2 {
-  margin-bottom: 10px;
+  code {
+    background: var(--silk-filter-bg);
+    border: 1px solid var(--silk-border);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: var(--silk-font-size-sm);
+  }
 }
 
 .pyprofile {
-  overflow: scroll;
+  overflow: auto;
   max-height: 650px;
 }

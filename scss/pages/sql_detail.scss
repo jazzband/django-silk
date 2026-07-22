@@ -1,59 +1,37 @@
-#traceback {
-  width: 960px;
-  margin: auto;
+/* SQL query/plan/traceback are wrapped in silk-section cards (request.css).
+   Only sql_detail-specific styles live here. */
+
+/* Metrics row below the query pre block */
+.silk-sql-meta {
+  display: flex;
+  gap: 1.25rem;
+  padding: 10px 16px;
+  border-top: 1px solid var(--silk-border);
+  background: var(--silk-filter-bg);
+  font-size: var(--silk-font-size-base);
+  color: var(--silk-text-secondary);
 }
 
-#traceback pre {
-  margin-top: 15px !important;
-  margin-bottom: 15px !important;
+/* Traceback frame list */
+.silk-traceback {
+  padding: 0.75rem 1rem;
+  font-family: Fantasque, monospace;
+  font-size: var(--silk-font-size-sm);
 }
 
-#traceback .not-third-party {
-  font-weight: bold;
+.silk-traceback__line {
+  padding: 2px 0;
+  line-height: 1.5;
 }
 
-a:hover {
-  color: #9dd0ff;
+/* Your code: normal weight, primary colour */
+.silk-traceback__line--app {
+  color: var(--silk-text-primary);
+  font-weight: normal;
 }
 
-a:active {
-  color: #594F4F;
-}
-
-code {
-  background-color: transparent !important;
-}
-
-#query-div pre {
-  background-color: transparent !important;
-}
-
-#query-div {
-  padding-top: 15px;
-}
-
-#query-info-div div {
-  padding-top: 5px;
-}
-
-#query-plan-div {
-  text-align: left;
-  width: 960px;
-  margin: auto;
-}
-
-#plan-div code {
-  margin: auto !important;
-  display: inline-block;
-}
-
-#query-plan-head {
-  padding-top: 5px;
-  padding-bottom: 15px;
-  text-align: center;
-  margin: auto;
-}
-
-.file-path {
-  font-size: 13px;
+/* Third-party / library: muted */
+.silk-traceback__line--lib {
+  color: var(--silk-text-muted);
+  font-weight: lighter;
 }

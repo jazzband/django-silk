@@ -4,7 +4,8 @@
   padding: 10px;
   margin-left: 10px;
   margin-top: 10px;
-  border-radius: 4px;
+  border-radius: var(--silk-card-radius, 8px);
+  box-shadow: var(--silk-card-shadow);
   transition: background-color 0.15s ease, color 0.15s ease;
   div {
     margin: 2px;
@@ -15,12 +16,11 @@
   }
   .meta {
     font-size: 12px;
-    color: #be5b43;
+    color: var(--silk-perf-bad);
     .unit {
       font-size: 9px;
       font-weight: lighter !important;
     }
-
   }
   .method-div {
     font-weight: bold;

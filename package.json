@@ -21,8 +21,11 @@
   },
   "homepage": "https://github.com/jazzband/django-silk",
   "devDependencies": {
+    "esbuild": "^0.27.4",
     "gulp": "^4.0.2",
-    "gulp-sass": "^4.0.2"
-  },
-  "dependencies": {}
+    "gulp-sass": "^5.1.0",
+    "highlight.js": "^11.11.1",
+    "lucide": "^0.574.0",
+    "sass": "^1.85.1"
+  }
 }

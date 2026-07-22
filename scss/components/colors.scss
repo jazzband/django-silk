@@ -1,19 +1,19 @@
 .very-good-font-color {
-  color: #bac54b;
+  color: var(--silk-perf-very-good);
 }
 
 .good-font-color {
-  color: #c3a948;
+  color: var(--silk-perf-good);
 }
 
 .ok-font-color {
-  color: #c08245;
+  color: var(--silk-perf-ok);
 }
 
 .bad-font-color {
-  color: #be5b43;
+  color: var(--silk-perf-bad);
 }
 
 .very-bad-font-color {
-  color: #b9424f;
+  color: var(--silk-perf-very-bad);
 }

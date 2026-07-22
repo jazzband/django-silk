@@ -1,53 +1,22 @@
-#query-info-div {
-  margin-top: 15px;
+/* profile_detail.html uses silk-section cards, silk-hero, silk-pre (from request.css).
+   Only profile-detail-specific styles live here. */
+
+/* Wide pre for pyprofile output */
+.silk-pre--wide {
+  overflow-x: auto;
+  white-space: pre;
+  font-size: var(--silk-font-size-sm);
 }
 
-#query-info-div .timestamp-div {
-  font-size: 13px;
-
-}
-
-#pyprofile-div {
-  display: block;
-  margin: auto;
-  width: 960px;
-}
-
-.pyprofile {
-  text-align: left;
-}
-
-a {
-  color: #45ADA8;
-}
-
-a:visited {
-  color: #45ADA8;
-}
-
-a:hover {
-  color: #547980;
-}
-
-a:active {
-  color: #594F4F;
-}
-
-#graph-div {
-  padding: 25px;
-  background-color: white;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 25px;
-  width: 960px;
+/* Profile graph container */
+.silk-graph-div {
+  padding: 1rem;
+  background: var(--silk-surface);
   text-align: center;
-}
+  overflow: auto;
 
-#percent {
-  width: 20px;
-}
-
-svg {
-  display: block;
+  svg {
+    display: block;
+    margin: auto;
+  }
 }

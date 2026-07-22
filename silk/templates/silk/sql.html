@@ -6,30 +6,30 @@
 {% load silk_inclusion %}
 {% load silk_urls %}
 
-{% block pagetitle %}Silky - SQL - {{ silk_request.path }}{% endblock %}
-
-{% block js %}
-  <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
-  {{ block.super }}
-  <script src="{% static 'silk/js/pages/sql.js' %}"></script>
-{% endblock %}
+{% block pagetitle %}Silky - SQL - {% if silk_request %}{{ silk_request.path }}{% elif profile %}{{ profile.name|default:profile.func_name }}{% endif %}{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'silk/css/pages/sql.css' %}">
-    <link rel="stylesheet" href="{% static 'silk/css/components/colors.css' %}">
     <link rel="stylesheet" href="{% static 'silk/css/components/numeric.css' %}">
-    <link rel="stylesheet" href="{% static 'silk/css/components/summary.css' %}">
-    <link rel="stylesheet" href="{% static 'silk/css/components/cell.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/css/pages/requests.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/request.css' %}"/>
+    <link rel="stylesheet" href="{% static 'silk/css/pages/sql.css' %}">
+    <link rel="stylesheet" href="{% static 'silk/lib/highlight/silk-theme.css' %}">
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'silk/lib/sortable.js' %}"></script>
+    {{ block.super }}
+    <script src="{% static 'silk/lib/highlight/highlight.pack.js' %}"></script>
+    <script src="{% static 'silk/js/pages/sql.js' %}"></script>
 {% endblock %}
 
 {% block filter %}
     <form id="filter-form" action="." method="get"></form>
-
     <div class="menu-item">
         <div class="menu-item-outer">
             <div class="menu-item-inner">
-                <label>Show:
-                    <select name="per_page" form="filter-form" onchange="this.form.submit();">
+                <label class="silk-toolbar-label" style="gap:6px;">Show:
+                    <select name="per_page" form="filter-form" onchange="this.form.submit();" class="silk-select">
                         {% for option in options_page_size %}
                             <option value="{{ option }}"
                                     {% if option == per_page %}selected{% endif %}>{{ option }}</option>
@@ -50,73 +50,160 @@
     {% endif %}
 {% endblock %}
 
-
 {% block data %}
-    {{ block.super }}
-    <div class="wrapper">
-        {% if profile or silk_request %}
-            <div id="query-div">
-            <div id="query-info-div">
-        {% endif %}
-        {% if profile %}
-            {% profile_summary profile %}
-        {% endif %}
-        {% if silk_request %}
-            {% request_summary silk_request %}
-        {% endif %}
-        {% if profile or silk_request %}
-            </div>
-            </div>
-        {% endif %}
-        <div id="table-div">
+<div class="silk-page">
 
-            <table class="sortable">
-                <tr>
-                    <th class="left-aligned">At</th>
-                    <th class="left-aligned">Action</th>
-                    <th class="left-aligned">Tables</th>
-                    <th class="right-aligned">Num. Joins</th>
-                    <th class="right-aligned">Execution Time (ms)</th>
-                </tr>
-                {% for sql_query in items %}
-                    {% sql_detail_url silk_request profile sql_query as detail_url %}
-                    <tr class="data-row" data-sql-detail-url="{{ detail_url }}">
-                        <td class="left-aligned">+{{ sql_query.start_time_relative }}</td>
-                        <td class="left-aligned">{{ sql_query.first_keywords }}</td>
-                        <td class="left-aligned">{{ sql_query.tables_involved|join:", " }}</td>
-                        <td class="right-aligned">{{ sql_query.num_joins }}</td>
-                        <td class="right-aligned">{{ sql_query.time_taken | floatformat:6 }}</td>
-                    </tr>
-                {% endfor %}
-
-            </table>
-
-            {% if items.paginator.num_pages > 1 %}
-            <div id="table-pagination" class="pagination">
-                <div class="current">
-                    Page {{ items.number }} of {{ items.paginator.num_pages }}.
-                </div>
-
-                <div class="step-links">
-                    {% if items.has_previous %}
-                        <a href="?page={{ items.previous_page_number }}&per_page={{ per_page }}">previous</a>
-                    {% else %}
-                        previous
-                    {% endif %}
-                    |
-                    {% if items.has_next %}
-                        <a href="?page={{ items.next_page_number }}&per_page={{ per_page }}">next</a>
-                    {% else %}
-                        next
-                    {% endif %}
-                </div>
-            </div>
+    {# ── Hero bar ── #}
+    {% if silk_request %}
+    <div class="silk-hero">
+        <div class="silk-hero__badges">
+            <span class="silk-badge silk-badge--method silk-badge--{{ silk_request.method|lower }}">{{ silk_request.method }}</span>
+            {% if silk_request.response.status_code %}
+            {% with sc=silk_request.response.status_code %}
+            <span class="silk-badge silk-badge--status {% if sc >= 500 %}silk-badge--status-5xx{% elif sc >= 400 %}silk-badge--status-4xx{% elif sc >= 300 %}silk-badge--status-3xx{% else %}silk-badge--status-2xx{% endif %}">{{ sc }}</span>
+            {% endwith %}
             {% endif %}
+            <span class="silk-hero__time">{{ silk_request.start_time | silk_full_datetime }}</span>
+        </div>
+        <div class="silk-hero__path">{{ silk_request.path }}</div>
+        <div class="silk-hero__metrics">
+            <span class="silk-hero__metric">
+                <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.time_taken|floatformat:"0" }}<span class="silk-unit">ms</span>
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="database" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.time_spent_on_sql_queries|floatformat:"0" }}<span class="silk-unit">ms</span> DB
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="layers" class="silk-icon silk-icon--sm"></i>
+                {{ silk_request.num_sql_queries }} queries
+            </span>
         </div>
     </div>
+    {% elif profile %}
+    <div class="silk-hero">
+        <div class="silk-hero__badges">
+            <span class="silk-hero__time">{{ profile.start_time | silk_full_datetime }}</span>
+        </div>
+        <div class="silk-hero__path">{% if profile.name %}{{ profile.name }}{% elif profile.func_name %}{{ profile.func_name }}{% endif %}</div>
+        <div class="silk-hero__metrics">
+            <span class="silk-hero__metric">
+                <i data-lucide="clock" class="silk-icon silk-icon--sm"></i>
+                {{ profile.time_taken|floatformat:"0" }}<span class="silk-unit">ms</span>
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="database" class="silk-icon silk-icon--sm"></i>
+                {{ profile.time_spent_on_sql_queries|floatformat:"0" }}<span class="silk-unit">ms</span> DB
+            </span>
+            <span class="silk-hero__metric">
+                <i data-lucide="layers" class="silk-icon silk-icon--sm"></i>
+                {{ profile.queries.count }} queries
+            </span>
+        </div>
+    </div>
+    {% endif %}
 
+    {# ── N+1 detection banner ── #}
+    {% if n_plus_one and n_plus_one.has_n_plus_one %}
+    <div class="silk-n1-banner">
 
+        <div class="silk-n1-banner__header">
+            <div class="silk-n1-banner__title">
+                <i data-lucide="alert-triangle" class="silk-icon silk-icon--sm"></i>
+                <strong>N+1 Queries Detected</strong>
+            </div>
+            <div class="silk-n1-banner__pills">
+                <span class="silk-n1-pill">{{ n_plus_one.groups|length }} pattern{% if n_plus_one.groups|length != 1 %}s{% endif %}</span>
+                <span class="silk-n1-pill">{{ n_plus_one.flagged_query_ids|length }} queries</span>
+            </div>
+            <p class="silk-n1-hint">
+                <i data-lucide="lightbulb" class="silk-icon silk-icon--sm"></i>
+                Eliminate by batching with <code>select_related()</code> or <code>prefetch_related()</code>
+            </p>
+        </div>
 
+        <div class="silk-n1-patterns">
+            {% for group in n_plus_one.groups %}
+            <div class="silk-n1-pattern">
+                <button type="button" class="silk-n1-row" aria-expanded="false">
+                    <span class="silk-n1-count">{{ group.count }}×</span>
+                    <span class="silk-n1-preview">{{ group.representative.query|truncatechars:120 }}</span>
+                    <span class="silk-n1-time">~{{ group.total_time_taken|floatformat:0 }}<span class="silk-unit">ms</span></span>
+                    <i data-lucide="chevron-down" class="silk-icon silk-icon--sm silk-n1-chevron"></i>
+                </button>
+                <div class="silk-n1-body" hidden>
+                    <pre class="silk-pre silk-pre--n1"><code class="language-sql">{{ group.representative.formatted_query }}</code></pre>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
+    </div>
+    {% endif %}
 
+    {# ── SQL table ── #}
+    {% if items %}
+    <div class="silk-table-wrapper">
+        <table class="silk-table sortable">
+            <thead class="silk-table__head">
+                <tr>
+                    <th class="silk-th">At</th>
+                    <th class="silk-th">Action</th>
+                    <th class="silk-th">Tables</th>
+                    <th class="silk-th silk-th--numeric">Joins</th>
+                    <th class="silk-th silk-th--numeric">Time (ms)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sql_query in items %}
+                {% sql_detail_url silk_request profile sql_query as detail_url %}
+                <tr class="silk-table__row{% if n_plus_one_ids and sql_query.pk in n_plus_one_ids %} silk-table__row--n1{% endif %}" tabindex="0" onclick="location.href='{{ detail_url }}'">
+                    <td class="silk-td silk-td--timestamp">+{{ sql_query.start_time_relative }}</td>
+                    <td class="silk-td">{{ sql_query.first_keywords }}</td>
+                    <td class="silk-td silk-td--path">{{ sql_query.tables_involved|join:", " }}</td>
+                    <td class="silk-td silk-td--numeric">{{ sql_query.num_joins }}</td>
+                    <td class="silk-td silk-td--numeric">
+                        <span class="silk-num {% if sql_query.time_taken >= 1000 %}silk-num--very-bad{% elif sql_query.time_taken >= 500 %}silk-num--bad{% elif sql_query.time_taken >= 100 %}silk-num--ok{% else %}silk-num--very-good{% endif %}">
+                            {{ sql_query.time_taken|floatformat:2 }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="silk-empty">
+        <div class="silk-empty__icon"><i data-lucide="database" class="silk-icon silk-icon--large"></i></div>
+        <p class="silk-empty__title">No SQL queries</p>
+        <p class="silk-empty__desc">This request did not execute any SQL queries.</p>
+    </div>
+    {% endif %}
+
+    {# ── Pagination ── #}
+    {% if items.paginator.num_pages > 1 %}
+    <nav class="silk-pagination" aria-label="SQL queries">
+        <ul class="silk-pagination__list">
+            <li class="silk-pagination__item {% if not items.has_previous %}silk-pagination__item--disabled{% endif %}">
+                <a class="silk-pagination__link" {% if items.has_previous %}href="?page={{ items.previous_page_number }}&per_page={{ per_page }}"{% endif %}>
+                    <i data-lucide="chevron-left" class="silk-icon silk-icon--sm"></i> Prev
+                </a>
+            </li>
+            {% for page_num in items.paginator.page_range %}
+            <li class="silk-pagination__item {% if page_num == items.number %}silk-pagination__item--current{% endif %}">
+                <a class="silk-pagination__link" href="?page={{ page_num }}&per_page={{ per_page }}">{{ page_num }}</a>
+            </li>
+            {% endfor %}
+            <li class="silk-pagination__item {% if not items.has_next %}silk-pagination__item--disabled{% endif %}">
+                <a class="silk-pagination__link" {% if items.has_next %}href="?page={{ items.next_page_number }}&per_page={{ per_page }}"{% endif %}>
+                    Next <i data-lucide="chevron-right" class="silk-icon silk-icon--sm"></i>
+                </a>
+            </li>
+        </ul>
+        <p class="silk-pagination__info">Page {{ items.number }} of {{ items.paginator.num_pages }}</p>
+    </nav>
+    {% endif %}
+
+</div>
 {% endblock %}

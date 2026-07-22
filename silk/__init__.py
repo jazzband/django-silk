@@ -1,3 +1,6 @@
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = version("django-silk")
+try:
+    __version__ = version("django-silk")
+except PackageNotFoundError:
+    __version__ = "unknown"

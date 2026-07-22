@@ -1,0 +1,67 @@
+{% comment %}
+Inline collapsible filter bar for the profiling page.
+Must be placed inside a <form> element that POSTs to the current URL.
+{% endcomment %}
+<div class="silk-filter-bar" id="silk-filter-bar" hidden>
+    <div class="silk-filter-bar__body">
+
+        {# Time presets #}
+        <div class="silk-filter-row">
+            <span class="silk-filter-label">Time:</span>
+            <div class="silk-filter-presets">
+                <button type="button" class="silk-preset-btn {% if not filters %}silk-preset-btn--active{% endif %}"
+                        onclick="silkFilterPreset('')">All</button>
+                {% for preset in time_presets %}
+                <button type="button" class="silk-preset-btn"
+                        onclick="silkFilterPreset('{{ preset.key }}')">{{ preset.label }}</button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="time_preset" id="silk-time-preset-val" value="">
+        </div>
+
+        {# Name / Function Name #}
+        <div class="silk-filter-row">
+            <label class="silk-filter-label">Name:
+                <select name="filter-name-value" class="silk-filter-select">
+                    <option value="">Any</option>
+                    {% for name_opt in options_names %}
+                    {% if name_opt %}
+                    <option {% if name_opt == filters.name.value %}selected{% endif %}>{{ name_opt }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="filter-name-typ" value="NameFilter">
+            </label>
+
+            <label class="silk-filter-label">Function:
+                <select name="filter-functionname-value" class="silk-filter-select">
+                    <option value="">Any</option>
+                    {% for fn in options_func_names %}
+                    {% if fn %}
+                    <option {% if fn == filters.functionname.value %}selected{% endif %}>{{ fn }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="filter-functionname-typ" value="FunctionNameFilter">
+            </label>
+
+            <label class="silk-filter-label">Min time:
+                <input type="number" name="filter-overalltime-value" class="silk-filter-input"
+                       placeholder="ms" value="{{ filters.overalltime.value }}" min="0">
+                <input type="hidden" name="filter-overalltime-typ" value="OverallTimeFilter">
+            </label>
+
+            <label class="silk-filter-label">Queries ≥:
+                <input type="number" name="filter-numqueriesfilter-value" class="silk-filter-input"
+                       placeholder="n" value="{{ filters.numqueriesfilter.value }}" min="0">
+                <input type="hidden" name="filter-numqueriesfilter-typ" value="NumQueriesFilter">
+            </label>
+        </div>
+
+        {# Actions #}
+        <div class="silk-filter-row silk-filter-row--actions">
+            <button type="submit" class="silk-btn silk-btn--primary">Apply</button>
+            <button type="submit" name="clear_filters" value="1" class="silk-btn silk-btn--ghost">Clear all</button>
+        </div>
+    </div>
+</div>
