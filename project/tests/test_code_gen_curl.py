@@ -39,4 +39,3 @@ class TestCodeGenCurl(TestCase):
         )
 
         self.assertIn("log_time=1543406262.021423", result)
-
