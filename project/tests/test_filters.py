@@ -267,4 +267,3 @@ class TestFiltersManager(TestCase):
         request = BareRequest()
         manager.save(request, {"show": "all"})
         self.assertEqual(manager.get(request), {"show": "all"})
-
