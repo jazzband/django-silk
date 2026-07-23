@@ -121,6 +121,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_non_silk_request(self):
         request = Request()
         request.path = '/myapp/foo'
+        request.path_info = '/myapp/foo'
         should_intercept = _should_intercept(request)
 
         self.assertTrue(should_intercept)
@@ -128,6 +129,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_silk_request(self):
         request = Request()
         request.path = reverse('silk:summary')
+        request.path_info = reverse('silk:summary')
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
@@ -136,6 +138,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_without_silk_urls(self):
         request = Request()
         request.path = '/login'
+        request.path_info = '/login'
         _should_intercept(request)  # Just checking no crash
 
     def test_should_intercept_ignore_paths(self):
@@ -144,6 +147,38 @@ class TestShouldIntercept(TestCase):
         ]
         request = Request()
         request.path = '/ignorethis'
+        request.path_info = '/ignorethis'
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
+
+    def test_should_intercept_uses_path_info_not_path(self):
+        """
+        Regression test for
+        https://github.com/jazzband/django-silk/issues/349
+
+        Matching must be based on path_info (SCRIPT_NAME-stripped),
+        not path, so a front-end web server prefix doesn't cause
+        silk's own requests or a configured SILKY_IGNORE_PATHS entry
+        to go unrecognized.
+        """
+        SilkyConfig().SILKY_IGNORE_PATHS = [
+            '/ignorethis'
+        ]
+
+        # A path with a SCRIPT_NAME-style prefix that only path_info
+        # (not path) has stripped off.
+        request = Request()
+        request.path = '/some-prefix/ignorethis'
+        request.path_info = '/ignorethis'
+        should_intercept = _should_intercept(request)
+
+        self.assertFalse(should_intercept)
+
+        # Same idea for silk's own summary page.
+        request2 = Request()
+        request2.path = '/some-prefix' + reverse('silk:summary')
+        request2.path_info = reverse('silk:summary')
+        should_intercept2 = _should_intercept(request2)
+
+        self.assertFalse(should_intercept2)
