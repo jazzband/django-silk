@@ -208,6 +208,9 @@ class MethodFilter(BaseFilter):
 
 
 def filters_from_request(request):
+    if 'clear_filters' in request.POST:
+        return {}
+
     raw_filters = {}
     for key in request.POST:
         splt = key.split('-')
