@@ -21,7 +21,6 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 4.2',
         'Framework :: Django :: 5.1',
         'Framework :: Django :: 5.2',
         'Framework :: Django :: 6.0',
@@ -38,7 +37,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires=[
-        'Django>=4.2',
+        'Django>=5.1',
         'sqlparse',
         'gprof2dot>=2017.09.19',
     ],
