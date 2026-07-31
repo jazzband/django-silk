@@ -55,7 +55,7 @@ repos:
   rev: '1.31.1'
   hooks:
   - id: django-upgrade
-    args: [--target-version, '5.1']
+    args: [--target-version, '5.2']
 - repo: https://github.com/hhatto/autopep8
   rev: 'v2.3.2'
   hooks:
