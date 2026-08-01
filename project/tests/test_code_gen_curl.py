@@ -21,3 +21,21 @@ class TestCodeGenCurl(TestCase):
             '-d', '{"gamma": "delta"}',
             'https://example.org/alpha/beta'
         ])
+
+    def test_non_string_query_param_value(self):
+        """
+        Regression test for
+        https://github.com/jazzband/django-silk/issues/317
+
+        A non-string query param value (e.g. a float, as in the
+        issue's reproduction) must not raise AttributeError when
+        generating the curl command.
+        """
+        result = curl_cmd(
+            url="https://example.org/alpha/beta",
+            method="GET",
+            query_params={"log_time": 1543406262.021423},
+            content_type="application/json",
+        )
+
+        self.assertIn("log_time=1543406262.021423", result)
