@@ -11,6 +11,7 @@ from silk import models
 from silk.request_filters import (
     AfterDateFilter,
     BeforeDateFilter,
+    FiltersManager,
     FunctionNameFilter,
     MethodFilter,
     NameFilter,
@@ -239,6 +240,8 @@ class TestFiltersManager(TestCase):
     Regression tests for
     https://github.com/jazzband/django-silk/issues/361
     """
+    class BareRequest:
+        pass
 
     def test_get_without_session_or_prior_save_returns_empty_dict(self):
         """
@@ -248,22 +251,12 @@ class TestFiltersManager(TestCase):
         matching the safe default already used by the session-based
         branch.
         """
-        from silk.request_filters import FiltersManager
-
-        class BareRequest:
-            pass
-
         manager = FiltersManager("summary_filters")
-        result = manager.get(BareRequest())
+        result = manager.get(TestFiltersManager.BareRequest())
         self.assertEqual(result, {})
 
     def test_save_then_get_without_session_round_trips(self):
-        from silk.request_filters import FiltersManager
-
-        class BareRequest:
-            pass
-
         manager = FiltersManager("summary_filters")
-        request = BareRequest()
+        request = TestFiltersManager.BareRequest()
         manager.save(request, {"show": "all"})
         self.assertEqual(manager.get(request), {"show": "all"})
