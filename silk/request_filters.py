@@ -244,4 +244,9 @@ class FiltersManager:
     def get(self, request):
         if hasattr(request, 'session'):
             return request.session.get(self.key, {})
-        return request.silk_filters
+        # Mirror the session branch's safe default: get() should never
+        # raise, even when this is the first time save() has been
+        # called for this request (or session support isn't available
+        # at all), in which case silk_filters was never set. See
+        # GH #361.
+        return getattr(request, 'silk_filters', {})
