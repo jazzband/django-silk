@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from itertools import groupby
 from math import floor
 
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.utils import timezone as django_timezone
 
 from silk import models
@@ -22,12 +22,27 @@ from silk.request_filters import (
     StatusCodeFilter,
     TimeSpentOnQueriesFilter,
     ViewNameFilter,
+    filters_from_request,
 )
 
 from .test_lib.mock_suite import MockSuite
 from .util import delete_all_models
 
 mock_suite = MockSuite()
+
+
+class TestFiltersFromRequest(TestCase):
+    def test_clear_filters_ignores_submitted_values(self):
+        request = RequestFactory().post(
+            '/',
+            {
+                'clear_filters': '1',
+                'filter-viewname-typ': 'ViewNameFilter',
+                'filter-viewname-value': 'view1',
+            },
+        )
+
+        self.assertEqual(filters_from_request(request), {})
 
 
 class TestRequestFilters(TestCase):

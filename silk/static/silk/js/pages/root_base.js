@@ -6,10 +6,3 @@ function initFilterButton() {
         initFilters();
     });
 }
-function submitFilters() {
-    $('#filter-form2').submit();
-}
-function submitEmptyFilters() {
-    $('#cbp-spmenu-s2 :input:not([type=hidden])').val('');
-    submitFilters();
-}
