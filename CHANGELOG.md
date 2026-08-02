@@ -1,6 +1,31 @@
 # Change Log
 ## Unreleased
 
+## [5.5.1](https://github.com/jazzband/django-silk/tree/5.5.1) (2026-08-01)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.5.0..5.5.1)
+
+This will be the final release to support Django 4.2 and Django 5.1
+
+**Fixes:**
+
+ - Fix HTML in request_summary.html (#852) @JortRoelofs
+ - Fix filtering for JS content (#868) @albertyw
+ - Fix silk collector finalise raising TypeError when a "model" key is present in query dict (#872) @albertyw
+ - Exclude NULL view_names from View filter dropdown (#882) @albertyw
+ - Fix FiltersManager.get() raising AttributeError without session support (#887) @agu2347
+ - Fix AttributeError generating curl command for non-string query params (#885) @agu2347
+
+**Features/Enhancements:**
+
+ - Add support for Python 3.15 (#892) @hugovk
+
+**Maintenance and Cleanup:**
+
+ - Fix test coverage flakiness (#850) @albertyw
+ - Fix test project (#871) @VaishnavGhenge
+ - Dependency updates
+
 ## [5.5.0](https://github.com/jazzband/django-silk/tree/5.5.0) (2026-03-06)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.4.3..5.5.0)
