@@ -82,15 +82,6 @@
 *.webm binary
 *.wmv binary
 
-# Lockfiles
-package-lock.json binary
-yarn.lock binary
-pnpm-lock.yaml binary
-bun.lock binary
-uv.lock binary
-Pipfile.lock binary
-poetry.lock binary
-
 # Source maps — suppress noisy diffs (Web.gitattributes)
 *.map text -diff
 
