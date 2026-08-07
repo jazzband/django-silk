@@ -10,8 +10,10 @@ from django.core.files.storage import storages
 from django.core.files.storage.handler import InvalidStorageError
 from django.db import models, router, transaction
 from django.db.models import (
+    Avg,
     BooleanField,
     CharField,
+    Count,
     DateTimeField,
     FileField,
     FloatField,
@@ -22,11 +24,14 @@ from django.db.models import (
     Sum,
     TextField,
 )
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from silk.config import SilkyConfig
 from silk.utils.profile_parser import parse_profile
+
+from .models import Request
 
 try:
     silk_storage = storages['SILKY_STORAGE']
@@ -194,6 +199,41 @@ class Request(models.Model):
 
         super().save(*args, **kwargs)
         Request.garbage_collect(force=False)
+
+    def summary_view(request):
+    num_requests = Request.objects.count()
+    avg_overall_time = Request.objects.aggregate(Avg('time_taken'))['time_taken__avg'] or 0
+    avg_num_queries = Request.objects.aggregate(Avg('meta_num_queries'))['meta_num_queries__avg'] or 0
+    avg_time_spent_on_queries = Request.objects.aggregate(Avg('meta_time_spent_queries'))['meta_time_spent_queries__avg'] or 0
+
+    longest_queries_by_view = Request.objects.order_by('-time_taken')[:10]
+    most_time_spent_in_db = Request.objects.order_by('-meta_time_spent_queries')[:10]
+    most_queries = Request.objects.order_by('-meta_num_queries')[:10]
+
+    options_view_style = [{'value': 'row', 'label': 'Row'}, {'value': 'grid', 'label': 'Grid'}]
+    options_show = [25, 50, 100]
+    options_order_by = [{'value': 'start_time', 'label': 'Start Time'}, {'value': 'time_taken', 'label': 'Time Taken'}]
+    options_order_dir = [{'value': 'asc', 'label': 'Ascending'}, {'value': 'desc', 'label': 'Descending'}]
+
+    context = {
+        'num_requests': num_requests,
+        'avg_overall_time': avg_overall_time,
+        'avg_num_queries': avg_num_queries,
+        'avg_time_spent_on_queries': avg_time_spent_on_queries,
+        'longest_queries_by_view': longest_queries_by_view,
+        'most_time_spent_in_db': most_time_spent_in_db,
+        'most_queries': most_queries,
+        'view_style': request.GET.get('view_style', 'row'),
+        'show': request.GET.get('show', 25),
+        'order_by': request.GET.get('order_by', 'start_time'),
+        'order_dir': request.GET.get('order_dir', 'asc'),
+        'options_view_style': options_view_style,
+        'options_show': options_show,
+        'options_order_by': options_order_by,
+        'options_order_dir': options_order_dir,
+    }
+
+    return render(request, 'silk/summary.html', context)
 
 
 class Response(models.Model):
