@@ -547,6 +547,14 @@ But sometimes, you might want to have your own sensitive keywords, then above co
 SILKY_SENSITIVE_KEYS = {'custom-password'}
 ```
 
+### Custom Database Tables
+
+By default, Silk is using below-mentioned table name (they are case insensitive)
+
+```python
+SILKY_DATABASE_TABLES = {'REQUEST': 'silk_request', 'RESPONSE': 'silk_response',
+                           'SQLQUERY': 'silk_sqlquery', 'PROFILE': 'silk_profile'}
+```
 
 ### Clearing logged data
 
