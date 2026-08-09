@@ -166,6 +166,14 @@ class TestRequestAfterDateFilter(TestCase):
         new_dt = django_timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
 
+    def test_str_today(self):
+        dt = django_timezone.now().replace(hour=13, minute=45, second=30, microsecond=123456)
+        self.assertEqual(str(AfterDateFilter(dt)), '>13:45:30.123')
+
+    def test_str_other_day(self):
+        f = AfterDateFilter('2020/01/02 13:45')
+        self.assertEqual(str(f), '>2020.01.02 13:45.000')
+
 
 class TestRequestBeforeDateFilter(TestCase):
     def assertFilter(self, dt, f):
@@ -194,6 +202,14 @@ class TestRequestBeforeDateFilter(TestCase):
         new_dt = datetime.strptime(dt_str, fmt)
         new_dt = django_timezone.make_aware(new_dt, timezone.utc)
         self.assertFilter(new_dt, f)
+
+    def test_str_today(self):
+        dt = django_timezone.now().replace(hour=13, minute=45, second=30, microsecond=123456)
+        self.assertEqual(str(BeforeDateFilter(dt)), '<13:45:30.123')
+
+    def test_str_other_day(self):
+        f = BeforeDateFilter('2020/01/02 13:45')
+        self.assertEqual(str(f), '<2020.01.02 13:45.000')
 
 
 class TestProfileFilters(TestCase):
