@@ -46,5 +46,4 @@ setup(
         'formatting': ['autopep8'],
     },
     python_requires='>=3.10',
-    setup_requires=['setuptools_scm'],
 )
