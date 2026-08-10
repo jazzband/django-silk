@@ -55,19 +55,21 @@ def _should_intercept(request):
             return False
 
     try:
-        # Use path_info (not path) so this comparison is unaffected by
-        # any SCRIPT_NAME prefix a front-end web server may add ahead
-        # of the path Django itself sees -- get_fpath() (via reverse())
-        # returns a path without that prefix, so comparing against
-        # request.path here could incorrectly fail to recognize silk's
-        # own requests when deployed behind such a prefix. See GH #349.
-        silky = request.path_info.startswith(get_fpath())
+        # get_fpath() (via reverse()) picks up Django's script prefix
+        # (set from SCRIPT_NAME by the WSGI handler on every real
+        # request), so it already includes any front-end web server
+        # prefix -- exactly like request.path does. Keep comparing
+        # against request.path here; request.path_info has that
+        # prefix stripped and would no longer match.
+        silky = request.path.startswith(get_fpath())
     except NoReverseMatch:
         silky = False
 
-    # Likewise, use path_info here so a configured SILKY_IGNORE_PATHS
-    # entry (naturally written without any deployment-specific
-    # SCRIPT_NAME prefix) can still match correctly.
+    # SILKY_IGNORE_PATHS entries are plain strings the user writes in
+    # settings.py -- never passed through reverse() -- so they're
+    # naturally written without any deployment-specific SCRIPT_NAME
+    # prefix. Use path_info (prefix-stripped) here so such an entry
+    # still matches when silk is deployed behind a prefix. See GH #349.
     ignored = request.path_info in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 

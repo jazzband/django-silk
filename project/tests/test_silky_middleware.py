@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import reverse, set_script_prefix
 
 from silk.config import SilkyConfig
 from silk.errors import SilkNotConfigured
@@ -152,15 +152,18 @@ class TestShouldIntercept(TestCase):
 
         self.assertFalse(should_intercept)
 
-    def test_should_intercept_uses_path_info_not_path(self):
+    def test_should_intercept_ignore_paths_behind_script_name_prefix(self):
         """
         Regression test for
         https://github.com/jazzband/django-silk/issues/349
 
-        Matching must be based on path_info (SCRIPT_NAME-stripped),
-        not path, so a front-end web server prefix doesn't cause
-        silk's own requests or a configured SILKY_IGNORE_PATHS entry
-        to go unrecognized.
+        A SILKY_IGNORE_PATHS entry is a plain string the user writes
+        in settings.py -- never passed through reverse() -- so it's
+        naturally written without any deployment-specific SCRIPT_NAME
+        prefix. Matching it must therefore use path_info (which has
+        that prefix stripped), not path (which still has it), or a
+        front-end web server prefix causes the entry to go
+        unrecognized.
         """
         SilkyConfig().SILKY_IGNORE_PATHS = [
             '/ignorethis'
@@ -175,10 +178,26 @@ class TestShouldIntercept(TestCase):
 
         self.assertFalse(should_intercept)
 
-        # Same idea for silk's own summary page.
-        request2 = Request()
-        request2.path = '/some-prefix' + reverse('silk:summary')
-        request2.path_info = reverse('silk:summary')
-        should_intercept2 = _should_intercept(request2)
+    def test_should_intercept_silk_request_behind_script_name_prefix(self):
+        """
+        Companion regression test for
+        https://github.com/jazzband/django-silk/issues/349.
 
-        self.assertFalse(should_intercept2)
+        Unlike SILKY_IGNORE_PATHS entries, get_fpath() is built from
+        reverse(), which picks up Django's script prefix (set from
+        SCRIPT_NAME by the WSGI handler on every real request) just
+        like request.path does. So when deployed behind a front-end
+        prefix, both request.path and reverse() include it together
+        and self-detection must keep comparing against request.path,
+        not the prefix-stripped request.path_info.
+        """
+        set_script_prefix('/some-prefix/')
+        try:
+            request = Request()
+            request.path = reverse('silk:summary')
+            request.path_info = reverse('silk:summary')[len('/some-prefix'):]
+            should_intercept = _should_intercept(request)
+
+            self.assertFalse(should_intercept)
+        finally:
+            set_script_prefix('/')
