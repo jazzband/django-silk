@@ -59,7 +59,7 @@ def _should_intercept(request):
     except NoReverseMatch:
         silky = False
 
-    ignored = request.path in config.SILKY_IGNORE_PATHS
+    ignored = request.path_info in config.SILKY_IGNORE_PATHS
     return not (silky or ignored)
 
 
