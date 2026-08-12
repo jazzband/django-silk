@@ -1,6 +1,18 @@
 # Change Log
 ## Unreleased
 
+## [5.5.2](https://github.com/jazzband/django-silk/tree/5.5.2) (2026-08-11)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/jazzband/django-silk/compare/5.5.0..5.5.2)
+
+This is a re-release of 5.5.1 due to build/release issues.
+
+This will be the final release to support Django 4.2 and Django 5.1.
+
+**Fixes:**
+
+ - Fix making a release build (#897) @albertyw
+
 ## [5.5.1](https://github.com/jazzband/django-silk/tree/5.5.1) (2026-08-01)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.5.0..5.5.1)
