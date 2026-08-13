@@ -1,4 +1,5 @@
 import base64
+import gzip
 import json
 import random
 import re
@@ -221,7 +222,10 @@ class Response(models.Model):
 
     @property
     def raw_body_decoded(self):
-        return base64.b64decode(self.raw_body)
+        raw_body = base64.b64decode(self.raw_body)
+        if self.headers.get('content-encoding') == 'gzip':
+            return gzip.decompress(raw_body)
+        return raw_body
 
 
 # TODO rewrite docstring
