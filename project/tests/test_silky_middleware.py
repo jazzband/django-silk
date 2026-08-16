@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import reverse, set_script_prefix
 
 from silk.config import SilkyConfig
 from silk.errors import SilkNotConfigured
@@ -121,6 +121,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_non_silk_request(self):
         request = Request()
         request.path = '/myapp/foo'
+        request.path_info = '/myapp/foo'
         should_intercept = _should_intercept(request)
 
         self.assertTrue(should_intercept)
@@ -128,6 +129,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_silk_request(self):
         request = Request()
         request.path = reverse('silk:summary')
+        request.path_info = reverse('silk:summary')
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
@@ -136,6 +138,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_without_silk_urls(self):
         request = Request()
         request.path = '/login'
+        request.path_info = '/login'
         _should_intercept(request)  # Just checking no crash
 
     def test_should_intercept_ignore_paths(self):
@@ -144,6 +147,57 @@ class TestShouldIntercept(TestCase):
         ]
         request = Request()
         request.path = '/ignorethis'
+        request.path_info = '/ignorethis'
         should_intercept = _should_intercept(request)
 
         self.assertFalse(should_intercept)
+
+    def test_should_intercept_ignore_paths_behind_script_name_prefix(self):
+        """
+        Regression test for
+        https://github.com/jazzband/django-silk/issues/349
+
+        A SILKY_IGNORE_PATHS entry is a plain string the user writes
+        in settings.py -- never passed through reverse() -- so it's
+        naturally written without any deployment-specific SCRIPT_NAME
+        prefix. Matching it must therefore use path_info (which has
+        that prefix stripped), not path (which still has it), or a
+        front-end web server prefix causes the entry to go
+        unrecognized.
+        """
+        SilkyConfig().SILKY_IGNORE_PATHS = [
+            '/ignorethis'
+        ]
+
+        # A path with a SCRIPT_NAME-style prefix that only path_info
+        # (not path) has stripped off.
+        request = Request()
+        request.path = '/some-prefix/ignorethis'
+        request.path_info = '/ignorethis'
+        should_intercept = _should_intercept(request)
+
+        self.assertFalse(should_intercept)
+
+    def test_should_intercept_silk_request_behind_script_name_prefix(self):
+        """
+        Companion regression test for
+        https://github.com/jazzband/django-silk/issues/349.
+
+        Unlike SILKY_IGNORE_PATHS entries, get_fpath() is built from
+        reverse(), which picks up Django's script prefix (set from
+        SCRIPT_NAME by the WSGI handler on every real request) just
+        like request.path does. So when deployed behind a front-end
+        prefix, both request.path and reverse() include it together
+        and self-detection must keep comparing against request.path,
+        not the prefix-stripped request.path_info.
+        """
+        set_script_prefix('/some-prefix/')
+        try:
+            request = Request()
+            request.path = reverse('silk:summary')
+            request.path_info = reverse('silk:summary')[len('/some-prefix'):]
+            should_intercept = _should_intercept(request)
+
+            self.assertFalse(should_intercept)
+        finally:
+            set_script_prefix('/')
