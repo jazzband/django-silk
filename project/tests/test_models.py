@@ -114,6 +114,8 @@ class RequestTest(TestCase):
 
     def test_garbage_collect(self):
 
+        self.obj.end_time = self.obj.start_time
+        self.obj.save(update_fields=['end_time'])
         self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 100
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
@@ -122,6 +124,8 @@ class RequestTest(TestCase):
 
     def test_probabilistic_garbage_collect(self):
 
+        self.obj.end_time = self.obj.start_time
+        self.obj.save(update_fields=['end_time'])
         self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
@@ -130,6 +134,8 @@ class RequestTest(TestCase):
 
     def test_force_garbage_collect(self):
 
+        self.obj.end_time = self.obj.start_time
+        self.obj.save(update_fields=['end_time'])
         self.assertTrue(models.Request.objects.filter(id=self.obj.id).exists())
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 0
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
@@ -138,14 +144,27 @@ class RequestTest(TestCase):
 
     def test_greedy_garbage_collect(self):
 
+        self.obj.end_time = self.obj.start_time
+        self.obj.save(update_fields=['end_time'])
         for x in range(3):
-            obj = models.Request(path='/', method='get')
+            obj = models.Request(path='/', method='get', end_time=self.obj.start_time)
             obj.save()
         self.assertEqual(models.Request.objects.count(), 4)
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 50
         SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 3
         models.Request.garbage_collect(force=True)
         self.assertGreater(models.Request.objects.count(), 0)
+
+    def test_garbage_collect_preserves_in_flight_requests(self):
+
+        self.obj.end_time = self.obj.start_time
+        self.obj.save(update_fields=['end_time'])
+        in_flight = RequestMinFactory.create()
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 100
+        SilkyConfig().SILKY_MAX_RECORDED_REQUESTS = 0
+        models.Request.garbage_collect(force=True)
+        self.assertFalse(models.Request.objects.filter(id=self.obj.id).exists())
+        self.assertTrue(models.Request.objects.filter(id=in_flight.id).exists())
 
     def test_save_if_have_no_raw_body(self):
 
