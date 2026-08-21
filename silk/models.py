@@ -156,13 +156,16 @@ class Request(models.Model):
         if check_percent != 0:
             target_count -= int(1 / check_percent)
 
-        # Make sure we can delete everything if needed by settings
+        # Make sure we can delete everything if needed by settings.
+        # Skip in-flight requests (end_time unset) to avoid racing with
+        # response finalization, which would raise IntegrityError.
+        completed = cls.objects.exclude(end_time__isnull=True)
         if target_count <= 0:
-            cls.objects.all().delete()
+            completed.delete()
             return
 
         try:
-            time_cutoff = cls.objects.order_by(
+            time_cutoff = completed.order_by(
                 '-start_time'
             ).values_list(
                 'start_time',
@@ -171,7 +174,7 @@ class Request(models.Model):
         except IndexError:
             return
 
-        cls.objects.filter(start_time__lte=time_cutoff).delete()
+        completed.filter(start_time__lte=time_cutoff).delete()
 
     def save(self, *args, **kwargs):
         # sometimes django requests return the body as 'None'
