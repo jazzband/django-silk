@@ -286,9 +286,9 @@ class SQLQueryTest(TestCase):
         self.obj.traceback = """Traceback (most recent call last):
           File "/home/user/some_script.py", line 10, in some_func
             pass
-          File "/usr/lib/python2.7/bdb.py", line 20, in trace_dispatch
+          File "/usr/lib/python3.13/bdb.py", line 20, in trace_dispatch
             return self.dispatch_return(frame, arg)
-          File "/usr/lib/python2.7/bdb.py", line 30, in dispatch_return
+          File "/usr/lib/python3.13/bdb.py", line 30, in dispatch_return
             if self.quitting: raise BdbQuit
         BdbQuit"""
 
@@ -523,8 +523,8 @@ class NoPendingMigrationsTest(TestCase):
     @override_settings(DEFAULT_AUTO_FIELD='django.db.models.BigAutoField')
     def test_check_with_overridden_default_auto_field(self):
         """
-        Test with `BigAutoField` set as `DEFAULT_AUTO_FIELD` - which is
-        default when generating proj with Django 3.2.
+        Test with `BigAutoField` set as `DEFAULT_AUTO_FIELD` - the default
+        for newly generated projects.
         """
         self.test_no_pending_migrations()
 
