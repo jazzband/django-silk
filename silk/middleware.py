@@ -26,7 +26,7 @@ def silky_reverse(name, *args, **kwargs):
     except NoReverseMatch:
         # In case user forgets to set namespace, but also fixes Django 1.5 tests on Travis
         # Hopefully if user has forgotten to add namespace there are no clashes with their own
-        # view names but I don't think there is really anything can do about this.
+        # view names but I don't think there is really anything we can do about this.
         r = reverse(name, *args, **kwargs)
     return r
 
@@ -44,7 +44,7 @@ AUTH_AND_SESSION_MIDDLEWARES = [
 
 
 def _should_intercept(request):
-    """we want to avoid recording any requests/sql queries etc that belong to Silky"""
+    """We want to avoid recording any requests/SQL queries, etc., that belong to Silky."""
     # Check custom intercept logic.
     if config.SILKY_INTERCEPT_FUNC:
         if not config.SILKY_INTERCEPT_FUNC(request):
@@ -100,7 +100,7 @@ class SilkyMiddleware:
         # To be able to persist filters when Session and Authentication
         # middlewares are not present.
         # Unlike session (which stores in DB) it won't persist filters
-        # after refresh the page.
+        # after refreshing the page.
         request.silk_filters = {}
 
         response = self.get_response(request)
