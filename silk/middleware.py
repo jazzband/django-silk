@@ -24,7 +24,7 @@ def silky_reverse(name, *args, **kwargs):
     try:
         r = reverse('silk:%s' % name, *args, **kwargs)
     except NoReverseMatch:
-        # In case user forgets to set namespace, but also fixes Django 1.5 tests on Travis
+        # In case user forgets to set namespace
         # Hopefully if user has forgotten to add namespace there are no clashes with their own
         # view names but I don't think there is really anything we can do about this.
         r = reverse(name, *args, **kwargs)
