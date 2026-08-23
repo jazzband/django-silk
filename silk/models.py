@@ -5,7 +5,6 @@ import re
 from uuid import uuid4
 
 import sqlparse
-from django.conf import settings
 from django.core.files.storage import storages
 from django.core.files.storage.handler import InvalidStorageError
 from django.db import models, router, transaction
@@ -35,8 +34,7 @@ def get_silk_storage():
         return storages['SILKY_STORAGE']
     except InvalidStorageError:
         from django.utils.module_loading import import_string
-        storage_class = SilkyConfig().SILKY_STORAGE_CLASS or settings.DEFAULT_FILE_STORAGE
-        return import_string(storage_class)()
+        return import_string(SilkyConfig().SILKY_STORAGE_CLASS)()
 
 
 # Kept for historical migrations that reference silk.models.silk_storage.

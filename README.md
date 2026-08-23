@@ -187,8 +187,7 @@ When enabled, a graph visualisation generated using [gprof2dot](https://github.c
 A custom storage class can be used for the saved generated binary `.prof` files:
 
 ```python
-# For Django >= 4.2 and Django-Silk >= 5.1.0:
-# See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
+# See https://docs.djangoproject.com/en/stable/ref/settings/#std-setting-STORAGES
 STORAGES = {
     'SILKY_STORAGE': {
         'BACKEND': 'path.to.StorageClass',
@@ -196,7 +195,7 @@ STORAGES = {
     # ...
 }
 
-# For Django < 4.2 or Django-Silk < 5.1.0
+# Alternatively, if STORAGES has no 'SILKY_STORAGE' entry:
 SILKY_STORAGE_CLASS = 'path.to.StorageClass'
 ```
 
