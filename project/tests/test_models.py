@@ -246,6 +246,13 @@ class ResponseTest(TestCase):
 
         self.assertEqual(self.obj.raw_body_decoded, content)
 
+    def test_raw_body_decoded_falls_back_on_malformed_gzip_response(self):
+        raw = b'not actually gzip data'
+        self.obj.raw_body = base64.b64encode(raw).decode('ascii')
+        self.obj.encoded_headers = json.dumps({'content-encoding': 'gzip'})
+
+        self.assertEqual(self.obj.raw_body_decoded, raw)
+
 
 class SQLQueryManagerTest(TestCase):
 
