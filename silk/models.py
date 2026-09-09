@@ -224,7 +224,12 @@ class Response(models.Model):
     def raw_body_decoded(self):
         raw_body = base64.b64decode(self.raw_body)
         if self.headers.get('content-encoding') == 'gzip':
-            return gzip.decompress(raw_body)
+            try:
+                return gzip.decompress(raw_body)
+            except (OSError, EOFError):
+                # Malformed gzip payloads must not crash the raw view;
+                # fall back to the still-compressed body.
+                return raw_body
         return raw_body
 
 
