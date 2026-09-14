@@ -39,11 +39,13 @@ class SilkyConfig(metaclass=Singleton):
 
     def _setup(self):
         from django.conf import settings
+        from django.core.signals import setting_changed
 
         options = {option: getattr(settings, option) for option in dir(settings) if option.startswith('SILKY')}
         self.attrs = copy(self.defaults)
         self.attrs['SILKY_PYTHON_PROFILER_RESULT_PATH'] = settings.MEDIA_ROOT
         self.attrs.update(options)
+        setting_changed.connect(self._on_setting_changed)
 
     def __init__(self):
         super().__init__()
@@ -54,3 +56,8 @@ class SilkyConfig(metaclass=Singleton):
 
     def __setattribute__(self, key, value):
         self.attrs[key] = value
+
+    def _on_setting_changed(self, sender, **kwargs):
+        setting = kwargs.get('setting')
+        if setting and setting.startswith('SILKY'):
+            self.attrs[setting] = kwargs.get('value')
