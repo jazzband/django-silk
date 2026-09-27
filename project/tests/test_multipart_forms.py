@@ -1,7 +1,8 @@
 import json
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
 
 from django.http import QueryDict
+from django.http.multipartparser import MultiPartParserError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -84,4 +85,18 @@ class TestMultipartForms(TestCase):
         self.assertEqual(body['title'], 'My Document')
         self.assertIn('_files', body)
         self.assertEqual(body['_files']['image']['name'], 'photo.jpg')
+        mock_request.body.assert_not_called()
+
+    def test_multipart_parse_error_is_ignored(self):
+        mock_request = Mock()
+        mock_request.headers = {'content-type': multipart_form}
+        mock_request.GET = {}
+        mock_request.path = reverse('silk:requests')
+        mock_request.method = 'post'
+        mock_request.body = Mock()
+        type(mock_request).POST = PropertyMock(side_effect=MultiPartParserError('bad'))
+        type(mock_request).FILES = PropertyMock(side_effect=MultiPartParserError('bad'))
+        request_model = RequestModelFactory(mock_request).construct_request_model()
+        self.assertFalse(request_model.body)
+        self.assertEqual(request_model.raw_body, '')
         mock_request.body.assert_not_called()
