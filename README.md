@@ -582,10 +582,10 @@ Silk features a project named `project` that can be used for `silk` development.
 you can work on the sample `project` and on the `silk` package at the same time.
 
 In order to setup local development you should first install all the dependencies for the test `project`. From the
-root of the `project` directory:
+root of the git repository (requires pip 25.1 or later):
 
 ```bash
-pip install -r requirements.txt
+pip install --group test
 ```
 
 You will also need to install `silk`'s dependencies. From the root of the git repository:
