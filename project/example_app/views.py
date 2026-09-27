@@ -4,6 +4,7 @@ from time import sleep
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from example_app import models
 
@@ -33,3 +34,9 @@ def upload_test(request):
         files = {k: v.name for k, v in request.FILES.items()}
         return JsonResponse({'fields': data, 'files': files})
     return render(request, 'example_app/upload_test.html')
+
+
+@csrf_exempt
+def upload_raw_body_test(request):
+    """Test view that reads the raw multipart body, e.g. to verify a signature."""
+    return JsonResponse({'length': len(request.body)})
