@@ -1,87 +1,141 @@
 import json
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
-from django.http import QueryDict
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
+from silk.config import SilkyConfig
 from silk.model_factory import RequestModelFactory, multipart_form
+from silk.models import Request
 
 
 class TestMultipartForms(TestCase):
 
-    def test_no_max_request(self):
+    def setUp(self):
+        self.factory = RequestFactory()
+        patcher = patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', -1, create=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_body_does_not_read_request(self):
         mock_request = Mock()
         mock_request.headers = {'content-type': multipart_form}
         mock_request.GET = {}
         mock_request.path = reverse('silk:requests')
         mock_request.method = 'post'
-        mock_request.body = Mock()
-        mock_request.POST = QueryDict()
-        mock_request.FILES = {}
         request_model = RequestModelFactory(mock_request).construct_request_model()
         self.assertFalse(request_model.body)
         self.assertEqual(request_model.raw_body, '')
-        mock_request.body.assert_not_called()
+        # Neither the raw body nor the parsed form data may be touched before the view runs
+        self.assertEqual(
+            [c for c in mock_request.mock_calls if c[0].split('.')[0] in ('body', 'POST', 'FILES', 'read')],
+            [],
+        )
 
     def test_multipart_with_form_fields(self):
-        mock_request = Mock()
-        mock_request.headers = {'content-type': multipart_form}
-        mock_request.GET = {}
-        mock_request.path = reverse('silk:requests')
-        mock_request.method = 'post'
-        mock_request.body = Mock()
-        post_data = QueryDict(mutable=True)
-        post_data['username'] = 'testuser'
-        post_data['email'] = 'test@example.com'
-        mock_request.POST = post_data
-        mock_request.FILES = {}
-        request_model = RequestModelFactory(mock_request).construct_request_model()
-        body = json.loads(request_model.body)
+        request = self.factory.post('/', {'username': 'testuser', 'email': 'test@example.com'})
+        body = json.loads(RequestModelFactory(request).multipart_body())
         self.assertEqual(body['email'], 'test@example.com')
         # username is a sensitive key and should be masked
         self.assertNotEqual(body.get('username'), 'testuser')
-        mock_request.body.assert_not_called()
+
+    def test_multipart_with_repeated_field(self):
+        request = self.factory.post('/', {'tag': ['a', 'b']})
+        body = json.loads(RequestModelFactory(request).multipart_body())
+        self.assertEqual(body['tag'], ['a', 'b'])
 
     def test_multipart_with_files(self):
-        mock_request = Mock()
-        mock_request.headers = {'content-type': multipart_form}
-        mock_request.GET = {}
-        mock_request.path = reverse('silk:requests')
-        mock_request.method = 'post'
-        mock_request.body = Mock()
-        mock_request.POST = QueryDict()
-        mock_file = Mock()
-        mock_file.name = 'document.pdf'
-        mock_file.size = 12345
-        mock_file.content_type = 'application/pdf'
-        mock_request.FILES = {'attachment': mock_file}
-        request_model = RequestModelFactory(mock_request).construct_request_model()
-        body = json.loads(request_model.body)
-        self.assertIn('_files', body)
-        self.assertEqual(body['_files']['attachment']['name'], 'document.pdf')
-        self.assertEqual(body['_files']['attachment']['size'], 12345)
-        self.assertEqual(body['_files']['attachment']['content_type'], 'application/pdf')
-        mock_request.body.assert_not_called()
+        upload = SimpleUploadedFile('document.pdf', b'x' * 123, content_type='application/pdf')
+        request = self.factory.post('/', {'attachment': upload})
+        body = json.loads(RequestModelFactory(request).multipart_body())
+        self.assertEqual(body['_files']['attachment'], {
+            'name': 'document.pdf',
+            'size': 123,
+            'content_type': 'application/pdf',
+        })
 
     def test_multipart_with_form_fields_and_files(self):
-        mock_request = Mock()
-        mock_request.headers = {'content-type': multipart_form}
-        mock_request.GET = {}
-        mock_request.path = reverse('silk:requests')
-        mock_request.method = 'post'
-        mock_request.body = Mock()
-        post_data = QueryDict(mutable=True)
-        post_data['title'] = 'My Document'
-        mock_request.POST = post_data
-        mock_file = Mock()
-        mock_file.name = 'photo.jpg'
-        mock_file.size = 54321
-        mock_file.content_type = 'image/jpeg'
-        mock_request.FILES = {'image': mock_file}
-        request_model = RequestModelFactory(mock_request).construct_request_model()
-        body = json.loads(request_model.body)
+        upload = SimpleUploadedFile('photo.jpg', b'jpeg', content_type='image/jpeg')
+        request = self.factory.post('/', {'title': 'My Document', 'image': upload})
+        body = json.loads(RequestModelFactory(request).multipart_body())
         self.assertEqual(body['title'], 'My Document')
-        self.assertIn('_files', body)
         self.assertEqual(body['_files']['image']['name'], 'photo.jpg')
-        mock_request.body.assert_not_called()
+
+    def test_multipart_empty_form(self):
+        request = self.factory.post('/', {})
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_multipart_after_view_read_body(self):
+        request = self.factory.post('/', {'title': 'x'})
+        request.body  # the view read the raw body
+        body = json.loads(RequestModelFactory(request).multipart_body())
+        self.assertEqual(body['title'], 'x')
+
+    def test_multipart_after_view_read_stream(self):
+        request = self.factory.post('/', {'title': 'x'})
+        request.read()  # the view consumed the stream directly; the data is gone
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_multipart_put_is_not_parsed(self):
+        request = self.factory.put('/', {'title': 'x'}, content_type=multipart_form)
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_not_multipart(self):
+        request = self.factory.post('/', {'title': 'x'}, content_type='application/json')
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_multipart_parse_error_is_ignored(self):
+        request = self.factory.post('/', b'', content_type='multipart/form-data; boundary=')
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    @override_settings(DATA_UPLOAD_MAX_NUMBER_FIELDS=1)
+    def test_multipart_too_many_fields_is_ignored(self):
+        request = self.factory.post('/', {'a': '1', 'b': '2'})
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_multipart_unexpected_error_is_raised(self):
+        request = self.factory.post('/', {'title': 'x'})
+        with patch.object(RequestModelFactory, '_parse_multipart_body', side_effect=ValueError('bad')):
+            with self.assertRaises(ValueError):
+                RequestModelFactory(request).multipart_body()
+
+    def test_multipart_respects_max_body_size(self):
+        request = self.factory.post('/', {'title': 'x' * 1000})
+        with patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', 100, create=True):
+            self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+        with patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', 10000, create=True):
+            self.assertEqual(json.loads(RequestModelFactory(request).multipart_body())['title'], 'x' * 1000)
+
+
+class TestMultipartMiddleware(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        SilkyConfig().SILKY_META = False
+
+    def setUp(self):
+        patcher = patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', -1, create=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_form_data_recorded_after_view(self):
+        upload = SimpleUploadedFile('photo.jpg', b'jpeg', content_type='image/jpeg')
+        response = self.client.post(
+            reverse('example_app:upload_test'), {'title': 'My Document', 'image': upload}
+        )
+        self.assertEqual(response.json(), {'fields': {'title': 'My Document'}, 'files': {'image': 'photo.jpg'}})
+        silk_request = Request.objects.get(path=reverse('example_app:upload_test'))
+        body = json.loads(silk_request.body)
+        self.assertEqual(body['title'], 'My Document')
+        self.assertEqual(body['_files']['image']['name'], 'photo.jpg')
+        self.assertEqual(silk_request.raw_body, '')
+
+    def test_view_can_read_raw_body(self):
+        """Silk must not consume the stream before the view reads request.body."""
+        response = self.client.post(reverse('example_app:upload_raw_body_test'), {'title': 'x'})
+        self.assertEqual(response.status_code, 200)
+        self.assertGreater(response.json()['length'], 0)
+        silk_request = Request.objects.get(path=reverse('example_app:upload_raw_body_test'))
+        self.assertEqual(json.loads(silk_request.body)['title'], 'x')
