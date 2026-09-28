@@ -6,7 +6,9 @@ import sys
 import traceback
 from uuid import UUID
 
-from django.core.exceptions import RequestDataTooBig
+from django.core.exceptions import RequestDataTooBig, SuspiciousOperation
+from django.http import UnreadablePostError
+from django.http.multipartparser import MultiPartParserError
 from django.urls import Resolver404, resolve
 
 from silk import models
@@ -180,7 +182,8 @@ class RequestModelFactory:
             return ''
         try:
             parsed = self._parse_multipart_body()
-        except Exception as e:
+        except (MultiPartParserError, SuspiciousOperation, UnreadablePostError) as e:
+            # Malformed body, or limits such as DATA_UPLOAD_MAX_NUMBER_FIELDS exceeded
             Logger.debug('Unable to parse multipart body: %s', e)
             return ''
         if not parsed:
@@ -188,6 +191,13 @@ class RequestModelFactory:
         body = json.dumps(parsed, sort_keys=True, indent=4,
                           cls=DefaultEncoder,
                           ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
+        max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
+        if max_size > -1 and sys.getsizeof(body) > max_size:
+            Logger.debug(
+                'Request %s has multipart body larger than %d, therefore ignoring',
+                self.request.path, max_size
+            )
+            return ''
         return self._mask_credentials(body)
 
     def body(self):

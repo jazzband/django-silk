@@ -2,7 +2,7 @@ import json
 from unittest.mock import Mock, patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
 from silk.config import SilkyConfig
@@ -14,6 +14,9 @@ class TestMultipartForms(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        patcher = patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', -1, create=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_body_does_not_read_request(self):
         mock_request = Mock()
@@ -83,11 +86,26 @@ class TestMultipartForms(TestCase):
         self.assertEqual(RequestModelFactory(request).multipart_body(), '')
 
     def test_multipart_parse_error_is_ignored(self):
-        request = self.factory.post(
-            '/', b'not multipart', content_type='multipart/form-data; boundary=BoUnDaRy'
-        )
+        request = self.factory.post('/', b'', content_type='multipart/form-data; boundary=')
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    @override_settings(DATA_UPLOAD_MAX_NUMBER_FIELDS=1)
+    def test_multipart_too_many_fields_is_ignored(self):
+        request = self.factory.post('/', {'a': '1', 'b': '2'})
+        self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+
+    def test_multipart_unexpected_error_is_raised(self):
+        request = self.factory.post('/', {'title': 'x'})
         with patch.object(RequestModelFactory, '_parse_multipart_body', side_effect=ValueError('bad')):
+            with self.assertRaises(ValueError):
+                RequestModelFactory(request).multipart_body()
+
+    def test_multipart_respects_max_body_size(self):
+        request = self.factory.post('/', {'title': 'x' * 1000})
+        with patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', 100, create=True):
             self.assertEqual(RequestModelFactory(request).multipart_body(), '')
+        with patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', 10000, create=True):
+            self.assertEqual(json.loads(RequestModelFactory(request).multipart_body())['title'], 'x' * 1000)
 
 
 class TestMultipartMiddleware(TestCase):
@@ -96,6 +114,11 @@ class TestMultipartMiddleware(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         SilkyConfig().SILKY_META = False
+
+    def setUp(self):
+        patcher = patch.object(SilkyConfig(), 'SILKY_MAX_REQUEST_BODY_SIZE', -1, create=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_form_data_recorded_after_view(self):
         upload = SimpleUploadedFile('photo.jpg', b'jpeg', content_type='image/jpeg')
