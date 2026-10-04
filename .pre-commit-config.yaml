@@ -23,7 +23,6 @@ repos:
   - id: end-of-file-fixer
     exclude: >-
       ^docs/[^/]*\.svg$
-  - id: requirements-txt-fixer
   - id: trailing-whitespace
     types: [python]
   - id: file-contents-sorter
