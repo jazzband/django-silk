@@ -55,4 +55,3 @@ class RequestView(View):
         except Request.DoesNotExist:
             return HttpResponseRedirect(request.headers.get('Referer', reverse("silk:summary")))
         return redirect(reverse("silk:summary"))
-
