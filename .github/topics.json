@@ -1,0 +1,19 @@
+{
+  "topics": [
+    "django",
+    "profiling",
+    "performance",
+    "debugging",
+    "monitoring",
+    "sql",
+    "queries",
+    "optimization",
+    "development-tools",
+    "middleware",
+    "request-tracking",
+    "sql-profiling",
+    "performance-monitoring",
+    "debug-toolbar",
+    "django-middleware"
+  ]
+}

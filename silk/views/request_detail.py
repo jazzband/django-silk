@@ -1,6 +1,7 @@
 import json
 
-from django.shortcuts import render
+from django.shortcuts import HttpResponseRedirect, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
