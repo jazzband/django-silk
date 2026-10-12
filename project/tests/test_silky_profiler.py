@@ -112,7 +112,7 @@ class TestQueries(TestCase):
         """test that any queries registered before profiling begins are ignored"""
         DataCollector().configure(Request.objects.create())
         DataCollector().register_query(*MockSuite().mock_sql_queries(n=2, as_dict=True))
-        before = [x for x in DataCollector().queries]
+        before = [*DataCollector().queries]
         with silk_profile(name='test_no_queries_before_profile'):
             mock_queries = MockSuite().mock_sql_queries(n=5, as_dict=True)
             DataCollector().register_query(*mock_queries)
