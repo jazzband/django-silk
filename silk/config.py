@@ -25,6 +25,7 @@ class SilkyConfig(metaclass=Singleton):
         'SILKY_MAX_RESPONSE_BODY_SIZE': -1,
         'SILKY_INTERCEPT_PERCENT': 100,
         'SILKY_INTERCEPT_FUNC': None,
+        'SILKY_INTERCEPT_STATUS_CODES': None,
         'SILKY_PYTHON_PROFILER': False,
         'SILKY_PYTHON_PROFILER_FUNC': None,
         'SILKY_STORAGE_CLASS': 'silk.storage.ProfilerResultStorage',

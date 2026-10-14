@@ -74,6 +74,14 @@ def _should_intercept(request):
     return not (silky or ignored)
 
 
+def _should_record_response(response):
+    """Only keep requests whose status code is in SILKY_INTERCEPT_STATUS_CODES (if set)."""
+    status_codes = config.SILKY_INTERCEPT_STATUS_CODES
+    if status_codes is None:
+        return True
+    return response.status_code in status_codes
+
+
 class TestMiddleware:
     def process_response(self, request, response):
         return response
@@ -163,7 +171,12 @@ class SilkyMiddleware:
                 collector = DataCollector()
                 collector.stop_python_profiler()
                 silk_request = collector.request
-                if silk_request:
+                # The request record is created before the status code is known,
+                # so discard it here if it doesn't match SILKY_INTERCEPT_STATUS_CODES.
+                if silk_request and not _should_record_response(response):
+                    silk_request.delete()
+                    silk_request = None
+                elif silk_request:
                     ResponseModelFactory(response).construct_response_model()
                     silk_request.end_time = timezone.now()
                     collector.finalise()
