@@ -72,7 +72,7 @@ class silk_profile:
         self._dynamic = _dynamic
 
     def _query_identifiers_from_collector(self):
-        return [x for x in DataCollector().queries]
+        return [*DataCollector().queries]
 
     def _start_queries(self):
         """record queries that have been executed before profiling began"""
