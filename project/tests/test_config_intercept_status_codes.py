@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from silk.collector import DataCollector
 from silk.config import SilkyConfig
+from silk.errors import SilkNotConfigured
 from silk.middleware import SilkyMiddleware
 from silk.models import Request
 
@@ -47,3 +48,13 @@ class TestConfigInterceptStatusCodes(TestCase):
     def test_discards_non_matching_status_code(self):
         SilkyConfig().SILKY_INTERCEPT_STATUS_CODES = {500}
         self.assertEqual(self._execute_request(200), 0)
+
+    def test_accepts_list_of_status_codes(self):
+        SilkyConfig().SILKY_INTERCEPT_STATUS_CODES = [500, 501]
+        self.assertEqual(self._execute_request(501), 1)
+
+    def test_invalid_setting_raises(self):
+        for invalid in ("500", 500, ["500"], [True]):
+            SilkyConfig().SILKY_INTERCEPT_STATUS_CODES = invalid
+            with self.assertRaises(SilkNotConfigured):
+                SilkyMiddleware(fake_get_response)
