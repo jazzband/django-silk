@@ -6,7 +6,9 @@ import sys
 import traceback
 from uuid import UUID
 
-from django.core.exceptions import RequestDataTooBig
+from django.core.exceptions import RequestDataTooBig, SuspiciousOperation
+from django.http import UnreadablePostError
+from django.http.multipartparser import MultiPartParserError
 from django.urls import Resolver404, resolve
 
 from silk import models
@@ -137,12 +139,73 @@ class RequestModelFactory:
                 body = raw_body
         return body
 
+    def _multipart_is_readable(self):
+        """Whether POST/FILES can be read without breaking the view.
+
+        Parsing a multipart body consumes the request stream, so it must only
+        happen once the view has finished. Even then it is skipped when the
+        view read the stream directly (e.g. ``request.read()``), since the
+        data is gone and Django would raise ``RawPostDataException``.
+        """
+        request = self.request
+        if request.method != 'POST':
+            return False
+        if hasattr(request, '_files') or hasattr(request, '_body'):
+            return True
+        return not getattr(request, '_read_started', False)
+
+    def _parse_multipart_body(self):
+        """Parse multipart/form-data requests to show form fields as JSON
+        and file uploads as metadata (name, size, content type) without file contents."""
+        data = {}
+        for key, value in self.request.POST.lists():
+            data[key] = value if len(value) > 1 else value[0]
+        files = {}
+        for key, uploaded_file in self.request.FILES.items():
+            files[key] = {
+                'name': uploaded_file.name,
+                'size': uploaded_file.size,
+                'content_type': uploaded_file.content_type,
+            }
+        if files:
+            data['_files'] = files
+        return data
+
+    def multipart_body(self):
+        """Return the masked JSON body of a multipart/form-data request.
+
+        Must be called after the view has run (see ``_multipart_is_readable``).
+        Returns an empty string if the body is not multipart or cannot be read.
+        """
+        content_type, _ = self.content_type()
+        if content_type != multipart_form or not self._multipart_is_readable():
+            return ''
+        try:
+            parsed = self._parse_multipart_body()
+        except (MultiPartParserError, SuspiciousOperation, UnreadablePostError) as e:
+            # Malformed body, or limits such as DATA_UPLOAD_MAX_NUMBER_FIELDS exceeded
+            Logger.debug('Unable to parse multipart body: %s', e)
+            return ''
+        if not parsed:
+            return ''
+        body = json.dumps(parsed, sort_keys=True, indent=4,
+                          cls=DefaultEncoder,
+                          ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
+        max_size = SilkyConfig().SILKY_MAX_REQUEST_BODY_SIZE
+        if max_size > -1 and sys.getsizeof(body) > max_size:
+            Logger.debug(
+                'Request %s has multipart body larger than %d, therefore ignoring',
+                self.request.path, max_size
+            )
+            return ''
+        return self._mask_credentials(body)
+
     def body(self):
         content_type, char_set = self.content_type()
         if content_type == multipart_form:
-            raw_body = b"Raw body not available for multipart_form data, Silk is not showing file uploads."
-            body = ''
-            return body, raw_body
+            # Reading POST/FILES here would consume the request stream before
+            # the view runs; the body is filled in after the response instead.
+            return '', ''
         try:
             raw_body = self.request.body
         except RequestDataTooBig:

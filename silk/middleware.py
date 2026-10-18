@@ -164,6 +164,11 @@ class SilkyMiddleware:
                 collector.stop_python_profiler()
                 silk_request = collector.request
                 if silk_request:
+                    if getattr(request, 'silk_is_intercepted', False):
+                        # Multipart bodies are only read once the view is done with the request
+                        multipart_body = RequestModelFactory(request).multipart_body()
+                        if multipart_body:
+                            silk_request.body = multipart_body
                     ResponseModelFactory(response).construct_response_model()
                     silk_request.end_time = timezone.now()
                     collector.finalise()

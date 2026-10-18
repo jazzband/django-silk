@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Upload Test</title></head>
+<body>
+    <h1>Test Multipart Upload</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Title: <input type="text" name="title" value="My Document"></label><br><br>
+        <label>Description: <input type="text" name="description" value="A test upload"></label><br><br>
+        <label>File: <input type="file" name="attachment"></label><br><br>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
