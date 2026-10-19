@@ -496,6 +496,18 @@ You can also use a `lambda`.
 SILKY_INTERCEPT_FUNC = lambda request: 'record_requests' in request.session
 ```
 
+#### Recording Only Specific Response Status Codes
+
+To keep only requests whose response has a particular status code (for example, to record server errors only), add the following to your `settings.py`:
+
+```python
+SILKY_INTERCEPT_STATUS_CODES = {500, 501} # only keep requests that returned 500 or 501
+```
+
+Because the status code is only known once the response is ready, Silk still records each request as it comes in,
+then discards it if its response status code is not in `SILKY_INTERCEPT_STATUS_CODES`.
+The default is `None`, which records every request.
+
 ### Ignoring specific paths
 
 To stop silk recording particular paths entirely, list them in `SILKY_IGNORE_PATHS`:

@@ -1,5 +1,6 @@
 import logging
 import random
+from collections.abc import Iterable
 
 from django.conf import settings
 from django.db import DatabaseError, router, transaction
@@ -74,6 +75,28 @@ def _should_intercept(request):
     return not (silky or ignored)
 
 
+def _validate_intercept_status_codes(status_codes):
+    """Raise SilkNotConfigured unless status_codes is None or an iterable of integers."""
+    if status_codes is None:
+        return
+    if (
+        isinstance(status_codes, (str, bytes))
+        or not isinstance(status_codes, Iterable)
+        or not all(isinstance(code, int) and not isinstance(code, bool) for code in status_codes)
+    ):
+        raise SilkNotConfigured(
+            _("SILKY_INTERCEPT_STATUS_CODES must be None or an iterable of integers, e.g. {500, 501}")
+        )
+
+
+def _should_record_response(response):
+    """Only keep requests whose status code is in SILKY_INTERCEPT_STATUS_CODES (if set)."""
+    status_codes = config.SILKY_INTERCEPT_STATUS_CODES
+    if status_codes is None:
+        return True
+    return response.status_code in status_codes
+
+
 class TestMiddleware:
     def process_response(self, request, response):
         return response
@@ -91,6 +114,7 @@ class SilkyMiddleware:
                 _("SILKY_AUTHENTICATION can not be enabled without Session, "
                   "Authentication or Message Django's middlewares")
             )
+        _validate_intercept_status_codes(config.SILKY_INTERCEPT_STATUS_CODES)
 
         self.get_response = get_response
 
@@ -163,7 +187,13 @@ class SilkyMiddleware:
                 collector = DataCollector()
                 collector.stop_python_profiler()
                 silk_request = collector.request
-                if silk_request:
+                # The request record is created before the status code is known,
+                # so discard it here if it doesn't match SILKY_INTERCEPT_STATUS_CODES.
+                if silk_request and not _should_record_response(response):
+                    # The record may not have been saved yet, so delete by pk (0 or 1 rows).
+                    models.Request.objects.filter(pk=silk_request.pk).delete()
+                    silk_request = None
+                elif silk_request:
                     ResponseModelFactory(response).construct_response_model()
                     silk_request.end_time = timezone.now()
                     collector.finalise()
