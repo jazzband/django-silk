@@ -32,7 +32,7 @@ class ProfileParserTestCase(TestCase):
             self.assertEqual(actual[0], exc_header)
 
             exc_number = re.compile(r"\d(.\d+)?")
-            exc_module = re.compile(r"({method.*})|({built-in.*})|(<.+>:\d+\(<.+>\))")
+            exc_module = re.compile(r"({method.*})|({built-in.*})|(.+:\d+\(.+\))")
 
             exc_row = [exc_number, exc_number, exc_number, exc_number, exc_number, exc_module]
 
