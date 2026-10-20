@@ -147,10 +147,16 @@ class RequestModelFactory:
             raw_body = self.request.body
         except RequestDataTooBig:
             raw_body = b"Raw body exceeds DATA_UPLOAD_MAX_MEMORY_SIZE, Silk is not showing file uploads."
-            body = self.request.POST.copy()
-            for k, v in self.request.FILES.items():
-                body.appendlist(k, v)
-            return body, raw_body
+            # The raw body is not available but the parsed form data still is.
+            # Store it the same way other form data is stored (as JSON, with
+            # uploads reduced to their file names) and mask sensitive values
+            # before it is saved.
+            body = dict(self.request.POST)
+            for name, files in self.request.FILES.lists():
+                body[name] = [getattr(f, 'name', str(f)) for f in files]
+            body = json.dumps(body, sort_keys=True, indent=4,
+                              ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII)
+            return self._mask_credentials(body), raw_body
         if char_set:
             try:
                 raw_body = raw_body.decode(char_set)
