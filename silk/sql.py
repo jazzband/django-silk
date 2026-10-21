@@ -95,15 +95,22 @@ def execute_sql(self, *args, **kwargs):
             'start_time': timezone.now(),
             'traceback': tb
         }
+        query_succeeded = False
         try:
-            return self._execute_sql(*args, **kwargs)
+            result = self._execute_sql(*args, **kwargs)
+            query_succeeded = True
+            return result
         finally:
             query_dict['end_time'] = timezone.now()
             request = DataCollector().request
             if request:
                 query_dict['request'] = request
             if getattr(self.query.model, '__module__', '') != 'silk.models':
-                query_dict['analysis'] = _explain_query(self.connection, q, params)
+                # Only EXPLAIN queries that succeeded. After a failed query, PostgreSQL
+                # rejects further queries in the transaction, so EXPLAIN would hide the
+                # original error (#672). Failed queries are still recorded, without analysis.
+                if query_succeeded:
+                    query_dict['analysis'] = _explain_query(self.connection, q, params)
                 DataCollector().register_query(query_dict)
             else:
                 DataCollector().register_silk_query(query_dict)
