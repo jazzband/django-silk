@@ -23,7 +23,7 @@ def _curl_process_params(body, content_type, query_params):
             pass
         query_params = '?' + str(query_params)
     if 'json' in content_type or 'javascript' in content_type:
-        if isinstance(body, dict):
+        if isinstance(body, (dict, list)):
             body = json.dumps(body)
         modifier = '-d'
     # See http://curl.haxx.se/docs/manpage.html#-F
