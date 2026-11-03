@@ -1,0 +1,13 @@
+.silk-button{
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    padding: 6px 10px;
+    background: rgb(51, 51, 68);
+    color: whitesmoke;
+    margin-top: 5%;
+}
+
+.cell:hover .silk-button{
+    background-color: #e2e6ea;
+    color: #000;
+}
