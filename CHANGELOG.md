@@ -2,6 +2,23 @@
 ## Unreleased
 
 
+## [5.7.0](https://github.com/django-commons/django-silk/tree/5.7.0) (2026-10-17)
+:release-by: Albert Wang (@albertyw)
+[Full Changelog](https://github.com/django-commons/django-silk/compare/5.6.0..5.7.0)
+
+This will be the final release to support Python 3.10.
+
+**Features/Enhancements:**
+
+ - Add SILKY_INTERCEPT_STATUS_CODES setting to only record requests with matching response status codes (#922) @AdrianVillegas2416
+
+**Maintenance and Cleanup:**
+
+ - Move test dependencies from requirements.txt into a pyproject.toml dependency group (#914) @albertyw
+ - Drop redundant pygments pin from test dependencies (#923) @albertyw
+ - Add GitHub repository topics (#917) @shivanshutiwari35
+
+
 ## [5.6.0](https://github.com/jazzband/django-silk/tree/5.6.0) (2026-09-11)
 :release-by: Albert Wang (@albertyw)
 [Full Changelog](https://github.com/jazzband/django-silk/compare/5.5.2..5.6.0)
