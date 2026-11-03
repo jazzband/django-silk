@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from silk import models
 from silk.config import SilkyConfig
@@ -15,11 +16,19 @@ class TestViewClearDB(TestCase):
         SilkyConfig().SILKY_AUTHORISATION = False
 
     def test_clear_all(self):
-        RequestMinFactory.create()
+        RequestMinFactory.create(end_time=timezone.now())
         self.assertEqual(models.Request.objects.count(), 1)
         response = self.client.post(silky_reverse("cleardb"), {"clear_all": "on"})
         self.assertTrue(response.status_code == 200)
         self.assertEqual(models.Request.objects.count(), 0)
+
+    def test_clear_preserves_in_flight_requests(self):
+        completed = RequestMinFactory.create(end_time=timezone.now())
+        in_flight = RequestMinFactory.create()
+        response = self.client.post(silky_reverse("cleardb"), {"clear_all": "on"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(models.Request.objects.filter(pk=completed.pk).exists())
+        self.assertTrue(models.Request.objects.filter(pk=in_flight.pk).exists())
 
 
 class TestViewClearDBAndDeleteProfiles(TestCase):
@@ -31,7 +40,7 @@ class TestViewClearDBAndDeleteProfiles(TestCase):
         SilkyConfig().SILKY_DELETE_PROFILES = True
 
     def test_clear_all_and_delete_profiles(self):
-        RequestMinFactory.create()
+        RequestMinFactory.create(end_time=timezone.now())
         self.assertEqual(models.Request.objects.count(), 1)
         response = self.client.post(silky_reverse("cleardb"), {"clear_all": "on"})
         self.assertTrue(response.status_code == 200)

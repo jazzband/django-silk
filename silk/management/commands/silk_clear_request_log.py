@@ -1,16 +1,12 @@
 from django.core.management.base import BaseCommand
 
-import silk.models
-from silk.utils.data_deletion import delete_model
+from silk.utils.data_deletion import clear_silk_data
 
 
 class Command(BaseCommand):
     help = "Clears silk's log of requests."
 
     def handle(self, *args, **options):
-        # Django takes a long time to traverse foreign key relations,
-        # so delete in the order that makes it easy.
-        delete_model(silk.models.Profile)
-        delete_model(silk.models.SQLQuery)
-        delete_model(silk.models.Response)
-        delete_model(silk.models.Request)
+        # Preserve in-flight requests (no end_time yet) so response
+        # finalization cannot hit IntegrityError on a deleted Request.
+        clear_silk_data()
