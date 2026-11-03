@@ -1,5 +1,6 @@
 from unittest.mock import Mock, NonCallableMagicMock, NonCallableMock, patch
 
+from django.db import DatabaseError, IntegrityError, InternalError
 from django.test import TestCase
 from django.utils.encoding import force_str
 
@@ -154,3 +155,32 @@ class TestCollectorInteraction(BaseTestCase):
         execute_sql(sql)
         self.assertNotIn(prefix, params)
         self.assertFalse(mock_cursor.execute.called)
+
+
+class TestFailedQuery(BaseTestCase):
+    """A query that raises must not be EXPLAINed afterwards (#672)"""
+
+    def setUp(self):
+        super().setUp()
+        DataCollector().configure(request=Request.objects.create(path='/path/to/somewhere'))
+        self.sql, _ = mock_sql(_simple_mock_query_params)
+        self.sql._execute_sql.side_effect = IntegrityError('duplicate key')
+        # Like PostgreSQL: once a query fails, the next one in the transaction raises
+        mock_cursor = self.sql.connection.cursor.return_value.__enter__.return_value
+        mock_cursor.execute.side_effect = InternalError('current transaction is aborted')
+
+    def test_original_error_raised(self):
+        with self.assertRaisesMessage(IntegrityError, 'duplicate key'):
+            execute_sql(self.sql)
+
+    def test_not_explained(self):
+        with self.assertRaises(DatabaseError):
+            execute_sql(self.sql)
+        self.assertFalse(self.sql.connection.cursor.called)
+
+    def test_still_recorded(self):
+        with self.assertRaises(DatabaseError):
+            execute_sql(self.sql)
+        self.assertEqual(1, len(DataCollector().queries))
+        query = list(DataCollector().queries.values())[0]
+        self.assertIsNone(query.get('analysis'))
