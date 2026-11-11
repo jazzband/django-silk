@@ -15,4 +15,5 @@ class TestCodeGenDjango(TestCase):
         self.assertIn("from django.test import Client", result)
         self.assertIn("c = Client()", result)
         self.assertIn("c.post(path='/alpha/beta'", result)
+        self.assertIn("data={'gamma': 'delta', 'epsilon': 'zeta'}", result)
         self.assertIn("content_type='application/x-www-form-urlencoded')", result)
