@@ -102,6 +102,27 @@ Dynamic profiling is configured via the ``SILKY_DYNAMIC_PROFILING`` option in yo
 	    print(3)
 	    print(4)
 
+	"""
+	Dynamic wildcard decorators
+	"""
+
+	SILKY_DYNAMIC_PROFILING = [
+	    # every function defined in path.to.module
+	    {'module': 'path.to.module', 'function': '*'},
+	    # every method of MyClass
+	    {'module': 'path.to.module', 'function': 'MyClass.*'},
+	    # every method starting with ``get_`` of the classes ending with ``View``
+	    {'module': 'path.to.module', 'function': '*View.get_*'},
+	]
+
+Wildcards follow the rules of Python's :mod:`fnmatch` (``*``, ``?`` and ``[seq]``). The pattern is
+matched against plain functions defined in the module itself, or, for ``Class.method`` patterns,
+against the classes defined in the module and their methods. Imported objects, static/class methods
+and dunder methods (e.g. ``__init__``, unless the pattern starts with ``__``) are not matched. A
+pattern that matches nothing raises an ``AttributeError``, and wildcards cannot be combined with
+``start_line``/``end_line``. If ``name`` is given it is used for every matched function, otherwise each
+function's own name is used.
+
 Note that dynamic profiling behaves in a similar fashion to that of the python mock framework in that
 we modify the function in-place e.g:
 

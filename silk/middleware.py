@@ -142,7 +142,14 @@ class SilkyMiddleware:
             end_line = conf.get('end_line')
             name = conf.get('name')
             if module and function:
-                if start_line and end_line:  # Dynamic context manager
+                if dynamic.is_function_pattern(function):  # Dynamic decorator on many functions
+                    if start_line or end_line:
+                        raise ValueError(
+                            'Wildcard function %r cannot be combined with start_line/end_line' % function)
+                    dynamic.profile_matching_functions(module=module,
+                                                       pattern=function,
+                                                       name=name)
+                elif start_line and end_line:  # Dynamic context manager
                     dynamic.inject_context_manager_func(module=module,
                                                         func=function,
                                                         start_line=start_line,

@@ -1,3 +1,4 @@
+import fnmatch
 import inspect
 import logging
 import re
@@ -56,10 +57,82 @@ def profile_function_or_method(module, func, name=None):
     func_name = func
     cls, func = _get_func(module, func_name)
     wrapped_target = decorator(func)
+    wrapped_target._silk_dynamic_profiled = True
     if cls:
         setattr(cls, func_name.split('.')[-1], wrapped_target)
     else:
         setattr(module, func_name, wrapped_target)
+
+
+def is_function_pattern(func_name):
+    """
+    Return True if func_name contains shell-style wildcards (``*``, ``?``, ``[seq]``).
+    """
+    return any(char in func_name for char in '*?[')
+
+
+def _matching_names(namespace, pattern, predicate):
+    # Dunder names (e.g. __init__) are only matched when the pattern asks for them explicitly.
+    skip_dunder = not pattern.startswith('__')
+    return sorted(
+        name for name, obj in vars(namespace).items()
+        if fnmatch.fnmatchcase(name, pattern)
+        and not (skip_dunder and name.startswith('__') and name.endswith('__'))
+        and predicate(obj)
+    )
+
+
+def _expand_function_pattern(module, pattern):
+    """
+    Given a module and a wildcard pattern, return the names of the functions it matches.
+
+    pattern can be of the forms:
+        - 'foo*': match functions defined in the module
+        - 'Class.foo*': match methods of a class defined in the module
+        - 'Cl*.*': match all methods of all matching classes defined in the module
+
+    Only plain functions defined in the module itself are matched: imported objects
+    and static/class methods are ignored.
+    """
+    def is_local(obj):
+        return getattr(obj, '__module__', None) == module.__name__
+
+    parts = pattern.split('.')
+    if len(parts) == 1:
+        return _matching_names(module, pattern, lambda obj: inspect.isfunction(obj) and is_local(obj))
+    if len(parts) != 2:
+        raise ValueError('Invalid function pattern %r' % pattern)
+    cls_pattern, func_pattern = parts
+    names = []
+    for cls_name in _matching_names(module, cls_pattern, lambda obj: inspect.isclass(obj) and is_local(obj)):
+        cls = getattr(module, cls_name)
+        names.extend(
+            '%s.%s' % (cls_name, func_name)
+            for func_name in _matching_names(cls, func_pattern, inspect.isfunction)
+        )
+    return names
+
+
+def profile_matching_functions(module, pattern, name=None):
+    """
+    Programmatically apply a decorator to every function or method matching a wildcard pattern
+
+    Functions that were already decorated by a previous call are left untouched, so this
+    can safely be called again (e.g. on every request).
+
+    @param module: module object or module name in form 'path.to.module'
+    @param pattern: function pattern in form 'foo*', 'Class.*' or 'Cl*.get*'
+    @param name: name of the profile, defaults to the name of each decorated function
+    """
+    if isinstance(module, str):
+        module = _get_module(module)
+    func_names = _expand_function_pattern(module, pattern)
+    if not func_names:
+        raise AttributeError('Module %s has no function matching %r' % (module.__name__, pattern))
+    for func_name in func_names:
+        _, func = _get_func(module, func_name)
+        if not getattr(func, '_silk_dynamic_profiled', False):
+            profile_function_or_method(module, func_name, name)
 
 
 def _get_parent_module(module):

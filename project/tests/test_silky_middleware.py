@@ -117,6 +117,107 @@ class TestApplyDynamicMappings(TestCase):
                 SilkyMiddleware(fake_get_response)
 
 
+class TestApplyDynamicWildcardMappings(TestCase):
+    def setUp(self):
+        # Wildcard profiling mutates the shared fixture module, so restore it afterwards.
+        from .data import dynamic as module
+        originals = {name: obj for name, obj in vars(module).items()}
+        class_originals = {
+            name: dict(vars(obj)) for name, obj in originals.items()
+            if isinstance(obj, type) and obj.__module__ == module.__name__
+        }
+
+        def restore():
+            for name, obj in originals.items():
+                setattr(module, name, obj)
+            for name, attrs in class_originals.items():
+                for attr, value in attrs.items():
+                    if attr not in ('__dict__', '__weakref__'):
+                        setattr(originals[name], attr, value)
+        self.addCleanup(restore)
+        self.middleware = SilkyMiddleware(fake_get_response)
+
+    def _profiled(self, func):
+        mock = mock_data_collector()
+        with patch('silk.profiling.profiler.DataCollector', return_value=mock) as mock_DataCollector:
+            func()
+            return mock_DataCollector.return_value.register_profile.call_count
+
+    def test_module_wildcard(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'wild_*'}]
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        self.assertEqual(self._profiled(dynamic.wild_one), 1)
+        self.assertEqual(self._profiled(dynamic.wild_two), 1)
+        self.assertEqual(self._profiled(dynamic._unrelated), 0)
+
+    def test_class_wildcard(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'Greeter.*'}]
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        greeter = dynamic.Greeter()
+        self.assertEqual(self._profiled(greeter.hello), 1)
+        self.assertEqual(self._profiled(greeter.goodbye), 1)
+        self.assertEqual(self._profiled(dynamic.Greeter.static), 0)
+        self.assertEqual(self._profiled(dynamic.Other().hello), 0)
+
+    def test_method_wildcard(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'Greeter.hel*'}]
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        greeter = dynamic.Greeter()
+        self.assertEqual(self._profiled(greeter.hello), 1)
+        self.assertEqual(self._profiled(greeter.help), 1)
+        self.assertEqual(self._profiled(greeter.goodbye), 0)
+
+    def test_class_and_method_wildcard(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': '*.hello'}]
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        self.assertEqual(self._profiled(dynamic.Greeter().hello), 1)
+        self.assertEqual(self._profiled(dynamic.Other().hello), 1)
+        self.assertEqual(self._profiled(dynamic.Greeter().goodbye), 0)
+
+    def test_dunder_methods_not_matched_by_wildcard(self):
+        from .data import dynamic
+
+        init = dynamic.Greeter.__init__
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'Greeter.*'}]
+        self.middleware._apply_dynamic_mappings()
+        self.assertIs(dynamic.Greeter.__init__, init)
+
+    def test_imported_objects_not_matched(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': '*'}]
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        self.assertEqual(self._profiled(dynamic.wild_one), 1)
+        self.assertIs(dynamic.dumps, __import__('json').dumps)
+        self.assertFalse(hasattr(dynamic.dumps, '_silk_dynamic_profiled'))
+
+    def test_applying_twice_does_not_stack_decorators(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'wild_*'}]
+        self.middleware._apply_dynamic_mappings()
+        self.middleware._apply_dynamic_mappings()
+        from .data import dynamic
+
+        self.assertEqual(self._profiled(dynamic.wild_one), 1)
+
+    def test_no_match(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [{'module': 'tests.data.dynamic', 'function': 'nothing*'}]
+        self.assertRaises(AttributeError, self.middleware._apply_dynamic_mappings)
+
+    def test_wildcard_with_line_numbers(self):
+        SilkyConfig().SILKY_DYNAMIC_PROFILING = [
+            {'module': 'tests.data.dynamic', 'function': 'wild_*', 'start_line': 1, 'end_line': 2}
+        ]
+        self.assertRaises(ValueError, self.middleware._apply_dynamic_mappings)
+
+
 class TestShouldIntercept(TestCase):
     def test_should_intercept_non_silk_request(self):
         request = Request()

@@ -1,6 +1,10 @@
 # Change Log
 ## Unreleased
 
+**Features/Enhancements:**
+
+ - Support wildcards in `SILKY_DYNAMIC_PROFILING` function names, e.g. `*` or `MyClass.*` (#457)
+
 
 ## [5.6.0](https://github.com/jazzband/django-silk/tree/5.6.0) (2026-09-11)
 :release-by: Albert Wang (@albertyw)
