@@ -121,7 +121,7 @@ class TestApplyDynamicWildcardMappings(TestCase):
     def setUp(self):
         # Wildcard profiling mutates the shared fixture module, so restore it afterwards.
         from .data import dynamic as module
-        originals = {name: obj for name, obj in vars(module).items()}
+        originals = {**vars(module)}
         class_originals = {
             name: dict(vars(obj)) for name, obj in originals.items()
             if isinstance(obj, type) and obj.__module__ == module.__name__

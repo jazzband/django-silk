@@ -107,7 +107,7 @@ def _expand_function_pattern(module, pattern):
     for cls_name in _matching_names(module, cls_pattern, lambda obj: inspect.isclass(obj) and is_local(obj)):
         cls = getattr(module, cls_name)
         names.extend(
-            '%s.%s' % (cls_name, func_name)
+            '{}.{}'.format(cls_name, func_name)
             for func_name in _matching_names(cls, func_pattern, inspect.isfunction)
         )
     return names
@@ -128,7 +128,7 @@ def profile_matching_functions(module, pattern, name=None):
         module = _get_module(module)
     func_names = _expand_function_pattern(module, pattern)
     if not func_names:
-        raise AttributeError('Module %s has no function matching %r' % (module.__name__, pattern))
+        raise AttributeError('Module {} has no function matching {!r}'.format(module.__name__, pattern))
     for func_name in func_names:
         _, func = _get_func(module, func_name)
         if not getattr(func, '_silk_dynamic_profiled', False):
