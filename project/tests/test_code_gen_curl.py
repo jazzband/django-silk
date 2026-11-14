@@ -22,6 +22,23 @@ class TestCodeGenCurl(TestCase):
             'https://example.org/alpha/beta'
         ])
 
+    def test_post_json_array(self):
+        result = curl_cmd(
+            url="https://example.org/alpha/beta",
+            method="POST",
+            body=[{"gamma": "delta", "epsilon": True}],
+            content_type="application/json",
+        )
+
+        result_words = shlex.split(result)
+
+        self.assertEqual(result_words, [
+            'curl', '-X', 'POST',
+            '-H', 'content-type: application/json',
+            '-d', '[{"gamma": "delta", "epsilon": true}]',
+            'https://example.org/alpha/beta'
+        ])
+
     def test_non_string_query_param_value(self):
         """
         Regression test for
