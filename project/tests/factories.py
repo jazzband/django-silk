@@ -37,7 +37,7 @@ class ResponseFactory(factory.django.DjangoModelFactory):
 class BlindFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('pystr', min_chars=5, max_chars=10)
     child_safe = factory.Faker('pybool')
-    photo = factory.django.ImageField()
+    photo = factory.django.FileField()
 
     class Meta:
         model = Blind
