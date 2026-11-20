@@ -299,18 +299,10 @@ class ResponseModelFactory:
             % self.request.pk
         )
         b, content = self.body()
-        headers = {}
-        for k, v in self.response.headers.items():
-            try:
-                header, val = v
-            except ValueError:
-                header, val = k, v
-            finally:
-                headers[header] = val
         silky_response = models.Response(
             request_id=self.request.id,
             status_code=self.response.status_code,
-            encoded_headers=json.dumps(headers, ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII),
+            encoded_headers=json.dumps(dict(self.response.headers), ensure_ascii=SilkyConfig().SILKY_JSON_ENSURE_ASCII),
             body=b
         )
 
