@@ -45,6 +45,24 @@ class TestProfilerRequests(TestCase):
         profile = list(DataCollector().profiles.values())[0]
         self.assertEqual(DataCollector().request, profile['request'])
 
+    def test_decorator_recursive(self):
+        DataCollector().configure(Request.objects.create(path='/to/somewhere'))
+
+        @silk_profile()
+        def func(n):
+            if n == 0:
+                raise ValueError
+            try:
+                func(n - 1)
+            except ValueError:
+                pass
+
+        func(2)
+        profiles = list(DataCollector().profiles.values())
+        # each call gets its own profile, with its own exception flag
+        self.assertEqual(len({id(p) for p in profiles}), 3)
+        self.assertEqual(sorted(p.get('exception_raised', False) for p in profiles), [False, False, True])
+
 
 class TestProfilertContextManager(TestCase):
     @classmethod
