@@ -137,6 +137,8 @@ class silk_profile:
             def decorator(view_func):
                 @wraps(view_func)
                 def wrapped_target(*args, **kwargs):
+                    # Per-call state, so recursive and concurrent calls get their own profile.
+                    profiler = silk_profile(self.name, self._dynamic)
                     with silk_meta_profiler():
                         try:
                             func_code = target.__code__
@@ -145,27 +147,27 @@ class silk_profile:
                         line_num = func_code.co_firstlineno
                         file_path = func_code.co_filename
                         func_name = target.__name__
-                        if not self.name:
-                            self.name = func_name
-                        self.profile = {
+                        if not profiler.name:
+                            profiler.name = func_name
+                        profiler.profile = {
                             'func_name': func_name,
-                            'name': self.name,
+                            'name': profiler.name,
                             'file_path': file_path,
                             'line_num': line_num,
-                            'dynamic': self._dynamic,
+                            'dynamic': profiler._dynamic,
                             'start_time': timezone.now(),
                             'request': DataCollector().request
                         }
-                        self._start_queries()
+                        profiler._start_queries()
                     try:
                         result = target(*args, **kwargs)
                     except Exception:
-                        self.profile['exception_raised'] = True
+                        profiler.profile['exception_raised'] = True
                         raise
                     finally:
                         with silk_meta_profiler():
-                            self.profile['end_time'] = timezone.now()
-                            self._finalise_queries()
+                            profiler.profile['end_time'] = timezone.now()
+                            profiler._finalise_queries()
                     return result
 
                 return wrapped_target
