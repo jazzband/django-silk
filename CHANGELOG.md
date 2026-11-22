@@ -1,6 +1,10 @@
 # Change Log
 ## Unreleased
 
+**Maintenance and Cleanup:**
+
+ - Switched to trusted publisher release process with Django Commons
+
 
 ## [5.6.0](https://github.com/jazzband/django-silk/tree/5.6.0) (2026-09-11)
 :release-by: Albert Wang (@albertyw)
