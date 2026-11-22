@@ -14,7 +14,7 @@ setup(
     description='Silky smooth profiling for the Django Framework',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/jazzband/django-silk',
+    url='https://github.com/django-commons/django-silk',
     author='Michael Ford',
     author_email='mtford@gmail.com',
     classifiers=[

@@ -85,7 +85,7 @@ def execute_sql(self, *args, **kwargs):
         sql_query = q % tuple(force_str(param) for param in params)
     except UnicodeDecodeError:
         # Sometimes `force_str` can still raise a UnicodeDecodeError
-        # Reference: https://github.com/jazzband/django-silk/issues?q=encoding
+        # Reference: https://github.com/django-commons/django-silk/issues?q=encoding
         # This could log a warning but given this is run in the hot path, logging could be too expensive.
         return self._execute_sql(*args, **kwargs)
     if _should_wrap(sql_query):

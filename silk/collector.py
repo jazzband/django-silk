@@ -97,7 +97,7 @@ class DataCollector(metaclass=Singleton):
                 self.local.pythonprofiler.enable()
             except ValueError as e:  # pragma: no cover
                 # Deal with cProfile not being allowed to run concurrently
-                # https://github.com/jazzband/django-silk/issues/682
+                # https://github.com/django-commons/django-silk/issues/682
                 Logger.error('Could not enable python profiler, %s' % str(e), exc_info=True)
                 self.local.pythonprofiler = None
 

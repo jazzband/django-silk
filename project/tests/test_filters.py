@@ -269,7 +269,7 @@ class TestProfileFilters(TestCase):
 class TestFiltersManager(TestCase):
     """
     Regression tests for
-    https://github.com/jazzband/django-silk/issues/361
+    https://github.com/django-commons/django-silk/issues/361
     """
     class BareRequest:
         pass
