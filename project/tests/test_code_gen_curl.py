@@ -25,7 +25,7 @@ class TestCodeGenCurl(TestCase):
     def test_non_string_query_param_value(self):
         """
         Regression test for
-        https://github.com/jazzband/django-silk/issues/317
+        https://github.com/django-commons/django-silk/issues/317
 
         A non-string query param value (e.g. a float, as in the
         issue's reproduction) must not raise AttributeError when

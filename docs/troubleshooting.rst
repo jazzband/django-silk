@@ -16,7 +16,7 @@ If you see errors like:
 
 Then it's likely your database is not configured correctly for UTF encoding.
 
-See this `github issue <https://github.com/jazzband/django-silk/issues/21>`_ for more details and workarounds.
+See this `github issue <https://github.com/django-commons/django-silk/issues/21>`_ for more details and workarounds.
 
 Context Processor
 -----------------
@@ -32,7 +32,7 @@ If you see errors like:
              ^^^^^^^^^^^^
     AttributeError: 'str' object has no attribute 'path'
 
-Include ``django.template.context_processors.request`` in your Django settings' ``TEMPLATES`` context processors as `recommended <https://github.com/jazzband/django-silk/issues/805>`_.
+Include ``django.template.context_processors.request`` in your Django settings' ``TEMPLATES`` context processors as `recommended <https://github.com/django-commons/django-silk/issues/805>`_.
 
 Middleware
 ----------
@@ -42,7 +42,7 @@ The order of middleware is sensitive. If any middleware placed before ``silk.mid
 Garbage Collection
 ------------------
 
-To `avoid <https://github.com/jazzband/django-silk/issues/265>`_ `deadlock <https://github.com/jazzband/django-silk/issues/294>`_ `issues <https://github.com/jazzband/django-silk/issues/371>`_, you might want to decouple silk's garbage collection from your webserver's request processing, set ``SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0`` and trigger it manually, e.g. in a cron job:
+To `avoid <https://github.com/django-commons/django-silk/issues/265>`_ `deadlock <https://github.com/django-commons/django-silk/issues/294>`_ `issues <https://github.com/django-commons/django-silk/issues/371>`_, you might want to decouple silk's garbage collection from your webserver's request processing, set ``SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT=0`` and trigger it manually, e.g. in a cron job:
 
 .. code-block:: bash
 

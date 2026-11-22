@@ -155,7 +155,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_ignore_paths_behind_script_name_prefix(self):
         """
         Regression test for
-        https://github.com/jazzband/django-silk/issues/349
+        https://github.com/django-commons/django-silk/issues/349
 
         A SILKY_IGNORE_PATHS entry is a plain string the user writes
         in settings.py -- never passed through reverse() -- so it's
@@ -181,7 +181,7 @@ class TestShouldIntercept(TestCase):
     def test_should_intercept_silk_request_behind_script_name_prefix(self):
         """
         Companion regression test for
-        https://github.com/jazzband/django-silk/issues/349.
+        https://github.com/django-commons/django-silk/issues/349.
 
         Unlike SILKY_IGNORE_PATHS entries, get_fpath() is built from
         reverse(), which picks up Django's script prefix (set from

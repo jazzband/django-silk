@@ -1,7 +1,7 @@
 {
   "name": "silk",
   "version": "5.6.0",
-  "description": "https://github.com/jazzband/django-silk",
+  "description": "https://github.com/django-commons/django-silk",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jazzband/django-silk.git"
+    "url": "https://github.com/django-commons/django-silk.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jazzband/django-silk/issues"
+    "url": "https://github.com/django-commons/django-silk/issues"
   },
-  "homepage": "https://github.com/jazzband/django-silk",
+  "homepage": "https://github.com/django-commons/django-silk",
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-sass": "^4.0.2"
